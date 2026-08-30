@@ -1,0 +1,40 @@
+#pragma once
+
+
+#include <windows.h>
+#include <math.h>
+#include <stdio.h>
+
+#include "smlib3d\\smd3d.h"
+#include "smwsock.h"
+#include "smPacket.h"
+#include "effectsnd.h"
+#include "Character/playsub.h"
+#include "language.h"
+#include "sinMonster.h"
+#include "sinMain.h"
+#include "sinTrade.h"
+#include "sinSubMain.h"
+#include "sinItem.h"
+#include "sinInvenTory.h"
+#include "sinSkill.h"
+#include "sinQuest.h"
+#include "sinSOD2.h"
+#include "HaQuest.h"
+#include "haPremiumItem.h"
+#include "SkillFunction\\Tempskron.h"
+#include "SkillFunction\\Morayion.h"
+#include "GM\\GM.h"
+#include "SQL.h"
+#include "Ranking\\SodRanking.h"
+#include "Ranking\\PVPRanking.h"
+#include "Ranking\\TopRanking.h"
+#include "Eventos\\Invasao.h"
+#include "Eventos\\Arena.h"
+#include "VIP\\Vip.h"
+#include "Security\\Joi.hpp"
+#include "GameServer\\GameServer.h"
+#include "GlobalsShared.h"
+#include "Caravana\\Caravana.h"
+#include "Roleta\\Roleta.h"
+#include "GM\\ServerCommand.h"

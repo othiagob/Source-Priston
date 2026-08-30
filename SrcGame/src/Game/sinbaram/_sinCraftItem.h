@@ -1,0 +1,30 @@
+#pragma once
+
+#include "..\globals.h"
+
+#define   SIN_ADD_FIRE				0x00000001
+#define   SIN_ADD_ICE				0x00000002
+#define   SIN_ADD_LIGHTNING			0x00000004
+#define   SIN_ADD_POISON			0x00000008
+#define   SIN_ADD_BIO				0x00000010
+#define   SIN_ADD_CRITICAL			0x00000020
+#define   SIN_ADD_ATTACK_RATE		0x00000040
+#define   SIN_ADD_DAMAGE_MIN		0x00000080
+#define   SIN_ADD_DAMAGE_MAX		0x00000100
+#define   SIN_ADD_ATTACK_SPEED		0x00000200
+#define   SIN_ADD_ABSORB			0x00000400
+#define   SIN_ADD_DEFENCE			0x00000800
+#define   SIN_ADD_BLOCK_RATE		0x00001000
+#define   SIN_ADD_MOVE_SPEED		0x00002000
+#define   SIN_ADD_LIFE				0x00004000
+#define   SIN_ADD_MANA				0x00008000
+#define   SIN_ADD_STAMINA			0x00010000
+#define   SIN_ADD_LIFEREGEN			0x00020000
+#define   SIN_ADD_MANAREGEN			0x00040000
+#define   SIN_ADD_STAMINAREGEN		0x00080000
+
+
+#define   SIN_ADD_NUM				1
+#define   SIN_ADD_PERCENT			2
+
+#include "srcServer\LangCraftItem.h"

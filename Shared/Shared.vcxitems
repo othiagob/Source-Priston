@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{5191e461-ab10-4ef2-b87b-e768a991cc3b}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)GlobalsShared.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Hashing\CRC.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LevelTable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\archer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\atalanta.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\base.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\fighter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\knight.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\magician.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\mechanician.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\pikeman.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills\priestess.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)smPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\CMutex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\common.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Debug.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\EXEVertex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\FileReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Geometry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Logs\utils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_exception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_filesystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_logging.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_string.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_testing.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Macros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\strings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DAABB.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DEasings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DFrustum.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DMatrix4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DQuad.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DQuaternion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DSphere.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DVector2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DVector3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\X3DVector4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utils\_common.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Debug.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\FileReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Geometry.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_exception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_filesystem.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_logging.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_string.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Logs\utils_testing.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\Mutex.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\strings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\X3DEasings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utils\_common.cpp" />
+  </ItemGroup>
+</Project>

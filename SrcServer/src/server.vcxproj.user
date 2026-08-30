@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ShowAllFiles>true</ShowAllFiles>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LocalDebuggerWorkingDirectory>..\..\..\PTServer\</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerWorkingDirectory>C:\PTServer\</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerCommand>$(TargetPath)</RemoteDebuggerCommand>
+    <DeploymentDirectory>C:\PTServer\</DeploymentDirectory>
+    <AdditionalFiles>PTServer.exe</AdditionalFiles>
+    <RemoteDebuggerServerName>190.102.40.25:4024</RemoteDebuggerServerName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerWorkingDirectory>..\..\..\PTServer\</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerWorkingDirectory>C:\PTServer\</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerServerName>15.204.184.155:4024</RemoteDebuggerServerName>
+    <DeploymentDirectory>C:\PTServer\</DeploymentDirectory>
+    <AdditionalFiles>Server.exe</AdditionalFiles>
+    <RemoteDebuggerCommand>$(TargetPath)</RemoteDebuggerCommand>
+  </PropertyGroup>
+</Project>

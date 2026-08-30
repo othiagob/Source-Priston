@@ -1,0 +1,410 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{07C4E7A3-1D3D-491E-84FE-9917FE9BAA4D}</ProjectGuid>
+    <ProjectName>Server</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="..\..\Shared\Shared.vcxitems" Label="Shared" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(SolutionDir)\Library;C:\Libs;C:\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
+    <IntDir>..\..\OutDir\DebugServer\</IntDir>
+    <IncludePath>C:\Libs;C:\Libs\zlib\include;$(IncludePath)</IncludePath>
+    <TargetName>Server</TargetName>
+    <OutDir>..\..\..\PTServer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..</OutDir>
+    <IntDir>..\..\OutDir\ReleaseServer\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(SolutionDir)\Library;f:\Sources\Libs;f:\Sources\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>f:\Sources\Libs;f:\Sources\Libs\zlib\include;$(IncludePath)</IncludePath>
+    <TargetName>Server</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4430;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <StringPooling>true</StringPooling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <AdditionalIncludeDirectories>$(ProjectDir)Server\;$(SolutionDir)..\Shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>Default</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>dsound.lib;odbc32.lib;odbccp32.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libc.lib;libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile />
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <BaseAddress>0x00400000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <FixedBaseAddress>true</FixedBaseAddress>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\runmap3d___Win32_Debug/runmap3d.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>false</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>.\Release/runmap3d.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4430;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)Server\;$(SolutionDir)..\Shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <AdditionalDependencies>dsound.lib;odbc32.lib;odbccp32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <BaseAddress>
+      </BaseAddress>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <FixedBaseAddress>
+      </FixedBaseAddress>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/runmap3d.tlb</TypeLibraryName>
+    </Midl>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0416</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Server\Aging\RestaureItem.cpp" />
+    <ClCompile Include="Server\AreaServer.cpp" />
+    <ClCompile Include="Server\Caravana\Caravana.cpp" />
+    <ClCompile Include="Server\Character\character.cpp" />
+    <ClCompile Include="Server\Character\Damage.cpp" />
+    <ClCompile Include="Server\Character\playmain.cpp" />
+    <ClCompile Include="Server\Character\playsub.cpp" />
+    <ClCompile Include="Server\Character\record.cpp" />
+    <ClCompile Include="Server\Character\SkillSub.cpp" />
+    <ClCompile Include="Server\Chat\ChatServer.cpp" />
+    <ClCompile Include="Server\CLI\CLI.cpp" />
+    <ClCompile Include="Server\ConnectReader.cpp" />
+    <ClCompile Include="Server\cSkinChanger.cpp" />
+    <ClCompile Include="Server\Database\SQLConnection.cpp" />
+    <ClCompile Include="Server\Eventos\Arena.cpp" />
+    <ClCompile Include="Server\Eventos\EragonLair.cpp" />
+    <ClCompile Include="Server\Eventos\Invasao.cpp" />
+    <ClCompile Include="Server\Eventos\Questions.cpp" />
+    <ClCompile Include="Server\field.cpp" />
+    <ClCompile Include="Server\fileread.cpp" />
+    <ClCompile Include="Server\GameServer\GameServer.cpp" />
+    <ClCompile Include="Server\GM\GM.cpp" />
+    <ClCompile Include="Server\GM\ServerCommand.cpp" />
+    <ClCompile Include="Server\Login\ProcessLogin.cpp" />
+    <ClCompile Include="Server\netplay.cpp" />
+    <ClCompile Include="Server\Party\CPartyHandler.cpp" />
+    <ClCompile Include="Server\Party\Party.cpp" />
+    <ClCompile Include="Server\Quest\Quest.cpp" />
+    <ClCompile Include="Server\Ranking\PVPRanking.cpp" />
+    <ClCompile Include="Server\Ranking\SodRanking.cpp" />
+    <ClCompile Include="Server\Ranking\TopRanking.cpp" />
+    <ClCompile Include="Server\Roleta\Roleta.cpp" />
+    <ClCompile Include="Server\Security\Firewall.cpp" />
+    <ClCompile Include="Server\Shop\NewShop.cpp" />
+    <ClCompile Include="Server\Shop\NewShopTime.cpp" />
+    <ClCompile Include="Server\sinbaram\haPremiumItem.cpp" />
+    <ClCompile Include="Server\sinbaram\sinInvenTory.cpp" />
+    <ClCompile Include="Server\sinbaram\sinItem.cpp" />
+    <ClCompile Include="Server\sinbaram\sinMain.cpp" />
+    <ClCompile Include="Server\sinbaram\sinQuest.cpp" />
+    <ClCompile Include="Server\sinbaram\sinSkill.cpp" />
+    <ClCompile Include="Server\sinbaram\sinSkill_Info.cpp" />
+    <ClCompile Include="Server\sinbaram\sinSOD2.cpp" />
+    <ClCompile Include="Server\sinbaram\sinSubMain.cpp" />
+    <ClCompile Include="Server\sinbaram\sinTrade.cpp" />
+    <ClCompile Include="Server\sinbaram\SkillFunction\Morayion.cpp" />
+    <ClCompile Include="Server\sinbaram\SkillFunction\Tempskron.cpp" />
+    <ClCompile Include="Server\Skills\Skills.cpp" />
+    <ClCompile Include="Server\smlib3d\smgeosub.cpp" />
+    <ClCompile Include="Server\smlib3d\smMap3d.cpp" />
+    <ClCompile Include="Server\smlib3d\smmatrix.cpp" />
+    <ClCompile Include="Server\smlib3d\smObj3d.cpp" />
+    <ClCompile Include="Server\smlib3d\smRead3d.cpp" />
+    <ClCompile Include="Server\smlib3d\smSin.cpp" />
+    <ClCompile Include="Server\smlib3d\smStage3d.cpp" />
+    <ClCompile Include="Server\smlib3d\smStgObj.cpp" />
+    <ClCompile Include="Server\smlib3d\smTexture.cpp" />
+    <ClCompile Include="Server\smReg.cpp" />
+    <ClCompile Include="Server\smwsock.cpp" />
+    <ClCompile Include="Server\SQL.cpp" />
+    <ClCompile Include="Server\SrcLang\jts.cpp" />
+    <ClCompile Include="Server\SrcServer\ClientFuncPos.cpp" />
+    <ClCompile Include="Server\SrcServer\DllServer.cpp" />
+    <ClCompile Include="Server\SrcServer\gameSQL.cpp" />
+    <ClCompile Include="Server\SrcServer\OnSever.cpp" />
+    <ClCompile Include="Server\SrcServer\openlive.cpp" />
+    <ClCompile Include="Server\SrcServer\PartySever.cpp" />
+    <ClCompile Include="Server\SrcServer\svrEventSpawn.cpp" />
+    <ClCompile Include="Server\SrcServer\Svr_Damge.cpp" />
+    <ClCompile Include="Server\TextMessage.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\BMPsmooth.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_chatlist.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_chip.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_CJoin.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_Cmake.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_CViewClanInfo.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_deletecha.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_isclanmember.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_Notice.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_nouser.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_report.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_Updatecldata.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\cE_user.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\clan_Enti.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\GuideHelp.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\Help.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\tjclan.cpp" />
+    <ClCompile Include="Server\TJBOY\clanmenu\tjScroll.cpp" />
+    <ClCompile Include="Server\TJBOY\isaocheck\auth.cpp" />
+    <ClCompile Include="Server\TJBOY\isaocheck\isaocheck.cpp" />
+    <ClCompile Include="Server\TJBOY\Ygy\memmap\memmap.cpp" />
+    <ClCompile Include="Server\TJBOY\Ygy\Packet\Packet.cpp" />
+    <ClCompile Include="Server\TJBOY\Ygy\Process\Process.cpp" />
+    <ClCompile Include="Server\TJBOY\Ygy\Util.cpp" />
+    <ClCompile Include="Server\VIP\Vip.cpp" />
+    <ClCompile Include="Server\WinDump.cpp" />
+    <ClCompile Include="Server\Winmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Server\Aging\RestaureItem.h" />
+    <ClInclude Include="Server\AreaServer.h" />
+    <ClInclude Include="Server\Caravana\Caravana.h" />
+    <ClInclude Include="Server\Character\character.h" />
+    <ClInclude Include="Server\Character\damage.h" />
+    <ClInclude Include="Server\Character\playmain.h" />
+    <ClInclude Include="Server\Character\playsub.h" />
+    <ClInclude Include="Server\Character\record.h" />
+    <ClInclude Include="Server\Character\SkillSub.h" />
+    <ClInclude Include="Server\Chat\Chat.h" />
+    <ClInclude Include="Server\Chat\ChatServer.h" />
+    <ClInclude Include="Server\CLI\CLI.h" />
+    <ClInclude Include="Server\ConnectReader.h" />
+    <ClInclude Include="Server\cSkinChanger.h" />
+    <ClInclude Include="Server\Database\SQLConnection.h" />
+    <ClInclude Include="Server\effectsnd.h" />
+    <ClInclude Include="Server\Eventos\Arena.h" />
+    <ClInclude Include="Server\Eventos\EragonLair.h" />
+    <ClInclude Include="Server\Eventos\Invasao.h" />
+    <ClInclude Include="Server\Eventos\Questions.h" />
+    <ClInclude Include="Server\field.h" />
+    <ClInclude Include="Server\fileread.h" />
+    <ClInclude Include="Server\GameServer\GameServer.h" />
+    <ClInclude Include="Server\GM\GM.h" />
+    <ClInclude Include="Server\GM\ServerCommand.h" />
+    <ClInclude Include="Server\ItemForm.h" />
+    <ClInclude Include="Server\language.h" />
+    <ClInclude Include="Server\Login\ProcessLogin.h" />
+    <ClInclude Include="Server\netplay.h" />
+    <ClInclude Include="Server\NetType.hpp" />
+    <ClInclude Include="Server\Party\CPartyHandler.h" />
+    <ClInclude Include="Server\Party\Party.h" />
+    <ClInclude Include="Server\playmodel.h" />
+    <ClInclude Include="Server\Quest\Quest.h" />
+    <ClInclude Include="Server\Ranking\PVPRanking.h" />
+    <ClInclude Include="Server\Ranking\SodRanking.h" />
+    <ClInclude Include="Server\Ranking\TopRanking.h" />
+    <ClInclude Include="Server\Resource\resource.h" />
+    <ClInclude Include="Server\Resource\resource1.h" />
+    <ClInclude Include="Server\Resource\resource2.h" />
+    <ClInclude Include="Server\Resource\resource3.h" />
+    <ClInclude Include="Server\Roleta\Roleta.h" />
+    <ClInclude Include="Server\Security\Firewall.h" />
+    <ClInclude Include="Server\Security\Joi.hpp" />
+    <ClInclude Include="Server\Shop\NewShop.h" />
+    <ClInclude Include="Server\Shop\NewShopTime.h" />
+    <ClInclude Include="Server\sinbaram\haPremiumItem.h" />
+    <ClInclude Include="Server\sinbaram\HaQuest.h" />
+    <ClInclude Include="Server\sinbaram\sinCraftItem.h" />
+    <ClInclude Include="Server\sinbaram\sinInvenTory.h" />
+    <ClInclude Include="Server\sinbaram\sinItem.h" />
+    <ClInclude Include="Server\sinbaram\sinLinkHeader.h" />
+    <ClInclude Include="Server\sinbaram\sinMain.h" />
+    <ClInclude Include="Server\sinbaram\sinQuest.h" />
+    <ClInclude Include="Server\sinbaram\sinSkill.h" />
+    <ClInclude Include="Server\sinbaram\sinSkill_Info.h" />
+    <ClInclude Include="Server\sinbaram\sinSkill_InfoIni.h" />
+    <ClInclude Include="Server\sinbaram\sinSOD2.h" />
+    <ClInclude Include="Server\sinbaram\sinSubMain.h" />
+    <ClInclude Include="Server\sinbaram\sinTrade.h" />
+    <ClInclude Include="Server\sinbaram\SkillFunction\Morayion.h" />
+    <ClInclude Include="Server\sinbaram\SkillFunction\Tempskron.h" />
+    <ClInclude Include="Server\sinbaram\_sinCraftItem.h" />
+    <ClInclude Include="Server\Skills\SkillPacket.h" />
+    <ClInclude Include="Server\Skills\Skills.h" />
+    <ClInclude Include="Server\smlib3d\smd3d.h" />
+    <ClInclude Include="Server\smlib3d\smGeosub.h" />
+    <ClInclude Include="Server\smlib3d\smMap3d.h" />
+    <ClInclude Include="Server\smlib3d\smmatrix.h" />
+    <ClInclude Include="Server\smlib3d\smObj3d.h" />
+    <ClInclude Include="Server\smlib3d\smRead3d.h" />
+    <ClInclude Include="Server\smlib3d\smSin.h" />
+    <ClInclude Include="Server\smlib3d\smStage3d.h" />
+    <ClInclude Include="Server\smlib3d\smStgObj.h" />
+    <ClInclude Include="Server\smlib3d\smTexture.h" />
+    <ClInclude Include="Server\smlib3d\smType.h" />
+    <ClInclude Include="Server\smreg.h" />
+    <ClInclude Include="Server\smwsock.h" />
+    <ClInclude Include="Server\SQL.h" />
+    <ClInclude Include="Server\SrcServer\AutoDropItem.h" />
+    <ClInclude Include="Server\SrcServer\BlessCastle.h" />
+    <ClInclude Include="Server\SrcServer\ClientFuncPos.h" />
+    <ClInclude Include="Server\SrcServer\DllServer.h" />
+    <ClInclude Include="Server\SrcServer\E_serverlog.h" />
+    <ClInclude Include="Server\SrcServer\Gamesql.h" />
+    <ClInclude Include="Server\SrcServer\Login.h" />
+    <ClInclude Include="Server\SrcServer\onserver.h" />
+    <ClInclude Include="Server\SrcServer\openlive.h" />
+    <ClInclude Include="Server\SrcServer\serverlog.h" />
+    <ClInclude Include="Server\SrcServer\ServerMsg.h" />
+    <ClInclude Include="Server\SrcServer\svrEventGame.h" />
+    <ClInclude Include="Server\SrcServer\svrEventSpawn.h" />
+    <ClInclude Include="Server\SrcServer\svrHaQuest.h" />
+    <ClInclude Include="Server\SrcServer\svr_Damage.h" />
+    <ClInclude Include="Server\TextMessage.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\BMPsmooth.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_chatlist.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_chip.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_CJoin.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_Cmake.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_CViewClanInfo.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_deletecha.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_isclanmember.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_Notice.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_nouser.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_report.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_Updatecldata.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\cE_user.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\clan_Enti.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\tjclan.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\tjclanDEF.h" />
+    <ClInclude Include="Server\TJBOY\clanmenu\tjScroll.h" />
+    <ClInclude Include="Server\TJBOY\isaocheck\auth.h" />
+    <ClInclude Include="Server\TJBOY\isaocheck\isaocheck.h" />
+    <ClInclude Include="Server\TJBOY\Ygy\memmap\memmap.h" />
+    <ClInclude Include="Server\TJBOY\Ygy\Packet\Packet.h" />
+    <ClInclude Include="Server\TJBOY\Ygy\Packet\PacketStruct.h" />
+    <ClInclude Include="Server\TJBOY\Ygy\Process\Process.h" />
+    <ClInclude Include="Server\TJBOY\Ygy\Util.h" />
+    <ClInclude Include="Server\TJBOY\Ygy\YgyHeader.h" />
+    <ClInclude Include="Server\VIP\Vip.h" />
+    <ClInclude Include="Server\WinDump.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Server\Resource\Resource.rc" />
+    <ResourceCompile Include="Server\Resource\Script.rc" />
+    <ResourceCompile Include="Server\Resource\server.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Server\Resource\Script11.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Server\Resource\icon.ico" />
+    <Image Include="Server\Resource\icon1.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,1 @@
+C:\Users\walla\Desktop\SourcePristonTale0906Engine\dependencies\ziparchive\ziparchive\Debug STL MT\ZipArchive.lib

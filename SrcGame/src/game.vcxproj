@@ -1,0 +1,804 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{07C4E7A3-1D3D-491E-84FE-9917FE9BAA4D}</ProjectGuid>
+    <ProjectName>Game</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="..\..\Shared\Shared.vcxitems" Label="Shared" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>C:\Source\Libs\DX9\Lib\x86;C:\Source\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>..\..\..</OutDir>
+    <IntDir>..\..\OutDir\DebugGame\</IntDir>
+    <IncludePath>C:\Source\Libs;C:\Source\Source code World priston tale\Source code\SrcGame\src\Game\imGui;C:\Source\Source code World priston tale\Source code\SrcGame\src\Game\API\include;C:\Libs\curl-7.69.1\curl-7.69.1\builds\libcurl-vc16-x86-debug-static-ipv6-sspi-winssl\include;C:\Source\Libs\DX9\Include;$(IncludePath);C:\Source\Libs\zlib\include</IncludePath>
+    <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <TargetName>Game</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>..\..\OutDir\ReleaseGame\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>f:\Sources\Libs;f:\Sources\Libs\curl-7.69.1\curl-7.69.1\include;f:\Sources\Libs\DX9\Include;$(IncludePath);f:\Sources\Libs\zlib\include</IncludePath>
+    <LibraryPath>f:\Sources\Libs\DX9\Lib\x86;f:\Sources\Libs\curl-7.69.1\curl-7.69.1\builds\libcurl-vc16-x86-debug-static-ipv6-sspi-winssl-obj-lib;f:\Sources\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>Game</TargetName>
+    <OutDir>..\..\..</OutDir>
+    <ExternalIncludePath>C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\cppwinrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared;C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\km;$(ExternalIncludePath)</ExternalIncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;_SECURE_SCL=0;_HAS_STD_BYTE=0;DELTA3D;_D3D9;WIN32;_DEBUG;_WINDOWS;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4995;4065;4409;4290;4005;4091;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <StringPooling>false</StringPooling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <AdditionalIncludeDirectories>$(ProjectDir)Game\;$(SolutionDir)..\Shared\;$(SolutionDir)..\Shared\Discord\Include;$(SolutionDir)..\dependencies\ziparchive\ZipArchive;$(SolutionDir)..\dependencies\Delta3D\Include\</AdditionalIncludeDirectories>
+      <EnablePREfast>false</EnablePREfast>
+      <SDLCheck>
+      </SDLCheck>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>$(SolutionDir)..\dependencies\ziparchive\ziparchive\Release STL MT\ZipArchive.lib;$(SolutionDir)..\dependencies\Delta3D\Lib\Delta3D.lib;dsound.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libc.lib;libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile />
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <MapExports>false</MapExports>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(ProjectDir)Game\API\libs;$(SolutionDir)..\Shared\Discord\lib;SolutionDir)..\dependencies\Delta3D\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <BaseAddress>0x870000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <FixedBaseAddress>true</FixedBaseAddress>
+      <ImportLibrary>..\..\..\Users\Luiz\Desktop\aPT v1042\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\runmap3d___Win32_Debug/runmap3d.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <PreprocessorDefinitions>_HAS_STD_BYTE=0;DELTA3D;_D3D9;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>false</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>.\Release/runmap3d.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4995;4065;4409;4290;4005;4091;4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)Game\;$(SolutionDir)..\Shared\;$(SolutionDir)..\Shared\Discord\Include;$(SolutionDir)..\dependencies\ziparchive\ZipArchive;$(SolutionDir)..\dependencies\Delta3D\Include\</AdditionalIncludeDirectories>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <EnableModules>
+      </EnableModules>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>$(SolutionDir)..\dependencies\ziparchive\ziparchive\Release STL MT\ZipArchive.lib;$(SolutionDir)..\dependencies\Delta3D\Lib\Delta3D.lib;dsound.lib;odbc32.lib;odbccp32.lib;libcurl_a_debug.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <BaseAddress>0x870000</BaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <FixedBaseAddress>true</FixedBaseAddress>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(ProjectDir)Game\API\libs;$(SolutionDir)..\Shared\Discord\lib;SolutionDir)..\dependencies\Delta3D\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\Users\Luiz\Desktop\aPT v1042\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/runmap3d.tlb</TypeLibraryName>
+    </Midl>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0416</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Game\ActionGame.cpp" />
+    <ClCompile Include="Game\AntiCheat.cpp" />
+    <ClCompile Include="Game\AreaServer.cpp" />
+    <ClCompile Include="Game\BellatraFontEffect.cpp" />
+    <ClCompile Include="Game\Caravana\Caravana.cpp" />
+    <ClCompile Include="Game\Caravana\ChangeCaravanName.cpp" />
+    <ClCompile Include="Game\CAutoCamera.cpp" />
+    <ClCompile Include="Game\character.cpp" />
+    <ClCompile Include="Game\Chat\ChatHandle.cpp" />
+    <ClCompile Include="Game\Chat\ChatWindow.cpp" />
+    <ClCompile Include="Game\checkdll.cpp" />
+    <ClCompile Include="Game\ConfirmationBox.cpp" />
+    <ClCompile Include="Game\Controller.cpp" />
+    <ClCompile Include="Game\cracker.cpp" />
+    <ClCompile Include="Game\cSkinChanger.cpp" />
+    <ClCompile Include="Game\CurseFilter.cpp" />
+    <ClCompile Include="Game\Damage.cpp" />
+    <ClCompile Include="Game\Discord.cpp" />
+    <ClCompile Include="Game\Discord\connection_win.cpp" />
+    <ClCompile Include="Game\Discord\discord_register_win.cpp" />
+    <ClCompile Include="Game\Discord\discord_rpc.cpp" />
+    <ClCompile Include="Game\Discord\rpc_connection.cpp" />
+    <ClCompile Include="Game\Discord\serialization.cpp" />
+    <ClCompile Include="Game\Drawsub.cpp" />
+    <ClCompile Include="Game\effectsnd.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXVideoRenderer.cpp" />
+    <ClCompile Include="Game\Engine\DynamicAnimation\AnimationHandler.cpp" />
+    <ClCompile Include="Game\Engine\CFont.cpp" />
+    <ClCompile Include="Game\Engine\CFontHandler.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXColor.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXDepthStencilBuffer.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXEffect.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXEffectFactory.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXFont.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXGraphicEngine.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXGraphicsDevice.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXIndexBuffer.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXLens.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXLogger.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXMaterial.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXRenderer.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXRenderTarget.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXSelectGlow.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXSprite.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXSpriteFactory.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXTerrain.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXTexture.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXTextureFactory.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXVertexBuffer.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXVertexDeclaration.cpp" />
+    <ClCompile Include="Game\Engine\Directx\DXViewport.cpp" />
+    <ClCompile Include="Game\Engine\Directx\PostProcess.cpp" />
+    <ClCompile Include="Game\Engine\DynamicAnimation\ExportFile.cpp" />
+    <ClCompile Include="Game\Engine\DynamicAnimation\ExportINXFile.cpp" />
+    <ClCompile Include="Game\Engine\DynamicAnimation\ExportSMDFile.cpp" />
+    <ClCompile Include="Game\Engine\DynamicAnimation\ImportFile.cpp" />
+    <ClCompile Include="Game\Engine\DynamicAnimation\ImportINXFile.cpp" />
+    <ClCompile Include="Game\Engine\DynamicAnimation\ImportSMDFile.cpp" />
+    <ClCompile Include="Game\Engine\Emojize.cpp" />
+    <ClCompile Include="Game\Engine\Keyboard\Keyboard.cpp" />
+    <ClCompile Include="Game\Engine\Mouse\Mouse.cpp" />
+    <ClCompile Include="Game\Engine\Timer\Timer.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIAnimation.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIBitmapFont.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIButton.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIChargeBar.cpp" />
+    <ClCompile Include="Game\Engine\UI\UICheckBox.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIComboBox.cpp" />
+    <ClCompile Include="Game\Engine\UI\UICounter.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIDropdownMenu.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIElement.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIEvent.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIFont.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIGroup.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIImage.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIImageBox.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIImageLoader.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIImageRender.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIInputField.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIItemInfoBox.cpp" />
+    <ClCompile Include="Game\Engine\UI\UILine.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIList.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIMessageBallon.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIScroll.cpp" />
+    <ClCompile Include="Game\Engine\UI\UISkillInfoBox.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIText.cpp" />
+    <ClCompile Include="Game\Engine\UI\UITextWindow.cpp" />
+    <ClCompile Include="Game\Engine\UI\UITooltip.cpp" />
+    <ClCompile Include="Game\Engine\UI\UIWindow.cpp" />
+    <ClCompile Include="Game\Eventos\Arena.cpp" />
+    <ClCompile Include="Game\Eventos\Invasao.cpp" />
+    <ClCompile Include="Game\Eventos\WarMode.cpp" />
+    <ClCompile Include="Game\field.cpp" />
+    <ClCompile Include="Game\fileread.cpp" />
+    <ClCompile Include="Game\FileWrapperImpl.cpp" />
+    <ClCompile Include="Game\FontImage.cpp" />
+    <ClCompile Include="Game\FullZoomMap.cpp" />
+    <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Game\GameCore.cpp" />
+    <ClCompile Include="Game\HelpTime.cpp" />
+    <ClCompile Include="Game\HoBaram\AssaParticle.cpp" />
+    <ClCompile Include="Game\HoBaram\HoAnimData.cpp" />
+    <ClCompile Include="Game\HoBaram\hoAssaParticleEffect.cpp" />
+    <ClCompile Include="Game\HoBaram\HoEffect.cpp" />
+    <ClCompile Include="Game\HoBaram\HoLinkHeader.cpp" />
+    <ClCompile Include="Game\HoBaram\HoLogic.cpp" />
+    <ClCompile Include="Game\HoBaram\HoLogin.cpp" />
+    <ClCompile Include="Game\HoBaram\HoMinMax.cpp" />
+    <ClCompile Include="Game\HoBaram\HoNewParticle.cpp" />
+    <ClCompile Include="Game\HoBaram\HoNewParticleMgr.cpp" />
+    <ClCompile Include="Game\HoBaram\HoOpening.cpp" />
+    <ClCompile Include="Game\HoBaram\HoParticle.cpp" />
+    <ClCompile Include="Game\HoBaram\HoParty.cpp" />
+    <ClCompile Include="Game\HoBaram\HoPhysics.cpp" />
+    <ClCompile Include="Game\HoBaram\HoSky.cpp" />
+    <ClCompile Include="Game\HoBaram\LowLevelPetSystem.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoEffectController.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoEffectMain.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoEffectManager.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoEffectModel.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoEffectResMgr.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoEffectUtil.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoEffectView.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\HoNewEffectFunction.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\math\COLOR3.CPP" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\math\COLOR4.CPP" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\math\MATRIX4.CPP" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\math\POINT3.CPP" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\Script\PiScript.cpp" />
+    <ClCompile Include="Game\HoBaram\NewEffect\HoEffect\Script\PiScriptLuaCommand.cpp" />
+    <ClCompile Include="Game\HoBaram\PCBangPetSystem.cpp" />
+    <ClCompile Include="Game\HUD\HudController.cpp" />
+    <ClCompile Include="Game\HUD\InstancesFlag.cpp" />
+    <ClCompile Include="Game\HUD\CustomHud.cpp" />
+    <ClCompile Include="Game\HUD\DisplayDamage.cpp" />
+    <ClCompile Include="Game\HUD\MessageBox.cpp" />
+    <ClCompile Include="Game\HUD\MiniMap\MiniMapHandler.cpp" />
+    <ClCompile Include="Game\HUD\MixWindow.cpp" />
+    <ClCompile Include="Game\HUD\Party\CPartyWindow.cpp" />
+    <ClCompile Include="Game\HUD\RankingWindow.cpp" />
+    <ClCompile Include="Game\HUD\RestaureWindow.cpp" />
+    <ClCompile Include="Game\HUD\Roleta.cpp" />
+    <ClCompile Include="Game\HUD\SodWindow.cpp" />
+    <ClCompile Include="Game\Ime.cpp" />
+    <ClCompile Include="Game\imGui\imgui.cpp" />
+    <ClCompile Include="Game\imGui\imgui_draw.cpp" />
+    <ClCompile Include="Game\imGui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="Game\imGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Game\imGui\imgui_tables.cpp" />
+    <ClCompile Include="Game\imGui\imgui_widgets.cpp" />
+    <ClCompile Include="Game\IniFiles.cpp" />
+    <ClCompile Include="Game\Login\LoginModel.cpp" />
+    <ClCompile Include="Game\Login\LoginScreen.cpp" />
+    <ClCompile Include="Game\Main.cpp" />
+    <ClCompile Include="Game\makeshadow.cpp" />
+    <ClCompile Include="Game\mini_dump.cpp" />
+    <ClCompile Include="Game\Model.cpp" />
+    <ClCompile Include="Game\Montarias\CMountHandler.cpp" />
+    <ClCompile Include="Game\netplay.cpp" />
+    <ClCompile Include="Game\PackageFile.cpp" />
+    <ClCompile Include="Game\Park\HoMessageBox.cpp" />
+    <ClCompile Include="Game\Particle.cpp" />
+    <ClCompile Include="Game\Party\CPartyHandler.cpp" />
+    <ClCompile Include="Game\Party\PartyHeader.cpp" />
+    <ClCompile Include="Game\pbackground.cpp" />
+    <ClCompile Include="Game\playmain.cpp" />
+    <ClCompile Include="Game\playsub.cpp" />
+    <ClCompile Include="Game\Quest\Quest.cpp" />
+    <ClCompile Include="Game\Quest\QuestWindow.cpp" />
+    <ClCompile Include="Game\record.cpp" />
+    <ClCompile Include="Game\Settings.cpp" />
+    <ClCompile Include="Game\Shop\NewShop.cpp" />
+    <ClCompile Include="Game\Shop\NewShopTime.cpp" />
+    <ClCompile Include="Game\sinbaram\AssaEffect.cpp" />
+    <ClCompile Include="Game\sinbaram\AssaParticle7.cpp" />
+    <ClCompile Include="Game\sinbaram\AssaTestParticle.cpp" />
+    <ClCompile Include="Game\sinbaram\AssaUtil.cpp" />
+    <ClCompile Include="Game\sinbaram\haPremiumItem.cpp" />
+    <ClCompile Include="Game\sinbaram\HaQuest.cpp" />
+    <ClCompile Include="Game\sinbaram\sin3D.cpp" />
+    <ClCompile Include="Game\sinbaram\sinAssaParticle.cpp" />
+    <ClCompile Include="Game\sinbaram\sinAssaSkillEffect.cpp" />
+    <ClCompile Include="Game\sinbaram\sinCharStatus.cpp" />
+    <ClCompile Include="Game\sinbaram\sinEffect.cpp" />
+    <ClCompile Include="Game\sinbaram\sinEffect2.cpp" />
+    <ClCompile Include="Game\sinbaram\sinEvent.cpp" />
+    <ClCompile Include="Game\sinbaram\sinHelp.cpp" />
+    <ClCompile Include="Game\sinbaram\sinHelpPet.cpp" />
+    <ClCompile Include="Game\sinbaram\sinInterFace.cpp" />
+    <ClCompile Include="Game\sinbaram\sinInvenTory.cpp" />
+    <ClCompile Include="Game\sinbaram\sinItem.cpp" />
+    <ClCompile Include="Game\sinbaram\sinMain.cpp" />
+    <ClCompile Include="Game\sinbaram\sinMessageBox.cpp" />
+    <ClCompile Include="Game\sinbaram\sinMsg.cpp" />
+    <ClCompile Include="Game\sinbaram\sinParkPcBangPet.cpp" />
+    <ClCompile Include="Game\sinbaram\sinParticle.cpp" />
+    <ClCompile Include="Game\sinbaram\sinPublicEffect.cpp" />
+    <ClCompile Include="Game\sinbaram\sinQuest.cpp" />
+    <ClCompile Include="Game\sinbaram\sinShop.cpp" />
+    <ClCompile Include="Game\sinbaram\sinSkill.cpp" />
+    <ClCompile Include="Game\sinbaram\sinSkillEffect.cpp" />
+    <ClCompile Include="Game\sinbaram\sinSkill_Info.cpp" />
+    <ClCompile Include="Game\sinbaram\sinSOD2.cpp" />
+    <ClCompile Include="Game\sinbaram\sinSubMain.cpp" />
+    <ClCompile Include="Game\sinbaram\sinTrade.cpp" />
+    <ClCompile Include="Game\sinbaram\sinUtil.cpp" />
+    <ClCompile Include="Game\sinbaram\sinWarpGate.cpp" />
+    <ClCompile Include="Game\sinbaram\SkillFunction\Morayion.cpp" />
+    <ClCompile Include="Game\sinbaram\SkillFunction\Tempskron.cpp" />
+    <ClCompile Include="Game\sinbaram\YameEffect.cpp" />
+    <ClCompile Include="Game\SkillSub.cpp" />
+    <ClCompile Include="Game\Skill\SkillManager.cpp" />
+    <ClCompile Include="Game\smlib3d\smDsx.cpp" />
+    <ClCompile Include="Game\smlib3d\smgeosub.cpp" />
+    <ClCompile Include="Game\smlib3d\smJpeg.cpp" />
+    <ClCompile Include="Game\smlib3d\smMap3d.cpp" />
+    <ClCompile Include="Game\smlib3d\smmatrix.cpp" />
+    <ClCompile Include="Game\smlib3d\smObj3d.cpp" />
+    <ClCompile Include="Game\smlib3d\smRead3d.cpp" />
+    <ClCompile Include="Game\smlib3d\smRend3d.cpp" />
+    <ClCompile Include="Game\smlib3d\smSin.cpp" />
+    <ClCompile Include="Game\smlib3d\smStage3d.cpp" />
+    <ClCompile Include="Game\smlib3d\smStgObj.cpp" />
+    <ClCompile Include="Game\smlib3d\smTexture.cpp" />
+    <ClCompile Include="Game\smReg.cpp" />
+    <ClCompile Include="Game\smwsock.cpp" />
+    <ClCompile Include="Game\SrcLang\jts.cpp" />
+    <ClCompile Include="Game\srcServer\OnSever.cpp" />
+    <ClCompile Include="Game\srcsound\Dxwav.cpp" />
+    <ClCompile Include="Game\srcsound\Wave.cpp" />
+    <ClCompile Include="Game\stdafx.cpp" />
+    <ClCompile Include="Game\STRCLASS.CPP" />
+    <ClCompile Include="Game\TextMessage.cpp" />
+    <ClCompile Include="Game\TitleBox\TitleBox.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\BMPsmooth.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_chatlist.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_chip.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_CJoin.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_Cmake.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_CViewClanInfo.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_deletecha.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_isclanmember.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_Notice.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_nouser.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_report.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_Updatecldata.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\cE_user.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\clan_Enti.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\GuideHelp.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\Help.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\tjclan.cpp" />
+    <ClCompile Include="Game\TJBOY\clanmenu\tjScroll.cpp" />
+    <ClCompile Include="Game\TJBOY\isaocheck\auth.cpp" />
+    <ClCompile Include="Game\TJBOY\isaocheck\isaocheck.cpp" />
+    <ClCompile Include="Game\TJBOY\park\ParkPlayer\ParkDXPlayer.cpp" />
+    <ClCompile Include="Game\TJBOY\Ygy\memmap\memmap.cpp" />
+    <ClCompile Include="Game\TJBOY\Ygy\Packet\Packet.cpp" />
+    <ClCompile Include="Game\TJBOY\Ygy\Process\Process.cpp" />
+    <ClCompile Include="Game\TJBOY\Ygy\Util.cpp" />
+    <ClCompile Include="Game\UnitGame.cpp" />
+    <ClCompile Include="Game\View.cpp" />
+    <ClCompile Include="Game\VIP\VIP.cpp" />
+    <ClCompile Include="Game\WinInt\WavIntHttp.cpp" />
+    <ClCompile Include="Game\WinInt\WinIntThread.cpp" />
+    <ClCompile Include="Game\Winmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game\AntiCheat.h" />
+    <ClInclude Include="Game\AreaServer.h" />
+    <ClInclude Include="Game\BellatraFontEffect.h" />
+    <ClInclude Include="Game\Caravana\Caravana.h" />
+    <ClInclude Include="Game\Caravana\ChangeCaravanName.h" />
+    <ClInclude Include="Game\character.h" />
+    <ClInclude Include="Game\Chat\Chat.h" />
+    <ClInclude Include="Game\Chat\ChatHandle.h" />
+    <ClInclude Include="Game\Chat\ChatWindow.h" />
+    <ClInclude Include="Game\ConfirmationBox.h" />
+    <ClInclude Include="Game\Controller.h" />
+    <ClInclude Include="Game\cracker.h" />
+    <ClInclude Include="Game\cSkinChanger.h" />
+    <ClInclude Include="Game\damage.h" />
+    <ClInclude Include="Game\Def.h" />
+    <ClInclude Include="Game\Discord.h" />
+    <ClInclude Include="Game\Discord\backoff.h" />
+    <ClInclude Include="Game\Discord\connection.h" />
+    <ClInclude Include="Game\Discord\msg_queue.h" />
+    <ClInclude Include="Game\Discord\rpc_connection.h" />
+    <ClInclude Include="Game\Discord\serialization.h" />
+    <ClInclude Include="Game\drawsub.h" />
+    <ClInclude Include="Game\effectsnd.h" />
+    <ClInclude Include="Game\Engine\Directx\DXVideoRenderer.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\AnimationHandler.h" />
+    <ClInclude Include="Game\Engine\CFont.h" />
+    <ClInclude Include="Game\Engine\CFontHandler.h" />
+    <ClInclude Include="Game\Engine\Directx\DX.h" />
+    <ClInclude Include="Game\Engine\Directx\DXColor.h" />
+    <ClInclude Include="Game\Engine\Directx\DXDepthStencilBuffer.h" />
+    <ClInclude Include="Game\Engine\Directx\DXEffect.h" />
+    <ClInclude Include="Game\Engine\Directx\DXEffectFactory.h" />
+    <ClInclude Include="Game\Engine\Directx\DXFont.h" />
+    <ClInclude Include="Game\Engine\Directx\DXGraphicEngine.h" />
+    <ClInclude Include="Game\Engine\Directx\DXGraphicsDevice.h" />
+    <ClInclude Include="Game\Engine\Directx\DXIndexBuffer.h" />
+    <ClInclude Include="Game\Engine\Directx\DXLens.h" />
+    <ClInclude Include="Game\Engine\Directx\DXLogger.h" />
+    <ClInclude Include="Game\Engine\Directx\DXMaterial.h" />
+    <ClInclude Include="Game\Engine\Directx\DXRenderer.h" />
+    <ClInclude Include="Game\Engine\Directx\DXRenderTarget.h" />
+    <ClInclude Include="Game\Engine\Directx\DXSelectGlow.h" />
+    <ClInclude Include="Game\Engine\Directx\DXSprite.h" />
+    <ClInclude Include="Game\Engine\Directx\DXSpriteFactory.h" />
+    <ClInclude Include="Game\Engine\Directx\DXTerrain.h" />
+    <ClInclude Include="Game\Engine\Directx\DXTexture.h" />
+    <ClInclude Include="Game\Engine\Directx\DXTextureFactory.h" />
+    <ClInclude Include="Game\Engine\Directx\DXVertexBuffer.h" />
+    <ClInclude Include="Game\Engine\Directx\DXVertexDeclaration.h" />
+    <ClInclude Include="Game\Engine\Directx\DXViewport.h" />
+    <ClInclude Include="Game\Engine\Directx\PostProcess.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\Export.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\ExportFile.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\ExportINXFile.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\ExportSMDFile.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\File.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\Import.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\ImportFile.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\ImportINXFile.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\ImportSMDFile.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawINXAnimation.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawINXFile.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawINXLODGroup.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDFace.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDFrame.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDHeader.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDKeyPosition.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDKeyRotation.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDKeyScale.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDLight.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDMaterial.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDMaterialHeader.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDMatrix.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDObject.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDObjectInfo.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDQuaternion.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDTerrain.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDTextureLink.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDVector3.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDVertex.h" />
+    <ClInclude Include="Game\Engine\DynamicAnimation\RawSMDVertexPhysique.h" />
+    <ClInclude Include="Game\Engine\Emojize.h" />
+    <ClInclude Include="Game\Engine\Keyboard\Keyboard.h" />
+    <ClInclude Include="Game\Engine\Mouse\Mouse.h" />
+    <ClInclude Include="Game\Engine\Timer\Timer.h" />
+    <ClInclude Include="Game\Engine\UI\UI.h" />
+    <ClInclude Include="Game\Engine\UI\UIAnimation.h" />
+    <ClInclude Include="Game\Engine\UI\UIBitmapFont.h" />
+    <ClInclude Include="Game\Engine\UI\UIButton.h" />
+    <ClInclude Include="Game\Engine\UI\UIChargeBar.h" />
+    <ClInclude Include="Game\Engine\UI\UICheckBox.h" />
+    <ClInclude Include="Game\Engine\UI\UIColor.h" />
+    <ClInclude Include="Game\Engine\UI\UIComboBox.h" />
+    <ClInclude Include="Game\Engine\UI\UICounter.h" />
+    <ClInclude Include="Game\Engine\UI\UIDropdownMenu.h" />
+    <ClInclude Include="Game\Engine\UI\UIElement.h" />
+    <ClInclude Include="Game\Engine\UI\UIEvent.h" />
+    <ClInclude Include="Game\Engine\UI\UIFont.h" />
+    <ClInclude Include="Game\Engine\UI\UIGroup.h" />
+    <ClInclude Include="Game\Engine\UI\UIImage.h" />
+    <ClInclude Include="Game\Engine\UI\UIImageBox.h" />
+    <ClInclude Include="Game\Engine\UI\UIImageLoader.h" />
+    <ClInclude Include="Game\Engine\UI\UIImageRender.h" />
+    <ClInclude Include="Game\Engine\UI\UIInputField.h" />
+    <ClInclude Include="Game\Engine\UI\UIItemInfoBox.h" />
+    <ClInclude Include="Game\Engine\UI\UILine.h" />
+    <ClInclude Include="Game\Engine\UI\UIList.h" />
+    <ClInclude Include="Game\Engine\UI\UIMessageBallon.h" />
+    <ClInclude Include="Game\Engine\UI\UIScroll.h" />
+    <ClInclude Include="Game\Engine\UI\UISkillInfoBox.h" />
+    <ClInclude Include="Game\Engine\UI\UIText.h" />
+    <ClInclude Include="Game\Engine\UI\UITextWindow.h" />
+    <ClInclude Include="Game\Engine\UI\UITooltip.h" />
+    <ClInclude Include="Game\Engine\UI\UIWindow.h" />
+    <ClInclude Include="Game\Eventos\Arena.h" />
+    <ClInclude Include="Game\Eventos\Invasao.h" />
+    <ClInclude Include="Game\Eventos\WarMode.h" />
+    <ClInclude Include="Game\field.h" />
+    <ClInclude Include="Game\fileread.h" />
+    <ClInclude Include="Game\FileWrapperImpl.h" />
+    <ClInclude Include="Game\FullZoomMap.h" />
+    <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\GameCore.h" />
+    <ClInclude Include="Game\GameInfo.h" />
+    <ClInclude Include="Game\globals.h" />
+    <ClInclude Include="Game\HelpTime.h" />
+    <ClInclude Include="Game\HoBaram\AssaParticle.h" />
+    <ClInclude Include="Game\HoBaram\HoAnimData.h" />
+    <ClInclude Include="Game\HoBaram\hoAssaParticleEffect.h" />
+    <ClInclude Include="Game\HoBaram\HoEffect.h" />
+    <ClInclude Include="Game\HoBaram\HoLinkHeader.h" />
+    <ClInclude Include="Game\HoBaram\HoLogic.h" />
+    <ClInclude Include="Game\HoBaram\HoLogin.h" />
+    <ClInclude Include="Game\HoBaram\HoMinMax.h" />
+    <ClInclude Include="Game\HoBaram\HoNewParticle.h" />
+    <ClInclude Include="Game\HoBaram\HoNewParticleLinkHeader.h" />
+    <ClInclude Include="Game\HoBaram\HoNewParticleMgr.h" />
+    <ClInclude Include="Game\HoBaram\HoOpening.h" />
+    <ClInclude Include="Game\HoBaram\HoParticle.h" />
+    <ClInclude Include="Game\HoBaram\HoParty.h" />
+    <ClInclude Include="Game\HoBaram\HoPhysics.h" />
+    <ClInclude Include="Game\HoBaram\HoSky.h" />
+    <ClInclude Include="Game\HoBaram\LowLevelPetSystem.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectController.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectEvent.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectMain.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectManager.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectModel.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectResMgr.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectUtil.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoEffectView.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoNewEffectFunction.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\HoNewEffectHeader.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\bSphere3.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\COLOR3.H" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\color4.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\lineSeg3.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\mathGlobal.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\MATRIX4.H" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\point3.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\math\POINT4.H" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\Script\PiScript.h" />
+    <ClInclude Include="Game\HoBaram\NewEffect\HoEffect\Script\PiScriptLuaCommand.h" />
+    <ClInclude Include="Game\HoBaram\PCBangPetSystem.h" />
+    <ClInclude Include="Game\HUD\HudController.h" />
+    <ClInclude Include="Game\HUD\InstancesFlag.h" />
+    <ClInclude Include="Game\HUD\CustomHud.h" />
+    <ClInclude Include="Game\HUD\DisplayDamage.h" />
+    <ClInclude Include="Game\HUD\File.h" />
+    <ClInclude Include="Game\HUD\MessageBox.h" />
+    <ClInclude Include="Game\HUD\MiniMap\MiniMapHandler.h" />
+    <ClInclude Include="Game\HUD\MixWindow.h" />
+    <ClInclude Include="Game\HUD\Party\CPartyWindow.h" />
+    <ClInclude Include="Game\HUD\RankingWindow.h" />
+    <ClInclude Include="Game\HUD\RestaureWindow.h" />
+    <ClInclude Include="Game\HUD\Roleta.h" />
+    <ClInclude Include="Game\HUD\SodWindow.h" />
+    <ClInclude Include="Game\Ime.h" />
+    <ClInclude Include="Game\imGui\imgui_impl_win32.h" />
+    <ClInclude Include="Game\imGui\imgui_internal.h" />
+    <ClInclude Include="Game\IniFiles.h" />
+    <ClInclude Include="Game\ItemForm.h" />
+    <ClInclude Include="Game\language.h" />
+    <ClInclude Include="Game\Login\LoginModel.h" />
+    <ClInclude Include="Game\Login\LoginScreen.h" />
+    <ClInclude Include="Game\makeshadow.h" />
+    <ClInclude Include="Game\mini_dump.h" />
+    <ClInclude Include="Game\Model.h" />
+    <ClInclude Include="Game\Montarias\CMountHandler.h" />
+    <ClInclude Include="Game\netplay.h" />
+    <ClInclude Include="Game\NetType.hpp" />
+    <ClInclude Include="Game\ofuscate.h" />
+    <ClInclude Include="Game\PackageFile.h" />
+    <ClInclude Include="Game\Park\HoMessageBox.h" />
+    <ClInclude Include="Game\particle.h" />
+    <ClInclude Include="Game\Party\CPartyHandler.h" />
+    <ClInclude Include="Game\Party\PartyHeader.h" />
+    <ClInclude Include="Game\pbackground.h" />
+    <ClInclude Include="Game\playmain.h" />
+    <ClInclude Include="Game\playmodel.h" />
+    <ClInclude Include="Game\playsub.h" />
+    <ClInclude Include="Game\Quest\Quest.h" />
+    <ClInclude Include="Game\Quest\QuestWindow.h" />
+    <ClInclude Include="Game\record.h" />
+    <ClInclude Include="Game\resource.h" />
+    <ClInclude Include="Game\resource1.h" />
+    <ClInclude Include="Game\Settings.h" />
+    <ClInclude Include="Game\Shop\NewShop.h" />
+    <ClInclude Include="Game\Shop\NewShopTime.h" />
+    <ClInclude Include="Game\sinbaram\AssaEffect.h" />
+    <ClInclude Include="Game\sinbaram\AssaParticle7.h" />
+    <ClInclude Include="Game\sinbaram\AssaTestParticle.h" />
+    <ClInclude Include="Game\sinbaram\AssaUtil.h" />
+    <ClInclude Include="Game\sinbaram\haPremiumItem.h" />
+    <ClInclude Include="Game\sinbaram\HaQuest.h" />
+    <ClInclude Include="Game\sinbaram\sin3D.h" />
+    <ClInclude Include="Game\sinbaram\sinAssaParticle.h" />
+    <ClInclude Include="Game\sinbaram\sinAssaSkillEffect.h" />
+    <ClInclude Include="Game\sinbaram\sinCharStatus.h" />
+    <ClInclude Include="Game\sinbaram\sinCraftItem.h" />
+    <ClInclude Include="Game\sinbaram\sinEffect.h" />
+    <ClInclude Include="Game\sinbaram\sinEffect2.h" />
+    <ClInclude Include="Game\sinbaram\sinEvent.h" />
+    <ClInclude Include="Game\sinbaram\sinHelpPet.h" />
+    <ClInclude Include="Game\sinbaram\sinInterFace.h" />
+    <ClInclude Include="Game\sinbaram\sinInvenTory.h" />
+    <ClInclude Include="Game\sinbaram\sinItem.h" />
+    <ClInclude Include="Game\sinbaram\sinLinkHeader.h" />
+    <ClInclude Include="Game\sinbaram\sinMain.h" />
+    <ClInclude Include="Game\sinbaram\sinMessageBox.h" />
+    <ClInclude Include="Game\sinbaram\sinMsg.h" />
+    <ClInclude Include="Game\sinbaram\sinParticle.h" />
+    <ClInclude Include="Game\sinbaram\sinPublicEffect.h" />
+    <ClInclude Include="Game\sinbaram\sinQuest.h" />
+    <ClInclude Include="Game\sinbaram\sinShop.h" />
+    <ClInclude Include="Game\sinbaram\sinSkill.h" />
+    <ClInclude Include="Game\sinbaram\sinSkillEffect.h" />
+    <ClInclude Include="Game\sinbaram\sinSkill_Info.h" />
+    <ClInclude Include="Game\sinbaram\sinSOD2.h" />
+    <ClInclude Include="Game\sinbaram\sinSubMain.h" />
+    <ClInclude Include="Game\sinbaram\sinTrade.h" />
+    <ClInclude Include="Game\sinbaram\sinWarpGate.h" />
+    <ClInclude Include="Game\sinbaram\SkillFunction\Morayion.h" />
+    <ClInclude Include="Game\sinbaram\SkillFunction\Tempskron.h" />
+    <ClInclude Include="Game\sinbaram\YameEffect.h" />
+    <ClInclude Include="Game\sinbaram\_sinCraftItem.h" />
+    <ClInclude Include="Game\SkillSub.h" />
+    <ClInclude Include="Game\Skill\SkillManager.h" />
+    <ClInclude Include="Game\smConfig.h" />
+    <ClInclude Include="Game\smlib3d\smd3d.h" />
+    <ClInclude Include="Game\smlib3d\smDsx.h" />
+    <ClInclude Include="Game\smlib3d\smGeosub.h" />
+    <ClInclude Include="Game\smlib3d\smJpeg.h" />
+    <ClInclude Include="Game\smlib3d\smMap3d.h" />
+    <ClInclude Include="Game\smlib3d\smmatrix.h" />
+    <ClInclude Include="Game\smlib3d\smObj3d.h" />
+    <ClInclude Include="Game\smlib3d\smRead3d.h" />
+    <ClInclude Include="Game\smlib3d\smrend3d.h" />
+    <ClInclude Include="Game\smlib3d\smSin.h" />
+    <ClInclude Include="Game\smlib3d\smStage3d.h" />
+    <ClInclude Include="Game\smlib3d\smStgObj.h" />
+    <ClInclude Include="Game\smlib3d\smTexture.h" />
+    <ClInclude Include="Game\smlib3d\smType.h" />
+    <ClInclude Include="Game\smreg.h" />
+    <ClInclude Include="Game\smwsock.h" />
+    <ClInclude Include="Game\srcServer\AutoDropItem.h" />
+    <ClInclude Include="Game\srcServer\BlessCastle.h" />
+    <ClInclude Include="Game\srcServer\ClientFuncPos.h" />
+    <ClInclude Include="Game\srcServer\E_serverlog.h" />
+    <ClInclude Include="Game\srcServer\HackTrap.h" />
+    <ClInclude Include="Game\srcServer\LangCraftItem.h" />
+    <ClInclude Include="Game\srcServer\LangJobCode.h" />
+    <ClInclude Include="Game\srcServer\LangMsg.h" />
+    <ClInclude Include="Game\srcServer\LangPartyMsg.h" />
+    <ClInclude Include="Game\srcServer\LangQuestMsg.h" />
+    <ClInclude Include="Game\srcServer\LangServerMessage.h" />
+    <ClInclude Include="Game\srcServer\LangSetEventSpawn.h" />
+    <ClInclude Include="Game\srcServer\LangSkillInfo.h" />
+    <ClInclude Include="Game\srcServer\LangTextFile.h" />
+    <ClInclude Include="Game\srcServer\LangTextMessage.h" />
+    <ClInclude Include="Game\srcServer\LangTimeLimit.h" />
+    <ClInclude Include="Game\srcServer\onserver.h" />
+    <ClInclude Include="Game\stdafx.h" />
+    <ClInclude Include="Game\STRCLASS.H" />
+    <ClInclude Include="Game\targetver.h" />
+    <ClInclude Include="Game\TextMessage.h" />
+    <ClInclude Include="Game\TitleBox\TitleBox.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\BMPsmooth.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_chatlist.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_chip.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_CJoin.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_Cmake.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_CViewClanInfo.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_deletecha.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_isclanmember.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_Notice.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_nouser.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_report.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_Updatecldata.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\cE_user.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\clan_Enti.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\tjclan.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\tjclanDEF.h" />
+    <ClInclude Include="Game\TJBOY\clanmenu\tjScroll.h" />
+    <ClInclude Include="Game\TJBOY\isaocheck\auth.h" />
+    <ClInclude Include="Game\TJBOY\isaocheck\isaocheck.h" />
+    <ClInclude Include="Game\TJBOY\park\ParkPlayer\ParkDXPlayer.h" />
+    <ClInclude Include="Game\TJBOY\Ygy\memmap\memmap.h" />
+    <ClInclude Include="Game\TJBOY\Ygy\Packet\Packet.h" />
+    <ClInclude Include="Game\TJBOY\Ygy\Packet\PacketStruct.h" />
+    <ClInclude Include="Game\TJBOY\Ygy\Process\Process.h" />
+    <ClInclude Include="Game\TJBOY\Ygy\Util.h" />
+    <ClInclude Include="Game\TJBOY\Ygy\YgyHeader.h" />
+    <ClInclude Include="Game\UnitGame.h" />
+    <ClInclude Include="Game\View.h" />
+    <ClInclude Include="Game\VIP\VIP.h" />
+    <ClInclude Include="Game\WinInt\RingBuff.h" />
+    <ClInclude Include="Game\WinInt\WavIntHttp.h" />
+    <ClInclude Include="Game\WinInt\WinIntThread.h" />
+    <ClInclude Include="Game\WinInt\ZipLib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Game\HoBaram\NewEffect\HoEffect\Script\Lua\Win32\Lua.lib" />
+    <Library Include="Game\HoBaram\NewEffect\HoEffect\Script\Lua\Win32\lualib.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Game\game.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Game\ico.ico" />
+    <Image Include="Game\icon.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
