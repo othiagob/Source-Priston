@@ -1,5 +1,6 @@
 #include "NewShop.h"
 #include "utils\strings.h"
+#include <atlconv.h>
 #include "..\\HUD\\RestaureWindow.h"
 #include "..\\sinbaram\\sinLinkHeader.h"
 #include "imGui/imgui_impl_dx9.h"

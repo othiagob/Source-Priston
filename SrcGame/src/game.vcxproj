@@ -84,7 +84,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>false</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(ProjectDir)Game\;$(SolutionDir)..\Shared\;$(SolutionDir)..\Shared\Discord\Include;$(SolutionDir)..\dependencies\ziparchive\ZipArchive;$(SolutionDir)..\dependencies\Delta3D\Include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VC_ATLMFC_IncludePath);$(ProjectDir)Game\;$(SolutionDir)..\Shared\;$(SolutionDir)..\Shared\Discord\Include;$(SolutionDir)..\dependencies\ziparchive\ZipArchive;$(SolutionDir)..\dependencies\Delta3D\Include\</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <SDLCheck>
       </SDLCheck>
@@ -149,7 +149,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4995;4065;4409;4290;4005;4091;4996</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(ProjectDir)Game\;$(SolutionDir)..\Shared\;$(SolutionDir)..\Shared\Discord\Include;$(SolutionDir)..\dependencies\ziparchive\ZipArchive;$(SolutionDir)..\dependencies\Delta3D\Include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VC_ATLMFC_IncludePath);$(ProjectDir)Game\;$(SolutionDir)..\Shared\;$(SolutionDir)..\Shared\Discord\Include;$(SolutionDir)..\dependencies\ziparchive\ZipArchive;$(SolutionDir)..\dependencies\Delta3D\Include\</AdditionalIncludeDirectories>
       <FloatingPointModel>Precise</FloatingPointModel>
       <AdditionalOptions>
       </AdditionalOptions>

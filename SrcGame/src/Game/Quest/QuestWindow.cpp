@@ -1,5 +1,6 @@
 #include "..\\sinbaram\\sinLinkHeader.h"
 #include "Quest.h"
+#include <atlconv.h>
 
 int lastSelected = 0;
 int selected = 1;
