@@ -52,8 +52,8 @@
     <OutDir>..\..\..</OutDir>
     <IntDir>..\..\OutDir\ReleaseServer\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)\Library;f:\Sources\Libs;f:\Sources\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>f:\Sources\Libs;f:\Sources\Libs\zlib\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Library;C:\Temp\Libs;C:\Temp\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Temp\Libs;C:\Temp\Libs\zlib\include;$(IncludePath)</IncludePath>
     <TargetName>Server</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
