@@ -1,7 +1,7 @@
 #pragma once
 
 #include	"sinbaram\sinItem.h"
-#include	<atltime.h>
+#include	<windows.h>
 #include "smwsock.h"
 #include <Utils/Geometry.h>
 #include <string>

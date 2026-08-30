@@ -1,6 +1,7 @@
 #pragma once
 
-#include <atlbase.h>
+#include <windows.h>
+#include <tchar.h>
 
 class CStrClass
 {
