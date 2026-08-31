@@ -1,0 +1,24 @@
+---
+description: Regras específicas de código compartilhado (Shared) - alto risco
+globs: Shared/**/*.cpp,Shared/**/*.h,Shared/**/*.hpp
+alwaysApply: false
+---
+
+# Shared — zona de alto risco
+
+Este código é compilado tanto no client quanto no server. Uma mudança aqui
+que não seja replicada/considerada dos dois lados causa bugs "fantasma"
+(funciona no meu PC / dessincroniza em produção).
+
+Antes de editar qualquer arquivo em `Shared/`:
+
+1. Diga explicitamente: "isso é consumido por SrcGame e SrcServer".
+2. Faça uma busca (grep/referências) por quem usa o símbolo que você vai
+   mudar, dos dois lados, e liste os arquivos encontrados.
+3. Se for mudar `smPacket.h`: nunca reutilize um valor de `smTRANSCODE_*`
+   existente para outra finalidade. Adicione um novo valor, documente para
+   que serve, e liste onde ele precisa ser tratado (handler no client e no
+   server).
+4. Se for mudar `Skills/*.h` ou `LevelTable.h`: sinalize que isso afeta
+   balanceamento de jogo, não só compilação — pode exigir validação de
+   game design, não só técnica.

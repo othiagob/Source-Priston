@@ -1,0 +1,21 @@
+---
+description: Regras específicas do cliente (SrcGame)
+globs: SrcGame/**/*.cpp,SrcGame/**/*.h,SrcGame/**/*.hpp
+alwaysApply: false
+---
+
+# Cliente (SrcGame)
+
+- A engine gráfica é a `Delta3D` (dependencies/Delta3D). Não recrie
+  funcionalidade que já existe lá — procure em `Include/Graphics/` antes de
+  implementar algo novo relacionado a render, câmera, mesh, textura etc.
+- UI de debug/ferramentas usa `imGui/` — UI de jogo real (HUD, janelas de
+  jogador) usa o sistema próprio em `WinInt/`/`HUD/`. Não misture os dois
+  sem confirmar qual é o esperado para a tela em questão.
+- Mudanças em telas de gameplay (Shop, Quest, Party, Skill, Caravana,
+  Eventos, Montarias, VIP, Roleta, HoBaram, TJBOY) quase sempre envolvem
+  enviar/receber um pacote definido em `Shared/smPacket.h`. Ao adicionar uma
+  feature nova nessas pastas, verifique se o pacote correspondente já existe
+  no servidor (`SrcServer`) antes de assumir que só falta o client.
+- `sinbaram/` e `smLib3d/` são módulos legados internos — trate como código
+  legado sensível: prefira mudanças cirúrgicas a reescritas.

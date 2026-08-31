@@ -1,0 +1,65 @@
+---
+description: Contexto geral do projeto Source Priston - sempre carregado
+globs:
+alwaysApply: true
+---
+
+# Source Priston — contexto do projeto
+
+Projeto de MMO cliente-servidor em C++17, Visual Studio 2022 (toolset v143),
+32-bit (Win32).
+- `SrcGame/` = cliente (renderização via engine Delta3D, DirectX)
+- `SrcServer/` = servidor (autoridade de jogo, banco de dados)
+- `Shared/` = código que **precisa ser idêntico** nos dois lados (protocolo
+  de rede em `smPacket.h`, tabelas de skill/nível, utils matemáticos)
+- `dependencies/` = bibliotecas de terceiros vendorizadas (Delta3D,
+  ziparchive) — nunca editar
+
+Documentação completa do projeto (vault Obsidian):
+`C:\Users\carol\Desktop\OTHIAGOB PROJETO\source-priston\priston-documents`
+— arquitetura verificada em `02-Arquitetura/Arquitetura.md`, protocolo em
+`02-Arquitetura/Protocolo-de-Rede.md`, design completo em
+`05-Specs/SDD-Source-Priston.md`. Leia-os (ou peça para eu ler) antes de
+mudanças estruturais.
+
+## Quem trabalha no projeto
+
+Uma pessoa (Thiago), **aprendendo C++ no processo**. Ao explicar mudanças,
+não assuma conhecimento avançado de C++ — explique brevemente o "porquê",
+não só o "o quê". Ele usa o Cursor como editor com IA e o Hermes para
+análises/documentação; ambos leem este mesmo contexto.
+
+## Regras de ouro (não negociáveis)
+
+1. **Nunca edite `dependencies/`.** Se um problema parece vir de lá, encapsule
+   a correção no código do jogo/servidor e avise explicitamente.
+2. **Toda mudança em `Shared/` implica revisar os dois lados.** Se você alterar
+   um struct de pacote, um enum de skill ou `LevelTable.h`, aponte
+   explicitamente quais arquivos em `SrcGame` e `SrcServer` consomem aquilo
+   e se precisam mudar também. Nunca assuma que "só o client" ou "só o
+   server" precisa da mudança sem verificar.
+3. **Não invente códigos de pacote (`smTRANSCODE_*`).** Se precisar de um
+   pacote novo, procure primeiro se já existe algo equivalente em
+   `Shared/smPacket.h`. Números de transcode são o contrato de rede — um
+   valor duplicado ou incorreto quebra comunicação silenciosamente.
+4. **Escopo pequeno por tarefa.** Não faça refactors amplos "de brinde"
+   enquanto resolve um bug pontual. Se notar algo que merece refactor,
+   liste como sugestão separada no fim da resposta, não aplique junto.
+5. **Sem testes automatizados no projeto ainda.** Isso significa que toda
+   mudança de lógica de jogo precisa vir acompanhada de um resumo claro do
+   que testar manualmente (qual tela, qual ação, qual pacote observar).
+6. **Não crie arquivos novos de configuração de build (.vcxproj, .sln)
+   nem mude Diretório de Saída/Intermediário sem pedido explícito.**
+   Essas mudanças quebram o build de forma que não aparece no diff do código.
+7. **Idioma:** comentários e nomes já existentes estão em português/inglês
+   misturados. Siga a convenção já usada no arquivo que está sendo editado
+   em vez de impor um padrão novo.
+
+## Como responder
+
+- Antes de editar algo em `Shared/`, liste os pontos de impacto conhecidos.
+- Depois de qualquer edição, resuma: o que mudou, por que, e o que testar.
+- Se a tarefa tocar em protocolo de rede, cite o(s) `smTRANSCODE_*` envolvido(s)
+  explicitamente.
+- Explique conceitos em linguagem simples quando o usuário for iniciante —
+  ele quer entender o que está fazendo, não só receber código pronto.

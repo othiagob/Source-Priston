@@ -1,0 +1,22 @@
+---
+description: Regras específicas do servidor (SrcServer)
+globs: SrcServer/**/*.cpp,SrcServer/**/*.h,SrcServer/**/*.hpp
+alwaysApply: false
+---
+
+# Servidor (SrcServer)
+
+- O servidor é a fonte de verdade (autoridade) para regras de jogo. Qualquer
+  validação que existir "só no client" (dano, drop, economia, XP) deve ser
+  tratada como potencial furo de segurança/cheat — sinalize isso mesmo que
+  não seja o foco da tarefa.
+- Mudanças em `Database/` que alterem schema (novas colunas/tabelas) exigem
+  eu confirmar como o schema atual está versionado antes de aplicar — o
+  schema é criado/manipulado via SQL rodado no SQL Server (ver
+  `02-Arquitetura/Banco-de-Dados.md` no vault de documentação); não existe
+  controle de migração formal ainda.
+- `Security/` lida com anti-cheat/validação de pacote. Trate qualquer edição
+  aqui como sensível: explique exatamente o que a validação fazia antes e
+  depois da mudança.
+- `GM/` e `CLI/` são ferramentas administrativas — bugs aqui não afetam
+  jogadores diretamente, mas podem abrir brecha de abuso se mal validados.

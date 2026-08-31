@@ -760,7 +760,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPreInst, LPSTR lpCmdLine, INT nCm
 
 	//Nome da janela do Game - DRACKO
 
-	SetWindowTextA(hwnd, "Draco Priston - ver. 1.00.03 - Instagram: marcus.perciani");
+	SetWindowTextA(hwnd, "PROJETO PRISTON - L. JURYS E THIAGO B.");
 
 	if (InitD3D(hwnd) == NULL)
 		return FALSE;
