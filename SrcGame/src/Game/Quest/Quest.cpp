@@ -150,7 +150,7 @@ void Quest::getAllQuests(QUEST_COMPRESSEDPCKG* Data)
 		x++;
 		vQuests.push_back(&allQuests);
 
-		if (y > 59) break; // máximo de desafios
+		if (y > 59) break; // mï¿½ximo de desafios
 	}
 
 	updateQuests = false;
@@ -238,12 +238,34 @@ void Quest::cancelQuest(int questID, int questType) {
 extern DWORD GetInvenItemCode();
 
 void Quest::finishQuest(int questID, int questType, int questObjective) {
+	static DWORD s_lastFinishTick = 0;
+	static int s_lastFinishQuest = 0;
+	const DWORD now = GetTickCount();
+	if (s_lastFinishQuest == questID && (now - s_lastFinishTick) < 1500)
+		return;
+	s_lastFinishTick = now;
+	s_lastFinishQuest = questID;
+
 	smTRANS_COMMAND finishQuest;
 	finishQuest.code = smTRANSCODE_FINISH_QUEST;
 	finishQuest.size = sizeof(smTRANS_COMMAND);
 	finishQuest.WParam = questID;
 	finishQuest.LParam = questType;
 	finishQuest.SParam = questObjective;
+
+	if (smWsockServer)
+		smWsockServer->Send((char*)&finishQuest, finishQuest.size, TRUE);
+
+	if (questID >= 1 && questID <= 60
+		&& questType != QUEST_REPEAT_SOLOPARTY
+		&& questType != QUEST_REPEAT_PARTY
+		&& questType != QUEST_REPEAT_SOLO)
+	{
+		questInfoPlayer.QuestPckg[questID].isActive = 0;
+		questInfoPlayer.QuestPckg[questID].isReadyToComplete = 0;
+		questInfoPlayer.QuestPckg[questID].isComplete = 1;
+		GetLocalTime(&questInfoPlayer.QuestPckg[questID].EndTime);
+	}
 
 	extern DWORD dwTotal_InvenItemCode;
 	extern DWORD dwTotal_InvenItemPlayTime;
@@ -254,14 +276,14 @@ void Quest::finishQuest(int questID, int questType, int questObjective) {
 	{
 		int x = 0;
 
-		// Localiza qual quest está sendo finalizada
+		// Localiza qual quest estï¿½ sendo finalizada
 		for (std::vector<QUESTPCKG*>::iterator it = vQuests.begin(); it < vQuests.end(); it++)
 		{
 			QUESTPCKG* getItemsToDelete = (*it);
 
 			if (getItemsToDelete->QuestPckg[x].questID == questID)
 			{
-				// Encontrou a quest, agora deleta os itens do inventário
+				// Encontrou a quest, agora deleta os itens do inventï¿½rio
 				if (getItemsToDelete->QuestPckg[x].qtItens[0])
 				{
 					for (int y = getItemsToDelete->QuestPckg[x].qtItens[0]; y > 0; y--)
@@ -318,14 +340,10 @@ void Quest::finishQuest(int questID, int questType, int questObjective) {
 					}
 				}
 
-				SaveGameData();
 			}
 			x++;
 		}
 	}
-
-	if (smWsockServer)
-		smWsockServer->Send((char*)&finishQuest, finishQuest.size, TRUE);
 }
 
 

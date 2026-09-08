@@ -148,7 +148,7 @@ BOOL IsPositionCostumeSlot2()
 }
 
 
-// Posição dos itens no inventário
+// Posi˜˜o dos itens no invent˜rio
 sINVENTORY sInven[INVENTORY_MAX_POS] = {
 	{ INVENTORY_POS_RHAND  ,{ 574 + 1 , 433 + 1 , 640 , 544 } },
 	{ INVENTORY_POS_LHAND  ,{ 722 + 1 , 433 + 1 , 788 , 544 } },
@@ -407,7 +407,7 @@ void cINVENTORY::InvenItemLoad()
 				if (InvenItem[i].CODE == sItem[j].CODE) {
 					wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
 					if (!sItem[j].lpTempItem)
-						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
+						sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
 					InvenItem[i].lpItem = sItem[j].lpTempItem;
 					break;
 				}
@@ -418,7 +418,7 @@ void cINVENTORY::InvenItemLoad()
 				if (InvenItemTemp[i].CODE == sItem[j].CODE) {
 					wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
 					if (!sItem[j].lpTempItem)
-						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
+						sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
 					InvenItemTemp[i].lpItem = sItem[j].lpTempItem;
 					break;
 				}
@@ -426,7 +426,7 @@ void cINVENTORY::InvenItemLoad()
 		}
 	}
 }
-//¾ÆÀÌÅÛÀ» ReleaseÇÑ´Ù 
+//˜˜˜˜˜˜˜˜ Release˜?˜ 
 void cINVENTORY::InvenItemRelease()
 {
 	int i = 0;
@@ -525,7 +525,7 @@ void cINVENTORY::Release()
 
 }
 /*----------------------------------------------------------------------------*
-*							     ±×¸®±â
+*							     ˜?˜˜˜
 *-----------------------------------------------------------------------------*/
 int CoreEffectTime = 0;
 int CoreEffectFlag = 0;
@@ -785,9 +785,9 @@ void cINVENTORY::Draw()
 				}
 
 				DrawSprite(InvenItem[i].x, InvenItem[i].y + (256 - sinMoveKindInter[SIN_INVENTORY]), InvenItem[i].lpItem, 0, 0, InvenItem[i].w, InvenItem[i].h);
-				//ÀÌ¹ÌÁö°¡ ¾ø´Â ¾ÆÀÌÅÛÀ» ±×·ÁÁØ´Ù 
+				//˜?˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜?˜ 
 				if (!InvenItem[i].lpItem) {
-					if (InvenItem[i].x > 10) {//¶«»§ -_-
+					if (InvenItem[i].x > 10) {//˜˜˜˜ -_-
 						dsDrawColorBox(D3DCOLOR_RGBA(125 + (i * 10), 125 + (i * 10), 255 + (i * 10), 125 + (i * 10)), InvenItem[i].x, InvenItem[i].y + (256 - sinMoveKindInter[SIN_INVENTORY]), InvenItem[i].w, InvenItem[i].h);
 					}
 
@@ -802,7 +802,7 @@ void cINVENTORY::Draw()
 		}
 	}
 
-	//¿Ï¼ºµÈ ÆÛÁñ ÀÌÆåÆ®
+	//˜?˜˜˜ ˜˜˜˜ ˜˜˜˜?
 	if (PuzzleOkFlag) {
 		dsDrawColorBox(D3DCOLOR_RGBA(255, 255, 0, 30), StartX + (22 * 8), sInven[0].Rect.top + (256 - sinMoveKindInter[SIN_INVENTORY]) + 2, 88, 88);
 
@@ -898,27 +898,27 @@ void cINVENTORY::Draw()
 	/*if( bCostumeSlot )
 		DrawSprite( ArrowPosi[ 9 ][ 0 ], ArrowPosi[ 9 ][ 1 ] + ( 256 - sinMoveKindInter[ SIN_INVENTORY ] ), lpCostumeButton, 0, 0, 20, 20 );*/
 
-	if (sinSkill.pLeftSkill) {		 //¿ÞÂÊ ½ºÅ³ 
+	if (sinSkill.pLeftSkill) {		 //˜˜˜˜ ˜˜? 
 		if (sinSkill.pLeftSkill->UseSkillFlag)
-			DrawSprite(sLeftRightSkill[0].BoxRect.left, sLeftRightSkill[0].BoxRect.top, //¹öÆ° 
+			DrawSprite(sLeftRightSkill[0].BoxRect.left, sLeftRightSkill[0].BoxRect.top, //˜˜? 
 				CSKILL->lpSkillButton[sinSkill.pLeftSkill->Position - 1], 0, 0, 40, 40);
 		else
-			DrawSprite(sLeftRightSkill[0].BoxRect.left, sLeftRightSkill[0].BoxRect.top, //¹öÆ° 
+			DrawSprite(sLeftRightSkill[0].BoxRect.left, sLeftRightSkill[0].BoxRect.top, //˜˜? 
 				CSKILL->lpSkillButton_Gray[sinSkill.pLeftSkill->Position - 1], 0, 0, 40, 40);
 
 	}
-	if (sinSkill.pRightSkill) {		//¿À¸¥ÂÊ ½ºÅ³  
+	if (sinSkill.pRightSkill) {		//˜˜˜˜˜˜ ˜˜?  
 		if (sinSkill.pRightSkill->UseSkillFlag)
-			DrawSprite(sLeftRightSkill[1].BoxRect.left, sLeftRightSkill[1].BoxRect.top, //¹öÆ° 
+			DrawSprite(sLeftRightSkill[1].BoxRect.left, sLeftRightSkill[1].BoxRect.top, //˜˜? 
 				CSKILL->lpSkillButton[sinSkill.pRightSkill->Position - 1], 0, 0, 40, 40);
 		else
-			DrawSprite(sLeftRightSkill[1].BoxRect.left, sLeftRightSkill[1].BoxRect.top, //¹öÆ° 
+			DrawSprite(sLeftRightSkill[1].BoxRect.left, sLeftRightSkill[1].BoxRect.top, //˜˜? 
 				CSKILL->lpSkillButton_Gray[sinSkill.pRightSkill->Position - 1], 0, 0, 40, 40);
 	}
 
 
-	//À¯´Ï¿Â ÄÚ¾î
-	//ÆÄÆ¼Å¬
+	//˜˜˜?˜ ˜?˜
+	//˜˜??
 	for (i = 0; i < 100; i++) {
 		if (UnionCore_Effect[i].Flag) {
 			cInvenTory.sinDrawInvenTexImage(&UnionCore_Effect[i].InvenFace);
@@ -932,7 +932,7 @@ void cINVENTORY::Draw()
 
 		}
 	}
-	//////////°³ÀÎ »óÁ¡
+	//////////˜˜˜˜ ˜˜˜˜
 	if (IndiShopIconFlag) {
 		DrawSprite(225, 570, lpIndiShopIcon, 0, 0, 27, 25);
 		DrawSprite(225 - 35, 570 - 27, cShop.lpMyShop_T, 0, 0, 100, 26);
@@ -1196,7 +1196,7 @@ void cINVENTORY::Main()
 
 	}
 	else {
-		// Deleta os coins do inventário se o player tiver segurando eles
+		// Deleta os coins do invent˜rio se o player tiver segurando eles
 		if (flagCheckCoin)
 		{
 			deleteCoinFromInventory();
@@ -1648,17 +1648,17 @@ void cINVENTORY::RButtonDown(int x, int y)
 					}
 					else
 					{
-						TitleBox::GetInstance()->SetText("Uma pedra especial já foi selecionada", 3);
+						TitleBox::GetInstance()->SetText("Uma pedra especial j˜ foi selecionada", 3);
 					}
 				}
 				else
 				{
-					TitleBox::GetInstance()->SetText("O item não pode ser usado no aging", 3);
+					TitleBox::GetInstance()->SetText("O item n˜o pode ser usado no aging", 3);
 				}
 			}
 			else if ((InvenItem[Index].CODE & sinITEM_MASK2) == sinOS1)
 			{
-				//Verifica as posições dos sheltons e pega a mais próxima.
+				//Verifica as posi˜˜es dos sheltons e pega a mais pr˜xima.
 				bool isEmpty = false;
 				int i = 0;
 				for (i = 0; i < 12; i++)
@@ -1690,12 +1690,12 @@ void cINVENTORY::RButtonDown(int x, int y)
 					}
 					else
 					{
-						TitleBox::GetInstance()->SetText("O item não pode ser usado no aging", 3);
+						TitleBox::GetInstance()->SetText("O item n˜o pode ser usado no aging", 3);
 					}
 				}
 				else
 				{
-					TitleBox::GetInstance()->SetText("Pedra incompatível ou janela de aging lotada", 3);
+					TitleBox::GetInstance()->SetText("Pedra incompat˜vel ou janela de aging lotada", 3);
 				}
 			}
 			else if (cAging.isAgeableItem(&Item))
@@ -1723,7 +1723,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 					}
 					else
 					{
-						TitleBox::GetInstance()->SetText("Já existe um item na janela de aging!", 3);
+						TitleBox::GetInstance()->SetText("J˜ existe um item na janela de aging!", 3);
 					}
 				}
 				else
@@ -1733,7 +1733,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			}
 			else
 			{
-				TitleBox::GetInstance()->SetText("O item não pode ser usado no aging!", 3);
+				TitleBox::GetInstance()->SetText("O item n˜o pode ser usado no aging!", 3);
 			}
 		}
 	}
@@ -1748,7 +1748,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 			if ((InvenItem[Index].CODE & sinITEM_MASK2) == sinOS1 || (InvenItem[Index].CODE & sinITEM_MASK2) == sinSE1)
 			{
-				//Verifica as posições dos sheltons e pega a mais próxima.
+				//Verifica as posi˜˜es dos sheltons e pega a mais pr˜xima.
 				bool isEmpty = false;
 
 				int i = 0;
@@ -1781,12 +1781,12 @@ void cINVENTORY::RButtonDown(int x, int y)
 					}
 					else
 					{
-						TitleBox::GetInstance()->SetText("Este item não pode ser mixado", 3);
+						TitleBox::GetInstance()->SetText("Este item n˜o pode ser mixado", 3);
 					}
 				}
 				else
 				{
-					TitleBox::GetInstance()->SetText("Pedra incompatível ou espaço insuficiente.", 3);
+					TitleBox::GetInstance()->SetText("Pedra incompat˜vel ou espa˜o insuficiente.", 3);
 				}
 			}
 			else if (cCraftItem.isMixableItem(&Item))
@@ -1814,7 +1814,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 					}
 					else
 					{
-						TitleBox::GetInstance()->SetText("Já existe um item na Janela de Mix", 3);
+						TitleBox::GetInstance()->SetText("J˜ existe um item na Janela de Mix", 3);
 					}
 				}
 				else
@@ -1893,7 +1893,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 		return;
 	}
 
-	//Clique direito para enviar itens do inventário para a fundição
+	//Clique direito para enviar itens do invent˜rio para a fundi˜˜o
 	else if (SmeltingItem.OpenFlag) {
 		if (SelectInvenItemIndex) {
 			sITEM& Item = InvenItem[Index];
@@ -1944,7 +1944,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 		}
 	}
 
-	//Clique direito para enviar itens do inventário para a criação
+	//Clique direito para enviar itens do invent˜rio para a cria˜˜o
 	else if (ManufactureItem.m_OpenFlag) {
 		if (SelectInvenItemIndex) {
 			sITEM& Item = InvenItem[Index];
@@ -2012,7 +2012,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 		}
 	}
 
-	//Clique direito para enviar itens do inventário para a troca
+	//Clique direito para enviar itens do invent˜rio para a troca
 	else if (cTrade.OpenFlag) {
 		if (SelectInvenItemIndex) {
 			sITEM& Item = InvenItem[Index];
@@ -2046,7 +2046,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 		return;
 	}
 
-	//Clique direito para enviar itens do inventário para o armazém
+	//Clique direito para enviar itens do invent˜rio para o armaz˜m
 	else if (cWareHouse.OpenFlag) {
 		if (SelectInvenItemIndex) {
 			sITEM& Item = InvenItem[Index];
@@ -2089,7 +2089,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 		return;
 	}
 
-	// Botão direito caravana
+	// Bot˜o direito caravana
 	else if (Caravana::GetInstance()->OpenFlag)
 	{
 		if (SelectInvenItemIndex)
@@ -2135,7 +2135,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 		return;
 	}
 
-	//Clique direito para enviar itens do inventário para a loja pessoal
+	//Clique direito para enviar itens do invent˜rio para a loja pessoal
 	else if (cMyShop.OpenFlag)
 	{
 		if (SelectInvenItemIndex) {
@@ -2209,7 +2209,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			}
 		}
 
-		// Ativa as forces quando clica com o botão direito aqui
+		// Ativa as forces quando clica com o bot˜o direito aqui
 		if ((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK2) == sinFO1)
 		{
 			if (((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) >= sin01) && ((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) <= sin15))
@@ -2241,50 +2241,50 @@ void cINVENTORY::RButtonDown(int x, int y)
 				temp = InvenItem[SelectInvenItemIndex - 1];
 				if (!CheckInvenEmpty(&temp))
 				{
-					cMessageBox.ShowMessage(MESSAGE_OVER_SPACE); //°ø°£ºÎÁ·
+					cMessageBox.ShowMessage(MESSAGE_OVER_SPACE); //˜˜˜˜˜˜˜˜
 					return;
 				}
 				if (sinChar->Weight[0] + 10 >= sinChar->Weight[1])
 				{
-					cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT); //¹«°ÔÃÊ°ú
+					cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT); //˜˜˜˜˜?˜
 					return;
 				}
 				bGiftBoxDelay = true;
 				if (sinActionPotion()) {
-					pUsePotion = &InvenItem[SelectInvenItemIndex - 1]; //»ç¿ëÇÒ ¼ÛÆíÀ» ¹é¾÷ÇÑ´Ù
+					pUsePotion = &InvenItem[SelectInvenItemIndex - 1]; //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜
 					sinUsePotionDelayFlag = 1;
 				}
 			}
-			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin34))  // ¹ÚÀç¿ø - È£¶ûÀÌ Ä¸½¶ »ç¿ë
+			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin34))  // ˜˜˜˜˜ - ?˜˜˜˜ ?˜˜ ˜˜˜
 			{
 				UseCapsuleItem(&InvenItem[SelectInvenItemIndex - 1]);
 			}
-			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin15)) // ¹ÚÀç¿ø - ¼ö¹Ú ¾ÆÀÌÅÛ »ç¿ë
+			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin15)) // ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜
 			{
 				if (sinActionPotion()) {
 					pUsePotion = &InvenItem[SelectInvenItemIndex - 1];
 				}
 			}
-			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin26)) // ¹ÚÀç¿ø - ¹ãÇÏ´ÃÀÇ ¼Ò¿øÀÌº¥Æ® // ¹ÚÀç¿ø - º°Á¶°¢ ¾ÆÀÌÅÛ »ç¿ë
+			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin26)) // ˜˜˜˜˜ - ˜˜˜?˜˜˜ ˜?˜˜?˜? // ˜˜˜˜˜ - ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜
 			{
 				return;
 			}
 			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin27) || InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin28) ||
 				InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin29) || InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin30) ||
 				InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin31) || InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin32) ||
-				InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin33)) // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ®
+				InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin33)) // ˜˜˜˜˜ - ˜˜˜?˜ ˜˜˜˜ ˜?˜?
 			{
 				return;
 			}
 
-			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin35)) // Àåº° - ¹ß·»Å¸ÀÎ ÃÊÄÝ·¿ ¾ÆÀÌÅÛ »ç¿ë
+			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin35)) // ˜? - ˜?˜?˜˜ ˜˜˜?˜ ˜˜˜˜˜˜ ˜˜˜
 			{
 				if (sinActionPotion()) {
 					pUsePotion = &InvenItem[SelectInvenItemIndex - 1];
 				}
 			}
 
-			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin36)) // Àåº° - Äµµðµ¥ÀÌÁî Äµµð¾ÆÀÌÅÛ »ç¿ë
+			else if (InvenItem[SelectInvenItemIndex - 1].CODE == (sinSP1 | sin36)) // ˜? - ?˜˜˜˜˜˜ ?˜˜˜˜˜˜˜ ˜˜˜
 			{
 				if (sinActionPotion()) {
 					pUsePotion = &InvenItem[SelectInvenItemIndex - 1];
@@ -2328,7 +2328,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 			// Limite de uso dos cristais aqui
 			if (limitebuff >= 5) {
-				TitleBox::GetInstance()->SetText("Você só pode usar 5 cristais de cada vez!", 3);
+				TitleBox::GetInstance()->SetText("Voc˜ s˜ pode usar 5 cristais de cada vez!", 3);
 				return;
 			}
 
@@ -2399,11 +2399,11 @@ void cINVENTORY::RButtonDown(int x, int y)
 			}
 		}
 
-		/////////°ø¼ºÀü Àü¿ë ¾ÆÀÌÅÛ 
+		/////////˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ 
 		if ((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK2) == sinBC1)
 		{
 			if (lpCurPlayer->OnStageField >= 0 && StageField[lpCurPlayer->OnStageField]->FieldCode != rsCASTLE_FIELD &&
-				(InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) <= sin16)  // ¹ÚÀç¿ø - ºÎ½ºÅÍ ¾ÆÀÌÅÛÀº °ø¼ºÇÊµå¿Ü¿¡µµ »ç¿ëÇÒ ¼ö ÀÖ´Ù.
+				(InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) <= sin16)  // ˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜?˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜.
 			{
 				return;
 			}
@@ -2419,28 +2419,28 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 			}
 
-			// ¹ÚÀç¿ø - ºÎ½ºÅÍ ¾ÆÀÌÅÛ
-			if (((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) >= sin21) && ((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) <= sin29)) // Àåº° - ½ºÅ³ µô·¹ÀÌ
+			// ˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜˜˜
+			if (((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) >= sin21) && ((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) <= sin29)) // ˜? - ˜˜? ˜˜˜˜˜˜
 				CSKILL->UseBoosterItem(&InvenItem[SelectInvenItemIndex - 1]);
 
-			// Àåº° - ½ºÅ³ µô·¹ÀÌ
+			// ˜? - ˜˜? ˜˜˜˜˜˜
 			if (((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK3) >= sin30))
 				CSKILL->UseSkillDelayItem(&InvenItem[SelectInvenItemIndex - 1]);
 
-			if (haCastleSkillUseFlag != 1)return; //»ç¿ëÁßÀÎ ¾ÆÀÌÅÛÀÌ´Ù.
+			if (haCastleSkillUseFlag != 1)return; //˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜?˜.
 
-			if (!sinItemPickUpDelayFlag) { //¹«ÇÑÀ¸·Î »ç¿ëÇÒ¼öÀÖÀ½À» ¹æÁöÇÑ´Ù
+			if (!sinItemPickUpDelayFlag) { //˜˜˜˜˜˜˜˜ ˜˜˜˜?˜˜˜˜˜˜˜ ˜˜˜˜˜?˜
 				InvenItem[SelectInvenItemIndex - 1].sItemInfo.PotionCount = 200;
 				sinThrowItemToFeild(&InvenItem[SelectInvenItemIndex - 1]);
 				InvenItem[SelectInvenItemIndex - 1].Flag = 0;
-				cInvenTory.CheckWeight();//¹«°Ô¸¦ º¸Á¤ÇØÁØ´Ù
+				cInvenTory.CheckWeight();//˜˜˜?˜ ˜˜˜˜˜˜˜?˜
 				ReFormInvenItem();
 			}
 
 		}
 		if ((InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK2) == sinBI1 || (InvenItem[SelectInvenItemIndex - 1].CODE & sinITEM_MASK2) == sinBI2) {
 			chaPremiumitem.TelePortCore.ItemIndex = 0;
-			//¸¶À»¿¡¼­ »ç¿ëµÅ¸é ¾ÈµÅ´Â ¾ÆÀÌÅÛ--------------------------------------------------------------------------------
+			//˜˜˜˜˜˜˜˜ ˜˜˜?˜ ˜??˜ ˜˜˜˜˜˜--------------------------------------------------------------------------------
 			if (lpCurPlayer->OnStageField >= 0 && StageField[lpCurPlayer->OnStageField]->State == FIELD_STATE_VILLAGE) {
 				/*if( (InvenItem[SelectInvenItemIndex-1].CODE &sinITEM_MASK2 ) == sinBI2 )
 					return;*/
@@ -2451,27 +2451,27 @@ void cINVENTORY::RButtonDown(int x, int y)
 			}
 			//--------------------------------------------------------------------------------------------------------------
 
-			//Contiue ÃÊ±âÈ­
+			//Contiue ˜?˜?
 			iEventBuyItemKind = 0;
-			//ºí·ç½ºÅæ »ç¿ë
+			//˜˜˜?˜˜ ˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin01))
 				chaPremiumitem.UsePremiumItem(1);
-			//·¹µå½ºÅæ
+			//˜˜˜?˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin02))
 				chaPremiumitem.UsePremiumItem(2);
-			//±×¸°½ºÅæ
+			//˜?˜˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin03))
 				chaPremiumitem.UsePremiumItem(3);
-			//ºÎÈ°ÁÖ¹®¼­
+			//˜˜?˜?˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin04))
 				return;
-			//ÀÌÅÍ³Î ¶óÀÌÇÁ
+			//˜˜˜?˜ ˜˜˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin05))
 				chaPremiumitem.UsePremiumItem(5);
-			//ÆäÀÌÆ² ¿¡Áö
+			//˜˜˜˜? ˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin06))
 			{
-				for (i = 0; i < MAX_CONTINUE_SKILL; i++)			 // pluto ¾î¹öÆ® ½ºÅ©·Ñ »ç¿ëÁßÀÌ¸é ¸·´Â´Ù
+				for (i = 0; i < MAX_CONTINUE_SKILL; i++)			 // pluto ˜˜˜? ˜˜?˜˜ ˜˜˜˜˜˜?˜ ˜˜˜?˜
 				{
 					if (ContinueSkill[i].CODE == SCROLL_P_EVASION)
 					{
@@ -2484,12 +2484,12 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(6);
 			}
-			//¾î¹öÆ® ½ºÅ©·Ñ
+			//˜˜˜? ˜˜?˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin07))
 			{
 				for (i = 0; i < MAX_CONTINUE_SKILL; i++)
 				{
-					if (ContinueSkill[i].CODE == SCROLL_P_CRITICAL)	// pluto ÆäÀÌÆ² ½ºÅ©·Ñ »ç¿ëÁßÀÌ¸é ¸·´Â´Ù
+					if (ContinueSkill[i].CODE == SCROLL_P_CRITICAL)	// pluto ˜˜˜˜? ˜˜?˜˜ ˜˜˜˜˜˜?˜ ˜˜˜?˜
 					{
 						if (ContinueSkill[i].Flag)
 						{
@@ -2500,12 +2500,12 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(7);
 			}
-			//ÅÚ·¹Æ÷Æ® ÄÚ¾î
+			//˜?˜˜˜? ˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin08)) {
 				chaPremiumitem.TelePortCore.ItemIndex = SelectInvenItemIndex - 1;
 				chaPremiumitem.UsePremiumItem(8);
 			}
-			//¾óÅ«ÀÌ ¹°¾à
+			//˜˜?˜˜ ˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin09)) {
 				chaPremiumitem.UsePremiumItem(9);
 			}
@@ -2523,13 +2523,13 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(9);
 			}
 
-			//¿¡ÀÌÂ¡ ½ºÅæ
+			//˜˜˜˜? ˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin10))
 				chaPremiumitem.UsePremiumItem(10);
-			//ÄÚÆÛ ¿À¾î
+			//˜˜˜˜ ˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin11))
 				chaPremiumitem.UsePremiumItem(11);
-			//½áµå ¾ÆÀÌÁî(1ÀÏ)
+			//˜˜˜ ˜˜˜˜˜˜(1˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin12))
 			{
 				if (chaPremiumitem.m_ThirdEyesTime > 0)
@@ -2540,7 +2540,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(12);
 			}
-			//°æÇèÄ¡ ¾÷ ¾ÆÀÌÅÛ(1ÀÏ)
+			//˜˜˜˜? ˜˜ ˜˜˜˜˜˜(1˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin13))
 			{
 				if (chaPremiumitem.m_ExpUpPotionTime > 0)
@@ -2551,7 +2551,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(13);
 			}
-			//½áµå ¾ÆÀÌÁî(7ÀÏ)
+			//˜˜˜ ˜˜˜˜˜˜(7˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin14))
 			{
 				if (chaPremiumitem.m_ThirdEyesTime > 0)
@@ -2562,7 +2562,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(14);
 			}
-			//°æÇèÄ¡ ¾÷ ¾ÆÀÌÅÛ(7ÀÏ)
+			//˜˜˜˜? ˜˜ ˜˜˜˜˜˜(7˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin15))
 			{
 				if (chaPremiumitem.m_ExpUpPotionTime > 0)
@@ -2573,16 +2573,16 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(15);
 			}
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(A)
+			//˜˜˜?? ˜˜˜˜(A)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin16))
 				chaPremiumitem.UsePremiumItem(16);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(B)
+			//˜˜˜?? ˜˜˜˜(B)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin17))
 				chaPremiumitem.UsePremiumItem(17);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(C)
+			//˜˜˜?? ˜˜˜˜(C)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin18))
 				chaPremiumitem.UsePremiumItem(18);
-			// pluto ¹ìÇÇ¸¯ Ä¿½ºÇÍ 3½Ã°£
+			// pluto ˜˜˜?˜ ?˜˜˜˜ 3˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin19))
 			{
 				if (chaPremiumitem.m_VampiricCuspidTime > 0)
@@ -2593,7 +2593,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(19);
 			}
-			// pluto ¹ìÇÇ¸¯ Ä¿½ºÇÍ 1ÀÏ
+			// pluto ˜˜˜?˜ ?˜˜˜˜ 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin20))
 			{
 				if (chaPremiumitem.m_VampiricCuspidTime > 0)
@@ -2604,7 +2604,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(20);
 			}
-			// pluto ¸¶³ª ¸®Â÷Â¡ Æ÷¼Ç 3½Ã°£
+			// pluto ˜˜˜˜ ˜˜˜˜? ˜˜˜˜ 3˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin21))
 			{
 				if (chaPremiumitem.m_ManaRechargingPTime > 0)
@@ -2615,7 +2615,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(21);
 			}
-			// pluto ¸¶³ª ¸®Â÷Â¡ Æ÷¼Ç 1ÀÏ
+			// pluto ˜˜˜˜ ˜˜˜˜? ˜˜˜˜ 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin22))
 			{
 				if (chaPremiumitem.m_ManaRechargingPTime > 0)
@@ -2629,84 +2629,84 @@ void cINVENTORY::RButtonDown(int x, int y)
 			//xxstr bi123
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin23))
 			{
-				// Àåº° - ÀÔ·ÂÃ¢
+				// ˜? - ˜?˜?
 				/*nName = 1;
 
-				sinChatEnter = 0; //ÀÓÀÇ·Î ±Û¾¾°¡ ¾Èº¸ÀÌ°ÔÇÑ´Ù
+				sinChatEnter = 0; //˜˜˜?˜ ˜?˜˜˜ ˜?˜˜?˜˜?˜
 				cInterFace.ChatFlag = 0;*/
 				chaPremiumitem.UsePremiumItem(23);
 			}
 
 
-			//ºê·ÐÁî ÆÐÅ°Áö ¾ÆÀÌÅÛ (3½Ã°£ )		//¼º±ÙÃß°¡
+			//˜˜˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜ (3˜?˜ )		//˜˜˜˜˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin01))
 				chaPremiumitem.UsePremiumItem(24);
-			//ºê·ÐÁî ÆÐÅ°Áö ¾ÆÀÌÅÛ (1ÀÏ )		
+			//˜˜˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜ (1˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin02))
 				chaPremiumitem.UsePremiumItem(25);
-			//ºê·ÐÁî ÆÐÅ°Áö ¾ÆÀÌÅÛ (7ÀÏ )		
+			//˜˜˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜ (7˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin03))
 				chaPremiumitem.UsePremiumItem(26);
-			//ºê·ÐÁî ÆÐÅ°Áö ¾ÆÀÌÅÛ (30ÀÏ )		
+			//˜˜˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜ (30˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin04))
 				chaPremiumitem.UsePremiumItem(27);
 
-			//½Ç¹ö ÆÐÅ°Áö ¾ÆÀÌÅÛ (3½Ã°£ )		
+			//˜?˜ ˜˜?˜˜ ˜˜˜˜˜˜ (3˜?˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin05))
 				chaPremiumitem.UsePremiumItem(28);
-			//½Ç¹ö ÆÐÅ°Áö ¾ÆÀÌÅÛ (1ÀÏ )		
+			//˜?˜ ˜˜?˜˜ ˜˜˜˜˜˜ (1˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin06))
 				chaPremiumitem.UsePremiumItem(29);
-			//½Ç¹ö ÆÐÅ°Áö ¾ÆÀÌÅÛ (7ÀÏ )		
+			//˜?˜ ˜˜?˜˜ ˜˜˜˜˜˜ (7˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin07))
 				chaPremiumitem.UsePremiumItem(30);
-			//½Ç¹ö ÆÐÅ°Áö ¾ÆÀÌÅÛ (30ÀÏ )		
+			//˜?˜ ˜˜?˜˜ ˜˜˜˜˜˜ (30˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin08))
 				chaPremiumitem.UsePremiumItem(31);
 
-			//°ñµå  ÆÐÅ°Áö ¾ÆÀÌÅÛ (3½Ã°£ )		
+			//˜˜˜  ˜˜?˜˜ ˜˜˜˜˜˜ (3˜?˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin09))
 				chaPremiumitem.UsePremiumItem(32);
-			//°ñµå ÆÐÅ°Áö ¾ÆÀÌÅÛ (1ÀÏ )		
+			//˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜ (1˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin10))
 				chaPremiumitem.UsePremiumItem(33);
-			//°ñµå ÆÐÅ°Áö ¾ÆÀÌÅÛ (7ÀÏ )		
+			//˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜ (7˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin11))
 				chaPremiumitem.UsePremiumItem(34);
-			//°ñµå ÆÐÅ°Áö ¾ÆÀÌÅÛ (30ÀÏ )		
+			//˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜ (30˜˜ )		
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin12))
 				chaPremiumitem.UsePremiumItem(35);
-			//===================== 2Â÷ Çì¾îÆ¾Æ® Æ÷¼Ç ========= ¼º±Ù ===== 060526
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(D)
+			//===================== 2˜˜ ˜˜˜?? ˜˜˜˜ ========= ˜˜˜˜ ===== 060526
+			//˜˜˜?? ˜˜˜˜(D)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin13))
 				chaPremiumitem.UsePremiumItem(36);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(E)
+			//˜˜˜?? ˜˜˜˜(E)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin14))
 				chaPremiumitem.UsePremiumItem(37);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(F)
+			//˜˜˜?? ˜˜˜˜(F)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin15))
 				chaPremiumitem.UsePremiumItem(38);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(G)
+			//˜˜˜?? ˜˜˜˜(G)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin16))
 				chaPremiumitem.UsePremiumItem(39);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(H)
+			//˜˜˜?? ˜˜˜˜(H)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin17))
 				chaPremiumitem.UsePremiumItem(40);
 
-			//===================== 3Â÷ Çì¾îÆ¾Æ® Æ÷¼Ç ========= ¼º±Ù ===== 060809
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(I)
+			//===================== 3˜˜ ˜˜˜?? ˜˜˜˜ ========= ˜˜˜˜ ===== 060809
+			//˜˜˜?? ˜˜˜˜(I)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin18))
 				chaPremiumitem.UsePremiumItem(41);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(J)
+			//˜˜˜?? ˜˜˜˜(J)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin19))
 				chaPremiumitem.UsePremiumItem(42);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(K)
+			//˜˜˜?? ˜˜˜˜(K)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin20))
 				chaPremiumitem.UsePremiumItem(43);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(L)
+			//˜˜˜?? ˜˜˜˜(L)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin21))
 				chaPremiumitem.UsePremiumItem(44);
-			//Çì¾îÆ¾Æ® Æ÷¼Ç(M)
+			//˜˜˜?? ˜˜˜˜(M)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin22))
 				chaPremiumitem.UsePremiumItem(45);
 			// novos cabelo xxstr
@@ -2781,33 +2781,33 @@ void cINVENTORY::RButtonDown(int x, int y)
 					InvenItem[SelectInvenItemIndex - 1].sItemInfo.ItemHeader.dwChkSum);
 			
 
-			//***********************º£Æ®³²¿äÃ» °æÄ¡ 50%============================			
-			// 1ÀÏ 
+			//***********************˜˜?˜˜˜˜? ˜˜? 50%============================			
+			// 1˜˜ 
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin24))
 				chaPremiumitem.UsePremiumItem(46);
-			//7ÀÏ
+			//7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin25))
 				chaPremiumitem.UsePremiumItem(47);
 
 
-			// pluto ¸¶ÀÌÆ® ¿Àºê ¾ÆÀ£ 1ÀÏ
+			// pluto ˜˜˜˜? ˜˜˜˜ ˜˜˜˜ 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin26))
 			{
 				chaPremiumitem.UsePremiumItem(48);
 			}
-			// pluto ¸¶ÀÌÆ® ¿Àºê ¾ÆÀ£ 30ÀÏ
+			// pluto ˜˜˜˜? ˜˜˜˜ ˜˜˜˜ 30˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin27))
 			{
 				chaPremiumitem.UsePremiumItem(49);
 			}
-			// pluto ¸¶³ª ¸®µà½º Æ÷¼Ç 1ÀÏ
+			// pluto ˜˜˜˜ ˜˜˜? ˜˜˜˜ 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin28))
 			{
 				if (chaPremiumitem.m_ManaReducePotiontime > 0) return;
 
 				chaPremiumitem.UsePremiumItem(50);
 			}
-			// pluto ¸¶³ª ¸®µà½º Æ÷¼Ç 7ÀÏ
+			// pluto ˜˜˜˜ ˜˜˜? ˜˜˜˜ 7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin29))
 			{
 				if (chaPremiumitem.m_ManaReducePotiontime > 0)
@@ -2818,189 +2818,189 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(51);
 			}
-			// pluto ºê·ÐÁî ÆÐÅ°Áö2 3½Ã°£
+			// pluto ˜˜˜˜˜ ˜˜?˜˜2 3˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin26))
 			{
 				chaPremiumitem.UsePremiumItem(52);
 			}
-			// pluto ºê·ÐÁî ÆÐÅ°Áö2 1ÀÏ
+			// pluto ˜˜˜˜˜ ˜˜?˜˜2 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin27))
 			{
 				chaPremiumitem.UsePremiumItem(53);
 			}
-			// pluto ºê·ÐÁî ÆÐÅ°Áö2 7ÀÏ
+			// pluto ˜˜˜˜˜ ˜˜?˜˜2 7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin28))
 			{
 				chaPremiumitem.UsePremiumItem(54);
 			}
-			// pluto ½Ç¹ö ÆÐÅ°Áö2 3½Ã°£
+			// pluto ˜?˜ ˜˜?˜˜2 3˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin29))
 			{
 				chaPremiumitem.UsePremiumItem(55);
 			}
-			// pluto ½Ç¹ö ÆÐÅ°Áö2 1ÀÏ
+			// pluto ˜?˜ ˜˜?˜˜2 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin30))
 			{
 				chaPremiumitem.UsePremiumItem(56);
 			}
-			// pluto ½Ç¹ö ÆÐÅ°Áö2 7ÀÏ
+			// pluto ˜?˜ ˜˜?˜˜2 7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin31))
 			{
 				chaPremiumitem.UsePremiumItem(57);
 			}
-			// pluto °ñµå ÆÐÅ°Áö2 3½Ã°£
+			// pluto ˜˜˜ ˜˜?˜˜2 3˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin32))
 			{
 				chaPremiumitem.UsePremiumItem(58);
 			}
-			// pluto °ñµå ÆÐÅ°Áö2 1ÀÏ
+			// pluto ˜˜˜ ˜˜?˜˜2 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin33))
 			{
 				chaPremiumitem.UsePremiumItem(59);
 			}
-			// pluto °ñµå ÆÐÅ°Áö2 7ÀÏ
+			// pluto ˜˜˜ ˜˜?˜˜2 7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin34))
 			{
 				chaPremiumitem.UsePremiumItem(60);
 			}
-			// pluto ½´Æä¸®¾î ÆÐÅ°Áö2 3½Ã°£
+			// pluto ˜˜˜?˜˜ ˜˜?˜˜2 3˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin35))
 			{
 				chaPremiumitem.UsePremiumItem(61);
 			}
-			// pluto ½´Æä¸®¾î ÆÐÅ°Áö2 1ÀÏ
+			// pluto ˜˜˜?˜˜ ˜˜?˜˜2 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin36))
 			{
 				chaPremiumitem.UsePremiumItem(62);
 			}
-			// pluto ½´Æä¸®¾î ÆÐÅ°Áö2 7ÀÏ
+			// pluto ˜˜˜?˜˜ ˜˜?˜˜2 7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin37))
 			{
 				chaPremiumitem.UsePremiumItem(63);
 			}
-			// pluto ¸¶ÀÌÆ® ¿Àºê ¾ÆÀ£2 1ÀÏ
+			// pluto ˜˜˜˜? ˜˜˜˜ ˜˜˜˜2 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin30))
 			{
 				chaPremiumitem.UsePremiumItem(64);
 			}
-			// pluto ¸¶ÀÌÆ® ¿Àºê ¾ÆÀ£2 30ÀÏ
+			// pluto ˜˜˜˜? ˜˜˜˜ ˜˜˜˜2 30˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin31))
 			{
 				chaPremiumitem.UsePremiumItem(65);
 			}
-			// pluto ½´Æä¸®¾î ÆÐÅ°Áö 3½Ã°£
+			// pluto ˜˜˜?˜˜ ˜˜?˜˜ 3˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin23))
 			{
 				chaPremiumitem.UsePremiumItem(66);
 			}
-			// pluto ½´Æä¸®¾î ÆÐÅ°Áö 1ÀÏ
+			// pluto ˜˜˜?˜˜ ˜˜?˜˜ 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin24))
 			{
 				chaPremiumitem.UsePremiumItem(67);
 			}
-			// pluto ½´Æä¸®¾î ÆÐÅ°Áö 7ÀÏ
+			// pluto ˜˜˜?˜˜ ˜˜?˜˜ 7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI2 | sin25))
 			{
 				chaPremiumitem.UsePremiumItem(68);
 			}
-			// pluto Æê(ÇØ¿Ü)
+			// pluto ˜˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin32))
 			{
 				chaPremiumitem.UsePremiumItem(69);
 			}
-			// pluto Æê(ÇØ¿Ü)
+			// pluto ˜˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin33))
 			{
 				chaPremiumitem.UsePremiumItem(70);
 			}
-			// pluto Æê(ÇØ¿Ü)
+			// pluto ˜˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin34))
 			{
 				chaPremiumitem.UsePremiumItem(71);
 			}
-			// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(¹«±â)
+			// ˜˜˜˜˜ - ˜˜˜˜? ˜˜˜˜˜˜(˜˜˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin36))
 			{
-				// ¹«±â ¿¡ÀÌÂ¡ ¸¶½ºÅÍ ¾ÆÀÌÅÛ(¾ç¼Õ¹«±âµµ ¿Þ¼Õ ½½·Ô¸¸ Ã¼Å©ÇÏ¸é µÈ´Ù.)
-				if (!cInvenTory.InvenItem[sInven[0].ItemIndex - 1].Flag || // ¹«±â¸¦ ÀÎº¥¿¡ Âø¿ëÇÏÁö ¾ÊÀ»°æ¿ì
-					!cInvenTory.InvenItem[sInven[0].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // ¿Þ¼Õ¹«±â(¿¡ÀÌÂ¡µÈ ¹«±â°¡ ¾Æ´Ò°æ¿ì)
+				// ˜˜˜˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜˜˜(˜˜?˜˜? ˜?˜ ˜˜˜?˜ ??˜?˜ ˜?˜.)
+				if (!cInvenTory.InvenItem[sInven[0].ItemIndex - 1].Flag || // ˜˜˜? ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜
+					!cInvenTory.InvenItem[sInven[0].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // ˜??˜˜˜(˜˜˜˜?˜˜ ˜˜˜? ˜??˜˜)
 				{
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_AGINGITEM);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(73);
 			}
-			// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(¹æÆÐ, ¿Àºê, ºñÁî)
+			// ˜˜˜˜˜ - ˜˜˜˜? ˜˜˜˜˜˜(˜˜˜˜, ˜˜˜˜, ˜˜˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin37))
 			{
-				// ¹æÆÐ ¿Àºê ºñÁî ¿¡ÀÌÂ¡ ¸¶½ºÅÍ ¾ÆÀÌÅÛ
-				if (!cInvenTory.InvenItem[sInven[1].ItemIndex - 1].Flag || // ¹«±â¸¦ ÀÎº¥¿¡ Âø¿ëÇÏÁö ¾ÊÀ»°æ¿ì
-					!cInvenTory.InvenItem[sInven[1].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // ¿¡ÀÌÂ¡µÈ ¾ÆÀÌÅÛÀÌ ¾Æ´Ò°æ¿ì
+				// ˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜˜˜
+				if (!cInvenTory.InvenItem[sInven[1].ItemIndex - 1].Flag || // ˜˜˜? ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜
+					!cInvenTory.InvenItem[sInven[1].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // ˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜??˜˜
 				{
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_AGINGITEM);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(74);
 			}
-			// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(°©¿Ê, ·Îºê)
+			// ˜˜˜˜˜ - ˜˜˜˜? ˜˜˜˜˜˜(˜˜˜˜, ˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin38))
 			{
-				// °©¿Ê ¿¡ÀÌÂ¡ ¸¶½ºÅÍ ¾ÆÀÌÅÛ
-				if (!cInvenTory.InvenItem[sInven[2].ItemIndex - 1].Flag || // °©¿Ê¸¦ ÀÎº¥¿¡ Âø¿ëÇÏÁö ¾ÊÀ»°æ¿ì
-					!cInvenTory.InvenItem[sInven[2].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // °©¿Ê(¿¡ÀÌÂ¡µÈ ¹«±â°¡ ¾Æ´Ò°æ¿ì)
+				// ˜˜˜˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜˜˜
+				if (!cInvenTory.InvenItem[sInven[2].ItemIndex - 1].Flag || // ˜˜˜?˜ ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜
+					!cInvenTory.InvenItem[sInven[2].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // ˜˜˜˜(˜˜˜˜?˜˜ ˜˜˜? ˜??˜˜)
 				{
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_AGINGITEM);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(75);
 			}
-			// ¹ÚÀç¿ø - ½ºÅ³ ¸¶½ºÅÍ(1Â÷)(½ºÅ³ ¼÷·Ãµµ¸¦ ÀüÁ÷º°·Î ÃÖ´ëÄ¡·Î ÇÑ´Ù.)
+			// ˜˜˜˜˜ - ˜˜? ˜˜˜˜˜˜(1˜˜)(˜˜? ˜˜˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜?˜˜ ˜?˜.)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin39))
 			{
 				if (CSKILL->CheckMaturedSkill(1) == FALSE)
 				{
-					// ÀÌ¹Ì 1Â÷ ÀüÁ÷ ½ºÅ³ÀÌ ¸ðµÎ ¼÷·ÃµÊ
+					// ˜?˜ 1˜˜ ˜˜˜˜ ˜˜?˜˜ ˜˜˜ ˜˜˜?˜
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_MATURESKILL);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(76);
 
 			}
-			// ¹ÚÀç¿ø - ½ºÅ³ ¸¶½ºÅÍ(2Â÷)(½ºÅ³ ¼÷·Ãµµ¸¦ ÀüÁ÷º°·Î ÃÖ´ëÄ¡·Î ÇÑ´Ù.)
+			// ˜˜˜˜˜ - ˜˜? ˜˜˜˜˜˜(2˜˜)(˜˜? ˜˜˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜?˜˜ ˜?˜.)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin40))
 			{
 				if (CSKILL->CheckMaturedSkill(2) == FALSE)
 				{
-					// ÀÌ¹Ì 2Â÷ ÀüÁ÷ ½ºÅ³ÀÌ ¸ðµÎ ¼÷·ÃµÊ
+					// ˜?˜ 2˜˜ ˜˜˜˜ ˜˜?˜˜ ˜˜˜ ˜˜˜?˜
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_MATURESKILL);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(77);
 
 			}
-			// ¹ÚÀç¿ø - ½ºÅ³ ¸¶½ºÅÍ(3Â÷)(½ºÅ³ ¼÷·Ãµµ¸¦ ÀüÁ÷º°·Î ÃÖ´ëÄ¡·Î ÇÑ´Ù.)
+			// ˜˜˜˜˜ - ˜˜? ˜˜˜˜˜˜(3˜˜)(˜˜? ˜˜˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜?˜˜ ˜?˜.)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin41))
 			{
 				if (CSKILL->CheckMaturedSkill(3) == 0)
 				{
-					// ÀÌ¹Ì 3Â÷ ÀüÁ÷ ½ºÅ³ÀÌ ¸ðµÎ ¼÷·ÃµÊ
+					// ˜?˜ 3˜˜ ˜˜˜˜ ˜˜?˜˜ ˜˜˜ ˜˜˜?˜
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_MATURESKILL);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(78);
 
 			}
-			// ¹ÚÀç¿ø - ÀÌµ¿ »óÁ¡ ¾ÆÀÌÅÛ
+			// ˜˜˜˜˜ - ˜?˜ ˜˜˜˜ ˜˜˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin42))
 			{
 				// lpPlayInfo->Position.Area==rsCASTLE_FIELD
-				// StageField[lpCurPlayer->OnStageField]->State==FIELD_STATE_ROOM || // Àå±âÆÇ
-				if (StageField[lpCurPlayer->OnStageField]->State == FIELD_STATE_ROOM || // Àå±âÆÇ
-					StageField[lpCurPlayer->OnStageField]->FieldCode == START_FIELD_NUM || // ¸®Ä«¸£ÅÙ
-					StageField[lpCurPlayer->OnStageField]->FieldCode == START_FIELD_MORYON || // ÇÊ¶óÀÌ
-					StageField[lpCurPlayer->OnStageField]->FieldCode == rsCASTLE_FIELD || // °ø¼º
-					StageField[lpCurPlayer->OnStageField]->FieldCode == rsSOD_FIELD || // º§¶óÆ®¶ó
-					StageField[lpCurPlayer->OnStageField]->FieldCode == 29) // À¯¶ó ºô¸®Áö
+				// StageField[lpCurPlayer->OnStageField]->State==FIELD_STATE_ROOM || // ˜˜˜˜˜
+				if (StageField[lpCurPlayer->OnStageField]->State == FIELD_STATE_ROOM || // ˜˜˜˜˜
+					StageField[lpCurPlayer->OnStageField]->FieldCode == START_FIELD_NUM || // ˜˜?˜˜˜˜
+					StageField[lpCurPlayer->OnStageField]->FieldCode == START_FIELD_MORYON || // ˜?˜˜˜
+					StageField[lpCurPlayer->OnStageField]->FieldCode == rsCASTLE_FIELD || // ˜˜˜˜
+					StageField[lpCurPlayer->OnStageField]->FieldCode == rsSOD_FIELD || // ˜˜˜˜?˜˜
+					StageField[lpCurPlayer->OnStageField]->FieldCode == 29) // ˜˜˜˜ ˜˜˜˜˜˜
 				{
 					cMessageBox.ShowMessage(MESSAGE_NO_USE_ITEM);
 					return;
@@ -3010,7 +3010,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				cMessageBox.ShowMessage3(MESSAGE_EVENT_ITEMOK, InvenItem[SelectInvenItemIndex - 1].sItemInfo.ItemName);
 			}
 
-			// ¹ÚÀç¿ø - °æÇèÄ¡Áõ°¡ Æ÷¼Ç(100% 1ÀÏ Ãß°¡)
+			// ˜˜˜˜˜ - ˜˜˜˜?˜˜˜˜ ˜˜˜˜(100% 1˜˜ ˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin43))
 			{
 				if (chaPremiumitem.m_ExpUpPotionTime > 0)
@@ -3022,7 +3022,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(80);
 			}
 
-			// ¹ÚÀç¿ø - °æÇèÄ¡Áõ°¡ Æ÷¼Ç(100% 7ÀÏ Ãß°¡)
+			// ˜˜˜˜˜ - ˜˜˜˜?˜˜˜˜ ˜˜˜˜(100% 7˜˜ ˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin44))
 			{
 				if (chaPremiumitem.m_ExpUpPotionTime > 0)
@@ -3034,19 +3034,19 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(81);
 			}
 
-			// ¹ÚÀç¿ø - Ä³¸¯ÅÍ ¼Ó¼ºº° ½ºÅÈ ÃÊ±âÈ­ ¾ÆÀÌÅÛ(5Á¾ - Èû, Á¤½Å·Â, Àç´É, ¹ÎÃ¸¼º, °Ç°­)
-			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin45)) // Èû
+			// ˜˜˜˜˜ - ?˜˜˜˜ ˜?˜˜˜ ˜˜˜˜ ˜?˜? ˜˜˜˜˜˜(5˜˜ - ˜˜, ˜˜˜?˜, ˜˜˜, ˜˜?˜˜, ˜?˜)
+			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin45)) // ˜˜
 				chaPremiumitem.UsePremiumItem(82);
-			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin46)) // Á¤½Å·Â
+			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin46)) // ˜˜˜?˜
 				chaPremiumitem.UsePremiumItem(83);
-			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin47)) // Àç´É
+			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin47)) // ˜˜˜
 				chaPremiumitem.UsePremiumItem(84);
-			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin48)) // ¹ÎÃ¸¼º
+			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin48)) // ˜˜?˜˜
 				chaPremiumitem.UsePremiumItem(85);
-			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin49)) // °Ç°­
+			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin49)) // ˜?˜
 				chaPremiumitem.UsePremiumItem(86);
 
-			// ¹ÚÀç¿ø - °æÇèÄ¡Áõ°¡ Æ÷¼Ç(100% 30ÀÏ Ãß°¡)
+			// ˜˜˜˜˜ - ˜˜˜˜?˜˜˜˜ ˜˜˜˜(100% 30˜˜ ˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin50))
 			{
 				if (chaPremiumitem.m_ExpUpPotionTime > 0)
@@ -3058,25 +3058,25 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(87);
 			}
 
-			// // ¹ÚÀç¿ø - ÇÈ´Ð½º Æê(30ÀÏ) Ãß°¡
+			// // ˜˜˜˜˜ - ˜?˜ ˜˜(30˜˜) ˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin51))
 			{
 				chaPremiumitem.UsePremiumItem(88);
 			}
 
-			// ¹ÚÀç¿ø - ¿¤´õ ÄÚÆÛ ¿À¾î Ãß°¡
+			// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin60))
 			{
 				chaPremiumitem.UsePremiumItem(97);
 			}
 
-			// ¹ÚÀç¿ø - ½´ÆÛ ¿¡ÀÌÂ¡ ½ºÅæ Ãß°¡
+			// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜? ˜˜˜˜ ˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin61))
 			{
 				chaPremiumitem.UsePremiumItem(98);
 			}
 
-			// ¹ÚÀç¿ø - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(Å×¸®)
+			// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin52))
 			{
 				if (sinChar->Level < 10)
@@ -3086,7 +3086,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(99);
 			}
-			// ¹ÚÀç¿ø - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(³Ü½Ã½º)
+			// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜??˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin53))
 			{
 				if (sinChar->Level < 10)
@@ -3096,7 +3096,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(100);
 			}
-			// ¹ÚÀç¿ø - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(ÀÌ¿À)
+			// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin54))
 			{
 				if (sinChar->Level < 10)
@@ -3106,7 +3106,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(101);
 			}
-			// ¹ÚÀç¿ø - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(¹«Æ®)
+			// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜˜?)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin55))
 			{
 				if (sinChar->Level < 10)
@@ -3118,7 +3118,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			}
 
 
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(Å×¸®) // 1ÀÏ
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜) // 1˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin69))
 			{
 				if (sinChar->Level < 10)
@@ -3128,7 +3128,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(103);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(³Ü½Ã½º)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜??˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin70))
 			{
 				if (sinChar->Level < 10)
@@ -3138,7 +3138,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(104);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(ÀÌ¿À)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin71))
 			{
 				if (sinChar->Level < 10)
@@ -3148,7 +3148,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(105);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(¹«Æ®)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜˜?)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin72))
 			{
 				if (sinChar->Level < 10)
@@ -3159,7 +3159,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(106);
 			}
 
-			// Àåº° - °æÇèÄ¡Áõ°¡ Æ÷¼Ç(100% 1½Ã°£)
+			// ˜? - ˜˜˜˜?˜˜˜˜ ˜˜˜˜(100% 1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin80))
 			{
 				if (chaPremiumitem.m_ExpUpPotionTime > 0)
@@ -3171,13 +3171,13 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(107);
 			}
 
-			// Àåº° - ÇÇ´Ð½ºÆê(1½Ã°£)
+			// ˜? - ˜??˜(1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin77))
 			{
 				chaPremiumitem.UsePremiumItem(108);
 			}
 
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(Å×¸®)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin65))
 			{
 				if (sinChar->Level < 10)
@@ -3187,7 +3187,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(109);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(³Ü½Ã½º)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜??˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin66))
 			{
 				if (sinChar->Level < 10)
@@ -3197,7 +3197,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(110);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(ÀÌ¿À)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin67))
 			{
 				if (sinChar->Level < 10)
@@ -3207,7 +3207,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(111);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(¹«Æ®)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜˜?)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin68))
 			{
 				if (sinChar->Level < 10)
@@ -3217,36 +3217,36 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(112);
 			}
-			// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(2Â÷) - ¾Ï¸´
+			// ˜˜˜˜˜ - ˜˜˜˜? ˜˜˜˜˜˜(2˜˜) - ˜?˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin62))
 			{
-				// ¾Ï¸´ ¿¡ÀÌÂ¡ ¸¶½ºÅÍ ¾ÆÀÌÅÛ
-				if (!cInvenTory.InvenItem[sInven[7].ItemIndex - 1].Flag || // ¾Ï¸´À» ÀÎº¥¿¡ Âø¿ëÇÏÁö ¾ÊÀ»°æ¿ì
-					!cInvenTory.InvenItem[sInven[7].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // Âø¿ëÇÑ ¾Ï¸´ÀÌ ¿¡ÀÌÂ¡µÈ °ÍÀÌ ¾Æ´Ò°æ¿ì
+				// ˜?˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜˜˜
+				if (!cInvenTory.InvenItem[sInven[7].ItemIndex - 1].Flag || // ˜?˜˜˜ ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜
+					!cInvenTory.InvenItem[sInven[7].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // ˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜˜?˜˜ ˜˜˜˜ ˜??˜˜
 				{
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_AGINGITEM);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(113);
 			}
-			// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(2Â÷) - Àå°©
+			// ˜˜˜˜˜ - ˜˜˜˜? ˜˜˜˜˜˜(2˜˜) - ˜?
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin63))
 			{
-				// Àå°© ¿¡ÀÌÂ¡ ¸¶½ºÅÍ ¾ÆÀÌÅÛ
-				if (!cInvenTory.InvenItem[sInven[8].ItemIndex - 1].Flag || // Àå°©À» ÀÎº¥¿¡ Âø¿ëÇÏÁö ¾ÊÀ»°æ¿ì
-					!cInvenTory.InvenItem[sInven[8].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // // Âø¿ëÇÑ Àå°©ÀÌ ¿¡ÀÌÂ¡µÈ °ÍÀÌ ¾Æ´Ò°æ¿ì
+				// ˜? ˜˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜˜˜
+				if (!cInvenTory.InvenItem[sInven[8].ItemIndex - 1].Flag || // ˜?˜˜ ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜
+					!cInvenTory.InvenItem[sInven[8].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // // ˜˜˜˜˜˜ ˜?˜˜ ˜˜˜˜?˜˜ ˜˜˜˜ ˜??˜˜
 				{
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_AGINGITEM);
 					return;
 				}
 				chaPremiumitem.UsePremiumItem(114);
 			}
-			// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(2Â÷) - ºÎÃ÷
+			// ˜˜˜˜˜ - ˜˜˜˜? ˜˜˜˜˜˜(2˜˜) - ˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin64))
 			{
-				// ºÎÃ÷ ¿¡ÀÌÂ¡ ¸¶½ºÅÍ ¾ÆÀÌÅÛ
-				if (!cInvenTory.InvenItem[sInven[9].ItemIndex - 1].Flag || // ºÎÃ÷¸¦ ÀÎº¥¿¡ Âø¿ëÇÏÁö ¾ÊÀ»°æ¿ì
-					!cInvenTory.InvenItem[sInven[9].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // // Âø¿ëÇÑ ºÎÃ÷°¡ ¿¡ÀÌÂ¡µÈ °ÍÀÌ ¾Æ´Ò°æ¿ì
+				// ˜˜˜˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜˜˜
+				if (!cInvenTory.InvenItem[sInven[9].ItemIndex - 1].Flag || // ˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜
+					!cInvenTory.InvenItem[sInven[9].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) // // ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜˜ ˜˜˜˜ ˜??˜˜
 				{
 					cMessageBox.ShowMessage(MESSAGE_HAVE_NOT_AGINGITEM);
 					return;
@@ -3255,13 +3255,13 @@ void cINVENTORY::RButtonDown(int x, int y)
 			}
 
 
-			// Àåº° - ±×¶óºñÆ¼ ½ºÅ©·Ñ
+			// ˜? - ˜?˜˜? ˜˜?˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin84))
 			{
 				chaPremiumitem.UsePremiumItem(116);
 			}
 
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(Å×¸® 1½Ã°£)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜ 1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin73))
 			{
 				if (sinChar->Level < 10)
@@ -3273,7 +3273,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(³Ü½Ã½º 1½Ã°£)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜??˜ 1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin74))
 			{
 				if (sinChar->Level < 10)
@@ -3283,7 +3283,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(118);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(ÀÌ¿À 1½Ã°£)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜?˜ 1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin75))
 			{
 				if (sinChar->Level < 10)
@@ -3293,7 +3293,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				}
 				chaPremiumitem.UsePremiumItem(119);
 			}
-			// Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(¹«Æ® 1½Ã°£)
+			// ˜? - ˜˜˜˜ ˜˜˜˜˜ ˜˜ ˜?˜(˜˜? 1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin76))
 			{
 				if (sinChar->Level < 10)
@@ -3304,7 +3304,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(120);
 			}
 
-			// Àåº° - ½áµå ¾ÆÀÌÁî(1½Ã°£)
+			// ˜? - ˜˜˜ ˜˜˜˜˜˜(1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin78))
 			{
 				if (chaPremiumitem.m_ThirdEyesTime > 0)
@@ -3316,13 +3316,13 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(121);
 			}
 
-			// Àåº° - ½´ÆÛ ¿¡ÀÌÂ¡ ½ºÅæ 1.5
+			// ˜? - ˜˜˜˜ ˜˜˜˜? ˜˜˜˜ 1.5
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin85))
 			{
 				chaPremiumitem.UsePremiumItem(122);
 			}
 
-			// Àåº° - °æÇèÄ¡Áõ°¡Æ÷¼Ç(1½Ã°£)
+			// ˜? - ˜˜˜˜?˜˜˜˜˜˜˜˜(1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin79))
 			{
 				if (chaPremiumitem.m_ExpUpPotionTime > 0)
@@ -3334,7 +3334,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(123);
 			}
 
-			// Àåº° - ¹ìÇÇ¸¯ Ä¿½ºÇÍ(1½Ã°£)
+			// ˜? - ˜˜˜?˜ ?˜˜˜˜(1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin81))
 			{
 				if (chaPremiumitem.m_VampiricCuspidTime > 0)
@@ -3346,7 +3346,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(124);
 			}
 
-			// Àåº° - ¸¶³ª ¸®Â÷Â¡ Æ÷¼Ç(1½Ã°£)
+			// ˜? - ˜˜˜˜ ˜˜˜˜? ˜˜˜˜(1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin82))
 			{
 				if (chaPremiumitem.m_ManaRechargingPTime > 0)
@@ -3358,7 +3358,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(125);
 			}
 
-			// Àåº° - ¸¶³ª ¸®µà½º(1½Ã°£)
+			// ˜? - ˜˜˜˜ ˜˜˜?(1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin83))
 			{
 				if (chaPremiumitem.m_ManaReducePotiontime > 0)
@@ -3370,7 +3370,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(126);
 			}
 
-			// Àåº° - ¹ìÇÇ¸¯ Ä¿½ºÇÍ EX(1½Ã°£)
+			// ˜? - ˜˜˜?˜ ?˜˜˜˜ EX(1˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin86))
 			{
 				if (chaPremiumitem.m_VampiricCuspidEXTime > 0)
@@ -3382,7 +3382,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(127);
 			}
 
-			// Àåº° - ¹ìÇÇ¸¯ Ä¿½ºÇÍ EX(3½Ã°£)
+			// ˜? - ˜˜˜?˜ ?˜˜˜˜ EX(3˜?˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin87))
 			{
 				if (chaPremiumitem.m_VampiricCuspidEXTime > 0)
@@ -3394,7 +3394,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 				chaPremiumitem.UsePremiumItem(128);
 			}
 
-			// Àåº° - ¹ìÇÇ¸¯ Ä¿½ºÇÍ EX(1ÀÏ)
+			// ˜? - ˜˜˜?˜ ?˜˜˜˜ EX(1˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin88))
 			{
 				if (chaPremiumitem.m_VampiricCuspidEXTime > 0)
@@ -3405,10 +3405,10 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(129);
 			}
-			// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ½ºÅæ
+			// ˜˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜ ˜˜˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin89))
 				chaPremiumitem.UsePremiumItem(130);
-			// ¹ÚÀç¿ø - ¸®½ºÆå ½ºÅæ
+			// ˜˜˜˜˜ - ˜˜˜˜˜˜ ˜˜˜˜
 
 
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin91))
@@ -3421,7 +3421,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(132);
 			}
-			// ¹ÚÀç¿ø - ±Ù·Â ¸®µà½º Æ÷¼Ç(7ÀÏ)
+			// ˜˜˜˜˜ - ˜?˜ ˜˜˜? ˜˜˜˜(7˜˜)
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin92))
 			{
 				if (chaPremiumitem.m_StaminaReducePotiontime > 0)
@@ -3442,25 +3442,25 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 				chaPremiumitem.UsePremiumItem(134);
 			}
-			// ¼®Áö¿ë - ÇÊµå ÄÚ¾î 1ÀÏ
+			// ˜˜˜˜˜˜ - ˜?˜ ˜?˜ 1˜˜
 			/*
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin93))
 			{
 				if (sinChar->Level > 19)
 				{
-					chaPremiumitem.TelePortCore.ItemIndex = SelectInvenItemIndex - 1;		// ÀÎº¥Åä¸®¿¡¼­ÀÇ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º ¾ò±â
-					chaPremiumitem.UsePremiumItem(134);									// ¾ÆÀÌÅÛ »ç¿ë
+					chaPremiumitem.TelePortCore.ItemIndex = SelectInvenItemIndex - 1;		// ˜?˜˜?˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜
+					chaPremiumitem.UsePremiumItem(134);									// ˜˜˜˜˜˜ ˜˜˜
 				}
 				else
 					cMessageBox.ShowMessage(MESSAGE_NOT_ENOUGH_LEVEL);
 			} */
-			// ¼®Áö¿ë - ÇÊµå ÄÚ¾î 7ÀÏ
+			// ˜˜˜˜˜˜ - ˜?˜ ˜?˜ 7˜˜
 			if (InvenItem[SelectInvenItemIndex - 1].sItemInfo.CODE == (sinBI1 | sin94))
 			{
 				if (sinChar->Level > 19)
 				{
-					chaPremiumitem.TelePortCore.ItemIndex = SelectInvenItemIndex - 1;		// ÀÎº¥Åä¸®¿¡¼­ÀÇ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º ¾ò±â
-					chaPremiumitem.UsePremiumItem(135);									// ¾ÆÀÌÅÛ »ç¿ë
+					chaPremiumitem.TelePortCore.ItemIndex = SelectInvenItemIndex - 1;		// ˜?˜˜?˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜
+					chaPremiumitem.UsePremiumItem(135);									// ˜˜˜˜˜˜ ˜˜˜
 				}
 				else
 					cMessageBox.ShowMessage(MESSAGE_NOT_ENOUGH_LEVEL);
@@ -3483,7 +3483,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			{
 				if (StageField[UNITDATA->OnStageField]->FieldCode == START_FIELD_CASTLE)
 				{
-					TitleBox::GetInstance()->SetText("Não pode ser utilizado neste mapa", 3);
+					TitleBox::GetInstance()->SetText("N˜o pode ser utilizado neste mapa", 3);
 					return;
 				}
 
@@ -3501,7 +3501,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			{
 				if (StageField[UNITDATA->OnStageField]->FieldCode == START_FIELD_CASTLE)
 				{
-					TitleBox::GetInstance()->SetText("Não pode ser utilizado neste mapa", 3);
+					TitleBox::GetInstance()->SetText("N˜o pode ser utilizado neste mapa", 3);
 					return;
 				}
 
@@ -3519,7 +3519,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			{
 				if (StageField[UNITDATA->OnStageField]->FieldCode == START_FIELD_CASTLE)
 				{
-					TitleBox::GetInstance()->SetText("Não pode ser utilizado neste mapa", 3);
+					TitleBox::GetInstance()->SetText("N˜o pode ser utilizado neste mapa", 3);
 					return;
 				}
 
@@ -3539,7 +3539,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			{
 				if (StageField[UNITDATA->OnStageField]->FieldCode == START_FIELD_CASTLE)
 				{
-					TitleBox::GetInstance()->SetText("Não pode ser utilizado neste mapa", 3);
+					TitleBox::GetInstance()->SetText("N˜o pode ser utilizado neste mapa", 3);
 					return;
 				}
 
@@ -3557,7 +3557,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			{
 				if (StageField[UNITDATA->OnStageField]->FieldCode == START_FIELD_CASTLE)
 				{
-					TitleBox::GetInstance()->SetText("Não pode ser utilizado neste mapa", 3);
+					TitleBox::GetInstance()->SetText("N˜o pode ser utilizado neste mapa", 3);
 					return;
 				}
 
@@ -3575,7 +3575,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			{
 				if (StageField[UNITDATA->OnStageField]->FieldCode == START_FIELD_CASTLE)
 				{
-					TitleBox::GetInstance()->SetText("Não pode ser utilizado neste mapa", 3);
+					TitleBox::GetInstance()->SetText("N˜o pode ser utilizado neste mapa", 3);
 					return;
 				}
 
@@ -3631,7 +3631,7 @@ void cINVENTORY::RButtonDown(int x, int y)
 			}
 
 
-			// Deleta item do inventário depois do uso
+			// Deleta item do invent˜rio depois do uso
 			if (haCastleSkillUseFlag != 1) return;
 
 			if (!sinItemPickUpDelayFlag)
@@ -3810,7 +3810,7 @@ void cINVENTORY::KeyDown()
 	memset(&TempPotion, 0, sizeof(sITEM));
 	int CountTemp = 0;
 	int sArrowPosi = 0;
-	char szKeyBuff[3] = { '1','2','3' }; //Å°¹öÆÛ 
+	char szKeyBuff[3] = { '1','2','3' }; //?˜˜˜˜ 
 
 	// Deixar invisivel/visivel montaria
 	if (sinGetKeyClick(VK_SPACE))
@@ -3826,7 +3826,7 @@ void cINVENTORY::KeyDown()
 
 		cMessageBox.CloseMessage();
 
-		if (!cCraftItem.OpenFlag && !cAging.OpenFlag && !SmeltingItem.OpenFlag && !ManufactureItem.m_OpenFlag || !cMixtureReset.OpenFlag) //????¡?? ??????????? ???????????? ESC?? ??´? // ?????? - ????? ???? â ???
+		if (!cCraftItem.OpenFlag && !cAging.OpenFlag && !SmeltingItem.OpenFlag && !ManufactureItem.m_OpenFlag || !cMixtureReset.OpenFlag) //????˜?? ??????????? ???????????? ESC?? ??˜? // ?????? - ????? ???? ˜ ???
 			cInterFace.CheckAllBox(SIN_ALL_CLOSE);
 	}
 
@@ -3862,7 +3862,7 @@ void cINVENTORY::KeyDown()
 		cHelpPet.PetMessage("*InvenTory", 3);
 		if (cInvenTory.OpenFlag)cInvenTory.OpenFlag = SIN_CLOSE;
 		else cInvenTory.OpenFlag = SIN_OPEN;
-		cInterFace.CheckAllBox(SIN_INVENTORY); //Ã¢À» ÇÏ³ª¸¸ ¶ç¿î´Ù 
+		cInterFace.CheckAllBox(SIN_INVENTORY); //?˜˜ ˜?˜˜˜ ˜˜˜˜ 
 		if (cInvenTory.OpenFlag) {
 			if (!sinFireShow) {
 				StartMenuFlame(0, 350);
@@ -3961,7 +3961,7 @@ void cINVENTORY::KeyDown()
 					}
 					else {
 						memcpy(&TempPotion, &InvenItem[SelectPotionIndex - 1], sizeof(sITEM));
-						TempPotion.SetX = sInven[i + 10].Rect.left + (((sInven[i + 10].Rect.right - sInven[i + 10].Rect.left) - InvenItem[SelectPotionIndex - 1].w) / 2);  //ÁÂÇ¥ ¼³Á¤ 							 
+						TempPotion.SetX = sInven[i + 10].Rect.left + (((sInven[i + 10].Rect.right - sInven[i + 10].Rect.left) - InvenItem[SelectPotionIndex - 1].w) / 2);  //˜˜? ˜˜˜˜ 							 
 						TempPotion.SetY = sInven[i + 10].Rect.top + (((sInven[i + 10].Rect.bottom - sInven[i + 10].Rect.top) - InvenItem[SelectPotionIndex - 1].h) / 2);
 
 						TempPotion.sItemInfo.PotionCount = 0;
@@ -4065,7 +4065,7 @@ int cINVENTORY::LoadItemInfo()
 					wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
 
 					if (!sItem[j].lpTempItem) {
-						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
+						sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
 						if (!sItem[j].lpTempItem) {
 							TEstFlag = 0;
 
@@ -4119,7 +4119,7 @@ int cINVENTORY::LoadItemInfo()
 					memcpy(&sinTempItem.sItemInfo, &InvenItemTemp[i].sItemInfo, sizeof(sITEMINFO));
 					wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
 					if (!sItem[j].lpTempItem) {
-						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
+						sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
 						if (!sItem[j].lpTempItem) {
 							TEstFlag = 0;
 
@@ -4292,7 +4292,15 @@ int cINVENTORY::LoadItemInfo()
 
 
 			if (!InvenItem[i].lpItem) {
-				cMessageBox.ShowMessage(MESSAGE_NOTEXIT_ITEMIMAGE);
+				for (int j = 0; j < MAX_ITEM; j++) {
+					if (InvenItem[i].CODE == sItem[j].CODE) {
+						sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
+						InvenItem[i].lpItem = sItem[j].lpTempItem;
+						InvenItem[i].w = sItem[j].w;
+						InvenItem[i].h = sItem[j].h;
+						break;
+					}
+				}
 			}
 			if (InvenItem[i].ItemPosition == 2) {
 				if (InvenItem[i].Class == ITEM_CLASS_WEAPON_TWO)
@@ -4342,7 +4350,7 @@ int cINVENTORY::LoadItemInfo()
 				memcpy(&sinTempItem.sItemInfo, &MouseItem.sItemInfo, sizeof(sITEMINFO));
 				wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
 				if (!sItem[j].lpTempItem)
-					sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
+					sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
 				sinTempItem.lpItem = sItem[j].lpTempItem;
 				sinTempItem.x = MouseItem.x;
 				sinTempItem.y = MouseItem.y;
@@ -4536,7 +4544,7 @@ int cINVENTORY::AutoSetInvenItem(sITEM* pItem, int PostBox)
 	return FALSE;
 }
 
-//ÀÎº¥Åä¸®¿¡¼­ÀÇ ºó°÷À» Ã¼Å©ÇÑ´Ù 
+//˜?˜˜?˜˜˜˜˜˜ ˜˜˜˜˜ ??˜?˜ 
 int cINVENTORY::InvenEmptyAearCheck(sITEM* pItem)
 {
 	int cntx, cnty;
@@ -4547,10 +4555,10 @@ int cINVENTORY::InvenEmptyAearCheck(sITEM* pItem)
 
 	if (AutoSetPotionToBox(pItem))return TRUE;
 
-	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //˜˜˜˜˜˜˜˜ ˜˜?˜˜˜?˜ ˜˜˜˜ ˜˜ X˜˜? 
+	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //˜˜˜˜˜˜˜˜ ˜˜?˜˜˜?˜ ˜˜˜˜ ˜˜ Y˜˜?
 
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//˜?? ˜˜˜˜ ˜??˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜?˜ ˜?˜˜?˜ ˜˜?˜˜ ?˜?˜˜˜ 
 	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22) {
 			flag = 0;
@@ -4571,7 +4579,7 @@ int cINVENTORY::InvenEmptyAearCheck(sITEM* pItem)
 				pItem->SetX = cntx;
 				pItem->SetY = cnty;
 				pItem->ItemPosition = 0;
-				LastSetInvenItem(pItem, 1); //¿ÀÅä¼ÂÆÃÀÏ°æ¿ì¿¡´Â ÀÎÀÚ1À» ³Ñ±ä´Ù 
+				LastSetInvenItem(pItem, 1); //˜˜˜˜˜˜˜˜?˜?˜˜ ˜˜˜˜1˜˜ ˜?˜˜ 
 				return TRUE;
 			}
 		}
@@ -4581,7 +4589,7 @@ int cINVENTORY::InvenEmptyAearCheck(sITEM* pItem)
 
 extern void Utils_Log(DWORD type, char* msg, ...);
 
-//ÀÎº¥Åä¸® ¾ÆÀÌÅÛÀ¸·Î º¹»çÇÑ´Ù 
+//˜?˜˜? ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 int cINVENTORY::LastSetInvenItem(sITEM* pItem, int AutoSet)
 {
 	int PassFlag = 0;
@@ -4619,7 +4627,7 @@ int cINVENTORY::LastSetInvenItem(sITEM* pItem, int AutoSet)
 				InvenCostume.x = 649;
 				InvenCostume.y = 445;
 
-				sinSetCharItem(InvenCostume.CODE, InvenCostume.SetModelPosi, TRUE); //¹«±â¿Í °©¿ÊÀ» ¼ÂÆÃÇÑ´Ù 
+				sinSetCharItem(InvenCostume.CODE, InvenCostume.SetModelPosi, TRUE); //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 
 				SetItemToChar();
 				SaveGameData();
@@ -4673,18 +4681,18 @@ int cINVENTORY::LastSetInvenItem(sITEM* pItem, int AutoSet)
 	return FALSE;
 }
 //////////////////////////////////
-//         *Æ÷¼Ç 
+//         *˜˜˜˜ 
 //////////////////////////////////
 int cINVENTORY::UsePotion(int x, int y)
-{   //Æ÷¼ÇÀ» »ç¿ëÇÑ´Ù {
+{   //˜˜˜˜˜˜ ˜˜˜˜?˜ {
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
 		if (InvenItem[i].Flag) {
 			if (InvenItem[i].x < x && InvenItem[i].x + InvenItem[i].w > x &&
 				InvenItem[i].y < y && InvenItem[i].y + InvenItem[i].h > y) {
 				if (InvenItem[i].ItemPosition == 11 || InvenItem[i].ItemPosition == 12 || InvenItem[i].ItemPosition == 13) {
-					if (InvenItem[i].Class == ITEM_CLASS_POTION) { //¹°¾àÀÏ°æ¿ì´Â »ç¿ëÇÑ´Ù 
-						if (sinActionPotion()) { //Æ÷¼ÇÀ» »ç¿ëÇÏ´Â ¸ð¼ÇÀ» ÃëÇÑ´Ù  ¸ð¼ÇÀÌ ³¡³­ÈÄ ¹°¾àÀ» »ç¿ëÇÑ´Ù 
-							pUsePotion = &InvenItem[i]; //»ç¿ëÇÒ Æ÷¼ÇÀ» ¹é¾÷ÇÑ´Ù 
+					if (InvenItem[i].Class == ITEM_CLASS_POTION) { //˜˜˜˜˜?˜˜˜ ˜˜˜˜?˜ 
+						if (sinActionPotion()) { //˜˜˜˜˜˜ ˜˜˜˜?˜ ˜˜˜˜˜ ˜˜˜?˜  ˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜ 
+							pUsePotion = &InvenItem[i]; //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜ 
 							sinUsePotionDelayFlag = 1;
 						}
 
@@ -4693,9 +4701,9 @@ int cINVENTORY::UsePotion(int x, int y)
 				}
 				else {
 					if (!OpenFlag)break;
-					if (InvenItem[i].Class == ITEM_CLASS_POTION) { //¹°¾àÀÏ°æ¿ì´Â »ç¿ëÇÑ´Ù 
-						if (sinActionPotion()) { //Æ÷¼ÇÀ» »ç¿ëÇÏ´Â ¸ð¼ÇÀ» ÃëÇÑ´Ù  ¸ð¼ÇÀÌ ³¡³­ÈÄ ¹°¾àÀ» »ç¿ëÇÑ´Ù 
-							pUsePotion = &InvenItem[i]; //»ç¿ëÇÒ Æ÷¼ÇÀ» ¹é¾÷ÇÑ´Ù 
+					if (InvenItem[i].Class == ITEM_CLASS_POTION) { //˜˜˜˜˜?˜˜˜ ˜˜˜˜?˜ 
+						if (sinActionPotion()) { //˜˜˜˜˜˜ ˜˜˜˜?˜ ˜˜˜˜˜ ˜˜˜?˜  ˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜ 
+							pUsePotion = &InvenItem[i]; //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜ 
 							sinUsePotionDelayFlag = 1;
 						}
 					}
@@ -4703,27 +4711,27 @@ int cINVENTORY::UsePotion(int x, int y)
 			}
 		}
 	}
-	ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+	ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 	return FALSE;
 
 }
 
 int cINVENTORY::ReSettingPotion()
-{ //Æ÷¼Ç °ø°£ÀÌ º¯ÇßÀ» °æ¿ì Æ÷¼ÇÀ» ¼ÂÆÃÇÑ´Ù 
+{ //˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 	sITEM TempPotionItem;
 	int i = 0, j = 0, cnt = 0;
 
 	memset(&TempPotionItem, 0, sizeof(sITEM));
-	for (i = 10; i < 13; i++) { //Æ÷¼Ç ¼¼ÆÃ¹Ú½º¸¸ °Ë»çÇÑ´Ù 
+	for (i = 10; i < 13; i++) { //˜˜˜˜ ˜˜˜??˜˜˜ ˜?˜˜?˜ 
 		if (sInven[i].ItemIndex) {
 			if (InvenItem[sInven[i].ItemIndex - 1].Flag) {
 				memcpy(&TempPotionItem, &InvenItem[sInven[i].ItemIndex - 1], sizeof(sITEM));
 				cnt = TempPotionItem.sItemInfo.PotionCount;
-				if (sinChar->Potion_Space < InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount) { //Æ÷¼Ç ÇÒ´ç °ø°£º¸´Ù Æ÷¼ÇÀÌ ´õÀÖÀ¸¸é 
+				if (sinChar->Potion_Space < InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount) { //˜˜˜˜ ˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ 
 					TempPotionItem.sItemInfo.PotionCount = InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount - sinChar->Potion_Space;
 					InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount -= TempPotionItem.sItemInfo.PotionCount;
 					if (!InvenEmptyAearCheck(&TempPotionItem)) {
-						NoSettingThrowItem(&TempPotionItem);// ¼ÂÆÃÀÌ ¾ÈµÉ¶§´Â ¹Ù´Ú¿¡ ¾ÆÀÌÅÛÀ» ¹ö¸°´Ù 
+						NoSettingThrowItem(&TempPotionItem);// ˜˜˜˜˜˜ ˜??˜˜˜ ˜??˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ 
 					}
 
 				}
@@ -4732,21 +4740,21 @@ int cINVENTORY::ReSettingPotion()
 		}
 
 	}
-	ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+	ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 
 	return TRUE;
 }
 int BackUpX, BackUpY, BackUpPosi = 0;
 int cINVENTORY::MouseSetPotion(sITEM* pItem)
-{   //Æ÷¼ÇÀ» ¸¶¿ì½º·Î ¼ÂÆÃÇÑ´Ù 
+{   //˜˜˜˜˜˜ ˜˜˜?˜˜ ˜˜˜˜˜?˜ 
 
 	int i = 0, cnt;
 	sITEM TempPotionItem;
-	sinPosionItem = 0; //ÃÊ±âÈ­ 
+	sinPosionItem = 0; //˜?˜? 
 
 	if (!pItem->Flag)return FALSE;
 	BackUpItemIndex = 0;
-	if (CrashItemIndex[0]) { //°ãÃÄÁø ¾ÆÀÌÅÛÀÌ ÀÖÀ¸¸é 
+	if (CrashItemIndex[0]) { //˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ 
 		if (pMessageItem) {
 			BackUpX = pMessageItem->x;
 			BackUpY = pMessageItem->y;
@@ -4755,36 +4763,36 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 			BackUpItemIndex = CrashItemIndex[0];
 
 		}
-		if (pItem->ItemPosition) { //Æ÷¼Ç¹Û½º¿¡¼­ °ãÄ¥°æ¿ì¿¡ 
+		if (pItem->ItemPosition) { //˜˜˜??˜˜˜˜˜ ˜˜?˜˜? 
 			memcpy(&TempPotionItem, pItem, sizeof(sITEM));
-			if (pItem->CODE == InvenItem[CrashItemIndex[0] - 1].CODE) { //°°Àº ÄÚµåÀÏ°æ¿ì 
+			if (pItem->CODE == InvenItem[CrashItemIndex[0] - 1].CODE) { //˜˜˜˜ ˜?˜˜?˜˜ 
 				cnt = pItem->sItemInfo.PotionCount;
 				for (i = 0; i < cnt; i++) {
 					if (sinChar->Potion_Space > InvenItem[CrashItemIndex[0] - 1].sItemInfo.PotionCount) {
 						InvenItem[CrashItemIndex[0] - 1].sItemInfo.PotionCount++;
 						pItem->sItemInfo.PotionCount--;
 						if (pItem->sItemInfo.PotionCount <= 0) {
-							pItem->Flag = 0; //ÀÎµ¦½º¸¦ ´Ù Áõ°¡ÇßÀ¸¸é ¾ÆÀÌÅÛÀ» Áö¿öÁØ´Ù 
+							pItem->Flag = 0; //˜?˜˜˜˜˜ ˜˜ ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 							sinPlaySound(pItem->SoundIndex);
-							ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
-							return TRUE; //ÀÎµ¦½º¸¦ Áõ°¡ÇØÁÙ°Ô ¾øÀ¸¸é ¸®ÅÏ 
+							ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
+							return TRUE; //˜?˜˜˜˜˜ ˜˜˜˜˜˜˜?˜ ˜˜˜˜˜˜ ˜˜˜˜ 
 						}
 					}
 					else {
-						if (InvenEmptyAearCheck(pItem)) { //³ª¸ÓÁö Æ÷¼ÇÀº Ã¢°í·Î ¼ÂÆÃ 						
-							ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+						if (InvenEmptyAearCheck(pItem)) { //˜˜˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜˜ ˜˜˜˜ 						
+							ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 							return TRUE;
 						}
 						else {
 							ResetPotion2();
 							if (sinThrowItemToFeild(pItem)) {
-								ReformCharForm();//ÀçÀÎÁõ
-								cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
+								ReformCharForm();//˜˜˜˜˜˜
+								cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
 								return TRUE;
 							}
 							else {
-								ReformCharForm();//ÀçÀÎÁõ
-								cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
+								ReformCharForm();//˜˜˜˜˜˜
+								cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
 								return FALSE;
 
 							}
@@ -4794,12 +4802,12 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 				}
 
 			}
-			else { //´Ù¸¥ ÄÚµåÀÏ °æ¿ì 
-				memcpy(&TempItem, &InvenItem[CrashItemIndex[0] - 1], sizeof(sITEM)); //ÀÎº¥Åä¸® ¾ÆÀÌÅÛÀ» ÅÛÇÁ·Î º¹»ç 
+			else { //˜?˜ ˜?˜˜˜ ˜˜˜ 
+				memcpy(&TempItem, &InvenItem[CrashItemIndex[0] - 1], sizeof(sITEM)); //˜?˜˜? ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ 
 				InvenItem[CrashItemIndex[0] - 1].Flag = 0;
 				if (sinPosionItem)
 					sinPosionItem->Flag = 0;
-				TempPotionItem.sItemInfo.PotionCount = 0; //Æ÷¼Ç Ä«¿îÆ® ÃÊ±âÈ­ 
+				TempPotionItem.sItemInfo.PotionCount = 0; //˜˜˜˜ ?˜˜? ˜?˜? 
 				cnt = pItem->sItemInfo.PotionCount;
 				for (i = 0; i < cnt; i++) {
 					if (sinChar->Potion_Space < pItem->sItemInfo.PotionCount) {
@@ -4808,20 +4816,20 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 					}
 					else {
 						ReFormInvenItem();
-						if (LastSetInvenItem(pItem)) {  //Æ÷¼Ç¼ÂÆÃÀ§Ä¡¿¡ ¼ÂÆÃ ÈÄ (°ãÃÄÁ³À»¶§¿¡´Â ¾ÆÀÌÅÛ ¼ÂÆÃÀ» 2¹ø °Ç³Ê¶íÈÄ ÇÑ´Ù )
+						if (LastSetInvenItem(pItem)) {  //˜˜˜?˜˜˜˜˜?˜˜ ˜˜˜˜ ˜˜ (˜˜˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ 2˜˜ ˜??˜˜˜ ˜?˜ )
 							if (TempPotionItem.sItemInfo.PotionCount > 0) {
-								if (InvenEmptyAearCheck(&TempPotionItem)) { //³ª¸ÓÁö Æ÷¼ÇÀº Ã¢°í·Î ¼ÂÆÃ 
+								if (InvenEmptyAearCheck(&TempPotionItem)) { //˜˜˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜˜ ˜˜˜˜ 
 									memcpy(pItem, &TempItem, sizeof(sITEM));
 									pMessageItem = sinPosionItem;
 									pMessageItem->x = BackUpX;
 									pMessageItem->y = BackUpY;
 									pMessageItem->ItemPosition = BackUpPosi;
 									sinPosionItem = 0;
-									ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+									ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 									return TRUE;
 								}
 								else {
-									//¹°¾à »ç¶óÁü ¹æÁö
+									//˜˜˜˜ ˜˜˜˜˜ ˜˜˜˜
 									memcpy(pItem, &TempItem, sizeof(sITEM));
 									if (sinPosionItem) {
 										pMessageItem = sinPosionItem;
@@ -4831,7 +4839,7 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 										sinPosionItem = 0;
 									}
 									sinThrowItemToFeild(&TempPotionItem);
-									ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+									ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 									return TRUE;
 								}
 							}
@@ -4843,11 +4851,11 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 								pMessageItem->ItemPosition = BackUpPosi;
 								sinPosionItem = 0;
 							}
-							ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+							ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 							return TRUE;
 						}
 						else {
-							ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+							ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 							return FALSE;
 						}
 
@@ -4858,30 +4866,30 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 			}
 
 		}
-		else { //Ã¢°í¿¡¼­ °ãÄ¥°æ¿ì¿¡ 
-			if (pItem->CODE == InvenItem[CrashItemIndex[0] - 1].CODE) { //°°Àº ÄÚµåÀÏ°æ¿ì 
-				/////////////// ¹°¾àÀ» º¹»çÇÏ´ø ³ðµéÀ» Àâ±âÀ§ÇØ¼­ ÇÔÁ¤À»ÆÇ´Ù 
+		else { //?˜˜˜˜˜˜ ˜˜?˜˜? 
+			if (pItem->CODE == InvenItem[CrashItemIndex[0] - 1].CODE) { //˜˜˜˜ ˜?˜˜?˜˜ 
+				/////////////// ˜˜˜˜˜˜ ˜˜˜˜˜?˜ ˜˜˜˜˜ ˜˜˜˜˜˜?˜ ˜˜˜˜˜˜˜?˜ 
 				if (!cInvenTory.OpenFlag) {
 					SendSetHackUser2(1960, 3);
 					return TRUE;
 				}
 
 				InvenItem[CrashItemIndex[0] - 1].sItemInfo.PotionCount += pItem->sItemInfo.PotionCount;
-				pItem->Flag = 0; //Æ÷¼Ç Ä«¿îÆ®¸¦ ´õÇØÁØ´ÙÀ½ ÃÊ±âÈ­ÇÑ´Ù 
+				pItem->Flag = 0; //˜˜˜˜ ?˜˜?˜˜ ˜˜˜˜˜?˜˜˜ ˜?˜?˜?˜ 
 				sinPlaySound(pItem->SoundIndex);
-				ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+				ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 				return TRUE;
 			}
 			else {
-				memcpy(&TempItem, &InvenItem[CrashItemIndex[0] - 1], sizeof(sITEM)); //¸¶¿ì½º ¾ÆÀÌÅÛÀ» ÅÛÇÁ·Î º¹»ç 
-				InvenItem[CrashItemIndex[0] - 1].Flag = 0; //º¹»çÇÑÈÄ¿¡ ÃÊ±âÈ­
+				memcpy(&TempItem, &InvenItem[CrashItemIndex[0] - 1], sizeof(sITEM)); //˜˜˜? ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ 
+				InvenItem[CrashItemIndex[0] - 1].Flag = 0; //˜˜˜˜˜˜˜?˜ ˜?˜?
 
 				TempItem.x = pItem->x;
 				TempItem.y = pItem->y;
 				ReFormInvenItem();
-				LastSetInvenItem(pItem); //¸¶¿ì½º ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®·Î º¹»ç 
-				memcpy(pItem, &TempItem, sizeof(sITEM)); //ÅÛÇÁ¾ÆÀÌÅÛÀ» ¸¶¿ì½º·Î º¹»ç 
-				if (sinPosionItem) { //Æ÷¼ÇÀÏ°æ¿ì¿¡¸¸ Æ÷ÀÎÅÍ¿¡ °ªÀ» ¼ÂÆÃ 
+				LastSetInvenItem(pItem); //˜˜˜? ˜˜˜˜˜˜˜˜ ˜?˜˜?˜˜ ˜˜˜˜ 
+				memcpy(pItem, &TempItem, sizeof(sITEM)); //˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜?˜˜ ˜˜˜˜ 
+				if (sinPosionItem) { //˜˜˜˜˜?˜?˜˜ ˜˜˜˜˜?˜ ˜˜˜˜ ˜˜˜˜ 
 					pMessageItem = sinPosionItem;
 					pMessageItem->x = BackUpX;
 					pMessageItem->y = BackUpY;
@@ -4889,15 +4897,15 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 					sinPosionItem = 0;
 
 				}
-				ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+				ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 				return TRUE;
 			}
 		}
 	}
-	else { //¾Æ´Ï¸é 
-		if (pItem->ItemPosition) {  //Æ÷¼Ç ¹Ú½ºÀÌ¸é 
+	else { //˜??˜ 
+		if (pItem->ItemPosition) {  //˜˜˜˜ ˜?˜˜?˜ 
 			memcpy(&TempPotionItem, pItem, sizeof(sITEM));
-			TempPotionItem.sItemInfo.PotionCount = 0; //Æ÷¼Ç Ä«¿îÆ® ÃÊ±âÈ­ 
+			TempPotionItem.sItemInfo.PotionCount = 0; //˜˜˜˜ ?˜˜? ˜?˜? 
 			cnt = pItem->sItemInfo.PotionCount;
 			for (i = 0; i < cnt; i++) {
 				if (sinChar->Potion_Space < pItem->sItemInfo.PotionCount) {
@@ -4907,59 +4915,59 @@ int cINVENTORY::MouseSetPotion(sITEM* pItem)
 				}
 				else {
 					ReFormInvenItem();
-					if (LastSetInvenItem(pItem)) {  //Æ÷¼Ç¼ÂÆÃÀ§Ä¡¿¡ ¼ÂÆÃ ÈÄ 
+					if (LastSetInvenItem(pItem)) {  //˜˜˜?˜˜˜˜˜?˜˜ ˜˜˜˜ ˜˜ 
 						if (TempPotionItem.sItemInfo.PotionCount > 0) {
-							if (InvenEmptyAearCheck(&TempPotionItem)) { //³ª¸ÓÁö Æ÷¼ÇÀº Ã¢°í·Î ¼ÂÆÃ 
-								ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+							if (InvenEmptyAearCheck(&TempPotionItem)) { //˜˜˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜˜ ˜˜˜˜ 
+								ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 								return TRUE;
 							}
 							else {
-								//¹°¾à »ç¶óÁü ¹æÁö 
-								sinThrowItemToFeild(&TempPotionItem);//¾ÆÀÌÅÛÀ» ¹ö¸°´Ù
-								ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+								//˜˜˜˜ ˜˜˜˜˜ ˜˜˜˜ 
+								sinThrowItemToFeild(&TempPotionItem);//˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜
+								ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 								return FALSE;
 							}
 						}
-						ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+						ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 						return TRUE;
 					}
 					else {
-						ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+						ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 						return FALSE;
 					}
 				}
 			}
 		}
-		else { //Ã¢°íÀÌ¸é ±×³É ¼ÂÆÃÇÑ´Ù 
+		else { //?˜˜˜?˜ ˜?˜ ˜˜˜˜˜?˜ 
 			ReFormInvenItem();
 			if (LastSetInvenItem(pItem)) {
-				ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+				ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 				return TRUE;
 			}
 
 		}
 
 	}
-	ReFormPotionNum();	//Æ÷¼Ç °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù
+	ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜
 	return FALSE;
 }
 
 int cINVENTORY::AutoSetPotionToBox(sITEM* pItem)
-{ //Æ÷¼ÇÀ» Ã¢°í¿¡ ¼¼ÆÃÇÑ´Ù 
+{ //˜˜˜˜˜˜ ?˜˜˜˜ ˜˜˜˜˜?˜ 
 
-	if (pItem->Class != ITEM_CLASS_POTION)return FALSE; //Æ÷¼ÇÀÌ ¾Æ´Ï¸é ¸®ÅÏÇÑ´Ù 
+	if (pItem->Class != ITEM_CLASS_POTION)return FALSE; //˜˜˜˜˜˜ ˜??˜ ˜˜˜˜˜?˜ 
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
 		if (InvenItem[i].Flag) {
-			if (pItem->CODE == InvenItem[i].CODE) {//°°Àº Æ÷¼ÇÀÌ¸é
-				if (InvenItem[i].ItemPosition)continue; //Æ÷¼Ç ¹Ú½º¿¡ ÀÖÀ¸¸é continue
+			if (pItem->CODE == InvenItem[i].CODE) {//˜˜˜˜ ˜˜˜˜˜?˜
+				if (InvenItem[i].ItemPosition)continue; //˜˜˜˜ ˜?˜˜˜ ˜˜˜˜˜˜ continue
 				InvenItem[i].sItemInfo.PotionCount += pItem->sItemInfo.PotionCount;
 				pItem->Flag = 0;
 				sinPlaySound(pItem->SoundIndex);
-				///////////////////// Æ÷¼ÇÀÌ Àß¸øµé¾î°¡´Â °æ¿ì¸¦ Ã¼Å©ÇØ¼­ º¸Á¤ÇØÁØ´Ù 
+				///////////////////// ˜˜˜˜˜˜ ˜?˜˜˜?˜˜ ˜˜? ??˜?˜ ˜˜˜˜˜˜˜?˜ 
 				if (InvenItem[i].x < 3 || InvenItem[i].y < 10)
 					ReSetPotionXY(&InvenItem[i]);
-				ReformCharForm();//ÀçÀÎÁõ
-				cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
+				ReformCharForm();//˜˜˜˜˜˜
+				cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
 
 				return TRUE;
 
@@ -4970,43 +4978,43 @@ int cINVENTORY::AutoSetPotionToBox(sITEM* pItem)
 	return FALSE;
 }
 int cINVENTORY::AutoSetPotion(sITEM* pItem)
-{	//Æ÷¼ÇÀ» ÀÚµ¿À¸·Î ¼ÂÆÃÇÑ´Ù 
+{	//˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜?˜ 
 
 
 	int i = 0, j = 0, cnt = 0;
 	sITEM TempPotion;
 
 
-	if (pItem->Class != ITEM_CLASS_POTION)return FALSE; //Æ÷¼ÇÀÌ ¾Æ´Ï¸é ¸®ÅÏÇÑ´Ù  
+	if (pItem->Class != ITEM_CLASS_POTION)return FALSE; //˜˜˜˜˜˜ ˜??˜ ˜˜˜˜˜?˜  
 	for (i = 0; i < INVENTORY_MAX_POS; i++) {
-		if (pItem->Class & sInven[i].Position) { //Æ÷¼ÇÀÌ ¼ÂÆÃµÉ¼ö ÀÖ´Â ¿µ¿ªÀÌ¸é 
-			if (sInven[i].ItemIndex) { //ÇöÀç Æ÷¼Ç ¹Ú½º¿¡ ¾ÆÀÌÅÛÀÌ ÀÖÀ¸¸é ÄÚµå¸¦ °Ë»öÇØ ¾ÆÀÌÅÛÀ» ´õÇÑ´Ù 
-				if (pItem->CODE == InvenItem[sInven[i].ItemIndex - 1].CODE) { //°°Àº ÄÚµåÀÇ Æ÷¼ÇÀÏ°æ¿ì 
-					if (sinChar->Potion_Space == InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount)continue; //ÄÚµå´Â °°Áö¸¸ °ø°£ÀÌ ºÎÁ·ÇÏ¸é 
+		if (pItem->Class & sInven[i].Position) { //˜˜˜˜˜˜ ˜˜˜??˜ ˜?˜ ˜˜˜˜˜?˜ 
+			if (sInven[i].ItemIndex) { //˜˜˜˜ ˜˜˜˜ ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?? ˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜?˜ 
+				if (pItem->CODE == InvenItem[sInven[i].ItemIndex - 1].CODE) { //˜˜˜˜ ˜?˜˜˜ ˜˜˜˜˜?˜˜ 
+					if (sinChar->Potion_Space == InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount)continue; //˜?˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 					cnt = pItem->sItemInfo.PotionCount;
-					for (j = 0; j < cnt; j++) { //Æ÷¼ÇÀÇ °¹¼ö¸¸Å­ ·çÇÁ¸¦ µ·´Ù 
-						if (sinChar->Potion_Space > InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount) { //¹°¾à º¸À¯°ø°£º¸´Ù ÀÛÀ¸¸é 
+					for (j = 0; j < cnt; j++) { //˜˜˜˜˜˜ ˜˜˜˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜ 
+						if (sinChar->Potion_Space > InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount) { //˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ 
 							InvenItem[sInven[i].ItemIndex - 1].sItemInfo.PotionCount++;
 							pItem->sItemInfo.PotionCount--;
 							sinPlaySound(pItem->SoundIndex);
 							if (pItem->sItemInfo.PotionCount <= 0) {
 								pItem->Flag = 0;
-								ReformCharForm();//ÀçÀÎÁõ
-								cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
-								return TRUE; //¹°¾àÀ» ´Ù½èÀ¸¸é ¸®ÅÏ 
+								ReformCharForm();//˜˜˜˜˜˜
+								cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
+								return TRUE; //˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜ 
 							}
 						}
-						else { //¹°¾à º¸À¯°ø°£ ¸¸Å­ Å©±â°¡ Â÷°ÔµÇ¸é 	
-							if (InvenEmptyAearCheck(pItem)) { //³ª¸ÓÁö Æ÷¼ÇÀ» ÀÎº¥Åä¸® °ø°£¿¡ ³Ö¾îÁØ´Ù 
-								ReformCharForm();//ÀçÀÎÁõ
-								cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
+						else { //˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜? ?˜? ˜˜˜??˜ 	
+							if (InvenEmptyAearCheck(pItem)) { //˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜? ˜˜˜˜˜˜ ˜?˜˜?˜ 
+								ReformCharForm();//˜˜˜˜˜˜
+								cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
 								return TRUE;
 							}
-							else { //ÀÏ´ÜÀº ¹®Á¦°¡ ¾ø³ª ÇØº»´Ù 
+							else { //˜?˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ ˜?˜˜˜ 
 								ResetPotion2();
 								if (sinThrowItemToFeild(pItem)) {
-									ReformCharForm();//ÀçÀÎÁõ
-									cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
+									ReformCharForm();//˜˜˜˜˜˜
+									cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
 									return TRUE;
 
 								}
@@ -5014,39 +5022,39 @@ int cINVENTORY::AutoSetPotion(sITEM* pItem)
 						}
 					}
 				}
-				else //ÄÚµå°¡ ´Ù¸£¸é ´Ù½Ã for·çÇÁ¸¦ µ·´Ù 
+				else //˜?? ˜?˜˜˜ ˜?˜ for˜˜˜˜˜˜ ˜˜˜˜ 
 					continue;
 
 			}
-			else { //¾ÆÀÌÅÛÀÌ ¾øÀ¸¸é ¼ÂÆÃÇÑ´Ù 
+			else { //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 				pItem->SetX = sInven[i].Rect.left + (((sInven[i].Rect.right - sInven[i].Rect.left) - pItem->w) / 2);
 				pItem->SetY = sInven[i].Rect.top + (((sInven[i].Rect.bottom - sInven[i].Rect.top) - pItem->h) / 2);
 
 				cnt = pItem->sItemInfo.PotionCount;
-				//pItem->SetX = sInven[i].Rect.left; //ÁÂÇ¥¼³Á¤ 
+				//pItem->SetX = sInven[i].Rect.left; //˜˜?˜˜˜˜ 
 				//pItem->SetY = sInven[i].Rect.top;
 				pItem->ItemPosition = i + 1;
-				memcpy(&TempPotion, pItem, sizeof(sITEM)); //¾ÆÀÌÅÛÀ» º¹»çÇÑ´Ù (¾ÆÀÌÅÛ °¹¼ö°¡ ÀÖÀ»°æ¿ì 2°÷À¸·Î ³ª´µ¾î¾ßÇÏ±â¶§¹®¿¡)
-				TempPotion.sItemInfo.PotionCount = 0; //Æ÷¼Ç °¹¼ö ÃÊ±âÈ­ 
+				memcpy(&TempPotion, pItem, sizeof(sITEM)); //˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ (˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜ 2˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜??˜˜˜˜)
+				TempPotion.sItemInfo.PotionCount = 0; //˜˜˜˜ ˜˜˜˜ ˜?˜? 
 				for (j = 0; j < cnt; j++) {
-					if (sinChar->Potion_Space < pItem->sItemInfo.PotionCount) { //Æ÷¼Ç ¾ÆÀÌÅÛÀÌ Å©¸é 
+					if (sinChar->Potion_Space < pItem->sItemInfo.PotionCount) { //˜˜˜˜ ˜˜˜˜˜˜˜˜ ?˜˜ 
 						pItem->sItemInfo.PotionCount--;
 						TempPotion.sItemInfo.PotionCount++;
 
 					}
-					else { //°ø°£¿¡ ¸Â°Ô µé¾î°¡¸é 
-						if (LastSetInvenItem(pItem, 1)) {//Æ÷¼Ç¼ÂÆÃÀ§Ä¡¿¡ ¼ÂÆÃ ÈÄ 
+					else { //˜˜˜˜˜˜ ˜˜˜ ˜˜?˜˜ 
+						if (LastSetInvenItem(pItem, 1)) {//˜˜˜?˜˜˜˜˜?˜˜ ˜˜˜˜ ˜˜ 
 							if (TempPotion.sItemInfo.PotionCount > 0) {
-								if (InvenEmptyAearCheck(&TempPotion)) { //³ª¸ÓÁö Æ÷¼ÇÀº Ã¢°í·Î ¼ÂÆÃ 
-									ReformCharForm();//ÀçÀÎÁõ
-									cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
+								if (InvenEmptyAearCheck(&TempPotion)) { //˜˜˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜˜ ˜˜˜˜ 
+									ReformCharForm();//˜˜˜˜˜˜
+									cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
 									return TRUE;
 								}
 							}
 							else {
-								ReformCharForm();//ÀçÀÎÁõ
-								cInvenTory.ReFormPotionNum();	//¹°¾à °¹¼ö Ã¼Å©
-								return TRUE; //ÀÚµ¿ ¼ÂÆÃÀÌ ¾ÈµÅ ´õ¶óµµ Æ÷¼ÇÀ§Ä¡¿¡ ¼ÂÆÃÇÏ¸é ¸®ÅÏÇØÁØ´Ù 
+								ReformCharForm();//˜˜˜˜˜˜
+								cInvenTory.ReFormPotionNum();	//˜˜˜˜ ˜˜˜˜ ??
+								return TRUE; //˜?˜ ˜˜˜˜˜˜ ˜?˜ ˜˜˜˜ ˜˜˜˜˜˜?˜˜ ˜˜˜˜˜?˜ ˜˜˜˜˜˜˜?˜ 
 							}
 						}
 
@@ -5059,17 +5067,17 @@ int cINVENTORY::AutoSetPotion(sITEM* pItem)
 	return FALSE;
 }
 //////////////////////////////////
-//         *ÅõÇÚµå
+//         *˜˜˜?˜
 //////////////////////////////////
 int cINVENTORY::ClearTwoHandPosiAndItem(sITEM* pItem)
 {
 	if (pItem->Class == ITEM_CLASS_WEAPON_TWO) {
-		if (sInven[0].ItemIndex) {  //¿À¸¥¼Õ 
+		if (sInven[0].ItemIndex) {  //˜˜˜˜˜˜ 
 			InvenItem[sInven[0].ItemIndex - 1].Flag = 0;
 			sInven[0].ItemIndex = 0;
 			if (InvenItem[sInven[0].ItemIndex - 1].ItemPosition) {
 				if (InvenItem[sInven[0].ItemIndex - 1].SetModelPosi) {
-					sinSetCharItem(InvenItem[sInven[0].ItemIndex - 1].CODE, InvenItem[sInven[0].ItemIndex - 1].SetModelPosi, FALSE); //¹«±â¿Í °©¿ÊÀ» ¼ÂÆÃÇÑ´Ù 
+					sinSetCharItem(InvenItem[sInven[0].ItemIndex - 1].CODE, InvenItem[sInven[0].ItemIndex - 1].SetModelPosi, FALSE); //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 				}
 
 			}
@@ -5080,7 +5088,7 @@ int cINVENTORY::ClearTwoHandPosiAndItem(sITEM* pItem)
 			sInven[1].ItemIndex = 0;
 			if (InvenItem[sInven[1].ItemIndex - 1].ItemPosition) {
 				if (InvenItem[sInven[1].ItemIndex - 1].SetModelPosi) {
-					sinSetCharItem(InvenItem[sInven[1].ItemIndex - 1].CODE, InvenItem[sInven[1].ItemIndex - 1].SetModelPosi, FALSE); //¹«±â¿Í °©¿ÊÀ» ¼ÂÆÃÇÑ´Ù 
+					sinSetCharItem(InvenItem[sInven[1].ItemIndex - 1].CODE, InvenItem[sInven[1].ItemIndex - 1].SetModelPosi, FALSE); //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 				}
 			}
 		}
@@ -5088,15 +5096,15 @@ int cINVENTORY::ClearTwoHandPosiAndItem(sITEM* pItem)
 	return TRUE;
 }
 int cINVENTORY::SetTwoHandItem(sITEM* pItem)
-{ //¼ÂÆÃ 
+{ //˜˜˜˜ 
 
 	sITEM TempTwoHandItem;
 
-	memset(&TempTwoHandItem, 0, sizeof(sITEM)); //ÃÊ±âÈ­ ÇØÁØ´Ù 
+	memset(&TempTwoHandItem, 0, sizeof(sITEM)); //˜?˜? ˜˜˜?˜ 
 
-	if (pItem->Class == ITEM_CLASS_WEAPON_TWO) { //ÅõÇÚµå ¹«±â¸¦ Ã¼Å©ÇÑ´Ù 
-		if (pItem->ItemPosition == 2) { //¿Þ¼ÕÀÌ¸é 
-			pItem->ItemPosition = 1;   //¾ÆÀÌÅÛÀÇ ¿µ¿ªÀ» ¿À¸¥¼ÕÀ¸·Î ¹Ù²Û´Ù  ÁÂÇ¥¸¦ ¼ÂÆÃÇÑ´Ù 
+	if (pItem->Class == ITEM_CLASS_WEAPON_TWO) { //˜˜˜?˜ ˜˜˜? ??˜?˜ 
+		if (pItem->ItemPosition == 2) { //˜?˜˜?˜ 
+			pItem->ItemPosition = 1;   //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ ˜??˜  ˜˜?˜˜ ˜˜˜˜˜?˜ 
 			pItem->x = sInven[0].Rect.left + (((sInven[0].Rect.right - sInven[0].Rect.left) - pItem->w) / 2);
 			pItem->y = sInven[0].Rect.top + (((sInven[0].Rect.bottom - sInven[0].Rect.top) - pItem->h) / 2);
 
@@ -5106,16 +5114,16 @@ int cINVENTORY::SetTwoHandItem(sITEM* pItem)
 		TempTwoHandItem.y = sInven[1].Rect.top + (((sInven[1].Rect.bottom - sInven[1].Rect.top) - pItem->h) / 2);
 		TempTwoHandItem.w = pItem->w;
 		TempTwoHandItem.h = pItem->h;
-		TempTwoHandItem.ItemPosition = 2; //¾ÆÀÌÅÛÀÇ À§Ä¡´Â ¿Þ¼Õ 
+		TempTwoHandItem.ItemPosition = 2; //˜˜˜˜˜˜˜˜ ˜˜?˜˜ ˜?˜ 
 		TempTwoHandItem.Class = pItem->Class;
-		TempTwoHandItem.sItemInfo.CODE = pItem->CODE; //ÄÚµå¸¦ ³Ö¾îÁØ´Ù (¾ÆÀÌÅÛLoad½Ã ¾ÆÀÌÅÛ ±¸ºÐÀÎÀÚ·Î ÀûÇÕ)
-		TempTwoHandItem.sItemInfo.Price = pItem->sItemInfo.Price; //°¡°ÝÀ» ³Ö¾îÁØ´Ù 
+		TempTwoHandItem.sItemInfo.CODE = pItem->CODE; //˜?? ˜?˜˜?˜ (˜˜˜˜˜˜Load˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜?˜ ˜˜˜˜)
+		TempTwoHandItem.sItemInfo.Price = pItem->sItemInfo.Price; //˜˜˜˜˜˜ ˜?˜˜?˜ 
 		memcpy(&TempTwoHandItem.lpItem, &pItem->lpItem, sizeof(LPDIRECT3DTEXTURE9));
 		TempTwoHandItem.Flag = 1;
 		for (int j = 0; j < INVENTORY_MAXITEM; j++) {
 			if (InvenItem[j].Flag == 0) {
 				memcpy(&InvenItem[j], &TempTwoHandItem, sizeof(sITEM));
-				sInven[1].ItemIndex = j + 1; //¼ÂÆÃµÉ¶§ ÀÎº¥¿µ¿ª¿¡µµ ¾ÆÀÌÅÛ ÀÎµ¦½º¸¦ ¼ÂÆÃÇÑ´Ù
+				sInven[1].ItemIndex = j + 1; //˜˜˜??˜ ˜?˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜?˜
 				break;
 			}
 		}
@@ -5126,20 +5134,20 @@ int cINVENTORY::SetTwoHandItem(sITEM* pItem)
 }
 
 int cINVENTORY::PickUpTwoHandItem(sITEM* pItem)
-{//¼±ÅÃ 
+{//˜˜˜˜ 
 	sITEM TempPickItem;
 	memset(&TempPickItem, 0, sizeof(sITEM));
 
-	if (pItem->ItemPosition) { //¹«±â ¹Ú½º¿¡¼­ Áý¾úÀ» °æ¿ì¿¡¸¸ 
+	if (pItem->ItemPosition) { //˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜?˜˜ 
 		if (sInven[0].ItemIndex && sInven[1].ItemIndex) {
-			memcpy(&TempPickItem, &InvenItem[sInven[0].ItemIndex - 1], sizeof(sITEM)); //¿À¸¥¼ÕÀÇ ¾ÆÀÌÅÛÀ» º¹»çÇÑ´Ù 
-			InvenItem[sInven[0].ItemIndex - 1].Flag = 0; //¿À¸¥¼Õ ¾ÆÀÌÅÛÀ» Áö¿öÁØ´Ù 
-			InvenItem[sInven[1].ItemIndex - 1].Flag = 0; //¿Þ¼Õ ¾ÆÀÌÅÛÀ» Áö¿öÁØ´Ù 
-			sInven[0].ItemIndex = 0; //¹«±â¼ÂÆÃ ¹Ú½ºÀÇ ¾ÆÀÌÅÛ Æ÷Áö¼Çµµ Áö¿öÁØ´Ù 
-			sInven[1].ItemIndex = 0; //¹«±â¼ÂÆÃ ¹Ú½ºÀÇ ¾ÆÀÌÅÛ Æ÷Áö¼Çµµ Áö¿öÁØ´Ù 
+			memcpy(&TempPickItem, &InvenItem[sInven[0].ItemIndex - 1], sizeof(sITEM)); //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
+			InvenItem[sInven[0].ItemIndex - 1].Flag = 0; //˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
+			InvenItem[sInven[1].ItemIndex - 1].Flag = 0; //˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
+			sInven[0].ItemIndex = 0; //˜˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ ˜˜˜˜˜?˜ 
+			sInven[1].ItemIndex = 0; //˜˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ ˜˜˜˜˜?˜ 
 			memcpy(pItem, &TempPickItem, sizeof(sITEM));
 			ReFormInvenItem();
-			ReformCharForm();//ÀçÀÎÁõ 
+			ReformCharForm();//˜˜˜˜˜˜ 
 			ReFormPotionNum();
 			return TRUE;
 		}
@@ -5234,8 +5242,15 @@ int cINVENTORY::PickUpInvenItem(int x, int y, int PickUpFlag)
 					}
 
 					if (!InvenItem[i].lpItem) {
-						cMessageBox.ShowMessage(MESSAGE_NOTEXIT_ITEMIMAGE);
-						return FALSE;
+						for (int j = 0; j < MAX_ITEM; j++) {
+							if (InvenItem[i].CODE == sItem[j].CODE) {
+								sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
+								InvenItem[i].lpItem = sItem[j].lpTempItem;
+								InvenItem[i].w = sItem[j].w;
+								InvenItem[i].h = sItem[j].h;
+								break;
+							}
+						}
 					}
 
 					for (int j = 0; j < SIN_MAX_HELP_NUMBER; j++)
@@ -5298,35 +5313,35 @@ int cINVENTORY::PickUpInvenItem(int x, int y, int PickUpFlag)
 						sInven[InvenItem[i].ItemPosition - 1].ItemIndex = 0;
 
 					}
-					ReFormInvenItem();  //Æ÷¼ÇÀ» ¼ÂÆÃÇØÁÖ±âÀü¿¡ Ã¼Å©¸¦ ÇØÁØ´Ù 
-					CheckWeight();		//¹«°Ô Ã¼Å© 
-					SetItemToChar();	//¾ÆÀÌÅÛ ¼ÂÆÃ 
+					ReFormInvenItem();  //˜˜˜˜˜˜ ˜˜˜˜˜˜˜?˜˜˜˜˜ ??˜˜ ˜˜˜?˜ 
+					CheckWeight();		//˜˜˜˜ ?? 
+					SetItemToChar();	//˜˜˜˜˜˜ ˜˜˜˜ 
 					sinPlaySound(InvenItem[i].SoundIndex);
 					ColorIndex = 0;
-					//ÆÛÁñÀ» Ã¼Å©ÇÑ´Ù
+					//˜˜˜˜˜˜ ??˜?˜
 					CheckPuzzle();
 					cHelpPet.PetMessage("*InvenTory_Item", 1);
 					return TRUE;
 				}
-				//°³ÀÎ »óÁ¡¿¡ ¾ÆÀÌÅÛ µî·Ï 
+				//˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜ 
 				else if (PickUpFlag == 2) {
 					if (MyShopSendButton)return FALSE;
 					if (MyShopItemIndex[i])return FALSE;
 					if (InvenItem[i].ItemPosition)return FALSE;
-					//º°»óÇ°±ÇÀº ÆÈ¼ö¾öµû!
+					//˜˜˜˜?˜˜˜˜ ˜?˜˜˜˜˜!
 					if (InvenItem[i].sItemInfo.CODE == (sinGF1 | sin01))return FALSE;
 					//if(InvenItem[i].sItemInfo.CODE == (sinGF1|sin02))return FALSE;
 
-					// Àåº° - ÇÏÆ®¸µÀº ÆÈ¼ö ¾ø´Ù
+					// ˜? - ˜˜?˜˜˜˜ ˜?˜ ˜˜˜˜
 					if (InvenItem[i].sItemInfo.CODE == (sinOR2 | sin33))return FALSE;
 
-					// Àåº° - ´«°áÁ¤ ¸ñ°ÉÀÌ´Â ÆÈ¼ö ¾ø´Ù
+					// ˜? - ˜˜˜˜˜˜ ˜˜˜˜?˜ ˜?˜ ˜˜˜˜
 					if (InvenItem[i].sItemInfo.CODE == (sinOA1 | sin36))return FALSE;
 
-					// Àåº° - Äµµðµ¥ÀÌÁî ÇÏÆ®¾Æ¹Ä·¿Àº ÆÈ¼ö ¾ø´Ù
+					// ˜? - ?˜˜˜˜˜˜ ˜˜?˜??˜˜˜ ˜?˜ ˜˜˜˜
 					if (InvenItem[i].sItemInfo.CODE == (sinOA1 | sin37))return FALSE;
 
-					//µî·ÏµÈ ¾ÆÀÌÅÛ ÄÚµå¿Í ¸¶½ºÅ© Á¾·ù´Â ÆÈ¼ö¾ø´Ù
+					//˜˜?˜ ˜˜˜˜˜˜ ˜?˜˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜?˜˜˜˜˜
 					for (kk = 0; kk < NotSell_Item_CODECnt; kk++) {
 						if (NotSell_Item_CODE[kk] == InvenItem[i].sItemInfo.CODE)return FALSE;
 
@@ -5340,14 +5355,14 @@ int cINVENTORY::PickUpInvenItem(int x, int y, int PickUpFlag)
 
 					}
 
-					memcpy(&MyShopMouseItem, &InvenItem[i], sizeof(sITEM)); //²®Áú¸¸ µî·ÏÇÑ´Ù
+					memcpy(&MyShopMouseItem, &InvenItem[i], sizeof(sITEM)); //˜˜˜˜˜˜ ˜˜˜˜?˜
 					memset(&MyShopMouseItem.sItemInfo, 0, sizeof(sITEMINFO));
 
 
-					MyShopMouseItem.sItemInfo.PotionCount = InvenItem[i].sItemInfo.PotionCount; //¹°¾àÀÏ°æ¿ì¸¦ »ý°¢ÇØ Ä«¿îÆ®¸¦ Ä«ÇÇÇÑ´Ù
-					MyShopMouseItem.sItemInfo.ItemHeader = InvenItem[i].sItemInfo.ItemHeader; //Çì´õ¸¦ Ä«ÇÇÇÑ´Ù
-					MyShopMouseItem.sItemInfo.Index = i + 1;				 //¾ÆÀÌÅÛ ÀÎµ¦½º ÀúÀå
-					sinMyShopItemPass = 1; //ÀÌº¥Æ®¸¦ ÇÑ¹ø °Ç³Ê¶Ù±âÀ§ÇÑ ÇÃ·¢
+					MyShopMouseItem.sItemInfo.PotionCount = InvenItem[i].sItemInfo.PotionCount; //˜˜˜˜˜?˜? ˜˜˜˜˜˜ ?˜˜?˜˜ ?˜˜˜?˜
+					MyShopMouseItem.sItemInfo.ItemHeader = InvenItem[i].sItemInfo.ItemHeader; //˜˜˜˜˜ ?˜˜˜?˜
+					MyShopMouseItem.sItemInfo.Index = i + 1;				 //˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜˜
+					sinMyShopItemPass = 1; //˜?˜?˜˜ ˜?˜ ˜???˜˜˜˜˜ ˜?˜
 
 				}
 				else {
@@ -5419,18 +5434,18 @@ int cINVENTORY::PickUpInvenItem(int x, int y, int PickUpFlag)
 }
 
 
-//¸¶¿ì½º¿¡ ¾ÆÀÌÅÛÀÌ ÀÖÀ»¶§ ¾ÆÀÌÅÛÀÌ ¼ÂÆÃµÉ ¿µ¿ªÀ» Ã¼Å©ÇÑ´Ù 
+//˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜ ??˜?˜ 
 int cINVENTORY::SetInvenItemAreaCheck(sITEM* pItem)
 {
 
 	int i, j;
-	ColorIndex = 0; //ÃÊ±âÈ­ 
-	CrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
+	ColorIndex = 0; //˜?˜? 
+	CrashItemIndex[0] = 0; //˜?˜˜ ˜˜˜˜˜˜ Index ˜?˜? 
 	CrashItemIndex[1] = 0;
-	AutoSetItemIndex = 0; //ÀÚµ¿À¸·Î ¼ÂÆÃµÉ ¾ÆÀÌÅÛÀÇ ÀÎµ¦½º 
+	AutoSetItemIndex = 0; //˜?˜˜˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜ 
 
-	///////////¹«±â ¿µ¿ª &Æ÷¼Ç ¿µ¿ª 
-	if (!cInvenTory.OpenFlag)return FALSE; //ÀÎº¥Åä¸®°¡ ¿­·ÁÀÖÁö ¾ÊÀ»½Ã¿¡´Â ¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÒ¼ö ¾ø´Ù
+	///////////˜˜˜˜ ˜˜˜˜ &˜˜˜˜ ˜˜˜˜ 
+	if (!cInvenTory.OpenFlag)return FALSE; //˜?˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ ˜˜˜˜
 	for (i = 0; i < INVENTORY_MAX_POS; i++) {
 
 		// costume xxstr
@@ -5446,7 +5461,7 @@ int cINVENTORY::SetInvenItemAreaCheck(sITEM* pItem)
 		}
 
 		if (CheckInvenPos(pItem->x + 11, pItem->y + 11, pItem->x + pItem->w - 11, pItem->y + pItem->h - 11, sInven[i].Rect)) {
-			ColorRect.left = sInven[i].Rect.left;     //ÄÃ·° ¹Ú½ºÀÇ RECT
+			ColorRect.left = sInven[i].Rect.left;     //˜?˜ ˜?˜˜˜ RECT
 			ColorRect.top = sInven[i].Rect.top;
 			ColorRect.right = sInven[i].Rect.right - sInven[i].Rect.left;
 			ColorRect.bottom = sInven[i].Rect.bottom - sInven[i].Rect.top;
@@ -5454,17 +5469,17 @@ int cINVENTORY::SetInvenItemAreaCheck(sITEM* pItem)
 			pItem->SetY = ColorRect.top + ((ColorRect.bottom - pItem->h) / 2);
 			pItem->ItemPosition = i + 1;
 
-			if (!(sInven[i].Position & pItem->Class)) { //Å¬·¡½º°¡ ¸ÂÁö ¾Ê´Â´Ù 
+			if (!(sInven[i].Position & pItem->Class)) { //?˜˜˜˜˜˜ ˜˜˜˜ ˜??˜ 
 				ColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 			}
-			if (pItem->sItemInfo.NotUseFlag) { //Å¬·¡½º°¡ ¸ÂÁö ¾Ê°Å³ª ¼ÂÆÃÀÌ µÉ¼ö¾øÀ¸¸é  
+			if (pItem->sItemInfo.NotUseFlag) { //?˜˜˜˜˜˜ ˜˜˜˜ ˜??˜ ˜˜˜˜˜˜ ˜?˜˜˜˜˜˜˜  
 				ColorIndex = NOT_USE_COLOR;
 				return FALSE;
 
 			}
 			/*
-			if(CrashItemIndex[0] = CrashInvenItem(ColorRect)){  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å©
+			if(CrashItemIndex[0] = CrashInvenItem(ColorRect)){  //˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜?˜ ??
 				if(InvenItem[CrashItemIndex[0]-1].sItemInfo.ItemKindCode == ITEM_KIND_QUEST_WEAPON &&
 					InvenItem[CrashItemIndex[0]-1].sItemInfo.ItemAgingNum[0] < 4){
 					ColorIndex = NOT_SETTING_COLOR;
@@ -5473,38 +5488,38 @@ int cINVENTORY::SetInvenItemAreaCheck(sITEM* pItem)
 			}
 			*/
 
-			if (CrashItemIndex[0] = CrashInvenItem(ColorRect)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
-				OverlapTwoHandItem(pItem); //ÅõÇÚµå ¹«±â·Î °ãÄ¡°Ô µÉ ¾ÆÀÌÅÛÀ» Ã¼Å©ÇÑ´Ù
+			if (CrashItemIndex[0] = CrashInvenItem(ColorRect)) {  //˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜?˜ ?? 
+				OverlapTwoHandItem(pItem); //˜˜˜?˜ ˜˜˜˜˜ ˜˜?˜˜ ˜˜ ˜˜˜˜˜˜˜˜ ??˜?˜
 				ColorIndex = OVERLAP_BOX_COLOR;
 				return TRUE;
 			}
-			OverlapTwoHandSwitch(pItem); //ÅõÇÚµå ¾ÆÀÌÅÛÀÇ ¹Ý´ëÂÊ °ãÄ¡±â Ã¼Å© 
-			ColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª 
+			OverlapTwoHandSwitch(pItem); //˜˜˜?˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜ ˜˜?˜˜ ?? 
+			ColorIndex = SET_ITEM_CHECK_COLOR; //˜˜˜˜˜?˜˜˜ 
 			return TRUE;
 		}
 
 	}
 
-	///////////¹Ú½º ¿µ¿ª 
+	///////////˜?˜ ˜˜˜˜ 
 	for (i = pItem->x + 11; i < pItem->x + pItem->w; i += 22) {
 		for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22) {
-			if (StartX <= i && EndX > i && StartY <= j && EndY > j) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+			if (StartX <= i && EndX > i && StartY <= j && EndY > j) { //˜?˜˜? ˜?˜˜˜ ˜˜?˜˜˜˜˜˜ ?? 
 				ColorRect.left = StartX + (((i - StartX) / 22) * 22);
 				ColorRect.top = StartY + (((j - StartY) / 22) * 22);
 				ColorRect.right = pItem->w;
 				ColorRect.bottom = pItem->h;
 				if (EndX < (ColorRect.left + ColorRect.right) - 11 || EndY < (ColorRect.top + ColorRect.bottom) - 11) {
-					InitColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+					InitColorRect(); //˜?˜ ˜?˜ RECT ˜?˜? (˜?˜ ˜?˜ RECT˜˜ ˜?˜˜˜˜ 0 ˜?˜ ˜˜˜˜˜?˜ ˜˜˜˜ 
 					return FALSE;
 				}
 				pItem->SetX = ColorRect.left;
 				pItem->SetY = ColorRect.top;
-				pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-				ColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+				pItem->ItemPosition = 0; //˜?˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜?˜ 
+				ColorIndex = SET_ITEM_CHECK_COLOR; //˜˜˜˜˜?˜˜˜
 
 
 				/*
-				if(CrashItemIndex[0] = CrashInvenItem(ColorRect)){  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å©
+				if(CrashItemIndex[0] = CrashInvenItem(ColorRect)){  //˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜?˜ ??
 					if(InvenItem[CrashItemIndex[0]-1].sItemInfo.ItemKindCode == ITEM_KIND_QUEST_WEAPON &&
 						InvenItem[CrashItemIndex[0]-1].sItemInfo.ItemAgingNum[0] < 4){
 						ColorIndex = NOT_SETTING_COLOR;
@@ -5513,17 +5528,17 @@ int cINVENTORY::SetInvenItemAreaCheck(sITEM* pItem)
 
 				}
 				*/
-				if (CrashItemIndex[0] = CrashInvenItem(ColorRect)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å©
+				if (CrashItemIndex[0] = CrashInvenItem(ColorRect)) {  //˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜?˜ ??
 					/*
-					if(!CheckSpecialItem(&InvenItem[CrashItemIndex[0]-1])){ //ÁýÀ» ¼ö¾ø´Â Æ¯º°ÇÑ ¾ÆÀÌÅÛÀ» Ã¼Å©
+					if(!CheckSpecialItem(&InvenItem[CrashItemIndex[0]-1])){ //˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜˜ ˜˜˜˜˜˜˜˜ ??
 						ColorIndex = NOT_SETTING_COLOR;
 						return FALSE;
 					}
 					*/
 
-					if (CrashItemIndex[1] = CrashInvenItem(ColorRect, CrashItemIndex[0])) { //µÎ°³ ÀÌ»ó °ãÄ¡³ª Ã¼Å© 
+					if (CrashItemIndex[1] = CrashInvenItem(ColorRect, CrashItemIndex[0])) { //˜?˜ ˜?˜ ˜˜?˜˜ ?? 
 						ColorIndex = NOT_SETTING_COLOR;
-						CrashItemIndex[1] = 0; //ÃÊ±âÈ­ 
+						CrashItemIndex[1] = 0; //˜?˜? 
 						return FALSE;
 
 					}
@@ -5540,7 +5555,7 @@ int cINVENTORY::SetInvenItemAreaCheck(sITEM* pItem)
 	return TRUE;
 }
 
-//ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ 
+//˜?˜ ˜?˜ RECT ˜?˜? 
 int cINVENTORY::InitColorRect()
 {
 	ColorRect.left = 0;
@@ -5551,7 +5566,7 @@ int cINVENTORY::InitColorRect()
 
 }
 
-//¾ÆÀÌÅÛ ³¢¸®ÀÇ Ãæµ¹¿µ¿ªÀ» Ã¼Å©ÇÑ´Ù
+//˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜˜˜˜˜ ??˜?˜
 int cINVENTORY::CrashInvenItem(RECT& desRect, int PassItemIndex)
 {
 
@@ -5583,7 +5598,7 @@ int cINVENTORY::CrashInvenItem(RECT& desRect, int PassItemIndex)
 	return FALSE;
 
 }
-//¾ÆÀÌÅÛÀÌ ³õÀ» ¿µ¿ª Ãæµ¹ Ã¼Å© 
+//˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜? ?? 
 int cINVENTORY::CheckInvenPos(int x, int y, int lx, int ly, RECT& rect)
 {
 	if (x <= rect.left) {
@@ -5610,7 +5625,7 @@ int cINVENTORY::ChangeInvenItem(sITEM* pItem)
 {
 
 	int BackUpX = 0, BackUpY = 0, BackUpPosi = 0;
-	for (int j = 0; j < SIN_MAX_HELP_NUMBER; j++)				//ÅÚ·¹Æ÷Æ® ÇÛÇÁÃ¢ÀÌ ¿­·ÈÀ»¶§ ¾ÆÅÛ Ã¼ÀÎÁö ¸·´Â´Ù (¼º±Ù Ãß°¡ )
+	for (int j = 0; j < SIN_MAX_HELP_NUMBER; j++)				//˜?˜˜˜? ˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜ ?˜˜˜˜ ˜˜˜?˜ (˜˜˜˜ ˜?˜ )
 	{
 		if (sSinHelp[j].KindFlag == SIN_HELP_KIND_TELEPORT_SCROLL) {
 			return TRUE;
@@ -5621,7 +5636,7 @@ int cINVENTORY::ChangeInvenItem(sITEM* pItem)
 
 	}
 
-	//Äù½ºÆ® ¾ÆÀÌÅÛÀº °ãÃÄÁø¾ÆÀÌÅÛÀ¸·Î »¬¼ö¾öµû
+	//˜˜˜˜? ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜
 	/*
 	if(CrashItemIndex[0]){
 		if(InvenItem[CrashItemIndex[0]-1].sItemInfo.ItemKindCode == ITEM_KIND_QUEST_WEAPON &&
@@ -5632,18 +5647,18 @@ int cINVENTORY::ChangeInvenItem(sITEM* pItem)
 	}
 	*/
 
-	// pluto ¹«ÇÑ ½ºÅ³ ¹ö±× ¸·´Â´Ù ±ÞÁ¶ÇÑ °ÅÀÓ -_- //ÇØ¿Ü
+	// pluto ˜˜˜˜ ˜˜? ˜˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜ ˜˜˜˜ -_- //˜?˜
 	if (lpCurPlayer->MotionInfo->State == CHRMOTION_STATE_ATTACK || lpCurPlayer->MotionInfo->State == CHRMOTION_STATE_SKILL)
 	{
-		//if( pCursorPos.x > 575 && pCursorPos.x < 785 && pCursorPos.y > 435 && pCursorPos.y < 540 ) // ¹«±â ÀåºñÃ¢ ÁÂÇ¥ÀÓ ¶«~»§~
-		//if( pCursorPos.x > 515 && pCursorPos.x < 785 && pCursorPos.y > 345 && pCursorPos.y < 600 ) // EPTÀ¯Àú¶«¿¡ ´Ù½Ã ¹«±â ÀåºñÃ¢ ÁÂÇ¥ÀÓ ¶«~»§~
-		//´Ù½Ã ¿À¸¥ÂÊ ¾Æ·¡¿¡¼­ ¾ÆÀÌÅÛÀ» ±ò¾Æ³¢¾î¼­ , CL¹ö±×¸¦ »ç¿ëÇÏ´õ¶ó. ±×·¡¼­ ¾Æ¾Ö ½ºÅ³ »ç¿ëÁß¿¡´Â ¾ÆÀÌÅÛ ¸ø°¥¾Æ³¢°ÔÇÔ
+		//if( pCursorPos.x > 575 && pCursorPos.x < 785 && pCursorPos.y > 435 && pCursorPos.y < 540 ) // ˜˜˜˜ ˜˜˜? ˜˜?˜˜ ˜˜~˜˜~
+		//if( pCursorPos.x > 515 && pCursorPos.x < 785 && pCursorPos.y > 345 && pCursorPos.y < 600 ) // EPT˜˜˜˜˜˜˜˜ ˜?˜ ˜˜˜˜ ˜˜˜? ˜˜?˜˜ ˜˜~˜˜~
+		//˜?˜ ˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜?˜˜? , CL˜˜˜?˜ ˜˜˜˜?˜˜˜. ˜?˜˜˜ ˜?˜ ˜˜? ˜˜˜˜?˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜˜˜˜˜
 		{
 			return FALSE;
 		}
 	}
-	if (!InvenNotOpenCheck(pItem))return FALSE; //ÀÎº¥ ·ÎÁ÷¼öÇà¿©ºÎ¸¦ Ã¼Å©ÇÑ´Ù 
-	if (CrashItemIndex[0]) {//Ãæµ¹ µÈ ¾ÆÀÌÅÛÀÌ ÀÖÀ¸¸é ¾ÆÀÌÅÛÀ» ¹Ù²ãÁØ´Ù 
+	if (!InvenNotOpenCheck(pItem))return FALSE; //˜?˜ ˜˜˜˜˜˜˜?˜?˜ ??˜?˜ 
+	if (CrashItemIndex[0]) {//˜? ˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜?˜ 
 		CheckInvenItemForm();
 		if (InvenItem[CrashItemIndex[0] - 1].Class == ITEM_CLASS_POTION) {
 			if (pMessageItem) {
@@ -5654,29 +5669,29 @@ int cINVENTORY::ChangeInvenItem(sITEM* pItem)
 				BackUpItemIndex = CrashItemIndex[0];
 			}
 		}
-		if (InvenItem[CrashItemIndex[0] - 1].Class == ITEM_CLASS_WEAPON_TWO) //¾ç¼Õ¹«±âÀÏ°æ¿ì¿¡´Â ÀÎÀÚ±¸Á¶Ã¼¿¡ ¿À¸¥¼Õ ¾ÆÀÌÅÛÀ» º¹»çÇÏ°í ³ª¸ÓÁö´Â Áö¿öÁØ´Ù 
-			PickUpTwoHandItem(&InvenItem[CrashItemIndex[0] - 1]); //¾ç¼Õ ¹«±â
+		if (InvenItem[CrashItemIndex[0] - 1].Class == ITEM_CLASS_WEAPON_TWO) //˜˜?˜˜˜˜?˜?˜˜ ˜˜˜?˜˜˜?˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
+			PickUpTwoHandItem(&InvenItem[CrashItemIndex[0] - 1]); //˜˜˜ ˜˜˜˜
 
-		memcpy(&TempItem, &InvenItem[CrashItemIndex[0] - 1], sizeof(sITEM)); //¸¶¿ì½º ¾ÆÀÌÅÛÀ» ÅÛÇÁ·Î º¹»ç 
-		if (InvenItem[CrashItemIndex[0] - 1].ItemPosition) //ÀåÂøµÇ ÀÖ´Â ¹«±âÀÏ°æ¿ì¿¡´Â ¹«±â¸¦ »©ÁØ´Ù
-			sinSetCharItem(InvenItem[CrashItemIndex[0] - 1].CODE, InvenItem[CrashItemIndex[0] - 1].SetModelPosi, FALSE); //¹«±â¿Í °©¿ÊÀ» ¼ÂÆÃÇÑ´Ù 			
-		InvenItem[CrashItemIndex[0] - 1].Flag = 0; //º¹»çÇÑÈÄ¿¡ ÃÊ±âÈ­
+		memcpy(&TempItem, &InvenItem[CrashItemIndex[0] - 1], sizeof(sITEM)); //˜˜˜? ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ 
+		if (InvenItem[CrashItemIndex[0] - 1].ItemPosition) //˜˜˜˜˜˜ ˜?˜ ˜˜˜˜˜?˜?˜˜ ˜˜˜? ˜˜˜?˜
+			sinSetCharItem(InvenItem[CrashItemIndex[0] - 1].CODE, InvenItem[CrashItemIndex[0] - 1].SetModelPosi, FALSE); //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 			
+		InvenItem[CrashItemIndex[0] - 1].Flag = 0; //˜˜˜˜˜˜˜?˜ ˜?˜?
 		TempItem.x = pItem->x;
 		TempItem.y = pItem->y;
-		if (AutoSetItemIndex) { //¿ÀÅä ¼ÂÆÃµÉ ¾ÆÀÌÅÛÀÌ ÀÖÀ¸¸é 
-			ReFormInvenItem(); //¿ÀÅä ¼ÂÆÃµÈ´ÙÀ½¿¡µµ Ã¼Å©¼¶À» °»½ÅÇÑ´Ù 
-			sinSetCharItem(InvenItem[AutoSetItemIndex - 1].CODE, InvenItem[AutoSetItemIndex - 1].SetModelPosi, FALSE); //¹æÆÐ¸¦ »©ÁØ´Ù 
-			if (!InvenEmptyAearCheck(&InvenItem[AutoSetItemIndex - 1])) {//ÇÑÂÊÀÇ ¾ÆÀÌÅÛÀ» ¿ÀÅä¼ÂÆÃÇÑ´Ù 
+		if (AutoSetItemIndex) { //˜˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ 
+			ReFormInvenItem(); //˜˜˜˜ ˜˜˜??˜˜˜˜˜˜˜ ??˜˜˜˜ ˜˜˜˜˜?˜ 
+			sinSetCharItem(InvenItem[AutoSetItemIndex - 1].CODE, InvenItem[AutoSetItemIndex - 1].SetModelPosi, FALSE); //˜˜˜˜ ˜˜˜?˜ 
+			if (!InvenEmptyAearCheck(&InvenItem[AutoSetItemIndex - 1])) {//˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜?˜ 
 				if (AutoSetItemIndex)
-					NoSettingThrowItem(&InvenItem[AutoSetItemIndex - 1], 1);//¼ÂÆÃÀÌ ¾ÈµÉ¶§´Â ¹ö¸°´Ù 
+					NoSettingThrowItem(&InvenItem[AutoSetItemIndex - 1], 1);//˜˜˜˜˜˜ ˜??˜˜˜ ˜˜˜˜˜˜ 
 
 			}
 
 		}
 		ReFormInvenItem();
-		LastSetInvenItem(pItem); //¸¶¿ì½º ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®·Î º¹»ç 
+		LastSetInvenItem(pItem); //˜˜˜? ˜˜˜˜˜˜˜˜ ˜?˜˜?˜˜ ˜˜˜˜ 
 		memcpy(pItem, &TempItem, sizeof(sITEM));
-		if (sinPosionItem) { //Æ÷¼ÇÀÏ°æ¿ì¿¡¸¸ Æ÷ÀÎÅÍ¿¡ °ªÀ» ¼ÂÆÃ 
+		if (sinPosionItem) { //˜˜˜˜˜?˜?˜˜ ˜˜˜˜˜?˜ ˜˜˜˜ ˜˜˜˜ 
 			if (InvenItem[CrashItemIndex[0] - 1].Class == ITEM_CLASS_POTION) {
 				pMessageItem = sinPosionItem;
 				pMessageItem->x = BackUpX;
@@ -5694,21 +5709,21 @@ int cINVENTORY::ChangeInvenItem(sITEM* pItem)
 	return FALSE;
 }
 
-//¼ÂÆÃÀÌ ¾ÈµÉ¶§¿¡´Â ¹Ù´Ú¿¡ ¾ÆÀÌÅÛÀ» ¹ö¸°´Ù 
+//˜˜˜˜˜˜ ˜??˜˜˜˜˜ ˜??˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ 
 int cINVENTORY::NoSettingThrowItem(sITEM* pItem, int Flag)
 {
-	//ÆÐÄ¡¸¦ À§ÇØ Àá½Ã ¸·¾ÆµÐ´Ù 
+	//˜˜?˜˜ ˜˜˜˜ ˜˜˜ ˜˜˜?˜ 
 	if (!pItem)return FALSE;
 	if (!pItem->Flag)return FALSE;
-	if (!Flag) { //°ãÃÄÁö´Â ¾ÆÀÌÅÛÀº ¹Ù´Û¿¡ ¹ö¸°´Ù (°ãÃÄÁöÁö¾ÊÀº »óÅÂ¿¡¼­´Â »óÁ¡ ¹× Æ®·¹ÀÌµå Ã¢µîÀÌ ¶°ÀÖÀ»°æ¿ì¿¡´Â ¹ö¸±¼ö¾ø´Ù) // pluto Á¦·Ã
-		if (cTrade.OpenFlag || cWareHouse.OpenFlag || cCraftItem.OpenFlag || cAging.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag)return FALSE; //Æ®·¹ÀÌµå³ª Ã¢°í°¡ ¶°ÀÖÀ¸¸é ¾ÆÀÌÅÛÀ» ¹ö¸®Áö ¾Ê´Â´Ù // ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â Ã¢ Ãß°¡
+	if (!Flag) { //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜??˜ ˜˜˜˜˜˜ (˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜?˜˜˜˜˜ ˜˜˜˜ ˜˜ ?˜˜˜?˜ ?˜˜˜˜ ˜˜˜˜˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜˜˜) // pluto ˜˜˜˜
+		if (cTrade.OpenFlag || cWareHouse.OpenFlag || cCraftItem.OpenFlag || cAging.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag)return FALSE; //?˜˜˜?? ?˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜??˜ // ˜˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜ ? ˜?˜
 	}
 	if (!pItem->sItemInfo.ItemHeader.Head || pItem->sItemInfo.ItemHeader.Head < 0)return FALSE;
 	if (pItem->sItemInfo.CODE == (sinGF1 | sin01))return FALSE;
 	//if(pItem->sItemInfo.CODE == ( sinGF1|sin02))return FALSE;
 
 	int kk = 0;
-	//µî·ÏµÈ ¾ÆÀÌÅÛÀº ¹ö¸±¼ö¾ø´Ù¾ÆÀÌÅÛÀ» ¹ö¸±¼ö¾ø´Ù 
+	//˜˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜?˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ 
 	for (kk = 0; kk < NotDrow_Item_CODECnt; kk++) {
 		if (NotDrow_Item_CODE[kk] == pItem->sItemInfo.CODE)return FALSE;
 
@@ -5727,23 +5742,23 @@ int cINVENTORY::NoSettingThrowItem(sITEM* pItem, int Flag)
 		pItem->Flag = 0;
 	}
 	else {
-		pItem->Flag = 0; //¹ö¸®Áö ¸øÇØµÎ ¼ÂÆÃÀÌ ¾ÈµÇ¹Ç·Î Áö¿ö¹ö¸°´Ù 
+		pItem->Flag = 0; //˜˜˜˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜ ˜???˜ ˜˜˜˜˜˜˜˜˜˜ 
 
 	}
 
 	return TRUE;
 }
 
-//¾ÆÀÌÅÛÀ» ¹ö¸°´Ù 
+//˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ 
 int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 {
-	///////////ÀÌº¥Æ® ¾ÆÀÌÅÛÀº ¹ö¸±¼ö ¾ø´Ù  ÆÈ¼öµµ¾ø´Ù 
+	///////////˜?˜? ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜  ˜?˜˜˜˜˜˜˜ 
 	//if((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinGP1)return TRUE;
-	//if((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinBI2)return TRUE;							//ÆÐÅ°ÁöÄ³½¬¾ÆÀÌÅÛÀº ¹ö¸±¼ö ¾ø´Ù.
-	if (cTrade.OpenFlag || cWareHouse.OpenFlag || cCraftItem.OpenFlag || cAging.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag)		//Æ®·¹ÀÌµå³ª Ã¢°í°¡ ¶°ÀÖÀ¸¸é ¾ÆÀÌÅÛÀ» ¹ö¸®Áö ¾Ê´Â´Ù  // ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â
+	//if((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinBI2)return TRUE;							//˜˜?˜˜?˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜.
+	if (cTrade.OpenFlag || cWareHouse.OpenFlag || cCraftItem.OpenFlag || cAging.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag)		//?˜˜˜?? ?˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜??˜  // ˜˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜
 		return TRUE;
 
-	if (sMessageBox3[MESSAGE_TELEPORT_CORE].Flag)return TRUE;		// ÅÚ·¹Æ÷Æ® ÇÛÇÁÃ¢ÀÌ ¶°ÀÖÀ»¶§ ¾ÆÀÌÅÛÀ» ¹ö¸±¼ö ¾ø´Ù (¼º±ÙÃß°¡)
+	if (sMessageBox3[MESSAGE_TELEPORT_CORE].Flag)return TRUE;		// ˜?˜˜˜? ˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ (˜˜˜˜˜?˜)
 	for (int i = 0; i < SIN_MAX_HELP_NUMBER; i++)
 	{
 		if (sSinHelp[i].KindFlag == SIN_HELP_KIND_TELEPORT_SCROLL)
@@ -5754,7 +5769,7 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 	}
 
 	int kk = 0;
-	//µî·ÏµÈ ¾ÆÀÌÅÛÀº ¹ö¸±¼ö¾ø´Ù¾ÆÀÌÅÛÀ» ¹ö¸±¼ö¾ø´Ù 
+	//˜˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜?˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ 
 	for (kk = 0; kk < NotDrow_Item_CODECnt; kk++) {
 		if (NotDrow_Item_CODE[kk] == pItem->sItemInfo.CODE)return TRUE;
 
@@ -5777,8 +5792,8 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 		}
 
 	}
-	if (pItem->sItemInfo.CODE == (sinGF1 | sin01))return TRUE; //»óÇ°±ÇÀº ¹ö¸±¼ö¾öµû
-//	if(pItem->sItemInfo.CODE == (sinGF1|sin02))return TRUE; //»óÇ°±ÇÀº ¹ö¸±¼ö¾öµû
+	if (pItem->sItemInfo.CODE == (sinGF1 | sin01))return TRUE; //˜˜?˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜
+//	if(pItem->sItemInfo.CODE == (sinGF1|sin02))return TRUE; //˜˜?˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜
 
 
 	if (cShop.OpenFlag) {
@@ -5791,9 +5806,9 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 		if (SellRight)
 		{
 			if (cShop.CheckHighRankItem(pItem)) {
-				CursorClass = 1; //Ä¿¼­¸¦ º¯°æÇØÁØ´Ù
-				pItem->Flag = 0; //Ä¿¼­¶§¹®¿¡ ¸¶¿ì½º ¾ÆÀÌÅÛÀ» Àá½Ã ÃÊ±âÈ­ÇÑ
-				ResetInvenItemCode(); //¸¶¿ì½º ÇÃ·ºÀ» ¾ø¾Ù¶§ ´Ù½Ã Ã¼Å©ÇØÁØ´Ù
+				CursorClass = 1; //?˜˜˜˜ ˜˜˜˜˜˜˜?˜
+				pItem->Flag = 0; //?˜˜˜˜˜˜˜˜ ˜˜˜? ˜˜˜˜˜˜˜˜ ˜˜˜ ˜?˜?˜˜
+				ResetInvenItemCode(); //˜˜˜? ˜?˜˜˜ ˜˜˜?˜ ˜?˜ ??˜˜˜?˜
 				cMessageBox.ShowMessage3(MESSAGE_SELL_HIGHRANK_ITEM, pItem->sItemInfo.ItemName);
 
 			}
@@ -5803,7 +5818,7 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 		int kk = 0;
 		if (18 < pCursorPos.x && 18 + (22 * 10) > pCursorPos.x &&
 			134 + sinInterHeight2 < pCursorPos.y && 134 + (22 * 10) + sinInterHeight2 > pCursorPos.y) {
-			//µî·ÏµÈ ¾ÆÀÌÅÛ ÄÚµå¿Í ¸¶½ºÅ© Á¾·ù´Â ÆÈ¼ö¾ø´Ù
+			//˜˜?˜ ˜˜˜˜˜˜ ˜?˜˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜?˜˜˜˜˜
 			for (kk = 0; kk < NotSell_Item_CODECnt; kk++) {
 				if (NotSell_Item_CODE[kk] == pItem->sItemInfo.CODE)return TRUE;
 
@@ -5818,25 +5833,25 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 			}
 
 			if (pItem->Class == ITEM_CLASS_POTION) {
-				return TRUE; //Æ÷¼Ç°ú »óÇ°±ÇÀº ÆÈÁö ¾Ê´Â´Ù 
+				return TRUE; //˜˜˜?˜ ˜˜?˜˜˜˜ ˜˜˜˜ ˜??˜ 
 			}
 
 			/*
-			if(pItem->sItemInfo.PotionCount == 1){ //Æ÷¼ÇÀÌ ÇÑ°³ÀÏ °æ¿ì¿¡´Â ±×³É ÆÇ´Ù
+			if(pItem->sItemInfo.PotionCount == 1){ //˜˜˜˜˜˜ ˜?˜˜˜ ˜˜?˜˜ ˜?˜ ˜?˜
 				cShop.SellItemToShop(pItem);
 				return TRUE;
 
 			}
-			if(pMessageItem){ //ÀÎº¥Åä¸®¿¡¼­ ÁýÀº ¾ÆÀÌÅÛÀÏ°æ¿ì¿¡¸¸
+			if(pMessageItem){ //˜?˜˜?˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜?˜?˜˜
 				cMessageBox.ShowMessage2(MESSAGE_SELL_ITEM);
-				pItem->Flag=0; //¸¶¿ì½º ¾ÆÀÌÅÛ ÃÊ±âÈ­
-				pMessageItem->Flag = 1; //¾ÆÀÌÅÛÀ» ÁýÀ»¶§ ÀúÀåÇØµ×´ø Æ÷ÀÎÅÍ·Î ÇÃ·¢À» »ì¸°´Ù
+				pItem->Flag=0; //˜˜˜? ˜˜˜˜˜˜ ˜?˜?
+				pMessageItem->Flag = 1; //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜??˜ ˜˜˜˜˜?˜ ˜?˜˜˜ ˜?˜˜
 				sInven[pMessageItem->ItemPosition-1].ItemIndex = BackUpItemIndex;
 				CheckOverlapItem(pMessageItem,BackUpItemIndex);
-				ReSettingPotion();      //Æ÷¼Ç°ø°£ Ã¼Å©
-				CheckWeight();          //¹«°Ô º¸Á¤
-				ReFormPotionNum();		//Æ÷¼Ç°¹¼ö º¸Á¤
-				if(pMessageItem->ItemPosition) //¾ÆÀÌÅÛ Æ÷Áö¼ÇÀÌ ÀÖ¾úÀ»°æ¿ì¿¡´Â À§Ä¡¸¦ »ì·ÁÁØ´Ù
+				ReSettingPotion();      //˜˜˜?˜˜˜ ??
+				CheckWeight();          //˜˜˜˜ ˜˜˜˜
+				ReFormPotionNum();		//˜˜˜?˜˜˜ ˜˜˜˜
+				if(pMessageItem->ItemPosition) //˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜˜˜?˜˜ ˜˜?˜˜ ˜˜˜˜?˜
 					sInven[pMessageItem->ItemPosition-1].ItemIndex = PotionIndex;
 				return TRUE;
 
@@ -5845,9 +5860,9 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 
 			else {
 				if (cShop.CheckHighRankItem(pItem)) {
-					CursorClass = 1; //Ä¿¼­¸¦ º¯°æÇØÁØ´Ù
-					pItem->Flag = 0; //Ä¿¼­¶§¹®¿¡ ¸¶¿ì½º ¾ÆÀÌÅÛÀ» Àá½Ã ÃÊ±âÈ­ÇÑ
-					ResetInvenItemCode(); //¸¶¿ì½º ÇÃ·ºÀ» ¾ø¾Ù¶§ ´Ù½Ã Ã¼Å©ÇØÁØ´Ù
+					CursorClass = 1; //?˜˜˜˜ ˜˜˜˜˜˜˜?˜
+					pItem->Flag = 0; //?˜˜˜˜˜˜˜˜ ˜˜˜? ˜˜˜˜˜˜˜˜ ˜˜˜ ˜?˜?˜˜
+					ResetInvenItemCode(); //˜˜˜? ˜?˜˜˜ ˜˜˜?˜ ˜?˜ ??˜˜˜?˜
 					cMessageBox.ShowMessage3(MESSAGE_SELL_HIGHRANK_ITEM, pItem->sItemInfo.ItemName);
 
 				}
@@ -5856,7 +5871,7 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 
 		}
 	}
-	else { //»óÁ¡ÀÌ ¾Æ´Ï°í¼­´Â º¹»çµÈ ¾ÆÀÌÅÛ°ú ÁõÁ¤¿ë¾ÆÀÌÅÛÀ» ¹ö¸±¼ö¾ø´Ù 
+	else { //˜˜˜˜˜˜ ˜??˜˜˜˜˜ ˜˜˜˜˜ ˜˜˜˜˜?˜ ˜˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ 
 		if (pItem->sItemInfo.SpecialItemFlag[0] == CHECK_COPY_ITEM ||
 			pItem->sItemInfo.SpecialItemFlag[0] == CHECK_GIVE_ITEM ||
 			pItem->sItemInfo.ItemKindCode == ITEM_KIND_QUEST ||
@@ -5864,7 +5879,7 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 			(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA2 ||
 			(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinQW1 ||
 			(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinBI1 ||
-			(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinBI2 ||	//¼º±ÙÃß°¡(ÆÐÅ°ÁöÄ³½¬¾ÆÀÌÅÛ¿¡ ´ëÇÑ µå¶ø ¹æÁö)
+			(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinBI2 ||	//˜˜˜˜˜?˜(˜˜?˜˜?˜˜˜˜˜˜˜?˜ ˜˜˜˜ ˜˜˜ ˜˜˜˜)
 
 			(pItem->sItemInfo.CODE == (sinDA1 | sin31)) ||
 			(pItem->sItemInfo.CODE == (sinDA2 | sin31)) ||
@@ -5908,7 +5923,7 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 	}
 
 
-	if (cShop.OpenFlag) //»óÁ¡ ·ÎÁ÷À» Ã³¸®ÇØÁØÈÄ Ã³¸®ÇØÁØ´Ù (»óÁ¡¿¡¼­´Â ¾ÆÀÌÅÛÀ» ¹ö¸®Áö ¾Ê´Â´Ù )
+	if (cShop.OpenFlag) //˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜˜˜˜˜˜ ?˜˜˜˜˜?˜ (˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜??˜ )
 		return TRUE;
 
 
@@ -5916,39 +5931,39 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 	if (OpenFlag) {
 		//pItem->x = pCursorPos.x-(MouseItem.w/2);
 		//pItem->y = pCursorPos.y -(MouseItem.h/2);
-		if (pItem->y + pItem->h < (600) - 180) { //ÀÎº¥Åä¸® ¿µ¿ªÀ» ¹þ¾î³µÀ¸¸é 
-			//¹°¾àÀÏ °æ¿ì 
+		if (pItem->y + pItem->h < (600) - 180) { //˜?˜˜? ˜˜˜˜˜˜ ˜˜˜?˜˜˜˜ 
+			//˜˜˜˜˜˜ ˜˜˜ 
 			if (pItem->Class == ITEM_CLASS_POTION) {
-				if (pItem->sItemInfo.PotionCount == 1) { //Æ÷¼ÇÀÌ ÇÑ°³ÀÏ °æ¿ì¿¡´Â ±×³É ¹ö¸°´Ù 
+				if (pItem->sItemInfo.PotionCount == 1) { //˜˜˜˜˜˜ ˜?˜˜˜ ˜˜?˜˜ ˜?˜ ˜˜˜˜˜˜ 
 					if (sinThrowItemToFeild(pItem)) {
 						sinPlaySound(pItem->SoundIndex);
 						pItem->Flag = 0;
-						ReFormPotionNum();		//Æ÷¼Ç°¹¼ö º¸Á¤ 
+						ReFormPotionNum();		//˜˜˜?˜˜˜ ˜˜˜˜ 
 						return TRUE;
 					}
 
 				}
-				if (pMessageItem) { //ÀÎº¥Åä¸®¿¡¼­ ÁýÀº ¾ÆÀÌÅÛÀÏ°æ¿ì¿¡¸¸ 
+				if (pMessageItem) { //˜?˜˜?˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜?˜?˜˜ 
 					if (GhostPotionCheckFlag) {
 						if (sinThrowItemToFeild(pItem)) {
 							sinPlaySound(pItem->SoundIndex);
 							pItem->Flag = 0;
 							GhostPotionCheckFlag = 0;
-							ReFormPotionNum();		//Æ÷¼Ç°¹¼ö º¸Á¤ 
+							ReFormPotionNum();		//˜˜˜?˜˜˜ ˜˜˜˜ 
 							return TRUE;
 
 						}
 
 					}
 					cMessageBox.ShowMessage2(MESSAGE_THROW_ITEM);
-					pItem->Flag = 0; //¸¶¿ì½º ¾ÆÀÌÅÛ ÃÊ±âÈ­
-					pMessageItem->Flag = 1; //¾ÆÀÌÅÛÀ» ÁýÀ»¶§ ÀúÀåÇØµ×´ø Æ÷ÀÎÅÍ·Î ÇÃ·¢À» »ì¸°´Ù
+					pItem->Flag = 0; //˜˜˜? ˜˜˜˜˜˜ ˜?˜?
+					pMessageItem->Flag = 1; //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜??˜ ˜˜˜˜˜?˜ ˜?˜˜˜ ˜?˜˜
 					sInven[pMessageItem->ItemPosition - 1].ItemIndex = BackUpItemIndex;
 					CheckOverlapItem(pMessageItem, BackUpItemIndex);
-					ReSettingPotion();      //Æ÷¼Ç°ø°£ Ã¼Å© 
-					CheckWeight();          //¹«°Ô º¸Á¤ 
-					ReFormPotionNum();		//Æ÷¼Ç°¹¼ö º¸Á¤ 
-					if (pMessageItem->ItemPosition) //¾ÆÀÌÅÛ Æ÷Áö¼ÇÀÌ ÀÖ¾úÀ»°æ¿ì¿¡´Â À§Ä¡¸¦ »ì·ÁÁØ´Ù 
+					ReSettingPotion();      //˜˜˜?˜˜˜ ?? 
+					CheckWeight();          //˜˜˜˜ ˜˜˜˜ 
+					ReFormPotionNum();		//˜˜˜?˜˜˜ ˜˜˜˜ 
+					if (pMessageItem->ItemPosition) //˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜˜˜?˜˜ ˜˜?˜˜ ˜˜˜˜?˜ 
 						sInven[pMessageItem->ItemPosition - 1].ItemIndex = PotionIndex;
 					return TRUE;
 				}
@@ -5961,10 +5976,10 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 		}
 	}
 	else {
-		if (pItem->y + pItem->h < 540) {       //ÀÎº¥Åä¸®°¡ ´ÝÇôÀÖÀ»°æ¿ì ÀÎÅÍÆäÀÌ½º Ã¢ÀÌ ¾Æ´Ò°æ¿ì ¹ö¸°´Ù 
-			//¹°¾àÀÏ °æ¿ì 
+		if (pItem->y + pItem->h < 540) {       //˜?˜˜?˜˜ ˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜?˜ ?˜˜ ˜??˜˜ ˜˜˜˜˜˜ 
+			//˜˜˜˜˜˜ ˜˜˜ 
 			if (pItem->Class == ITEM_CLASS_POTION) {
-				if (pItem->sItemInfo.PotionCount == 1) { //Æ÷¼ÇÀÌ ÇÑ°³ÀÏ °æ¿ì¿¡´Â ±×³É ¹ö¸°´Ù 
+				if (pItem->sItemInfo.PotionCount == 1) { //˜˜˜˜˜˜ ˜?˜˜˜ ˜˜?˜˜ ˜?˜ ˜˜˜˜˜˜ 
 					if (sinThrowItemToFeild(pItem)) {
 						sinPlaySound(pItem->SoundIndex);
 						pItem->Flag = 0;
@@ -5978,18 +5993,18 @@ int cINVENTORY::ThrowInvenItemToField(sITEM* pItem, int SellRight)
 							sinPlaySound(pItem->SoundIndex);
 							pItem->Flag = 0;
 							GhostPotionCheckFlag = 0;
-							ReFormPotionNum();		//Æ÷¼Ç°¹¼ö º¸Á¤ 
+							ReFormPotionNum();		//˜˜˜?˜˜˜ ˜˜˜˜ 
 							return TRUE;
 						}
 					}
 					cMessageBox.ShowMessage2(MESSAGE_THROW_ITEM);
-					pItem->Flag = 0; //¸¶¿ì½º ¾ÆÀÌÅÛ ÃÊ±âÈ­
-					pMessageItem->Flag = 1; //¾ÆÀÌÅÛÀ» ÁýÀ»¶§ ÀúÀåÇØµ×´ø Æ÷ÀÎÅÍ·Î ÇÃ·¢À» »ì¸°´Ù 
+					pItem->Flag = 0; //˜˜˜? ˜˜˜˜˜˜ ˜?˜?
+					pMessageItem->Flag = 1; //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜??˜ ˜˜˜˜˜?˜ ˜?˜˜˜ ˜?˜˜ 
 					sInven[pMessageItem->ItemPosition - 1].ItemIndex = BackUpItemIndex;
 					CheckOverlapItem(pMessageItem, BackUpItemIndex);
-					ReSettingPotion();      //Æ÷¼Ç°ø°£ Ã¼Å© 
-					CheckWeight();          //¹«°Ô º¸Á¤ 
-					ReFormPotionNum();		//Æ÷¼Ç°¹¼ö º¸Á¤ 
+					ReSettingPotion();      //˜˜˜?˜˜˜ ?? 
+					CheckWeight();          //˜˜˜˜ ˜˜˜˜ 
+					ReFormPotionNum();		//˜˜˜?˜˜˜ ˜˜˜˜ 
 					if (pMessageItem->ItemPosition)
 						sInven[pMessageItem->ItemPosition - 1].ItemIndex = PotionIndex;
 					return TRUE;
@@ -6116,7 +6131,7 @@ int cINVENTORY::CharOnlySetItem(sITEM* pItem)
 	return TRUE;
 }
 
-//ÇöÀç »óÅÂ¸¦ Ã¼Å©ÇÑ´Ù (·¹º§ ,Èû ,¹ÎÃ¸ ....) 
+//˜˜˜˜ ˜˜˜?˜ ??˜?˜ (˜˜˜˜ ,˜˜ ,˜˜? ....) 
 int cINVENTORY::CheckRequireItem()
 {
 	int NotUseItemFlag = 0;
@@ -6130,22 +6145,22 @@ int cINVENTORY::CheckRequireItem()
 			if (InvenItem[i].sItemInfo.Talent > sinChar->Talent)NotUseItemFlag = 1;
 			if (InvenItem[i].sItemInfo.Spirit > sinChar->Spirit)NotUseItemFlag = 1;
 			if (InvenItem[i].sItemInfo.Health > sinChar->Health)NotUseItemFlag = 1;
-			if (DeleteEventItem_TimeOut(&InvenItem[i].sItemInfo) == TRUE) NotUseItemFlag = 1;  //	¹ÚÀç¿ø : ±â°£Á¦ ¾ÆÀÌÅÛ ¸¸·áµÇ¾úÀ»¶§(Å¬·£Ä¡ÇÁ¸µ µîµî)
+			if (DeleteEventItem_TimeOut(&InvenItem[i].sItemInfo) == TRUE) NotUseItemFlag = 1;  //	˜˜˜˜˜ : ˜?˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜˜˜˜˜(?˜˜?˜˜˜˜ ˜˜˜)
 			if (NotUseItemFlag) {
 				InvenItem[i].sItemInfo.NotUseFlag = 1;
 				NotUseItemFlag = 0;
 			}
 			else
 				InvenItem[i].sItemInfo.NotUseFlag = 0;
-			CharOnlySetItem(&InvenItem[i]); //Ä³¸¯ÅÍº° ¾ÆÀÌÅÛÀ» Ã¼Å©ÇÑ´Ù
+			CharOnlySetItem(&InvenItem[i]); //?˜˜˜?˜ ˜˜˜˜˜˜˜˜ ??˜?˜
 			if ((InvenItem[i].sItemInfo.CODE & sinITEM_MASK2) == sinFO1) {
 				int j = 0;
-				for (j = 0; j < 16; j++) { // ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º Ãß°¡
+				for (j = 0; j < 16; j++) { // ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜ ˜?˜
 					if ((InvenItem[i].sItemInfo.CODE & sinITEM_MASK3) == SheltomCode2[j] || (InvenItem[i].sItemInfo.CODE & sinITEM_MASK3) == MagicSheltomCode[j]) {
 						break;
 					}
 				}
-				if ((InvenItem[i].sItemInfo.CODE & sinITEM_MASK3) < sin21) // ¹ÚÀç¿ø - ÀÏ¹Ý Æ÷½º
+				if ((InvenItem[i].sItemInfo.CODE & sinITEM_MASK3) < sin21) // ˜˜˜˜˜ - ˜?˜ ˜˜˜˜
 				{
 					if (sinChar->Level < ForceOrbUseLevel[j][0] ||
 						sinChar->Level > ForceOrbUseLevel[j][1]) {
@@ -6158,7 +6173,7 @@ int cINVENTORY::CheckRequireItem()
 
 					}
 				}
-				else if ((InvenItem[i].sItemInfo.CODE & sinITEM_MASK3) < sin33) // ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º
+				else if ((InvenItem[i].sItemInfo.CODE & sinITEM_MASK3) < sin33) // ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜
 				{
 					if (sinChar->Level < MagicForceOrbUseLevel[j][0] ||
 						sinChar->Level > MagicForceOrbUseLevel[j][1]) {
@@ -6179,7 +6194,7 @@ int cINVENTORY::CheckRequireItem()
 	return TRUE;
 }
 
-//¼ÂÆÃÇÒ¼ö ÀÖ´ÂÁö¸¦ Ã¼Å© 
+//˜˜˜˜˜?˜ ˜?˜˜˜˜˜ ?? 
 int cINVENTORY::CheckRequireItemToSet(sITEM* pItem)
 {
 	int NotUseItemFlag = 0;
@@ -6199,15 +6214,15 @@ int cINVENTORY::CheckRequireItemToSet(sITEM* pItem)
 
 
 	}
-	CharOnlySetItem(pItem); //Ä³¸¯ÅÍº° ¾ÆÀÌÅÛÀ» Ã¼Å©ÇÑ´Ù
+	CharOnlySetItem(pItem); //?˜˜˜?˜ ˜˜˜˜˜˜˜˜ ??˜?˜
 	return TRUE;
 
 }
 
-//ÀÎº¥Åä¸® ÅØ½ºÆ® 
+//˜?˜˜? ˜?˜? 
 int cINVENTORY::DrawInvenText()
 {
-	//if(!sinMoveKindInter[SIN_INVENTORY])return FALSE; //Ä³¸¯ÅÍ ½ºÅ×ÀÌÅÍ½º°¡ ´ÝÇôÀÖÀ¸¸é ¸®ÅÏÇÑ´Ù 
+	//if(!sinMoveKindInter[SIN_INVENTORY])return FALSE; //?˜˜˜˜ ˜˜˜˜˜˜˜?˜˜˜ ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 
 	HDC hdc = NULL;
 
@@ -6235,9 +6250,9 @@ int cINVENTORY::DrawInvenText()
 
 	for (i = 0; i < INVENTORY_MAXITEM; i++) {
 		if (InvenItem[i].Flag) {
-			///////////////////////// ¾ÆÀÌÅÛ ÀÌ¹ÌÁö°¡ ¾øÀ» °æ¿ì Ç¥½ÃÇØÁØ´Ù
+			///////////////////////// ˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜ ˜˜˜ ?˜˜˜˜˜?˜
 			if (!InvenItem[i].lpItem) {
-				if (InvenItem[i].x > 10) {//¶«»§ -_-
+				if (InvenItem[i].x > 10) {//˜˜˜˜ -_-
 					NoImageMessagePosi.x = InvenItem[i].x + (InvenItem[i].w / 2) - 5;
 					NoImageMessagePosi.y = InvenItem[i].y + (InvenItem[i].h / 2) - 20;
 					lstrcpy(strBuff, "NO");
@@ -6269,7 +6284,7 @@ int cINVENTORY::DrawInvenText()
 	char szBuff2[128];
 
 
-	// Àåº° - ÀÔ·ÂÃ¢
+	// ˜? - ˜?˜?
 	if (nName == 1)
 	{
 		//	BackUpPosX = BackStartPos.x;
@@ -6309,11 +6324,11 @@ int cINVENTORY::DrawInvenText()
 			memset(szBuff2, 0, sizeof(szBuff2));
 			while (1) {
 				if (cInvenTory.szDoc[End] == NULL)break;
-				if (cInvenTory.szDoc[End] & 0x80) { //ÇÑ±ÛÀÌ¸é..
+				if (cInvenTory.szDoc[End] & 0x80) { //˜?˜˜?˜..
 					End += 2;
 					Conut += 2;
 				}
-				else { //¿µ¹®ÀÌ¸é..
+				else { //˜˜˜˜˜?˜..
 					End++;
 					Conut++;
 				}
@@ -6336,7 +6351,7 @@ int cINVENTORY::DrawInvenText()
 
 	}
 
-	//Å×½ºÆ®¸¦ ¾Ë¼öÀÖ´Â ¸Þ¼¼Áö ³ªÁß¿¡ Áö¿ö¾ßÇÔ
+	//˜?˜?˜˜ ˜?˜˜?˜ ˜?˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜˜˜
 	/*
 	if(sinTestFlag2){
 		if(sinTestFlag2 <= 5){
@@ -6386,7 +6401,7 @@ int cINVENTORY::DrawInvenText()
 	return TRUE;
 }
 
-//ÇöÀçÀÇ Á÷¾÷À» ±¸ÇØ¿Â´Ù 
+//˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜??˜ 
 int cINVENTORY::SearchJobAndSetting()
 {
 	int cnt;
@@ -6394,7 +6409,7 @@ int cINVENTORY::SearchJobAndSetting()
 	JobName[0] = 0;
 
 	cnt = 0;
-	//³­Áß¿¡ ²À»©¾ßÇÔ!
+	//˜˜˜?˜ ˜˜˜˜˜˜˜˜!
 	/*
 	if(smConfig.DebugMode){
 		if(sinChar->ChangeJob > 1)
@@ -6407,12 +6422,12 @@ int cINVENTORY::SearchJobAndSetting()
 			sinJobList = GetJobDataCode(sinChar->JOB_CODE, sinChar->ChangeJob);
 			lstrcpy(JobName, sinJobList->szName2);
 			sinChar->JobBitMask = JobDataBase[cnt].JobBitCode;
-			sinChar->LifeFunction = JobDataBase[cnt].LifeFunction; //»ý¸í·Â ÇÔ¼ö 
-			sinChar->ManaFunction = JobDataBase[cnt].ManaFunction; //±â·Â ÇÔ¼ö 
-			sinChar->StaminaFunction = JobDataBase[cnt].StaminaFunction; //±Ù·ÂÇÔ¼ö 
-			sinDamageFunction[0] = JobDataBase[cnt].DamageFunction[0];  //±ÙÁ¢ °ø°Ý 
-			sinDamageFunction[1] = JobDataBase[cnt].DamageFunction[1];  //¿ø°Å¸® °ø°Ý 
-			sinDamageFunction[2] = JobDataBase[cnt].DamageFunction[2];  //¸¶¹ý °ø°Ý
+			sinChar->LifeFunction = JobDataBase[cnt].LifeFunction; //˜˜˜˜˜˜ ˜?˜ 
+			sinChar->ManaFunction = JobDataBase[cnt].ManaFunction; //˜˜˜ ˜?˜ 
+			sinChar->StaminaFunction = JobDataBase[cnt].StaminaFunction; //˜?˜˜?˜ 
+			sinDamageFunction[0] = JobDataBase[cnt].DamageFunction[0];  //˜˜˜˜ ˜˜˜˜ 
+			sinDamageFunction[1] = JobDataBase[cnt].DamageFunction[1];  //˜˜˜?˜ ˜˜˜˜ 
+			sinDamageFunction[2] = JobDataBase[cnt].DamageFunction[2];  //˜˜˜˜ ˜˜˜˜
 
 			break;
 		}
@@ -6427,64 +6442,64 @@ extern BOOL bTopLVL;
 
 extern DWORD sodcode;
 int playtime = 0;
-//Ä³¸¯ÅÍ ´É·ÂÄ¡ ¼³Á¤ 
+//?˜˜˜˜ ˜?˜? ˜˜˜˜ 
 int cINVENTORY::SetItemToChar(int CheckHackFlag)
 {
 
-	//CheckWeight();//¹«°Ô º¸Á¤  //ÇØÅ·¹æÁö¿¡¼­ ¹®Á¦°¡ »ý°Ü ÀÌ°÷¿¡¼­ ¹«°Ô¸¦ ÇÑ¹ø´õ º¸Á¤ÇØÁØ´Ù(Speed°ü·Ã)
-	memset(&sElement_Attack, 0, sizeof(sELEMENT_ATTACK)); //¼Ó¼º °ø°Ý µ¥¹ÌÁö´Â ÀÌ°÷¿¡¼­¸¸ Àû¿ëÇÑ´Ù 
-	CheckCharForm();//ÀÎÁõ  
+	//CheckWeight();//˜˜˜˜ ˜˜˜˜  //˜˜?˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜?˜ ˜?˜˜˜ ˜˜˜˜˜˜˜?˜(Speed˜˜˜˜)
+	memset(&sElement_Attack, 0, sizeof(sELEMENT_ATTACK)); //˜?˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
+	CheckCharForm();//˜˜˜˜  
 
-	sinTempDamage2[0] = 0;   //º¸¿©Áö±â¸¸ ÇÏ´Â µ¥¹ÌÁö (°è»êÀº ¼­¹ö¿¡¼­ )
+	sinTempDamage2[0] = 0;   //˜˜˜˜˜˜˜? ˜?˜ ˜˜˜˜˜˜ (˜˜˜˜˜ ˜˜˜˜˜˜˜˜ )
 	sinTempDamage2[1] = 0;
 
 	int cnt = 0;
-	int sinAttack_Rating = 0;   //°³ÀÎ ¸íÁß·ü 
-	int sinAttack_Damage[2] = { 0,0 }; //°ø°Ý·Â 
-	int sinCritical = 0;      //Å©¸®Æ¼ÄÃÈý 100ºÐÀ²·Î ³ªÅ¸³½´Ù 
-	int sinDefense = 0;		  //¹æ¾î·Â 
-	float sinAbsorption = 0;  //Èí¼ö·Â 
-	int   sinTempAbsorption = 0; //Èí¼ö·ÂÀ» º¸Á¤ÇÑ´Ù
-	float sinTempAbsorption2 = 0; //Èí¼ö·ÂÀ» º¸Á¤ÇÑ´Ù
-	float sinBlock_Rate = 0;  //ºí·°·ü 
-	int sinWeight = 0;        //¹«°Ô 
-	float sinMoveSpeed = 0;	  //½ºÇÇµå
-	int sinWeaponSpeed = 0;   //¹«±â¼Óµµ 
-	int sinShooting_Range = 0;  //°ø°Ý°Å¸®
-	int sinSight = 0;		//½Ã¾ß (¾ß°£ Àû¿ë)
+	int sinAttack_Rating = 0;   //˜˜˜˜ ˜˜˜?˜ 
+	int sinAttack_Damage[2] = { 0,0 }; //˜˜˜?˜ 
+	int sinCritical = 0;      //?˜˜?˜˜˜˜ 100˜˜˜˜˜˜ ˜˜?˜˜˜˜ 
+	int sinDefense = 0;		  //˜˜˜˜ 
+	float sinAbsorption = 0;  //˜˜˜˜˜˜ 
+	int   sinTempAbsorption = 0; //˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜
+	float sinTempAbsorption2 = 0; //˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜
+	float sinBlock_Rate = 0;  //˜˜˜˜˜˜ 
+	int sinWeight = 0;        //˜˜˜˜ 
+	float sinMoveSpeed = 0;	  //˜˜˜?˜
+	int sinWeaponSpeed = 0;   //˜˜˜˜?˜ 
+	int sinShooting_Range = 0;  //˜˜˜??˜
+	int sinSight = 0;		//˜?˜ (˜?˜ ˜˜˜˜)
 	int sinResistance[8] = { 0,0,0,0,0,0,0,0 };
-	int sinPotion_Space = 2; //±âº» Àº 2°³ ±îÁö °¡´É
+	int sinPotion_Space = 2; //˜? ˜˜ 2˜˜ ˜˜˜˜ ˜˜˜˜
 	int sinSkillMasteryItem = 0;
 
-	/////////// ½ºÅ³ ´É·Â Ä¡ 
+	/////////// ˜˜? ˜?˜ ? 
 	int sinSkillDamage[2] = { 0,0 };
 	int sinSkillResistance[8] = { 0,0,0,0,0,0,0,0 };
 	int sinSkillWeaponSpeed = 0;
 
-	/////////// Ä³¸¯ÅÍ Àû¿ë ¾ÆÀÌÅÛ ´É·ÂÄ¡ 
+	/////////// ?˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜?˜? 
 	int sinCharItemDamage = 0;
 
-	////////////Æ¯È­ ¾ÆÀÌÅÛ ÀÎÀÚ //////////////////////
-	float	sinAdd_fAbsorb = 0;			//Èí¼ö·Â 
-	int     sinAdd_Defence = 0;			//¹æ¾î·Â 
-	float   sinAdd_fSpeed = 0;			//ÀÌµ¿ ¼Óµµ 
-	float   sinAdd_fBlock_Rating = 0;			//(¹æÆÐ)ºí·°À² 
-	int     sinAdd_Attack_Speed = 0;			//°ø°Ý¼Óµµ
-	int     sinAdd_Critical_Hit = 0;			//1.5¹è µ¥¹ÌÁöÈ®À²
-	int     sinAdd_Shooting_Range = 0;			//»çÁ¤°Å¸® 
-	short	sinAdd_Resistance[8] = { 0,0,0,0,0,0,0,0 };		//¿ø¼Ò¿¡´ëÇÑ ÀúÇ×·Â 
+	////////////?? ˜˜˜˜˜˜ ˜˜˜˜ //////////////////////
+	float	sinAdd_fAbsorb = 0;			//˜˜˜˜˜˜ 
+	int     sinAdd_Defence = 0;			//˜˜˜˜ 
+	float   sinAdd_fSpeed = 0;			//˜?˜ ˜?˜ 
+	float   sinAdd_fBlock_Rating = 0;			//(˜˜˜˜)˜˜˜˜˜˜ 
+	int     sinAdd_Attack_Speed = 0;			//˜˜˜??˜
+	int     sinAdd_Critical_Hit = 0;			//1.5˜˜ ˜˜˜˜˜˜?˜˜
+	int     sinAdd_Shooting_Range = 0;			//˜˜˜˜˜?˜ 
+	short	sinAdd_Resistance[8] = { 0,0,0,0,0,0,0,0 };		//˜˜˜?˜˜˜˜˜ ˜˜˜?˜ 
 
 	////////////////////////////////////////////////
 
-	short	sinLev_Attack_Resistance[8] = { 0,0,0,0,0,0,0,0 };	//¿ø¼Ò¿¡´ëÇÑ °ø°Ý·Â
-	int		sinLev_Mana = 0;	//¸¶³ªÈ¸º¹(ÃÖ¼Ò)(ÃÖ´ë)
-	int		sinLev_Life = 0;	//¶óÀÌÇÁÈ¸º¹(ÃÖ¼Ò)(ÃÖ´ë) 
-	int     sinLev_Attack_Rating = 0; //¸íÁß·Â 
-	short	sinLev_Damage[2] = { 0,0 };//°ø°Ý·Â
+	short	sinLev_Attack_Resistance[8] = { 0,0,0,0,0,0,0,0 };	//˜˜˜?˜˜˜˜˜ ˜˜˜?˜
+	int		sinLev_Mana = 0;	//˜˜˜˜?˜˜(˜?˜)(˜?˜)
+	int		sinLev_Life = 0;	//˜˜˜˜˜˜?˜˜(˜?˜)(˜?˜) 
+	int     sinLev_Attack_Rating = 0; //˜˜˜?˜ 
+	short	sinLev_Damage[2] = { 0,0 };//˜˜˜?˜
 
-	float	sinPer_Mana_Regen = 0;//¸¶³ª Àç»ý  (°è»êÀ»À§ÇØ floatÇüÀ¸·Î )
-	float	sinPer_Life_Regen = 0;//¶óÀÌÇÁ Àç»ý 
-	float 	sinPer_Stamina_Regen = 0;//½ºÅ×¹Ì³ª Àç»ý
+	float	sinPer_Mana_Regen = 0;//˜˜˜˜ ˜˜˜  (˜˜˜˜˜˜˜˜˜ float˜˜˜˜˜˜ )
+	float	sinPer_Life_Regen = 0;//˜˜˜˜˜˜ ˜˜˜ 
+	float 	sinPer_Stamina_Regen = 0;//˜˜˜??˜ ˜˜˜
 
 	float fstrength, fhealth, ftalent, fLevel, fMaxWeight, fNowWeight, fSpirit, fDexterity;
 	float fAttack_Rating, fDefense;
@@ -6493,17 +6508,17 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 
 	///////////////////////////////////////////////// 
 
-	float sinfIncreLife = 0; //ÃÖ´ëÄ¡ Áõ°¡ 
+	float sinfIncreLife = 0; //˜?˜? ˜˜˜˜ 
 	float sinfIncreMana = 0;
 	float sinfIncreStamina = 0;
 
-	float sinfRegenLife = 0; //Regen °ü·Ã 
+	float sinfRegenLife = 0; //Regen ˜˜˜˜ 
 	float sinfRegenMana = 0;
 	float sinfRegenStamina = 0;
 
 	/////////////////////////////////////////////////
-	//ÀÌ»Ú°Ô ´Ù½Ã¸Í±Ù ½ºÅ³
-	sinUndeadAbsorb = 0; //¾ðµ¥µå Èí¼öÀ² ÃÊ±âÈ­ 
+	//˜??˜ ˜???˜ ˜˜?
+	sinUndeadAbsorb = 0; //˜??˜ ˜˜˜˜˜˜ ˜?˜? 
 
 	//////////////////////////////////////////////////
 	int InvenCheckItem[15] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
@@ -6561,12 +6576,12 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 	}
 	*/
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
-		if (InvenItem[i].Flag) {//¼ÂÆÃµÇÀÖ´Â ¾ÆÀÌÅÛÀÌ¸é 
+		if (InvenItem[i].Flag) {//˜˜˜?˜˜?˜ ˜˜˜˜˜˜˜?˜ 
 			if (InvenItem[i].ItemPosition) {
 				if (InvenItem[i].sItemInfo.CODE > sinPM1)continue;
-				if (InvenItem[i].sItemInfo.NotUseFlag)continue; //¼ÂÆÃµÉ¼ö ¾ø´Â ¾ÆÀÌÅÛÀÌ¸é ÆÄ¶ó¸ÞÅ¸ ¼ÂÆÃÀ» ÇÏÁö¾Ê´Â´Ù
+				if (InvenItem[i].sItemInfo.NotUseFlag)continue; //˜˜˜??˜ ˜˜˜˜ ˜˜˜˜˜˜˜?˜ ˜?˜˜? ˜˜˜˜˜˜ ˜˜˜˜˜??˜
 
-				// Não acrescenta status de item expirado
+				// N˜o acrescenta status de item expirado
 				if (InvenItem[i].sItemInfo.expireTime > 0)
 				{
 					if (DeleteEventItem_TimeOut(&InvenItem[i].sItemInfo) == TRUE)
@@ -6576,21 +6591,21 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				if (!CheckRequireItemToSet2(&InvenItem[i]))continue;
 
 				if (InvenItem[i].Class == ITEM_CLASS_WEAPON_TWO)
-					if (InvenItem[i].sItemInfo.ItemHeader.dwChkSum == 0)continue; //¾ç¼Õ¹«±â¶«½Ã »ìÂ¦ ¶«»§ 
+					if (InvenItem[i].sItemInfo.ItemHeader.dwChkSum == 0)continue; //˜˜?˜˜?˜˜ ˜˜˜ ˜˜˜˜ 
 
-				if (!InvenCheckItem[InvenItem[i].ItemPosition]) {  //¾ÆÀÌÅÛÀÌ °ãÃÄÀÖÀ»¶© ´É·ÂÄ¡¸¦ ¹Ý¿µ¾ÈÇÑ´Ù 
+				if (!InvenCheckItem[InvenItem[i].ItemPosition]) {  //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ ˜?˜?˜˜ ˜?˜˜˜˜?˜ 
 					InvenCheckItem[InvenItem[i].ItemPosition] = i + 1;
 				}
 				else
 					continue;
 
-				////////////////////////Ä¡Æ®µÈ ¾ÆÀÌÅÛÀ» ³¯·Á¹ö¸°´Ù 
+				////////////////////////??˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ 
 				if (!CheckItemForm(&InvenItem[i].sItemInfo)) {
-					SendSetHackUser(1); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
-					InvenItem[i].Flag = 0;  //Ä¡Æ®µÈ ¾ÆÀÌÅÛÀ» ¾ø¾Ö¹öÈù´Ù 
+					SendSetHackUser(1); //˜˜?˜˜ ˜?˜˜˜˜?˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ TRUE ˜˜˜˜ ˜˜˜˜ 
+					InvenItem[i].Flag = 0;  //??˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜?˜˜˜˜˜ 
 					if (InvenItem[i].ItemPosition) {
 						sInven[InvenItem[i].ItemPosition - 1].ItemIndex = 0;
-						sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE); //¹«±â¿Í °©¿ÊÀ» ¼ÂÆÃÇÑ´Ù 
+						sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE); //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 
 					}
 					if (InvenItem[i].Class == ITEM_CLASS_WEAPON_TWO) {
@@ -6601,7 +6616,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				}
 				////////////////////////
 
-				sinAttack_Rating += InvenItem[i].sItemInfo.Attack_Rating; //°³ÀÎ ¸íÁß·ü 				
+				sinAttack_Rating += InvenItem[i].sItemInfo.Attack_Rating; //˜˜˜˜ ˜˜˜?˜ 				
 				sinAttack_Damage[0] += InvenItem[i].sItemInfo.Damage[0];
 				sinAttack_Damage[1] += InvenItem[i].sItemInfo.Damage[1];
 				sinCritical += InvenItem[i].sItemInfo.Critical_Hit;
@@ -6609,20 +6624,20 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				//sinTempAbsorption = (int)(InvenItem[i].sItemInfo.fAbsorb*10.000001f);
 				sinTempAbsorption = (int)(GetItemAbsorb(&InvenItem[i].sItemInfo) * 10.000001f);
 				sinTempAbsorption2 = ((float)sinTempAbsorption / 10.0f);
-				sinTempAbsorption2 += 0.000001f;  //¿ÀÂ÷º¸Á¤
+				sinTempAbsorption2 += 0.000001f;  //˜˜˜˜˜˜˜˜
 
 				if (InvenItem[i].sItemInfo.fAbsorb) {
 					CountAbsorbItem++;
 
 				}
 
-				sinAbsorption += sinTempAbsorption2; //µÞºÎºÐÀ» ÀÚ¸£°í °è»êÇÑ´Ù
+				sinAbsorption += sinTempAbsorption2; //˜??˜˜˜ ˜?˜˜˜ ˜˜˜˜?˜
 //				sinAbsorption += InvenItem[i].sItemInfo.fAbsorb;
 
 				sinBlock_Rate += InvenItem[i].sItemInfo.fBlock_Rating;
 				sinMoveSpeed += InvenItem[i].sItemInfo.fSpeed;
 
-				//Äù½ºÆ® ¾ÆÀÌÅÛ¶§¹®¿¡ ÀÌ·¸°Ô ÇÑ´Ù ±«·Ó´Ù -_-
+				//˜˜˜˜? ˜˜˜˜˜?˜˜˜˜˜ ˜?˜˜˜ ˜?˜ ˜˜˜?˜ -_-
 				if (CheckQuestItemDownFlag && InvenItem[i].sItemInfo.ItemKindCode == ITEM_KIND_QUEST_WEAPON) {
 					sinWeaponSpeed += InvenItem[i].sItemInfo.Attack_Speed - 2;
 				}
@@ -6639,9 +6654,9 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				sinfIncreLife += InvenItem[i].sItemInfo.fIncrease_Life;
 				sinfIncreMana += InvenItem[i].sItemInfo.fIncrease_Mana;
 				sinfIncreStamina += InvenItem[i].sItemInfo.fIncrease_Stamina;
-				if (InvenItem[i].sItemInfo.Potion_Space) //¾Ï·¿ Âø¿ë½Ã ´Â ¾Ï·¿ÀÇ Æ÷¼Ç º¸À¯°ø°£À¸·Î  ¼³Á¤
+				if (InvenItem[i].sItemInfo.Potion_Space) //˜?˜ ˜˜˜˜˜ ˜˜ ˜?˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜˜  ˜˜˜˜
 				{
-					// ¹ÚÀç¿ø - ½´ÆÛ ¾Ï¸´ ¾ÆÀÌÅÛ Ãß°¡
+					// ˜˜˜˜˜ - ˜˜˜˜ ˜?˜ ˜˜˜˜˜˜ ˜?˜
 					if (DeleteEventItem_TimeOut(&InvenItem[i].sItemInfo) == TRUE)
 					{
 						sinPotion_Space = 2;
@@ -6649,53 +6664,53 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 					else
 						sinPotion_Space = InvenItem[i].sItemInfo.Potion_Space;
 				}
-				///////////////////////Ä³¸¯ÅÍ Æ¯È­ ´É·Â
+				///////////////////////?˜˜˜˜ ?? ˜?˜
 				if (sinChar->JobBitMask & InvenItem[i].sItemInfo.JobCodeMask) {
 					sinTempAbsorption = (int)(InvenItem[i].sItemInfo.JobItem.Add_fAbsorb * 10.000001f);
 					sinTempAbsorption2 = ((float)sinTempAbsorption / 10.0f);
-					sinTempAbsorption2 += 0.000001f;  //¿ÀÂ÷º¸Á¤
-					sinAdd_fAbsorb += sinTempAbsorption2; //µÞºÎºÐÀ» ÀÚ¸£°í °è»êÇÑ´Ù
+					sinTempAbsorption2 += 0.000001f;  //˜˜˜˜˜˜˜˜
+					sinAdd_fAbsorb += sinTempAbsorption2; //˜??˜˜˜ ˜?˜˜˜ ˜˜˜˜?˜
 
 					if (InvenItem[i].sItemInfo.JobItem.Add_fAbsorb) {
 						CountAbsorbItem++;
 
 					}
 
-					//sinAdd_fAbsorb    += InvenItem[i].sItemInfo.JobItem.Add_fAbsorb;   //Èí¼ö·Â 
-					sinAdd_Defence += InvenItem[i].sItemInfo.JobItem.Add_Defence;   //¹æ¾î·Â 
-					sinAdd_fSpeed += InvenItem[i].sItemInfo.JobItem.Add_fSpeed;	//ÀÌµ¿ ¼Óµµ 
-					sinAdd_fBlock_Rating += InvenItem[i].sItemInfo.JobItem.Add_fBlock_Rating;	//(¹æÆÐ)ºí·°À² 
-					sinAdd_Attack_Speed += InvenItem[i].sItemInfo.JobItem.Add_Attack_Speed;	//°ø°Ý¼Óµµ
-					sinAdd_Critical_Hit += InvenItem[i].sItemInfo.JobItem.Add_Critical_Hit;	//1.5¹è µ¥¹ÌÁöÈ®À²
-					sinAdd_Shooting_Range += InvenItem[i].sItemInfo.JobItem.Add_Shooting_Range;	//»çÁ¤°Å¸® 
-					sinAdd_fMagic_Mastery += InvenItem[i].sItemInfo.JobItem.Add_fMagic_Mastery; //¸¶¹ý¼÷·Ãµµ 
+					//sinAdd_fAbsorb    += InvenItem[i].sItemInfo.JobItem.Add_fAbsorb;   //˜˜˜˜˜˜ 
+					sinAdd_Defence += InvenItem[i].sItemInfo.JobItem.Add_Defence;   //˜˜˜˜ 
+					sinAdd_fSpeed += InvenItem[i].sItemInfo.JobItem.Add_fSpeed;	//˜?˜ ˜?˜ 
+					sinAdd_fBlock_Rating += InvenItem[i].sItemInfo.JobItem.Add_fBlock_Rating;	//(˜˜˜˜)˜˜˜˜˜˜ 
+					sinAdd_Attack_Speed += InvenItem[i].sItemInfo.JobItem.Add_Attack_Speed;	//˜˜˜??˜
+					sinAdd_Critical_Hit += InvenItem[i].sItemInfo.JobItem.Add_Critical_Hit;	//1.5˜˜ ˜˜˜˜˜˜?˜˜
+					sinAdd_Shooting_Range += InvenItem[i].sItemInfo.JobItem.Add_Shooting_Range;	//˜˜˜˜˜?˜ 
+					sinAdd_fMagic_Mastery += InvenItem[i].sItemInfo.JobItem.Add_fMagic_Mastery; //˜˜˜˜˜˜˜?˜ 
 
-					if (InvenItem[i].sItemInfo.JobItem.Lev_Mana) //¸¶³ª ÃÖ´ë·® 
-						sinLev_Mana += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Mana);				//¸¶³ªÈ¸º¹(ÃÖ¼Ò)(ÃÖ´ë)
-					if (InvenItem[i].sItemInfo.JobItem.Lev_Life)  //¶óÀÌÇÁ ÃÖ´ë·®
-						sinLev_Life += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Life);				//¶óÀÌÇÁÈ¸º¹(ÃÖ¼Ò)(ÃÖ´ë) 
-					if (InvenItem[i].sItemInfo.JobItem.Lev_Attack_Rating) //¾îÅÃ·¹ÀÌÆÃ 
-						sinLev_Attack_Rating += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Attack_Rating);		//¸íÁß·Â 
-					//if(InvenItem[i].sItemInfo.JobItem.Lev_Damage[0]) //µ¥¹ÌÁö(ÃÖ¼Ò)
-					//	sinLev_Damage[0] +=  (sinChar->Level /InvenItem[i].sItemInfo.JobItem.Lev_Damage[0]);			//°ø°Ý·Â
-					if (InvenItem[i].sItemInfo.JobItem.Lev_Damage[1]) // LV/x Æ¯È­ +µ¥¹ÌÁö sinLev_Damage[0]Àº »ç¿ëÇÏ°íÀÖÁö¾Ê´Ù
-						sinLev_Damage[1] += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Damage[1]);			//°ø°Ý·Â
-					if (InvenItem[i].sItemInfo.JobItem.Per_Mana_Regen)//¸¶³ª¸®Á¨
-						sinPer_Mana_Regen += (InvenItem[i].sItemInfo.JobItem.Per_Mana_Regen / 2.0f);			//¸¶³ª Àç»ý 
-					if (InvenItem[i].sItemInfo.JobItem.Per_Life_Regen)//¶óÀÌÇÁ ¸®Á¨
-						sinPer_Life_Regen += (InvenItem[i].sItemInfo.JobItem.Per_Life_Regen / 2.0f);			//¶óÀÌÇÁ Àç»ý 
-					if (InvenItem[i].sItemInfo.JobItem.Per_Stamina_Regen)//½ºÅ×¹Ì³ª ¸®Á¨
-						sinPer_Stamina_Regen += (InvenItem[i].sItemInfo.JobItem.Per_Stamina_Regen / 2.0f);		//½ºÅ×¹Ì³ª Àç»ý
+					if (InvenItem[i].sItemInfo.JobItem.Lev_Mana) //˜˜˜˜ ˜?? 
+						sinLev_Mana += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Mana);				//˜˜˜˜?˜˜(˜?˜)(˜?˜)
+					if (InvenItem[i].sItemInfo.JobItem.Lev_Life)  //˜˜˜˜˜˜ ˜??
+						sinLev_Life += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Life);				//˜˜˜˜˜˜?˜˜(˜?˜)(˜?˜) 
+					if (InvenItem[i].sItemInfo.JobItem.Lev_Attack_Rating) //˜˜˜?˜˜˜˜˜ 
+						sinLev_Attack_Rating += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Attack_Rating);		//˜˜˜?˜ 
+					//if(InvenItem[i].sItemInfo.JobItem.Lev_Damage[0]) //˜˜˜˜˜˜(˜?˜)
+					//	sinLev_Damage[0] +=  (sinChar->Level /InvenItem[i].sItemInfo.JobItem.Lev_Damage[0]);			//˜˜˜?˜
+					if (InvenItem[i].sItemInfo.JobItem.Lev_Damage[1]) // LV/x ?? +˜˜˜˜˜˜ sinLev_Damage[0]˜˜ ˜˜˜˜?˜˜˜˜˜˜?˜
+						sinLev_Damage[1] += (sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Damage[1]);			//˜˜˜?˜
+					if (InvenItem[i].sItemInfo.JobItem.Per_Mana_Regen)//˜˜˜˜˜˜˜˜
+						sinPer_Mana_Regen += (InvenItem[i].sItemInfo.JobItem.Per_Mana_Regen / 2.0f);			//˜˜˜˜ ˜˜˜ 
+					if (InvenItem[i].sItemInfo.JobItem.Per_Life_Regen)//˜˜˜˜˜˜ ˜˜˜˜
+						sinPer_Life_Regen += (InvenItem[i].sItemInfo.JobItem.Per_Life_Regen / 2.0f);			//˜˜˜˜˜˜ ˜˜˜ 
+					if (InvenItem[i].sItemInfo.JobItem.Per_Stamina_Regen)//˜˜˜??˜ ˜˜˜˜
+						sinPer_Stamina_Regen += (InvenItem[i].sItemInfo.JobItem.Per_Stamina_Regen / 2.0f);		//˜˜˜??˜ ˜˜˜
 
-					for (int t = 0; t < 8; t++) { //Æ¯È­ ÀúÇ×°ü·Ã  
-						sinAdd_Resistance[t] += (int)InvenItem[i].sItemInfo.JobItem.Add_Resistance[t];	//¿ø¼Ò¿¡´ëÇÑ ÀúÇ×·Â 
+					for (int t = 0; t < 8; t++) { //?? ˜˜˜?˜˜˜  
+						sinAdd_Resistance[t] += (int)InvenItem[i].sItemInfo.JobItem.Add_Resistance[t];	//˜˜˜?˜˜˜˜˜ ˜˜˜?˜ 
 						if (InvenItem[i].sItemInfo.JobItem.Lev_Attack_Resistance[t])
 							sinLev_Attack_Resistance[t] += (int)InvenItem[i].sItemInfo.JobItem.Lev_Attack_Resistance[t] +
-							(sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Attack_Resistance[t]);//¿ø¼Ò¿¡´ëÇÑ °ø°Ý·Â
+							(sinChar->Level / InvenItem[i].sItemInfo.JobItem.Lev_Attack_Resistance[t]);//˜˜˜?˜˜˜˜˜ ˜˜˜?˜
 
 					}//if for
-				}// Æ¯È­´É·Â 
-				for (int j = 0; j < 8; j++) //±âº» ÀúÇ× 
+				}// ??˜?˜ 
+				for (int j = 0; j < 8; j++) //˜? ˜˜˜˜ 
 					sinResistance[j] += (int)InvenItem[i].sItemInfo.Resistance[j];
 
 			} //if ItemPosition
@@ -6714,7 +6729,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 
 	if (sInven[0].ItemIndex)
 	{
-		// Não acrescenta status de item expirado
+		// N˜o acrescenta status de item expirado
 		if (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].sItemInfo.expireTime > 0)
 		{
 			if (DeleteEventItem_TimeOut(&cInvenTory.InvenItem[sInven[0].ItemIndex - 1].sItemInfo) == FALSE)
@@ -6746,7 +6761,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		}
 	}
 
-	if (chaPremiumitem.m_Hat)// Hat Bônus / Bônus dos chapeus
+	if (chaPremiumitem.m_Hat)// Hat B˜nus / B˜nus dos chapeus
 	{
 		switch (chaPremiumitem.HatKind)
 		{
@@ -6771,13 +6786,13 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		}
 	}
 
-	//Æ¯È­¸¦ ³Ö¾ßÇÑ´Ù
+	//??˜˜ ˜?˜˜?˜
 	int MetalArmor = 0;
 	if (sInven[2].ItemIndex) {
 		TempDefense = cInvenTory.InvenItem[sInven[2].ItemIndex - 1].sItemInfo.Defence;
 		if (sinChar->JobBitMask & cInvenTory.InvenItem[sInven[2].ItemIndex - 1].sItemInfo.JobCodeMask) {
 			TempDefense += cInvenTory.InvenItem[sInven[2].ItemIndex - 1].sItemInfo.JobItem.Add_Defence;
-			MetalArmor = 1; //¸ÞÅ» ¾Æ¸Ó ÇÃ·¢
+			MetalArmor = 1; //˜˜? ˜?˜ ˜?˜
 
 		}
 
@@ -6800,14 +6815,14 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 	int Count2 = 0;
 	int Point2 = 0;
 	int p = 0;
-	int Flag3 = 0; //½ºÅ³¿¡ »ç¿ëÇÑ´Ù ÇöÁ¦´Â ÄÁ¼¾Æ®·¹ÀÌ¼Ç¸¸
-	int Flag4 = 0; //½ºÅ³¿¡ »ç¿ëÇÑ´Ù ÇöÁ¦´Â ½ºÀ§ÇÁÆ®¿¢½º 
+	int Flag3 = 0; //˜˜?˜˜ ˜˜˜˜?˜ ˜˜˜˜˜˜ ˜˜˜˜?˜˜˜??˜
+	int Flag4 = 0; //˜˜?˜˜ ˜˜˜˜?˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜?˜˜˜˜ 
 
-	//PC¹æ¿ë ¸íÁß·Â¶§¹®¿¡ ÀÌ°÷¿¡¼­ ÃÊ±âÈ­ÇØÁØ´Ù
+	//PC˜˜˜ ˜˜˜?˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜?˜?˜˜˜?˜
 	SkillTextColor[SIN2_ATTACK_RATE] = SIN_TEXT_COLOR_WHITE;
 	SkillTextColor[SIN2_LIFE] = SIN_TEXT_COLOR_WHITE;
-	SkillTextColor[SIN2_MANA] = SIN_TEXT_COLOR_WHITE; // ¹ÚÀç¿ø - ºÎ½ºÅÍ ¾ÆÀÌÅÛ(±â·Â)
-	SkillTextColor[SIN2_STAMINA] = SIN_TEXT_COLOR_WHITE; // ¹ÚÀç¿ø - ºÎ½ºÅÍ ¾ÆÀÌÅÛ(±Ù·Â)
+	SkillTextColor[SIN2_MANA] = SIN_TEXT_COLOR_WHITE; // ˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜˜˜(˜˜˜)
+	SkillTextColor[SIN2_STAMINA] = SIN_TEXT_COLOR_WHITE; // ˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜˜˜(˜?˜)
 	SkillTextColor[SIN2_SPEED] = SIN_TEXT_COLOR_WHITE;
 
 	int TempChangeDamageFlag = 0;
@@ -6827,14 +6842,14 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 			case SKILL_AUTOMATION:
 				if (sinWS1 == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2) ||
 					sinWT1 == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2)) {
-					//µ¥¹ÌÁö´Â ¼­¹ö¿¡¼­ Ã³¸®ÇÑ´Ù
-					sinTempDamage2[0] += (int)(((float)Automation_Damage[ContinueSkill[i].Point - 1] / 100) * TempDamage[0]); //µð½ºÇÃ·¹ÀÌ·Î º¸¿©ÁÖ±â¸¸ÇÑ´Ù
+					//˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ?˜˜˜?˜
+					sinTempDamage2[0] += (int)(((float)Automation_Damage[ContinueSkill[i].Point - 1] / 100) * TempDamage[0]); //˜˜˜?˜˜?˜ ˜˜˜˜˜??˜?˜
 					sinTempDamage2[1] += (int)(((float)Automation_Damage[ContinueSkill[i].Point - 1] / 100) * TempDamage[1]);
 					sinSkillWeaponSpeed += ContinueSkill[i].PlusState[0];
 					SendProcessSKillToServer(SKILL_PLAY_AUTOMATION, ContinueSkill[i].Point, 0, 0);
 				}
 				else
-					SendCancelSkillToServer(SKILL_PLAY_AUTOMATION, ContinueSkill[i].Point, 0, 0); //½ºÅ³ÀÌ Ãë¼ÒµÉ¶§ ¼­¹ö¿¡ ¾Ë·ÁÁØ´Ù 
+					SendCancelSkillToServer(SKILL_PLAY_AUTOMATION, ContinueSkill[i].Point, 0, 0); //˜˜?˜˜ ˜˜??˜ ˜˜˜˜˜˜ ˜?˜˜?˜ 
 
 				break;
 			case SKILL_MAXIMIZE:
@@ -6842,15 +6857,15 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				sinTempDamage2[1] += (int)(((float)ContinueSkill[i].PlusState[0] / 100.0f) * TempDamage[1]);
 
 				break;
-			case SKILL_WINDY: //¸íÁß·Â »ó½Â  
+			case SKILL_WINDY: //˜˜˜?˜ ˜˜˜  
 				if (sinWT1 == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2)) {
 					sinAttack_Rating += (Windy_Attack_Rating[ContinueSkill[i].Point - 1] * TempAttack_Rating) / 100;
-					sinShooting_Range += 30; //»çÁ¤°Å¸® 30ÇÃ·¯½º 
+					sinShooting_Range += 30; //˜˜˜˜˜?˜ 30˜?˜˜˜ 
 					SkillTextColor[SIN2_ATTACK_RATE] = SIN_TEXT_COLOR_ORANGE;
 
 				}
 				else {
-					ContinueSkill[i].CheckTime = ContinueSkill[i].UseTime * 70; //ÅõÃ¢ÀÌ ¾Æ´Ò°æ¿ì Ãë¼Ò½ÃÅ²´Ù 
+					ContinueSkill[i].CheckTime = ContinueSkill[i].UseTime * 70; //˜˜?˜˜ ˜??˜˜ ˜˜?˜?˜˜ 
 					SkillTextColor[SIN2_ATTACK_RATE] = SIN_TEXT_COLOR_WHITE;
 				}
 				break;
@@ -6879,13 +6894,13 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 						Flag4 = 1;
 					}
 				}
-				//½ºÅ³»ç¿ë¹«±â°¡ ¾Æ´Ï¸é ²¨ÁØ´Ù
+				//˜˜?˜˜?˜? ˜??˜ ˜˜˜?˜
 				//if(!Flag4){
-				///	ContinueSkill[i].CheckTime = ContinueSkill[i].UseTime*70; //µµ³¢°¡ ¾Æ´Ò°æ¿ì´Â Ãë¼ÒÇÑ´Ù
+				///	ContinueSkill[i].CheckTime = ContinueSkill[i].UseTime*70; //˜˜˜˜˜˜ ˜??˜˜˜ ˜˜˜˜?˜
 				//}
 				break;
 			case SKILL_TRIUMPH_OF_VALHALLA:
-				//ÆÄÆ¼¿øÀº ¹Ý¸¸ Àû¿ëµÈ´Ù
+				//˜˜?˜˜˜˜ ˜?˜ ˜˜˜˜?˜
 				sinTempDamage2[1] += (T_Of_Valhalla_Damage[ContinueSkill[i].Point - 1] + (SetT_Of_ValhallaLV / 4)) / (SetT_Of_ValhallaFlag + 1);
 				SkillTextColor[SIN2_DAMAGE] = SIN_TEXT_COLOR_GOLD;
 				break;
@@ -6924,7 +6939,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 					SkillTextColor[SIN2_SPEED] = SIN_TEXT_COLOR_GREEN;
 				}
 				break;
-			case SKILL_FORCE_OF_NATURE: //Flag º»ÀÎ 1 ÆÄÆ¼ 2
+			case SKILL_FORCE_OF_NATURE: //Flag ˜˜˜˜ 1 ˜˜? 2
 				sinTempDamage2[0] += Force_Of_Nature_AddDamage[ContinueSkill[i].Point - 1] / ContinueSkill[i].Flag;
 				sinTempDamage2[1] += Force_Of_Nature_AddDamage[ContinueSkill[i].Point - 1] / ContinueSkill[i].Flag;
 				sinAttack_Rating += Force_Of_Nature_AddHit[ContinueSkill[i].Point - 1] / ContinueSkill[i].Flag;
@@ -6936,7 +6951,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				sinTempDamage2[1] += God_Bless_AddDamage[ContinueSkill[i].Point - 1];
 				SkillTextColor[SIN2_DAMAGE] = SIN_TEXT_COLOR_GOLD;
 				break;
-			case SKILL_HALL_OF_VALHALLA: //Àá½Ã´ë±â
+			case SKILL_HALL_OF_VALHALLA: //˜˜?˜˜
 				if (SetT_Of_ValhallaPOINT) {
 					sinTempDamage2[1] += (T_Of_Valhalla_Damage[SetT_Of_ValhallaPOINT - 1] + (SetH_Of_ValhallaLV / 4) /*) /ContinueSkill[i].Flag*/); //xxstr
 					SkillTextColor[SIN2_DAMAGE] = SIN_TEXT_COLOR_GOLD;
@@ -6946,22 +6961,22 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				sinTempAbsorb += Compulsion_AddAbsorb[ContinueSkill[i].Point - 1];
 				SkillTextColor[SIN2_ABSORB] = SIN_TEXT_COLOR_BLUE;
 				break;
-			case SKILL_FROST_JAVELIN: //Àá½Ã´ë±â
+			case SKILL_FROST_JAVELIN: //˜˜?˜˜
 				if (sinWT1 == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2)) {
 					sinTempDamage2[0] += Frost_Javelin_IceAddDamage[ContinueSkill[i].Point - 1][0];
 					sinTempDamage2[1] += Frost_Javelin_IceAddDamage[ContinueSkill[i].Point - 1][1];
 				}
 				else {
-					ContinueSkill[i].CheckTime = ContinueSkill[i].UseTime * 70; //ÅõÃ¢ÀÌ ¾Æ´Ò°æ¿ì Ãë¼Ò½ÃÅ²´Ù 
+					ContinueSkill[i].CheckTime = ContinueSkill[i].UseTime * 70; //˜˜?˜˜ ˜??˜˜ ˜˜?˜?˜˜ 
 					SkillTextColor[SIN2_ATTACK_RATE] = SIN_TEXT_COLOR_WHITE;
 					SendCancelSkillToServer(SKILL_PLAY_FROST_JAVELIN, 0, 0, 0);
 				}
 				break;
-			case CLANSKILL_ABSORB:   //Èí¼ö·Â+20 
-				sinTempAbsorb += 5;	 // ¹ÚÀç¿ø - °ø¼ºÀü ¼ö¼º Å¬·£ ½ºÅ³ »óÇâ Á¶Á¤(10 -> 20)
+			case CLANSKILL_ABSORB:   //˜˜˜˜˜˜+20 
+				sinTempAbsorb += 5;	 // ˜˜˜˜˜ - ˜˜˜˜˜˜ ˜˜˜˜ ?˜˜ ˜˜? ˜˜˜˜ ˜˜˜˜(10 -> 20)
 				SkillTextColor[SIN2_ABSORB] = SIN_TEXT_COLOR_BLUE;
 				break;
-			case SCROLL_INVULNERABILITY:  //¹«Àû ½ºÅ©·Ñ °ø°Ý·Â 1/2
+			case SCROLL_INVULNERABILITY:  //˜˜˜˜ ˜˜?˜˜ ˜˜˜?˜ 1/2
 			case SCROLL_P_INVULNERABILITY:
 				sinTempDamage2[0] -= (sinChar->Attack_Damage[0]) / 3;
 				sinTempDamage2[1] -= (sinChar->Attack_Damage[1]) / 3;
@@ -6993,8 +7008,8 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 			}
 			break;
 
-			case BOOSTER_ITEM_LIFE: // ¹ÚÀç¿ø - ºÎ½ºÅÍ ¾ÆÀÌÅÛ(»ý¸í·Â)
-				SkillTextColor[SIN2_LIFE] = SIN_TEXT_COLOR_PINK; // »ç¿ëÁßÀÏ¶§ ÀÎÅÍÆäÀÌ½º ±ÛÀÚ»öÀ» ¹Ù²ãÁØ´Ù
+			case BOOSTER_ITEM_LIFE: // ˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜˜˜(˜˜˜˜˜˜)
+				SkillTextColor[SIN2_LIFE] = SIN_TEXT_COLOR_PINK; // ˜˜˜˜˜˜?˜ ˜˜˜˜˜˜˜?˜ ˜˜˜?˜˜˜ ˜?˜˜?˜
 
 				if (AddBoosterLife)
 				{
@@ -7004,8 +7019,8 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 					tempLife[0] = 0;
 
 				break;
-			case BOOSTER_ITEM_MANA: // ¹ÚÀç¿ø - ºÎ½ºÅÍ ¾ÆÀÌÅÛ(±â·Â)
-				SkillTextColor[SIN2_MANA] = SIN_TEXT_COLOR_PINK; // »ç¿ëÁßÀÏ¶§ ÀÎÅÍÆäÀÌ½º ±ÛÀÚ»öÀ» ¹Ù²ãÁØ´Ù
+			case BOOSTER_ITEM_MANA: // ˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜˜˜(˜˜˜)
+				SkillTextColor[SIN2_MANA] = SIN_TEXT_COLOR_PINK; // ˜˜˜˜˜˜?˜ ˜˜˜˜˜˜˜?˜ ˜˜˜?˜˜˜ ˜?˜˜?˜
 
 				if (AddVirtualMana[1])
 				{
@@ -7015,8 +7030,8 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 					tempMana[0] = 0;
 
 				break;
-			case BOOSTER_ITEM_STAMINA: // ¹ÚÀç¿ø - ºÎ½ºÅÍ ¾ÆÀÌÅÛ(±Ù·Â)
-				SkillTextColor[SIN2_STAMINA] = SIN_TEXT_COLOR_PINK; // »ç¿ëÁßÀÏ¶§ ÀÎÅÍÆäÀÌ½º ±ÛÀÚ»öÀ» ¹Ù²ãÁØ´Ù
+			case BOOSTER_ITEM_STAMINA: // ˜˜˜˜˜ - ˜?˜˜˜ ˜˜˜˜˜˜(˜?˜)
+				SkillTextColor[SIN2_STAMINA] = SIN_TEXT_COLOR_PINK; // ˜˜˜˜˜˜?˜ ˜˜˜˜˜˜˜?˜ ˜˜˜?˜˜˜ ˜?˜˜?˜
 
 				if (AddVirtualStamina[1])
 				{
@@ -7031,12 +7046,12 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		}
 	}
 
-	//////// ÀúÇ×·Â °¡ÁßÄ¡ 
+	//////// ˜˜˜?˜ ˜˜˜˜? 
 	for (int i = 1; i < MAX_USESKILL; i++)
-	{ //³ë¸Ö ¾îÅÃÀ» »©ÁØ´Ù 
-		if (sinSkill.UseSkill[i].Flag && sinSkill.UseSkill[i].Point) {//»ç¿ë Æ÷ÀÎÆ®°¡ ÀÖÀ¸¸é
+	{ //˜˜˜ ˜˜˜˜˜˜ ˜˜˜?˜ 
+		if (sinSkill.UseSkill[i].Flag && sinSkill.UseSkill[i].Point) {//˜˜˜ ˜˜˜˜?˜˜ ˜˜˜˜˜˜
 			switch (sinSkill.UseSkill[i].CODE) {
-			case SKILL_POISON_ATTRIBUTE:       //µ¥¹ÌÁö Áõ°¡ 
+			case SKILL_POISON_ATTRIBUTE:       //˜˜˜˜˜˜ ˜˜˜˜ 
 				sinSkillResistance[sITEMINFO_POISON] = PlusPoison[sinSkill.UseSkill[i].Point - 1];
 
 				break;
@@ -7052,13 +7067,13 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		}
 	}
 
-	//¿ä±â´Â ´É·ÂÄ¡ Àû¿ëµÇ±âÀü ÀÎÀÚ¸¦ ÇÃ·¯½º ÇØÁÖ´Â°÷
+	//˜˜˜˜ ˜?˜? ˜˜˜˜?˜˜˜ ˜˜˜?˜ ˜?˜˜˜ ˜˜˜?˜˜
 	int TempDivide = 1;
 	for (int i = 0; i < MAX_CONTINUE_SKILL; i++) {
 		if (ContinueSkill[i].Flag) {
 			switch (ContinueSkill[i].CODE) {
 			case SKILL_ZENITH:
-				if (ContinueSkill[i].PartyFlag)TempDivide = 2; //ÆÄÆ¼¿øÀÏ °æ¿ì´Â 50%¸¸ Àû¿ëÇÑ´Ù 
+				if (ContinueSkill[i].PartyFlag)TempDivide = 2; //˜˜?˜˜˜˜ ˜˜˜˜ 50%˜˜ ˜˜˜˜˜?˜ 
 				sinSkillResistance[sITEMINFO_BIONIC] += Zenith_Element[ContinueSkill[i].Point - 1] / TempDivide;
 				sinSkillResistance[sITEMINFO_FIRE] += Zenith_Element[ContinueSkill[i].Point - 1] / TempDivide;
 				sinSkillResistance[sITEMINFO_ICE] += Zenith_Element[ContinueSkill[i].Point - 1] / TempDivide;
@@ -7070,23 +7085,23 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 	}
 	/////////////////////////////////////////////
 	for (int i = 0; i < 8; i++)
-	{ //ÀúÇ×·Â 
+	{ //˜˜˜?˜ 
 		sinChar->Resistance[i] = sinResistance[i] + sinAdd_Resistance[i] + sinSkillResistance[i];
 
 	}
 
-	//////////////////////// µ¥¹ÌÁö °¡ÁßÄ¡ 
+	//////////////////////// ˜˜˜˜˜˜ ˜˜˜˜? 
 	for (int i = 1; i < MAX_USESKILL; i++)
-	{ //³ë¸Ö ¾îÅÃÀ» »©ÁØ´Ù 
-		if (sinSkill.UseSkill[i].Flag && sinSkill.UseSkill[i].Point) { //»ç¿ë Æ÷ÀÎÆ®°¡ ÀÖÀ¸¸é 
-			//////////// ¹«±â¿¡ »ó°ü¾øÀÌ ´É·ÂÄ¡¸¦ Á¶Á¤ÇÑ´Ù 
+	{ //˜˜˜ ˜˜˜˜˜˜ ˜˜˜?˜ 
+		if (sinSkill.UseSkill[i].Flag && sinSkill.UseSkill[i].Point) { //˜˜˜ ˜˜˜˜?˜˜ ˜˜˜˜˜˜ 
+			//////////// ˜˜˜? ˜˜˜˜˜˜˜ ˜?˜?˜˜ ˜˜˜˜˜?˜ 
 			//switch(sinSkill.UseSkill[i].CODE){
 
 			//}
-			//////////////°°Àº °è¿­¹«±âÀÏ°æ¿ì¿¡ ÇØ´ç 
+			//////////////˜˜˜˜ ˜?˜˜˜˜˜?˜? ˜?˜ 
 			for (cnt = 0; cnt < 8; cnt++) {
 				switch (sinSkill.UseSkill[i].CODE) {
-				case SKILL_MELEE_MASTERY:       //µ¥¹ÌÁö Áõ°¡ 
+				case SKILL_MELEE_MASTERY:       //˜˜˜˜˜˜ ˜˜˜˜ 
 					if (sInven[0].ItemIndex) {
 						if (sinSkill.UseSkill[i].Skill_Info.UseWeaponCode[cnt] == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2)) {
 							sinSkillDamage[0] = (int)(((float)Melee_Mastery_DamagePercent[sinSkill.UseSkill[i].Point - 1] / 100) * TempDamage[0]);
@@ -7094,7 +7109,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 						}
 					}
 					break;
-				case SKILL_SHOOTING_MASTERY:    //È° µ¥¹ÌÁö Áõ°¡  
+				case SKILL_SHOOTING_MASTERY:    //? ˜˜˜˜˜˜ ˜˜˜˜  
 					if (sInven[0].ItemIndex) {
 						if (sinSkill.UseSkill[i].Skill_Info.UseWeaponCode[cnt] == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2)) {
 							sinSkillDamage[0] = (int)(((float)S_Mastery_DamagePercent[sinSkill.UseSkill[i].Point - 1] / 100) * TempDamage[0]);
@@ -7106,8 +7121,8 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				case SKILL_WEAPONE_DEFENCE_MASTERY:
 					if (sInven[0].ItemIndex) {
 						if (sinSkill.UseSkill[i].Skill_Info.UseWeaponCode[cnt] == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2)) {
-							if (sInven[1].ItemIndex) //¹æÆÐ°¡ ÀÖÀ¸¸é ºê·¹ÀÌÅ© 
-								if (sinDS1 == (cInvenTory.InvenItem[sInven[1].ItemIndex - 1].CODE & sinITEM_MASK2)) //¹æÆÐ¸¦ Â÷°íÀÖÁö ¾ÊÀ»¶§¸¸ Àû¿ë 
+							if (sInven[1].ItemIndex) //˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜? 
+								if (sinDS1 == (cInvenTory.InvenItem[sInven[1].ItemIndex - 1].CODE & sinITEM_MASK2)) //˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜ 
 									break;
 
 							sinBlock_Rate += W_D_Mastery_Block[sinSkill.UseSkill[i].Point - 1];
@@ -7137,7 +7152,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 							sinSkillDamage[0] = (int)(((float)M_Weapon_Mastey[sinSkill.UseSkill[i].Point - 1] / 100) * TempDamage[0]);
 							sinSkillDamage[1] = (int)(((float)M_Weapon_Mastey[sinSkill.UseSkill[i].Point - 1] / 100) * TempDamage[1]);
 						}
-						//¸ÞÄ«´Ï¼Ç À¯´ÏÅ© ¾ÆÀÌÅÛ
+						//˜˜?˜?˜ ˜˜˜˜? ˜˜˜˜˜˜
 						if (InvenItem[sInven[0].ItemIndex - 1].sItemInfo.UniqueItem == 2) {
 							sinSkillDamage[0] = (int)(((float)M_Weapon_Mastey[sinSkill.UseSkill[i].Point - 1] / 100) * TempDamage[0]);
 							sinSkillDamage[1] = (int)(((float)M_Weapon_Mastey[sinSkill.UseSkill[i].Point - 1] / 100) * TempDamage[1]);
@@ -7162,7 +7177,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 						}
 					}
 					break;
-				case SKILL_EVASION_MASTERY: //¸ðÇÏ´Â ¾ÖÀÏ±î -_-?
+				case SKILL_EVASION_MASTERY: //˜˜˜?˜ ˜˜˜?˜ -_-?
 
 
 					break;
@@ -7171,7 +7186,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		}
 	}
 
-	/////////Ä³¸¯ÅÍ¿¡ ÇØ´çÇÏ´Â ¹«±â»ç¿ë½Ã µ¥¹ÌÁö Ãß°¡ 
+	/////////?˜˜˜?˜ ˜?˜˜?˜ ˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜ 
 	switch (sinChar->JOB_CODE) {
 	case SIN_CHAR_FIGHTER:
 		if (sinWA1 == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2))
@@ -7183,7 +7198,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		if (sInven[0].ItemIndex) {
 			if (sinChar->JobBitMask & InvenItem[sInven[0].ItemIndex - 1].sItemInfo.JobCodeMask)
 				sinCharItemDamage = sinChar->Level / 6;
-			//¸ÞÄ«´Ï¼Ç À¯´ÏÅ© ¾ÆÀÌÅÛ ÁÖ¹«±â±º ¼³Á¤ 
+			//˜˜?˜?˜ ˜˜˜˜? ˜˜˜˜˜˜ ˜?˜˜? ˜˜˜˜ 
 			if (InvenItem[sInven[0].ItemIndex - 1].sItemInfo.UniqueItem == 2)
 				sinCharItemDamage = sinChar->Level / 6;
 		}
@@ -7274,12 +7289,12 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		SkillTextColor[SIN2_DAMAGE] = SIN_TEXT_COLOR_GOLD;
 	else SkillTextColor[SIN2_DAMAGE] = SIN_TEXT_COLOR_WHITE;
 
-	//Èí¼öÀ²°ü·Ã
+	//˜˜˜˜˜˜˜˜˜˜
 	if (TempChangeAbsorbFlag)
 		SkillTextColor[SIN2_ABSORB] = SIN_TEXT_COLOR_BLUE;
 	else SkillTextColor[SIN2_ABSORB] = SIN_TEXT_COLOR_WHITE;
 
-	sinChar->Potion_Space = sinPotion_Space; //Æ÷¼ÇÀ» °¡Áú¼ö ÀÖ´Â ÇÑ°èÄ¡ 
+	sinChar->Potion_Space = sinPotion_Space; //˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜ ˜?˜? 
 
 	fstrength = (float)sinChar->Strength;
 	fhealth = (float)sinChar->Health;
@@ -7289,7 +7304,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 	fLevel = (float)sinChar->Level;
 
 
-	//°³ÀÎ ¸íÁß·ü 
+	//˜˜˜˜ ˜˜˜?˜ 
 	sinChar->Attack_Rating = (int)((sinAttack_Rating + (fDexterity * 3.1) + (fLevel * 1.9) + (ftalent * 1.5)) + sinLev_Attack_Rating);
 
 	if (sinDamageFunction[0] == 1 && !sInven[0].ItemIndex) {
@@ -7301,7 +7316,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		sinChar->Attack_Damage[1] = 2 + ((sinChar->Strength + 200) / 200) + ((sinChar->Talent + sinChar->Dexterity) / 45) + sinLev_Damage[1];
 	}
 
-	////(±ÙÁ¢Çü1)
+	////(˜˜˜˜˜˜1)
 	if ((sinDamageFunction[0] == 1 && (InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 1 || InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 3))) {
 		sinChar->Attack_Damage[0] = 1 + (sinAttack_Damage[0] * (sinChar->Strength + 130) / 130) +
 			((sinChar->Talent + sinChar->Dexterity) / 40) + sinLev_Damage[0] + sinSkillDamage[0] + sinCharItemDamage + ((sinAttack_Damage[0] + sinAttack_Damage[1]) / 16);
@@ -7309,14 +7324,14 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 			((sinChar->Talent + sinChar->Dexterity) / 40) + sinLev_Damage[1] + sinSkillDamage[1] + sinCharItemDamage;
 	}
 	if ((sinDamageFunction[0] == 2 && (InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 1 || InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 3))) {
-		////(±ÙÁ¢Çü2)
+		////(˜˜˜˜˜˜2)
 		sinChar->Attack_Damage[0] = 1 + (sinAttack_Damage[0] * (sinChar->Strength + 150) / 150) +
 			((sinChar->Talent + sinChar->Dexterity) / 45) + sinLev_Damage[0] + sinSkillDamage[0] + sinCharItemDamage + ((sinAttack_Damage[0] + sinAttack_Damage[1]) / 16);
 		sinChar->Attack_Damage[1] = 3 + (sinAttack_Damage[1] * (sinChar->Strength + 150) / 150) +
 			((sinChar->Talent + sinChar->Dexterity) / 45) + sinLev_Damage[1] + sinSkillDamage[1] + sinCharItemDamage;
 	}
 	if ((sinDamageFunction[0] == 3 && (InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 1 || InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 3))) {
-		////(±ÙÁ¢Çü3)
+		////(˜˜˜˜˜˜3)
 		sinChar->Attack_Damage[0] = 1 + (sinAttack_Damage[0] * (sinChar->Strength + 190) / 190) +
 			((sinChar->Talent + sinChar->Dexterity) / 50) + sinLev_Damage[0] + sinSkillDamage[0] + sinCharItemDamage + ((sinAttack_Damage[0] + sinAttack_Damage[1]) / 16);
 		sinChar->Attack_Damage[1] = 3 + (sinAttack_Damage[1] * (sinChar->Strength + 190) / 190) +
@@ -7324,14 +7339,14 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 	}
 
 	if (sinDamageFunction[1] == 1 && InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 2) {
-		////(¹ß»çÇü1)
+		////(˜?˜˜˜1)
 		sinChar->Attack_Damage[0] = 1 + (sinAttack_Damage[0] * (sinChar->Dexterity + 130) / 130) +
 			((sinChar->Talent + sinChar->Strength) / 40) + sinLev_Damage[0] + sinSkillDamage[0] + sinCharItemDamage + ((sinAttack_Damage[0] + sinAttack_Damage[1]) / 16);
 		sinChar->Attack_Damage[1] = 3 + (sinAttack_Damage[1] * (sinChar->Dexterity + 130) / 130) +
 			((sinChar->Talent + sinChar->Strength) / 40) + sinLev_Damage[1] + sinSkillDamage[1] + sinCharItemDamage;
 	}
 	if (sinDamageFunction[1] == 2 && InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 2) {
-		////(¹ß»çÇü2)
+		////(˜?˜˜˜2)
 		sinChar->Attack_Damage[0] = 1 + (sinAttack_Damage[0] * (sinChar->Dexterity + 190) / 190) +
 			((sinChar->Talent + sinChar->Strength) / 50) + sinLev_Damage[0] + sinSkillDamage[0] + sinCharItemDamage + ((sinAttack_Damage[0] + sinAttack_Damage[1]) / 16);
 		sinChar->Attack_Damage[1] = 3 + (sinAttack_Damage[1] * (sinChar->Dexterity + 190) / 190) +
@@ -7339,14 +7354,14 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 	}
 
 	if (sinDamageFunction[2] == 1 && InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 3) {
-		////(¹ý»çÇü1)
+		////(˜˜˜˜˜˜1)
 		sinChar->Attack_Damage[0] = 1 + (sinAttack_Damage[0] * (sinChar->Spirit + 150) / 150) +
 			((sinChar->Talent) / 30) + sinLev_Damage[0] + sinSkillDamage[0] + sinCharItemDamage + ((sinAttack_Damage[0] + sinAttack_Damage[1]) / 16);
 		sinChar->Attack_Damage[1] = 3 + (sinAttack_Damage[1] * (sinChar->Spirit + 150) / 150) +
 			((sinChar->Talent) / 30) + sinLev_Damage[1] + sinSkillDamage[1] + sinCharItemDamage;
 	}
 	if (sinDamageFunction[2] == 2 && InvenItem[sInven[0].ItemIndex - 1].WeaponClass == 3) {
-		////(¹ý»çÇü2)
+		////(˜˜˜˜˜˜2)
 		sinChar->Attack_Damage[0] = 1 + (sinAttack_Damage[0] * (sinChar->Spirit + 170) / 170) +
 			((sinChar->Talent) / 30) + sinLev_Damage[0] + sinSkillDamage[0] + sinCharItemDamage + ((sinAttack_Damage[0] + sinAttack_Damage[1]) / 16);
 		sinChar->Attack_Damage[1] = 3 + (sinAttack_Damage[1] * (sinChar->Spirit + 170) / 170) +
@@ -7402,7 +7417,7 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 		else
 			sinChar->Weight[1] = sWeightBase;
 
-		// Premium está ativo?
+		// Premium est˜ ativo?
 		if (sinChar->GravityScroolCheck[0] > 0)
 			sinChar->Weight[1] = (short)sWeightBase + ((sinChar->GravityScroolCheck[0]) * 50);
 
@@ -7629,14 +7644,14 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 				sinChar->Defence += (int)((float)sinChar->Defence * TempSkillData);
 				SkillTextColor[SIN2_DEFENSE] = SIN_TEXT_COLOR_BLUE;
 				break;
-			case SKILL_SPARK_SHIELD: //°è»êÀº À§¿¡¼­ÇÏ°í ±ÛÀÚ »ö¸¸ º¸Á¤ÇØÁØ´Ù
+			case SKILL_SPARK_SHIELD: //˜˜˜˜˜ ˜˜˜˜˜˜˜?˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜?˜
 			case SKILL_METAL_ARMOR:
-				if (MetalArmor) { //¸ÞÄ«´Ï¼Ç Æ¯È­¾Æ¸Ó°¡ ÀÖÀ»°æ¿ì¿¡¸¸ Àû¿ëµÈ´Ù 
+				if (MetalArmor) { //˜˜?˜?˜ ??˜??˜ ˜˜˜˜˜˜?˜˜ ˜˜˜˜?˜ 
 					SkillTextColor[SIN2_DEFENSE] = SIN_TEXT_COLOR_BLUE;
 				}
 				break;
-			case SKILL_CONCENTRATION:  //ÀÚ½ÅÀÇ ¸íÁß·ÂÀÌ °ü·ÃµÇ±â¶§¹®¿¡ ¹Ø¿¡¼­ °è»êÇØÁØ´Ù
-				for (p = 0; p < 8; p++) { //´Ù¸¥ ¹«±â±ºµµ Ã¼Å©µÈ´Ù   
+			case SKILL_CONCENTRATION:  //˜?˜˜˜ ˜˜˜?˜˜˜ ˜˜˜???˜˜˜˜ ˜?˜˜˜ ˜˜˜˜˜˜?˜
+				for (p = 0; p < 8; p++) { //˜?˜ ˜˜˜?˜˜ ??˜?˜   
 					if (sInven[0].ItemIndex) {
 						if (ContinueSkill[i].Skill_Info.UseWeaponCode[p] == (cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE & sinITEM_MASK2)) {
 							sinChar->Attack_Rating += Concentration_AttackRate[ContinueSkill[i].Point - 1];
@@ -7648,36 +7663,36 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 
 				}
 				if (!Flag3) {
-					//½ºÅ³»ç¿ë¹«±â°¡ ¾Æ´Ï¸é Àû¿ë¸¸¾ÈµÇ°ÔÇÑ´Ù
+					//˜˜?˜˜?˜? ˜??˜ ˜˜˜?˜??˜˜?˜
 				//	ContinueSkill[i].CheckTime = ContinueSkill[i].UseTime*70; 
 					SkillTextColor[SIN2_ATTACK_RATE] = SIN_TEXT_COLOR_WHITE;
 				}
 				break;
 			case SKILL_FORCE_ORB:
-				// ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º, ºô¸µ ¸ÅÁ÷ Æ÷½º Ãß°¡½Ã Ä³¸¯ÅÍ Á¤º¸Ã¢¿¡ º¸¿©Áö´Â °ø°Ý·Â(µð½ºÇÃ·¹ÀÌ½Ã¿¡¸¸ º¸¿©ÁÙ µ¥¹ÌÁö)
-				if (ContinueSkill[i].ElementIndex == 1000) // ºô¸µ ¸ÅÁ÷ Æ÷½º »ç¿ëÁßÀÏ¶§
+				// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜, ˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜?˜˜˜ ?˜˜˜˜ ˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜?˜(˜˜˜?˜˜??˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜)
+				if (ContinueSkill[i].ElementIndex == 1000) // ˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜?˜
 				{
-					// fo135 ~ fo137 // ºô¸µ ¸ÅÁ÷ Æ÷½º
+					// fo135 ~ fo137 // ˜˜˜˜ ˜˜˜˜ ˜˜˜˜
 					OrbDamageTemp2 = (sinChar->Attack_Damage[0] + ((sinChar->Attack_Damage[1] - sinChar->Attack_Damage[0]) / 2)) / 15;
 					sinTempDamage2[0] += OrbDamageTemp2;
 					sinTempDamage2[1] += OrbDamageTemp2;
 				}
-				else // ÀÏ¹Ý ¸ÅÁ÷ Æ÷½º »ç¿ëÁßÀÏ¶§ // Àåº° - Æ÷½º ÀÎÆä¸£³ª, ÀÌ´Ï±×¸¶ Æ÷½º ¼öÁ¤
+				else // ˜?˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜?˜ // ˜? - ˜˜˜˜ ˜˜˜?˜˜, ˜???˜ ˜˜˜˜ ˜˜˜˜
 				{
-					// fo107 ~ fo110 // ¸ÓÅ° Æ÷½º ~ ¹Ì¶óÁö Æ÷½º - °ø°Ý·Â°¡Áß 10% 
+					// fo107 ~ fo110 // ˜˜? ˜˜˜˜ ~ ˜?˜˜˜ ˜˜˜˜ - ˜˜˜?˜˜˜˜ 10% 
 					if (ContinueSkill[i].Point >= 7 && ContinueSkill[i].Point <= 10)
 					{
 						OrbDamageTemp2 = (sinChar->Attack_Damage[0] + ((sinChar->Attack_Damage[1] - sinChar->Attack_Damage[0]) / 2)) / 10;
 						sinTempDamage2[0] += OrbDamageTemp2;
 						sinTempDamage2[1] += OrbDamageTemp2;
 					}
-					else if (ContinueSkill[i].Point == 11) // ÀÎÆä¸£³ª Æ÷½º
+					else if (ContinueSkill[i].Point == 11) // ˜˜˜?˜˜ ˜˜˜˜
 					{
 						OrbDamageTemp2 = (((sinChar->Attack_Damage[1] + sinChar->Attack_Damage[0]) / 2) * 15) / 100;
 						sinTempDamage2[0] += OrbDamageTemp2;
 						sinTempDamage2[1] += OrbDamageTemp2;
 					}
-					else if (ContinueSkill[i].Point >= 12) // ÀÌ´Ï±×¸¶ Æ÷½º
+					else if (ContinueSkill[i].Point >= 12) // ˜???˜ ˜˜˜˜
 					{
 						OrbDamageTemp2 = (((sinChar->Attack_Damage[1] + sinChar->Attack_Damage[0]) / 2) * 20) / 100;
 						sinTempDamage2[0] += OrbDamageTemp2;
@@ -7734,32 +7749,32 @@ int cINVENTORY::SetItemToChar(int CheckHackFlag)
 	}
 
 	/////////////////////////////////////////////
-	CheckRequireItem(); //Âø¿ëµÉ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÎÁö¸¦ Ã¼Å©ÇÑ´Ù 
+	CheckRequireItem(); //˜˜˜˜?˜ ˜?˜ ˜˜˜˜˜˜˜˜˜˜˜˜ ??˜?˜ 
 
-	ReformCharForm();   //ÀçÀÎÁõ 
+	ReformCharForm();   //˜˜˜˜˜˜ 
 
-	//¹°¾à ¼ö³³°ø°£À» Ã¼Å©ÇÑ´Ù 
+	//˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ ??˜?˜ 
 	ReSettingPotion();
 
 
 
-	//µð½ºÇÃ·¹ÀÌ¿¡ Ä«ÇÇ 
+	//˜˜˜?˜˜?˜ ?˜˜ 
 	if (!CheckHackFlag)
 		memcpy(&sinCharDisplay, sinChar, sizeof(smCHAR_INFO));
-	else //ÇØÅ·¹æÁö
+	else //˜˜?˜˜˜˜
 		HackCharStateCheck(sinChar, &sinCharDisplay);
 
 	return TRUE;
 }
 
-//Ä³¸¯ÅÍ Á¤º¸¸¦ ÀÐ¾î¿Â´Ù 
+//?˜˜˜˜ ˜˜˜˜˜˜ ˜˜?˜ 
 void cINVENTORY::LoadCharState()
 {
 
-	if (!sinChar->ArrowPosi[0])sinChar->ArrowPosi[0] = 1; //ÀÎº¥ AB¾ÆÀÌÅÛ È­»ìÇ¥ Ç¥½Ã°ªÀÌ ¾øÀ¸¸é ±âº»¼ÂÆÃÇÑ´Ù 
+	if (!sinChar->ArrowPosi[0])sinChar->ArrowPosi[0] = 1; //˜?˜ AB˜˜˜˜˜˜ ?˜˜? ?˜?˜˜˜ ˜˜˜˜˜˜ ˜?˜˜˜˜˜?˜ 
 	if (!sinChar->ArrowPosi[1])sinChar->ArrowPosi[1] = 3;
 
-	//È­»ìÇ¥ À§Ä¡ º¸Á¤ 
+	//?˜˜? ˜˜? ˜˜˜˜ 
 	if (sinChar->ArrowPosi[0] == 1)
 		ArrowState[0] = 0;
 	if (sinChar->ArrowPosi[0] == 2)
@@ -7775,25 +7790,25 @@ void cINVENTORY::LoadCharState()
 
 }
 
-//¾ÆÀÌÅÛÀ» ¹Ù²Û´Ù 
+//˜˜˜˜˜˜˜˜ ˜??˜ 
 int cINVENTORY::ChangeABItem(int Posi)
 {
-	SetDelayFlag = 1; //AB Ã¼ÀÎÁö¸¦ ÇÏ¸é µô·¹ÀÌ ÇÃ·¢À» ÁØ´Ù 
+	SetDelayFlag = 1; //AB ?˜˜˜˜˜˜ ˜?˜ ˜˜˜˜˜˜ ˜?˜˜˜ ˜?˜ 
 
-	//if(cTrade.OpenFlag)return TRUE; //³¯Ä¡±â ¶«»§!! 
+	//if(cTrade.OpenFlag)return TRUE; //˜˜?˜˜ ˜˜˜˜!! 
 	if (NotChangeSetItemFlag)return TRUE;
 	if (cMyShop.OpenFlag)return FALSE;
 	if (MyShopSendButton)return FALSE;
-	if (ChangeSpecialItem(1))return TRUE; //Äù½ºÆ®¾ÆÀÌÅÛÀÌ ÄÑÁ®ÀÖÀ»°æ¿ì¿¡´Â Äµ½½½ÃÅ²´Ù
+	if (ChangeSpecialItem(1))return TRUE; //˜˜˜˜?˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜?˜˜ ?˜˜˜˜?˜˜
 
 	if (cWareHouse.OpenFlag || Caravana::GetInstance()->OpenFlag) {
-		//¼öÁ¤ ÇÏ´ë¿ë
-		//Ã¢°í ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®·Î ¿Å±æ½Ã¿¡ ÀÎº¥ÂûÀ» ¹Ù²Ü¼ö ¾ø´Ù./
+		//˜˜˜˜ ˜?˜˜
+		//?˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜?˜˜ ˜?˜?˜ ˜?˜˜˜˜˜ ˜??˜ ˜˜˜˜./
 		if (MouseItem.Flag)
-			return TRUE;  //Ã¢°í°¡ ¿­·ÁÀÖÀ»°æ¿ì¿¡´Â Äµ½½½ÃÅ²´Ù
+			return TRUE;  //?˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜?˜˜ ?˜˜˜˜?˜˜
 	}
 
-	if (sMessageBox3[MESSAGE_SELL_HIGHRANK_ITEM].Flag)return TRUE; //¾ÆÀÌÅÛÆÈ±â ¸Þ¼¼Áö¹Ú½º°¡ÀÖÀ»°Ü¿ì´Â ¸®ÅÏ
+	if (sMessageBox3[MESSAGE_SELL_HIGHRANK_ITEM].Flag)return TRUE; //˜˜˜˜˜˜˜?˜ ˜?˜˜˜˜?˜˜˜˜˜˜˜˜?˜˜ ˜˜˜˜
 	if (SpecialItemShowFlag)return TRUE;
 
 	//	if( cSinHelp.sinShowHelp()) 
@@ -7801,8 +7816,8 @@ int cINVENTORY::ChangeABItem(int Posi)
 
 	int desPosi;
 	int i, j, t;
-	//============ ÅÚ·¹Æ÷Æ®ÄÚ¾î ¹«ÇÑ»ç¿ëÀ» ¸·´Â´Ù (¼º±Ù060612)
-	//ÅÚ·¹Æ÷Æ®ÇÛÇÁÃ¢ÀÌ ¶°ÀÖÀ»¶§ ÀÎº¥ AB ¸·À½
+	//============ ˜?˜˜˜?˜?˜ ˜˜˜?˜˜˜˜ ˜˜˜?˜ (˜˜˜˜060612)
+	//˜?˜˜˜?˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜?˜ AB ˜˜˜˜
 	if (sMessageBox3[MESSAGE_TELEPORT_CORE].Flag)return TRUE;
 	for (i = 0; i < SIN_MAX_HELP_NUMBER; i++)
 	{
@@ -7813,7 +7828,7 @@ int cINVENTORY::ChangeABItem(int Posi)
 
 	}
 
-	// pluto Á¦ÀÛ ABÃ¼ÀÎÁö ¸·´Â´Ù
+	// pluto ˜˜˜˜ AB?˜˜˜˜ ˜˜˜?˜
 	if (sinCraftItemStartFlag || StartInterEffectAging2)
 	{
 		return TRUE;
@@ -7823,7 +7838,7 @@ int cINVENTORY::ChangeABItem(int Posi)
 		return TRUE;
 	}
 
-	//============== ¾ÆÅÛ»ç¿ëÈÄ ABÃ¼ÀÎÁö ¸·´Â´Ù
+	//============== ˜˜˜?˜˜˜˜ AB?˜˜˜˜ ˜˜˜?˜
 
 	if (Posi <= 2)desPosi = 1;
 	if (Posi > 2)desPosi = 2;
@@ -7851,9 +7866,9 @@ int cINVENTORY::ChangeABItem(int Posi)
 
 	switch (desPosi) {
 	case 1: //Box
-		memcpy(&BackUpInvenItemTemp, &InvenItemTemp, sizeof(sITEM) * 80); //Àá½Ã ¾ÆÀÌÅÛÀ» ¹é¾÷ÇÑ´Ù 
+		memcpy(&BackUpInvenItemTemp, &InvenItemTemp, sizeof(sITEM) * 80); //˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜?˜ 
 		for (t = 0; t < 80; t++)InvenItemTemp[t].Flag = 0;
-		for (i = 0; i < 80; i++) { //Temp·Î º¹»ç 
+		for (i = 0; i < 80; i++) { //Temp˜˜ ˜˜˜˜ 
 			if (InvenItem[i].Flag) {
 				if (InvenItem[i].ItemPosition == 0) {
 					for (j = 0; j < 80; j++) {
@@ -7866,7 +7881,7 @@ int cINVENTORY::ChangeABItem(int Posi)
 				}
 			}
 		}
-		for (i = 0; i < 80; i++) { //ÀÎº¥Åä¸® ¾ÆÀÌÅÛÀ¸·Î º¹»ç 
+		for (i = 0; i < 80; i++) { //˜?˜˜? ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜ 
 			if (BackUpInvenItemTemp[i].Flag) {
 				for (j = 0; j < 80; j++) {
 					if (!InvenItem[j].Flag) {
@@ -7884,7 +7899,7 @@ int cINVENTORY::ChangeABItem(int Posi)
 
 		break;
 
-	case 2: //¹«±â Æ÷Áö¼Ç 
+	case 2: //˜˜˜˜ ˜˜˜˜˜˜ 
 		ContinueSkillCancelFlag = 1;
 		memcpy(&BackUpInvenItemTemp[80], &InvenItemTemp[80], sizeof(sITEM) * 2);
 		for (t = 80; t < 82; t++)InvenItemTemp[t].Flag = 0;
@@ -7904,14 +7919,14 @@ int cINVENTORY::ChangeABItem(int Posi)
 			}
 		}
 
-		for (i = 80; i < 82; i++) { //ÀÎº¥Åä¸® ¾ÆÀÌÅÛÀ¸·Î º¹»ç 
+		for (i = 80; i < 82; i++) { //˜?˜˜? ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜ 
 			if (BackUpInvenItemTemp[i].Flag) {
 				for (j = 0; j < 80; j++) {
 					if (!InvenItem[j].Flag) {
 						memcpy(&InvenItem[j], &BackUpInvenItemTemp[i], sizeof(sITEM));
 						BackUpInvenItemTemp[i].Flag = 0;
 						sInven[InvenItem[j].ItemPosition - 1].ItemIndex = j + 1;
-						sinSetCharItem(InvenItem[j].CODE, InvenItem[j].SetModelPosi, TRUE); //¾ÆÀÌÅÛÀ» ¹Ù²Ü¶§ 
+						sinSetCharItem(InvenItem[j].CODE, InvenItem[j].SetModelPosi, TRUE); //˜˜˜˜˜˜˜˜ ˜??˜ 
 						if (InvenItem[j].SoundIndex)
 							sinPlaySound(InvenItem[j].SoundIndex);
 						break;
@@ -7927,29 +7942,29 @@ int cINVENTORY::ChangeABItem(int Posi)
 		break;
 	}
 
-	//¾ç¼Õ ¾ÆÀÌÅÛÀÌ ÇÑ¼Õ¿¡ ÀÖÀ»°æ¿ì¿¡´Â Áö¿öÁØ´Ù 
+	//˜˜˜ ˜˜˜˜˜˜˜˜ ˜??˜ ˜˜˜˜˜˜?˜˜ ˜˜˜˜˜?˜ 
 	for (i = 0; i < INVENTORY_MAXITEM; i++) {
 		if (InvenItem[i].Flag) {
 			if (InvenItem[i].ItemPosition) {
-				//¾ç¼Õ¾ÆÀÌÅÛÀÌ ÇÑ¼Õ¿¡ ÀÖÀ»°æ¿ì¿¡´Â Áö¿öÁØ´Ù 
+				//˜˜?˜˜˜˜˜˜˜ ˜??˜ ˜˜˜˜˜˜?˜˜ ˜˜˜˜˜?˜ 
 				if (InvenItem[i].Class == ITEM_CLASS_WEAPON_TWO) {
-					if (InvenItem[i].ItemPosition == 1) {//¿À¸¥¼Õ 
+					if (InvenItem[i].ItemPosition == 1) {//˜˜˜˜˜˜ 
 						if (InvenItem[i].sItemInfo.CODE != InvenItem[sInven[1].ItemIndex - 1].sItemInfo.CODE) {
 							InvenItem[sInven[1].ItemIndex - 1].Flag = 0;
 							InvenItem[i].Flag = 0;
-							sInven[1].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
-							sInven[0].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
+							sInven[1].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
+							sInven[0].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
 							if (InvenItem[i].SetModelPosi)
 								sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE);
 
 						}
 					}
-					if (InvenItem[i].ItemPosition == 2) {//¿Þ¼Õ 
+					if (InvenItem[i].ItemPosition == 2) {//˜?˜ 
 						if (InvenItem[i].sItemInfo.CODE != InvenItem[sInven[0].ItemIndex - 1].sItemInfo.CODE) {
 							InvenItem[sInven[0].ItemIndex - 1].Flag = 0;
 							InvenItem[i].Flag = 0;
-							sInven[0].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
-							sInven[1].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
+							sInven[0].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
+							sInven[1].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
 							if (InvenItem[i].SetModelPosi)
 								sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE);
 
@@ -7960,7 +7975,7 @@ int cINVENTORY::ChangeABItem(int Posi)
 		}
 	}
 
-	///////////'E'Å°·ÎÀÎÇØ ¾ø¾îÁö´Â ¹°¾àÀ» Ã£±âÀ§ÇÑ Èû°Ü¿î ³ë·Â!!!
+	///////////'E'?˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜˜˜˜ ˜˜˜?˜ ˜˜˜!!!
 	if (MouseItem.Flag) {
 		if (MouseItem.Class == ITEM_CLASS_POTION) {
 			GhostPotionCheckFlag = 1;
@@ -7973,9 +7988,9 @@ int cINVENTORY::ChangeABItem(int Posi)
 	else
 		GhostPotionCheckFlag = 0;
 
-	CheckRequireItem(); //¾ÆÀÌÅÛÀÇ Á¤º¸¸¦ º¯°æÇÑ´Ù (¿ä±¸Ä¡ °ü·Ã)
-	ReFormInvenItem(); //¿ÀÅä ¼ÂÆÃµÈ´ÙÀ½¿¡µµ Ã¼Å©¼¶À» °»½ÅÇÑ´Ù 
-	cInvenTory.CheckPuzzle(); //ÆÛÁñ Ã¼Å©
+	CheckRequireItem(); //˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ (˜?? ˜˜˜˜)
+	ReFormInvenItem(); //˜˜˜˜ ˜˜˜??˜˜˜˜˜˜˜ ??˜˜˜˜ ˜˜˜˜˜?˜ 
+	cInvenTory.CheckPuzzle(); //˜˜˜˜ ??
 	return TRUE;
 }
 
@@ -8016,7 +8031,7 @@ int cINVENTORY::ChangeACItem(bool Costume)
 	return TRUE;
 }
 
-// Preço de venda dos itens no NPC
+// Pre˜o de venda dos itens no NPC
 sITEMPRICE cINVENTORY::GetInvenItemPrice(sITEM* pItem)
 {
 	sITEMPRICE sinItemPrice;
@@ -8037,10 +8052,10 @@ sITEMPRICE cINVENTORY::GetInvenItemPrice(sITEM* pItem)
 	if (Dur[0] == 0)Dur[0] = 1;
 	if (Dur[1] == 0)Dur[1] = 1;
 
-	// Preço do item no NPC
+	// Pre˜o do item no NPC
 	sinItemPrice.PureSellPrice = (int)((Price * (Dur[0] / Dur[1])) + (Price - (Price * (Dur[0] / Dur[1]))) * 0.25);
 
-	// Se for Gold bar, vende pelo mesmo preço
+	// Se for Gold bar, vende pelo mesmo pre˜o
 	if (pItem->sItemInfo.itemType == 3 || pItem->sItemInfo.itemType == 4 || pItem->sItemInfo.itemType == 5)
 		sinItemPrice.SellPrice = (int)Price;
 	else
@@ -8061,16 +8076,16 @@ int cINVENTORY::RepairInvenItem(sITEM* pItem, int RepairCost)
 		}
 	}
 
-	CheckCharForm();//ÀÎÁõ 
-	//ReformCharForm();//ÀçÀÎÁõ
+	CheckCharForm();//˜˜˜˜ 
+	//ReformCharForm();//˜˜˜˜˜˜
 	if (!pItem->sItemInfo.Durability[1])return FALSE;
 	if (sinChar->Money - RepairCost > 0) {
 		if (pItem->sItemInfo.Durability[0] < pItem->sItemInfo.Durability[1]) {
 			//sinChar->Money -= RepairCost;
 			sinMinusMoney(RepairCost);
 			pItem->sItemInfo.Durability[0] = pItem->sItemInfo.Durability[1];
-			ReformCharForm();//ÀçÀÎÁõ 
-			SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+			ReformCharForm();//˜˜˜˜˜˜ 
+			SendSaveMoney(); //˜?˜ ˜˜˜˜˜˜ ˜˜˜?˜˜?˜˜˜˜˜ ?˜˜˜?˜ 
 			return TRUE;
 		}
 	}
@@ -8078,13 +8093,13 @@ int cINVENTORY::RepairInvenItem(sITEM* pItem, int RepairCost)
 
 }
 
-//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù 
+//˜˜˜?˜ ??˜?˜ 
 void cINVENTORY::CheckWeight()
 {
 
-	CheckCharForm();//ÀÎÁõ
+	CheckCharForm();//˜˜˜˜
 
-	sinChar->Weight[0] = 0; //¹«°Ô ÃÊ±âÈ­ ÈÄ ´Ù½Ã ¼ÂÆÃ 
+	sinChar->Weight[0] = 0; //˜˜˜˜ ˜?˜? ˜˜ ˜?˜ ˜˜˜˜ 
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
 		if (InvenItem[i].Flag) {
 			if (InvenItem[i].Class == ITEM_CLASS_POTION) {
@@ -8110,15 +8125,15 @@ void cINVENTORY::CheckWeight()
 		}
 	}
 
-	ReformCharForm();//ÀçÀÎÁõ 
+	ReformCharForm();//˜˜˜˜˜˜ 
 
 }
 
-// ¼ÂÆÃÇÒ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù 
+// ˜˜˜˜˜?˜˜?˜˜˜˜˜ ??˜?˜ 
 int cINVENTORY::CheckSetOk(sITEM* pItem, int AutoFlag)
 {
 	if (pItem->Class == ITEM_CLASS_POTION) {
-		if (sinChar->Weight[0] + pItem->sItemInfo.PotionCount > sinChar->Weight[1]) { //¹«°Ô¸¦ ³Ñ¾î¼­¸é 
+		if (sinChar->Weight[0] + pItem->sItemInfo.PotionCount > sinChar->Weight[1]) { //˜˜˜?˜ ˜??˜˜ 
 			cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 			sinOverWeightCnt++;
 			return FALSE;
@@ -8126,7 +8141,7 @@ int cINVENTORY::CheckSetOk(sITEM* pItem, int AutoFlag)
 
 	}
 	else {
-		if (sinChar->Weight[0] + pItem->sItemInfo.Weight > sinChar->Weight[1]) { //¹«°Ô¸¦ ³Ñ¾î¼­¸é 
+		if (sinChar->Weight[0] + pItem->sItemInfo.Weight > sinChar->Weight[1]) { //˜˜˜?˜ ˜??˜˜ 
 			if (pItem->sItemInfo.ItemKindCode != ITEM_KIND_QUEST_WEAPON) {
 				cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 				sinOverWeightCnt++;
@@ -8134,11 +8149,11 @@ int cINVENTORY::CheckSetOk(sITEM* pItem, int AutoFlag)
 			}
 		}
 	}
-	if (!AutoFlag) { //¿ÀÅä¼ÂÆÃÀÌ ¾Æ´Ò °æ¿ì¿¡¸¸ Ã¼Å©ÇÑ´Ù 
+	if (!AutoFlag) { //˜˜˜˜˜˜˜˜˜ ˜?˜ ˜˜?˜˜ ??˜?˜ 
 		if (pItem->ItemPosition) {
 			if (pItem->sItemInfo.NotUseFlag) {
 				cMessageBox.ShowMessage(MESSAGE_NO_USE_ITEM);
-				return FALSE; //¸Þ¼¼Áö¸¸ Ãâ·ÂÇØÁØ´Ù Ã¢°í·Î ¿ÀÅä¼ÂÆÃÀº µÈ´Ù 
+				return FALSE; //˜?˜˜˜˜˜ ˜˜˜˜˜˜?˜ ?˜˜˜˜ ˜˜˜˜˜˜˜˜˜ ˜?˜ 
 			}
 		}
 	}
@@ -8146,20 +8161,20 @@ int cINVENTORY::CheckSetOk(sITEM* pItem, int AutoFlag)
 }
 
 
-//º¹»çµÈ ¾ÆÀÌÅÛÀ» ¾ø¾Ø´Ù  
+//˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜?˜  
 int cINVENTORY::CopyItemClear(sITEM* pItem)
-{ //¸¶¿ì½º¿¡ µé·ÁÀÖ´Â ¾ÆÀÌÅÛ°ú °°Àº ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö¸¦ °Ë»çÇÑ´Ù
+{ //˜˜˜?˜˜ ˜˜˜˜?˜ ˜˜˜˜˜?˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜?˜˜?˜
 
 	int CopyItemCnt = 0;
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
-		if (InvenItem[i].Flag) {		//¾Õ¸é ÀÎº¥Åä¸® 
+		if (InvenItem[i].Flag) {		//˜?˜ ˜?˜˜? 
 			if (CompareItems(&pItem->sItemInfo, &InvenItem[i].sItemInfo)) {
-				//º¹»çµÈ ¾ÆÀÌÅÛÀ» Áö¿öÁØ´Ù 
+				//˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 				InvenItem[i].Flag = 0;
 				if (InvenItem[i].ItemPosition) {
 					sInven[InvenItem[i].ItemPosition - 1].ItemIndex = 0;
-					sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE); //¹«±â¿Í °©¿ÊÀ» ¼ÂÆÃÇÑ´Ù 
-					ClearTwoHandPosiAndItem(&InvenItem[i]);//ÅõÇÚµå ¹«±âÀÌ¸é ÅõÇÚµå ¹«±â¸¦ Áö¿öÁØ´Ù 
+					sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE); //˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
+					ClearTwoHandPosiAndItem(&InvenItem[i]);//˜˜˜?˜ ˜˜˜˜˜?˜ ˜˜˜?˜ ˜˜˜? ˜˜˜˜˜?˜ 
 
 				}
 				CopyItemCnt++;
@@ -8168,8 +8183,8 @@ int cINVENTORY::CopyItemClear(sITEM* pItem)
 			}
 
 		}
-		if (InvenItemTemp[i].Flag) {	//µÞ¸é ÀÎº¥Åä¸® 
-			if (CompareItems(&pItem->sItemInfo, &InvenItemTemp[i].sItemInfo)) {//º¹»çµÈ ¾ÆÀÌÅÛÀ» Áö¿öÁØ´Ù 
+		if (InvenItemTemp[i].Flag) {	//˜?˜ ˜?˜˜? 
+			if (CompareItems(&pItem->sItemInfo, &InvenItemTemp[i].sItemInfo)) {//˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 				InvenItemTemp[i].Flag = 0;
 				if (InvenItemTemp[i].Class == ITEM_CLASS_WEAPON_TWO) {
 					if (InvenItemTemp[i].ItemPosition == 1 || InvenItemTemp[i].ItemPosition == 2) {
@@ -8189,7 +8204,7 @@ int cINVENTORY::CopyItemClear(sITEM* pItem)
 		}
 	}
 	if (CopyItemCnt) {
-		SendCopyItemUser(CopyItemCnt); //¼­¹ö¿¡ Ä«ÇÇµÈ ¾ÆÀÌÅÛÀÇ °¹¼ö¸¦ º¸³½´Ù 
+		SendCopyItemUser(CopyItemCnt); //˜˜˜˜˜˜ ?˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ 
 		CopyItemCnt = 0;
 	}
 	return TRUE;
@@ -8197,7 +8212,7 @@ int cINVENTORY::CopyItemClear(sITEM* pItem)
 }
 
 POINT ResultSize;
-//±×¸²ÀÇ »çÀÌÁî¸¦ ±¸ÇØ¼­ ¸®ÅÏÇÑ´Ù 
+//˜?˜˜˜ ˜˜˜˜˜? ˜˜˜?˜ ˜˜˜˜˜?˜ 
 POINT cINVENTORY::CheckImageSize(LPDIRECT3DTEXTURE9 lpdd)
 {
 	ResultSize.x = 0;
@@ -8210,7 +8225,7 @@ POINT cINVENTORY::CheckImageSize(LPDIRECT3DTEXTURE9 lpdd)
 	return ResultSize;
 }
 
-//ÀÓ½Ã·Î ¾ÆÀÌÅÛ ÀÌ¹ÌÁö¸¦ Ã¼Å©ÇÏ±âÀ§ÇØ¼­ ¾²ÀÎ´Ù 
+//˜??˜ ˜˜˜˜˜˜ ˜?˜˜˜˜˜ ??˜?˜˜˜˜?˜ ˜˜˜?˜ 
 int cINVENTORY::ImsiCheckItemImageSize()
 {
 	sITEM TestItem;
@@ -8219,7 +8234,7 @@ int cINVENTORY::ImsiCheckItemImageSize()
 	sinTestBuff[0] = 0;
 	for (int j = 0; j < MAX_ITEM; j++) {
 		wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
-		memcpy(&TestItem, &sItem[j], sizeof(sITEM));  //±¸Á¶Ã¼¿¡ Á¤ÀÇµÈ Á¤º¸¸¦ ÀúÀåÇÑ´Ù 
+		memcpy(&TestItem, &sItem[j], sizeof(sITEM));  //˜˜˜˜?˜˜ ˜˜˜?˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 		TestItem.lpItem = LoadDibSurfaceOffscreen(szFilePath);
 		TestPoint.x = 0;
 		TestPoint.y = 0;
@@ -8236,14 +8251,14 @@ int cINVENTORY::ImsiCheckItemImageSize()
 }
 
 
-//Àß¸øµÈ ÁÂÇ¥¸¦ º¸Á¤ÇØÁØ´Ù 
+//˜?˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜˜?˜ 
 int cINVENTORY::CheckOverlapItem(sITEM* pItem, int PassItemIndex)
 {
 	int ReSetXYFlag = 0;
 	if (!pItem)return FALSE;
 	if (pItem->ItemPosition) {
-		if (pItem->ItemPosition < 11) { //¹°¾à Æ÷Áö¼ÇÀÌ ¾Æ´Ï¸é 
-			sInven[pItem->ItemPosition - 1].ItemIndex = 0; //Æ÷Áö¼Ç ÃÊ±âÈ­ 
+		if (pItem->ItemPosition < 11) { //˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜??˜ 
+			sInven[pItem->ItemPosition - 1].ItemIndex = 0; //˜˜˜˜˜˜ ˜?˜? 
 			pItem->ItemPosition = 0;
 			ReSetXYFlag = 1;
 		}
@@ -8264,10 +8279,10 @@ int cINVENTORY::CheckOverlapItem(sITEM* pItem, int PassItemIndex)
 	RECT	rect;
 	int		flag;
 
-	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //˜˜˜˜˜˜˜˜ ˜˜?˜˜˜?˜ ˜˜˜˜ ˜˜ X˜˜? 
+	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //˜˜˜˜˜˜˜˜ ˜˜?˜˜˜?˜ ˜˜˜˜ ˜˜ Y˜˜?
 
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//˜?? ˜˜˜˜ ˜??˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜?˜ ˜?˜˜?˜ ˜˜?˜˜ ?˜?˜˜˜ 
 
 	if (CrashInvenItem(Rect, PassItemIndex) || ReSetXYFlag) {
 		for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
@@ -8298,7 +8313,7 @@ int cINVENTORY::CheckOverlapItem(sITEM* pItem, int PassItemIndex)
 	return FALSE;
 }
 
-//ÀÓ½Ã·Î Àß¸øµÈ ÁÂÇ¥¸¦ º¸Á¤ÇØÁØ´Ù 
+//˜??˜ ˜?˜˜˜ ˜˜?˜˜ ˜˜˜˜˜˜˜?˜ 
 int cINVENTORY::ReSetPotionXY(sITEM* pItem, int kind)
 {
 
@@ -8314,10 +8329,10 @@ int cINVENTORY::ReSetPotionXY(sITEM* pItem, int kind)
 	RECT	rect;
 	int		flag;
 
-	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //˜˜˜˜˜˜˜˜ ˜˜?˜˜˜?˜ ˜˜˜˜ ˜˜ X˜˜? 
+	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //˜˜˜˜˜˜˜˜ ˜˜?˜˜˜?˜ ˜˜˜˜ ˜˜ Y˜˜?
 
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//˜?? ˜˜˜˜ ˜??˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜?˜ ˜?˜˜?˜ ˜˜?˜˜ ?˜?˜˜˜ 
 
 	if (kind == 1) {
 		for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
@@ -8338,7 +8353,7 @@ int cINVENTORY::ReSetPotionXY(sITEM* pItem, int kind)
 				if (flag == 0) {
 					pItem->x = cntx;
 					pItem->y = cnty;
-					//sInven[pItem->ItemPosition-2].ItemIndex =0; //¿ä±â´Â ÅÛÇÁ¾ÆÀÌÅÛÀÌ¶ó¼­ °Á ³ÀµÐ´Ù 
+					//sInven[pItem->ItemPosition-2].ItemIndex =0; //˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜?˜ ˜˜ ˜˜˜˜ 
 					pItem->ItemPosition = 0;
 					return TRUE;
 				}
@@ -8428,10 +8443,10 @@ int cINVENTORY::UseEcore(sITEM* pItem)
 					}
 				}
 				else {
-					TitleBox::GetInstance()->SetText("Você deve estar em grupo", 3);
+					TitleBox::GetInstance()->SetText("Voc˜ deve estar em grupo", 3);
 				}
 
-				if (partyFlag && !foundPlayerGroup) CHATGAMEHANDLE->AddChatBoxText("> Membro do grupo não encontrado!", EChatColor::CHATCOLOR_Error);
+				if (partyFlag && !foundPlayerGroup) CHATGAMEHANDLE->AddChatBoxText("> Membro do grupo n˜o encontrado!", EChatColor::CHATCOLOR_Error);
 			}
 		}
 
@@ -8486,7 +8501,7 @@ int cINVENTORY::EatSongPyeun(sITEM* pItem)
 	}
 	char szBuff[128];
 
-	//////////////À¯Åë±âÇÑÀÌ Áö³­ ¼ÛÆíÀ» ¸Ô¾úÀ»¶§ 
+	//////////////˜˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜˜˜˜ 
 	if (cItem.GetItemLimitTime(pItem) == FALSE) {
 		//if(pItem->LimitTimeFlag){
 			//cMessageBox.ShowMessage(MESSAGE_DEAD_SONGPYUEN);
@@ -8504,26 +8519,26 @@ int cINVENTORY::EatSongPyeun(sITEM* pItem)
 
 	TempRandPotion = pItem->sItemInfo.Life[1] - pItem->sItemInfo.Life[0];
 	ResultPotion = pItem->sItemInfo.Life[0] + (rand() % TempRandPotion);
-	sinSetLife((sinGetLife() + ResultPotion));		//¶óÀÌÇÁ ¼ÂÆÃ 
+	sinSetLife((sinGetLife() + ResultPotion));		//˜˜˜˜˜˜ ˜˜˜˜ 
 	Life = (sinGetLife() + ResultPotion);
 
 	TempRandPotion = pItem->sItemInfo.Mana[1] - pItem->sItemInfo.Mana[0];
 	ResultPotion = pItem->sItemInfo.Mana[0] + (rand() % TempRandPotion);
-	sinSetMana((sinGetMana() + ResultPotion));		//¸¶³ª ¼ÂÆÃ
+	sinSetMana((sinGetMana() + ResultPotion));		//˜˜˜˜ ˜˜˜˜
 	Mana = (sinGetLife() + ResultPotion);
 
 	TempRandPotion = pItem->sItemInfo.Stamina[1] - pItem->sItemInfo.Stamina[0];
 	ResultPotion = pItem->sItemInfo.Stamina[0] + (rand() % TempRandPotion);
-	sinSetStamina((sinGetStamina() + ResultPotion));	//½ºÅ×¹Ì³ª ¼ÂÆÃ
+	sinSetStamina((sinGetStamina() + ResultPotion));	//˜˜˜??˜ ˜˜˜˜
 	Stamina = (sinGetLife() + ResultPotion);
 
 	smTRANS_COMMAND	smTransCommand;
 
 	smTransCommand.size = sizeof(smTRANS_COMMAND);
 	smTransCommand.code = smTRANSCODE_PARTY_POTION;
-	smTransCommand.WParam = Life;	//»ý¸í·Â
-	smTransCommand.LParam = Mana;	//±â·Â
-	smTransCommand.SParam = Stamina;//±Ù·Â
+	smTransCommand.WParam = Life;	//˜˜˜˜˜˜
+	smTransCommand.LParam = Mana;	//˜˜˜
+	smTransCommand.SParam = Stamina;//˜?˜
 	smTransCommand.EParam = lpCurPlayer->dwObjectSerial;
 
 	if (smWsockUserServer && InterfaceParty.PartyMemberCount)
@@ -8537,7 +8552,7 @@ int cINVENTORY::EatSongPyeun(sITEM* pItem)
 	return TRUE;
 
 }
-//¸¶¿ì½º¿¡ ÀÖ´Â ¾ÆÀÌÅÛÀ» ¸®ÅÏÇÑ´Ù 
+//˜˜˜?˜˜ ˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 int cINVENTORY::ResetMouseItem()
 {
 	if (MouseItem.Flag) {
@@ -8550,9 +8565,9 @@ int cINVENTORY::ResetMouseItem()
 }
 //CheckInvenItemForm();
 //ReFormInvenItem();
-//////////////////////ÀÎº¥Åä¸® ¾ÆÀÌÅÛÀÇ Á¶ÀÛÀ» ¹æÁöÇÑ´Ù 
+//////////////////////˜?˜˜? ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 int cINVENTORY::CheckInvenItemForm()
-{ //µ¥ÀÌÅ¸ÀÇ °ªÀ» ´õÇØ¼­ º¯¼ö¿¡ ³Ö¾îÁØ´Ù 
+{ //˜˜˜˜?˜˜ ˜˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜ ˜?˜˜?˜ 
 	DWORD TempCheckDataSum = 0;
 
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
@@ -8579,14 +8594,14 @@ int cINVENTORY::CheckInvenItemForm()
 
 	}
 	/*if(TempCheckDataSum != InvenDataCheckSum){
-		SendSetHackUser(2); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á
+		SendSetHackUser(2); //˜˜?˜˜ ˜?˜˜˜˜?˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ TRUE ˜˜˜˜ ˜˜˜˜
 		//TempCheckDataSum = 0;
 
 	}*/
 	return TRUE;
 }
 
-//µ¥ÀÌÅ¸ÀÇ °ªÀ» ¼ÂÆÃÇÑ´Ù 
+//˜˜˜˜?˜˜ ˜˜˜˜ ˜˜˜˜˜?˜ 
 int cINVENTORY::ReFormInvenItem()
 {
 	DWORD Temp = 0;
@@ -8659,7 +8674,7 @@ int cINVENTORY::CheckMoneyLimit(int Money)
 	return FALSE;
 }
 
-//////Æ÷¼ÇÀÇ °¹¼ö¸¦ ´õÇÑ´Ù 
+//////˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜?˜ 
 int sinPotionNum[4] = { 0,0,0,0 };
 int CheckPotionNum[4] = { 0,0,0,0 };
 int cINVENTORY::ReFormPotionNum()
@@ -9103,11 +9118,11 @@ int cINVENTORY::ResetInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum, D
 	return FALSE;
 }
 
-//¾ÆÀÌÅÛ »èÁ¦ (¼­¹ö ¸Þ¼¼Áö)
+//˜˜˜˜˜˜ ˜˜˜˜ (˜˜˜˜ ˜?˜˜˜)
 int cINVENTORY::DeleteInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum)
 {
 
-	//¸¶¿ì½º ¾ÆÀÌÅÛÀ» Ã¼Å©ÇØÁØ´Ù 
+	//˜˜˜? ˜˜˜˜˜˜˜˜ ??˜˜˜?˜ 
 	if (MouseItem.Flag && MouseItem.CODE == CODE &&
 		MouseItem.sItemInfo.ItemHeader.Head == Head &&
 		MouseItem.sItemInfo.ItemHeader.dwChkSum == CheckSum) {
@@ -9122,25 +9137,25 @@ int cINVENTORY::DeleteInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum)
 				InvenItem[i].sItemInfo.ItemHeader.dwChkSum == CheckSum) {
 				InvenItem[i].Flag = 0;
 				if (InvenItem[i].ItemPosition) {
-					//¾ç¼Õ¾ÆÀÌÅÛÀÌ ÇÑ¼Õ¿¡ ÀÖÀ»°æ¿ì¿¡´Â Áö¿öÁØ´Ù 
+					//˜˜?˜˜˜˜˜˜˜ ˜??˜ ˜˜˜˜˜˜?˜˜ ˜˜˜˜˜?˜ 
 					if (InvenItem[i].Class == ITEM_CLASS_WEAPON_TWO) {
-						if (InvenItem[i].ItemPosition == 1) {//¿À¸¥¼Õ 
+						if (InvenItem[i].ItemPosition == 1) {//˜˜˜˜˜˜ 
 							if (InvenItem[i].CODE != InvenItem[sInven[1].ItemIndex - 1].CODE) {
 								InvenItem[sInven[1].ItemIndex - 1].Flag = 0;
 								InvenItem[i].Flag = 0;
-								sInven[1].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
-								sInven[0].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
+								sInven[1].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
+								sInven[0].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
 								if (InvenItem[i].SetModelPosi)
 									sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE);
 
 							}
 						}
-						if (InvenItem[i].ItemPosition == 2) {//¿Þ¼Õ 
+						if (InvenItem[i].ItemPosition == 2) {//˜?˜ 
 							if (InvenItem[i].CODE != InvenItem[sInven[0].ItemIndex - 1].CODE) {
 								InvenItem[sInven[0].ItemIndex - 1].Flag = 0;
 								InvenItem[i].Flag = 0;
-								sInven[0].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
-								sInven[1].ItemIndex = 0; //ÀÎº¥Åä¸® ¹Ú½º ÃÊ±âÈ­ 
+								sInven[0].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
+								sInven[1].ItemIndex = 0; //˜?˜˜? ˜?˜ ˜?˜? 
 								if (InvenItem[i].SetModelPosi)
 									sinSetCharItem(InvenItem[i].CODE, InvenItem[i].SetModelPosi, FALSE);
 
@@ -9154,7 +9169,7 @@ int cINVENTORY::DeleteInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum)
 
 				}
 				ReFormInvenItem();
-				ReformCharForm();//ÀçÀÎÁõ 
+				ReformCharForm();//˜˜˜˜˜˜ 
 				ReFormPotionNum();
 				SetItemToChar();
 				break;
@@ -9168,7 +9183,7 @@ int cINVENTORY::DeleteInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum)
 				InvenItemTemp[i].sItemInfo.ItemHeader.dwChkSum == CheckSum) {
 				InvenItemTemp[i].Flag = 0;
 				ReFormInvenItem();
-				ReformCharForm();//ÀçÀÎÁõ 
+				ReformCharForm();//˜˜˜˜˜˜ 
 				ReFormPotionNum();
 				SetItemToChar();
 				break;
@@ -9177,7 +9192,7 @@ int cINVENTORY::DeleteInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum)
 		}
 	}
 
-	//Çã»ó ¾ÆÀÌÅÛÀÌ ÀÖÀ»°æ¿ì Ã¼Å©ÇØ¼­ ´Ù½ÃÇÑ¹ø Áö¿öÁØ´Ù
+	//˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ??˜?˜ ˜?˜˜?˜ ˜˜˜˜˜?˜
 	if (!sInven[0].ItemIndex) {
 		if (sInven[1].ItemIndex) {
 			if (InvenItem[sInven[1].ItemIndex - 1].Flag) {
@@ -9186,7 +9201,7 @@ int cINVENTORY::DeleteInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum)
 						InvenItem[sInven[1].ItemIndex - 1].Flag = 0;
 						sInven[1].ItemIndex = 0;
 						ReFormInvenItem();
-						ReformCharForm();//ÀçÀÎÁõ 
+						ReformCharForm();//˜˜˜˜˜˜ 
 						ReFormPotionNum();
 						SetItemToChar();
 					}
@@ -9198,7 +9213,7 @@ int cINVENTORY::DeleteInvenItemToServer(DWORD CODE, DWORD Head, DWORD CheckSum)
 	return TRUE;
 }
 
-//Ä³¸¯ÅÍ ÆÄ¶ó¸ÞÅÍ Á¶ÀÛÀ» ¹æÁöÇÑ´Ù 
+//?˜˜˜˜ ˜?˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 int cINVENTORY::HackCharStateCheck(smCHAR_INFO* pChar_Info, smCHAR_INFO* desChar_Info)
 {
 	int HackFlag = 0;
@@ -9255,7 +9270,7 @@ int cINVENTORY::HackCharStateCheck(smCHAR_INFO* pChar_Info, smCHAR_INFO* desChar
 	return TRUE;
 }
 
-//Àß¸ø ¹èÄ¡µÈ ¾ÆÀÌÅÛÀ» Àç¹èÄ¡ÇÑ´Ù 
+//˜?˜ ˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜?˜?˜ 
 int cINVENTORY::CheckResetInvenItem()
 {
 	RECT rect;
@@ -9385,7 +9400,7 @@ int cINVENTORY::CheckDamage()
 			Critical += pItem->sItemInfo.Critical_Hit;
 
 
-			// Crítico dos aneis amuletos e sheltons
+			// Cr˜tico dos aneis amuletos e sheltons
 			if ((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinOR1)
 			{
 				if (pItem->sItemInfo.Critical_Hit)
@@ -9551,7 +9566,7 @@ int cINVENTORY::CheckDamage()
 		}
 	}
 
-	// Envia o dano e critico máximo que o char pode causar para o servidor
+	// Envia o dano e critico m˜ximo que o char pode causar para o servidor
 	SendMaxDamageToServer(RealDamage[0], RealDamage[1], RealSendCritical);
 	return TRUE;
 }
@@ -9604,7 +9619,7 @@ int cINVENTORY::DeleteCoupleRing()
 	return TRUE;
 }
 
-//¸µÅ©ÄÚ¾î µ¥ÀÌÅ¸¸¦ ¼­¹ö¿¡¼­ ¹Þ´Â´Ù
+//˜˜?˜?˜ ˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜??˜
 int cINVENTORY::RecvLinkCore(sITEMINFO* pItemInfo)
 {
 	sITEMINFO* pItemInfo2 = 0;
@@ -9621,7 +9636,7 @@ int cINVENTORY::RecvLinkCore(sITEMINFO* pItemInfo)
 			pItemInfo->BackUpKey == pItemInfo2->BackUpKey &&
 			pItemInfo->CODE == pItemInfo2->CODE) {
 			memcpy(pItemInfo2, pItemInfo, sizeof(sITEMINFO));
-			CheckWeight();//¹«°Ô º¸Á¤ 
+			CheckWeight();//˜˜˜˜ ˜˜˜˜ 
 			ReFormInvenItem();
 			return TRUE;
 
@@ -9632,7 +9647,7 @@ int cINVENTORY::RecvLinkCore(sITEMINFO* pItemInfo)
 int sinMousePotionNum[4] = { 0,0,0,0 };
 int ChecMousekPotionNum[4] = { 0,0,0,0 };
 
-//¸¶¿ì½ºÀÇ Æ÷¼ÇÀ» Ã¼Å©ÇÑ´Ù
+//˜˜˜?˜˜ ˜˜˜˜˜˜ ??˜?˜
 int cINVENTORY::CheckMousePotionNumForm()
 {
 	for (int k = 0; k < 4; k++) {
@@ -9664,8 +9679,8 @@ int cINVENTORY::CheckMousePotionNumForm()
 	}
 	for (int j = 0; j < 4; j++) {
 		if (ChecMousekPotionNum[j] != sinMousePotionNum[j]) {
-			//SendSetHackUser(TRUE); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
-			SendSetHackUser2(1510, j); //ÇØÅ·ÇÑ À¯Àú¸¦ ½Å°íÇÑ´Ù
+			//SendSetHackUser(TRUE); //˜˜?˜˜ ˜?˜˜˜˜?˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ TRUE ˜˜˜˜ ˜˜˜˜ 
+			SendSetHackUser2(1510, j); //˜˜?˜˜ ˜˜˜˜˜˜ ˜?˜˜?˜
 
 
 		}
@@ -9674,7 +9689,7 @@ int cINVENTORY::CheckMousePotionNumForm()
 
 	return TRUE;
 }
-//¸¶¿ì½ºÀÇ Æ÷¼ÇÀ» ÀÎÁõÇÑ´Ù 
+//˜˜˜?˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 int cINVENTORY::ReFormMousePotionNum()
 {
 	for (int j = 0; j < 4; j++) {
@@ -9706,12 +9721,12 @@ int cINVENTORY::ReFormMousePotionNum()
 	return TRUE;
 }
 
-//À¯´Ï¿Â ÄÚ¾î ÀÌÆåÆ®¸¦ ¼ÂÆÃÇÑ´Ù
+//˜˜˜?˜ ˜?˜ ˜˜˜˜?˜˜ ˜˜˜˜˜?˜
 int cINVENTORY::SetUnionCoreEffect(int x, int y)
 {
 	for (int i = 0; i < 10; i++) {
 		if (!UnionCore_Effect_Bone[i].Flag) {
-			UnionCore_Effect_Bone[i].DesPosi.x = x + 22; //À¯´Ï¿Â ÄÚ¾îÀÇ Áß½É ÁÂÇ¥¸¦Ã¼Å©ÇÑ´Ù
+			UnionCore_Effect_Bone[i].DesPosi.x = x + 22; //˜˜˜?˜ ˜?˜˜˜ ˜?˜ ˜˜?˜˜??˜?˜
 			UnionCore_Effect_Bone[i].DesPosi.y = y;//-500;
 			UnionCore_Effect_Bone[i].Flag = 1;
 			UnionCore_Effect_Bone[i].Posi.y -= 350;
@@ -9742,7 +9757,7 @@ int cINVENTORY::SetUnionCoreEffect(int x, int y)
 int cINVENTORY::UnionCoreParticleProcess()
 {
 	int i = 0;
-	//º»
+	//˜˜
 	for (i = 0; i < 10; i++) {
 		if (UnionCore_Effect_Bone[i].Flag) {
 			UnionCore_Effect_Bone[i].Time += GetRandomPos(1, 3);
@@ -9762,7 +9777,7 @@ int cINVENTORY::UnionCoreParticleProcess()
 		}
 	}
 
-	//ÆÄÆ¼Å¬
+	//˜˜??
 	for (i = 0; i < 100; i++) {
 		if (UnionCore_Effect[i].Flag) {
 			UnionCore_Effect[i].Time++;
@@ -9873,7 +9888,7 @@ int cINVENTORY::UnionCoreParticle(int x, int y)
 	return TRUE;
 }
 
-//À¯´Ï¿Â ÄÚ¾î ÅÍÁö´Â ÀÌÆåÆ® 
+//˜˜˜?˜ ˜?˜ ˜˜˜˜˜˜ ˜˜˜˜? 
 int cINVENTORY::UnionCoreParticle2(int x, int y, int Flag)
 {
 
@@ -9922,35 +9937,35 @@ int cINVENTORY::UnionCoreParticle2(int x, int y, int Flag)
 }
 
 
-//ÄÚµå·Î ÀÎº¥Åä¸® °ø°£À» Ã¼Å©ÇÑ´Ù 
+//˜?˜˜ ˜?˜˜? ˜˜˜˜˜˜ ??˜?˜ 
 int cINVENTORY::CheckInvenEmpty(sITEM* pItem)
 {
-	//µ·°ú°æÇèÄ¡´Â °ø°£À» Ã¼Å©ÇÏÁö¾Ê´Â´Ù
+	//˜˜˜˜˜˜˜˜?˜˜ ˜˜˜˜˜˜ ??˜˜˜˜˜??˜
 	if (pItem->CODE == (sinGG1 | sin01) || pItem->CODE == (sinGG1 | sin02))return TRUE;
 
 	char szFilePath[256];
 	for (int j = 0; j < MAX_ITEM; j++) {
 		if (pItem->CODE == sItem[j].CODE) {
 			wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
-			if (!sItem[j].lpTempItem) //ÀÌ¹ÌÁö°¡ ¾øÀ¸¸é ·ÎµåÇÑ´Ù
-				sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
-			pItem->lpItem = sItem[j].lpTempItem; //ÅÛÇÁ¿¡ ÀÖ´ø ÀÌ¹ÌÁö Æ÷ÀÎÅÍ¸¦ ³Ö¾îÁØ´Ù 
+			if (!sItem[j].lpTempItem) //˜?˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜?˜
+				sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
+			pItem->lpItem = sItem[j].lpTempItem; //˜˜˜˜˜˜ ˜?˜ ˜?˜˜˜ ˜˜˜˜˜?˜ ˜?˜˜?˜ 
 			pItem->w = sItem[j].w;
 			pItem->h = sItem[j].h;
 		}
 
 	}
 
-	memcpy(&cTrade.CheckItem, &cInvenTory.InvenItem, sizeof(sITEM) * 100); //°ø°£ Ã¼Å©¸¦ À§ÇØ¼­ º¹»ç 
+	memcpy(&cTrade.CheckItem, &cInvenTory.InvenItem, sizeof(sITEM) * 100); //˜˜˜˜ ??˜˜ ˜˜˜?˜ ˜˜˜˜ 
 	if (cTrade.TradeCheckEmptyArea(pItem))
 		return TRUE;
 	else return FALSE;
 }
 
-//µ·ÀÌ¹ÌÁö¿Í °æÇèÄ¡ ÀÌ¹ÌÁö¸¦ ·ÎµùÇÑ´Ù 
+//˜˜˜?˜˜˜˜˜ ˜˜˜˜? ˜?˜˜˜˜˜ ˜?˜˜?˜ 
 int cINVENTORY::LoadMoneyExpImage(sITEM* pItem)
 {
-	//µ·
+	//˜˜
 	if (pItem->CODE == (sinGG1 | sin01)) {
 		if (!lpGold7)lpGold7 = LoadDibSurfaceOffscreen("image\\Sinimage\\MessageBox\\Gold7.bmp");
 		pItem->lpItem = lpGold7;
@@ -9966,21 +9981,21 @@ int cINVENTORY::LoadMoneyExpImage(sITEM* pItem)
 	return TRUE;
 }
 
-//sItemInfo·Î ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®¿¡ ¼ÂÆÃÇÑ´Ù
+//sItemInfo˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜?˜˜ ˜˜˜˜˜?˜
 int cINVENTORY::SetInvenToItemInfo(sITEMINFO* pItemInfo)
 {
 
-	//µ·ÀÏ °æ¿ì
+	//˜˜˜˜ ˜˜˜
 	if (pItemInfo->CODE == (sinGG1 | sin01)) {
-		CheckCharForm();//ÀÎÁõ 
+		CheckCharForm();//˜˜˜˜ 
 		sinPlusMoney(pItemInfo->Money);
-		ReformCharForm();//ÀçÀÎÁõ 	
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+		ReformCharForm();//˜˜˜˜˜˜ 	
+		SendSaveMoney(); //˜?˜ ˜˜˜˜˜˜ ˜˜˜?˜˜?˜˜˜˜˜ ?˜˜˜?˜ 
 		sinPlaySound(SIN_SOUND_COIN);
 		return TRUE;
 	}
 
-	//°æÇèÄ¡ÀÏ°æ¿ì 
+	//˜˜˜˜?˜?˜˜ 
 	if (pItemInfo->CODE == (sinGG1 | sin02)) {
 		AddExp(pItemInfo->Money);
 		sinPlaySound(SIN_SOUND_EAT_POTION2);
@@ -9988,10 +10003,10 @@ int cINVENTORY::SetInvenToItemInfo(sITEMINFO* pItemInfo)
 
 	}
 
-	//¾ÆÀÌÅÛÀÏ °æ¿ì 
+	//˜˜˜˜˜˜˜˜ ˜˜˜ 
 	sITEM TempItem;
 	if (LoadItemImage(pItemInfo, &TempItem)) {
-		if (cInvenTory.CheckRequireItemToSet(&TempItem)) {         //°ð¹Ù·Î ¼ÂÆÃµÉ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù  
+		if (cInvenTory.CheckRequireItemToSet(&TempItem)) {         //˜˜?˜ ˜˜˜??˜˜?˜˜˜˜˜ ??˜?˜  
 			if (!cInvenTory.AutoSetInvenItem(&TempItem, 1)) {
 				TempItem.Flag = 0;
 				return FALSE;
@@ -10006,15 +10021,15 @@ extern BOOL bNewTeleportWindow;
 /*******************************************************************************
 *						Wing Item
 ********************************************************************************/
-int cINVENTORY::sinWingQuestNpc() //À®¾ÆÀÌÅÛ Äù½ºÆ® 
+int cINVENTORY::sinWingQuestNpc() //˜˜˜˜˜˜˜˜ ˜˜˜˜? 
 {
 
 	sITEM* pItem = 0;
 	int   Index = 0;
 	int   i = 0;
 
-	WingItemQuestIndex = 0;//ÃÊ±âÈ­ 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	WingItemQuestIndex = 0;//˜?˜? 
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
 	for (i = 0; i < INVENTORY_MAXITEM * 2; i++) {
 		if (i < 100) {
@@ -10026,31 +10041,31 @@ int cINVENTORY::sinWingQuestNpc() //À®¾ÆÀÌÅÛ Äù½ºÆ®
 			pItem = &InvenItemTemp[i - 100];
 		}
 		switch (pItem->sItemInfo.CODE) {
-		case (sinQW1 | sin01): //¸ÞÅ»À®
+		case (sinQW1 | sin01): //˜˜?˜˜
 			Index = 1;
 			memcpy(&sWingItem_Send.DesCraftItem, pItem, sizeof(sITEM));
 
 			break;
-		case (sinQW1 | sin02): //½Ç¹öÀ®
+		case (sinQW1 | sin02): //˜?˜˜˜
 			Index = 2;
 			memcpy(&sWingItem_Send.DesCraftItem, pItem, sizeof(sITEM));
 
 			break;
-		case (sinQW1 | sin03): //°ñµåÀ®
+		case (sinQW1 | sin03): //˜˜˜˜˜
 			Index = 3;
 			memcpy(&sWingItem_Send.DesCraftItem, pItem, sizeof(sITEM));
 			break;
-		case (sinQW1 | sin04): //´ÙÀÌ¾ÆÀ®
+		case (sinQW1 | sin04): //˜˜˜?˜˜˜
 			Index = 4;
 			memcpy(&sWingItem_Send.DesCraftItem, pItem, sizeof(sITEM));
 			break;
-		case (sinQW1 | sin05): //ÄÉÀÌ¾Æ½º À®
+		case (sinQW1 | sin05): //˜˜˜??˜ ˜˜
 			Index = 5;
 			memcpy(&sWingItem_Send.DesCraftItem, pItem, sizeof(sITEM));
 			break;
-		case (sinQW1 | sin06): //ÀÍ½ºÆ®¸²À® ·Î½ºÆ® ¾ÆÀÏ·£µå ¼º±Ù Ãß°¡
+		case (sinQW1 | sin06): //˜?˜?˜˜˜˜ ˜?˜? ˜˜˜?˜˜˜ ˜˜˜˜ ˜?˜
 			if (smConfig.DebugMode)
-				if (WingItemQuestIndex = 1000)  //¹ÞÀ»¾ÆÀÌÅÛÀÌ ¾øÀ» °æ¿ì¿¡´ëÇÑ ÀÓÀÇ ¼ÂÆÃ
+				if (WingItemQuestIndex = 1000)  //˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜?˜˜˜˜ ˜˜˜˜ ˜˜˜˜
 					cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST_WING, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), WingQuestFilePath_b[6]);
 			return FALSE;
 
@@ -10092,14 +10107,14 @@ int cINVENTORY::sinWingQuestNpc() //À®¾ÆÀÌÅÛ Äù½ºÆ®
 	}
 	else if (bNewTeleportWindow == FALSE)
 	{
-		WingItemQuestIndex = 1000; //¹ÞÀ»¾ÆÀÌÅÛÀÌ ¾øÀ» °æ¿ì¿¡´ëÇÑ ÀÓÀÇ ¼ÂÆÃ
+		WingItemQuestIndex = 1000; //˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜?˜˜˜˜ ˜˜˜˜ ˜˜˜˜
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST_WING, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), WingQuestFilePath_a[Index]);
 	}
 
 	return TRUE;
 }
 
-//Âø¿ëÇÒ¼öÀÖ´Â ¾ÆÀÌÅÛÀÎÁö¸¦ ÇÑ¹ø´õ Ã¼Å©ÇÑ´Ù 
+//˜˜˜˜˜?˜˜?˜ ˜˜˜˜˜˜˜˜˜˜˜˜ ˜?˜˜˜ ??˜?˜ 
 int cINVENTORY::CheckRequireItemToSet2(sITEM* pItem)
 {
 	int NotUseItemFlag = 0;
@@ -10134,7 +10149,7 @@ int cINVENTORY::CheckRequireItemToSet2(sITEM* pItem)
 	return TRUE;
 }
 
-//½ºÆä¼È¾ÆÀÌÅÛ ¼ÒÆÃ
+//˜˜˜˜?˜˜˜˜˜ ˜˜˜˜
 int cINVENTORY::CheckSpecialItemPosi()
 {
 	int j = 0;
@@ -10164,33 +10179,33 @@ int cINVENTORY::CheckSpecialItemPosi()
 
 	}
 	ReFormInvenItem();
-	ReformCharForm();//ÀçÀÎÁõ 
+	ReformCharForm();//˜˜˜˜˜˜ 
 	ReFormPotionNum();
 	SetItemToChar();
 	return TRUE;
 }
 
-//½ºÆä¼È¾ÆÀÌÅÛÀ» º¸¿©ÁØ´Ù
+//˜˜˜˜?˜˜˜˜˜˜˜ ˜˜˜˜˜?˜
 int cINVENTORY::ChangeSpecialItem(int Flag)
 {
-	if (Flag == 1) { //AB¹öÆ°À¸·Î ¾ÆÀÌÅÛ ¾ÕµÚ°¡ ¹Ù²ð¶§ ½ºÆä¼È¾ÆÀÌÅÛÃ¢ÀÌ ¶°ÀÖÀ¸¸é ¹Ù²ãÁØ´Ù
+	if (Flag == 1) { //AB˜˜?˜˜˜˜ ˜˜˜˜˜˜ ˜??˜ ˜?˜ ˜˜˜˜?˜˜˜˜˜?˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜?˜
 		if (SpecialItemShowFlag) {
 			SpecialItemShowFlag = 0;
 
 		}
 		else return FALSE;
 	}
-	else if (Flag == 2) { //¾ÆÀÌÅÛÀ» ÀÔ¼öÇÒ¶§³ª °Å·¡ÇÒ¶§ Ã¢°í¸¦ ¿­¶§ »óÁ¡À» ¿­¶§ µîµî Ã¢À» ¹Ù²Û´Ù
+	else if (Flag == 2) { //˜˜˜˜˜˜˜˜ ˜?˜˜?˜˜˜ ˜?˜˜?˜ ?˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜ ?˜˜ ˜??˜
 		SpecialItemShowFlag = 0;
 
 	}
 	else SpecialItemShowFlag ^= 1;
 
 
-	//½ºÆä¼È¾ÆÀÌÅÛÀÇ ÁÂÇ¥¸¦ ÀÌµ¿½ÃÅ²´Ù
+	//˜˜˜˜?˜˜˜˜˜˜˜ ˜˜?˜˜ ˜?˜˜˜?˜˜
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
 		if (InvenItem[i].Flag) {
-			if (SpecialItemShowFlag) { //Æ¯º°ÇÑ ¾ÆÀÌÅÛÀÇ µð½ºÇÃ·¹ÀÌ¸¦ ´Ù¸£°ÔÇÑ´Ù
+			if (SpecialItemShowFlag) { //?˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜?˜˜?˜ ˜?˜˜˜˜?˜
 				if (InvenItem[i].sItemInfo.SpecialItemFlag[1] == ITEM_KIND_SPECIAL) {
 					if (InvenItem[i].x > 10000) {
 						InvenItem[i].x -= 10000;
@@ -10220,7 +10235,7 @@ int cINVENTORY::ChangeSpecialItem(int Flag)
 	}
 	return TRUE;
 }
-//ÄÚµå³ª ¾ÆÀÌÅÛ Á¾·ù·Î ÀÎº¥Åä¸® ¾ÆÀÌÅÛ ÀÎµ¦½º¸¦ ¸®ÅÏÇÑ´Ù
+//˜?? ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜? ˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜?˜
 int cINVENTORY::SearchItemIndex(DWORD CODE, int KindFlag)
 {
 	int i = 0;
@@ -10261,27 +10276,27 @@ int cINVENTORY::SearchItemIndex(DWORD CODE, int KindFlag)
 	return FALSE;
 }
 
-//¹ÚÀç¿ø - ¼ö¹Ú ¸ð¾Æ¿À±â
+//˜˜˜˜˜ - ˜˜˜˜ ˜˜?˜˜˜
 int WatermelonEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, };
 
-//Àåº° - ¹ß·»Å¸ÀÎ ÃÊÄÝ·¿ ¸ð¾Æ¿À±â
+//˜? - ˜?˜?˜˜ ˜˜˜?˜ ˜˜?˜˜˜
 int ValentineEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, };
 
-// Àåº° - Äµµðµ¥ÀÌÁî
+// ˜? - ?˜˜˜˜˜˜
 int CandydaysEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, };
 
-// Àåº° - ¸ÅÁöÄÃ±×¸°
+// ˜? - ˜˜˜˜˜??˜
 int MagicalGreenEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, };
 int MagicalGreenEmeraldEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, };
 
-// Àåº° - Ä«¶óÀÇ ´«¹°
+// ˜? - ?˜˜˜˜ ˜˜˜˜
 int TearOfKaraEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, };
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó 
-int FindinvestigatorNineEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, }; // ³ªÀÎ ¾Æ¹Ä·¿
-int FindinvestigatorTaleEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, }; // Å×ÀÏ ¾Æ¹Ä·¿
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ 
+int FindinvestigatorNineEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, }; // ˜˜˜˜ ˜??˜
+int FindinvestigatorTaleEventItemIndex[INVENTORY_MAXITEM * 2] = { 0, }; // ˜˜˜˜ ˜??˜
 
-// ¹ÚÀç¿ø - °°Àº ¾ÆÀÌÅÛÀÇ °¹¼ö¸¦ ¸®ÅÏÇÑ´Ù.(ÀÎº¥¿¡¼­ ¼ö¹Ú °¹¼ö ¸®ÅÏÇÏ±â)
+// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜.(˜?˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜?˜)
 int cINVENTORY::CheckItemCount(DWORD CODE)
 {
 	int i = 0;
@@ -10317,7 +10332,7 @@ int cINVENTORY::CheckItemCount(DWORD CODE)
 }
 
 
-// Àåº° - °°Àº ¾ÆÀÌÅÛÀÇ °¹¼ö¸¦ ¸®ÅÏÇÑ´Ù.(ÀÎº¥¿¡¼­ ¹ß·»Å¸ÀÎ ÃÊÄÝ·¿ °¹¼ö ¸®ÅÏÇÏ±â)
+// ˜? - ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜.(˜?˜˜˜˜˜ ˜?˜?˜˜ ˜˜˜?˜ ˜˜˜˜ ˜˜˜˜˜?˜)
 int cINVENTORY::CheckValentineItemCount(DWORD CODE)
 {
 	int i = 0;
@@ -10353,7 +10368,7 @@ int cINVENTORY::CheckValentineItemCount(DWORD CODE)
 }
 
 
-// Àåº° - Äµµðµ¥ÀÌÁî °°Àº ¾ÆÀÌÅÛÀÇ °¹¼ö¸¦ ¸®ÅÏÇÑ´Ù.(ÀÎº¥¿¡¼­ Äµµð °¹¼ö ¸®ÅÏÇÏ±â)
+// ˜? - ?˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜.(˜?˜˜˜˜˜ ?˜˜ ˜˜˜˜ ˜˜˜˜˜?˜)
 int cINVENTORY::CheckCandyItemCount(DWORD CODE)
 {
 	int i = 0;
@@ -10389,7 +10404,7 @@ int cINVENTORY::CheckCandyItemCount(DWORD CODE)
 }
 
 
-// Àåº° - ¸ÅÁöÄÃ±×¸°
+// ˜? - ˜˜˜˜˜??˜
 int cINVENTORY::CheckMagicalGreenItemCount(DWORD CODE)
 {
 	int i = 0;
@@ -10424,7 +10439,7 @@ int cINVENTORY::CheckMagicalGreenItemCount(DWORD CODE)
 	return item_count;
 }
 
-// Àåº° - ¸ÅÁöÄÃ±×¸°
+// ˜? - ˜˜˜˜˜??˜
 int cINVENTORY::CheckMagicalGreenItemEmeraldCount(DWORD CODE)
 {
 	int i = 0;
@@ -10460,7 +10475,7 @@ int cINVENTORY::CheckMagicalGreenItemEmeraldCount(DWORD CODE)
 }
 
 
-// Àåº° - Ä«¶óÀÇ ´«¹° - ÀÌº¥Æ® ¾ÆÀÌÅÛ °¹¼ö ¸®ÅÏ
+// ˜? - ?˜˜˜˜ ˜˜˜˜ - ˜?˜? ˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜
 int cINVENTORY::CheckTearOfKaraItemCount(DWORD CODE)
 {
 	int i = 0;
@@ -10496,7 +10511,7 @@ int cINVENTORY::CheckTearOfKaraItemCount(DWORD CODE)
 }
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó - ³ªÀÎ ¾Æ¹Ä·¿ °¹¼ö ¸®ÅÏ
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ - ˜˜˜˜ ˜??˜ ˜˜˜˜ ˜˜˜˜
 int cINVENTORY::CheckFindinvestigatorNineItemCount(DWORD CODE)
 {
 	int i = 0;
@@ -10532,7 +10547,7 @@ int cINVENTORY::CheckFindinvestigatorNineItemCount(DWORD CODE)
 }
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó - Å×ÀÏ ¾Æ¹Ä·¿ °¹¼ö ¸®ÅÏ
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ - ˜˜˜˜ ˜??˜ ˜˜˜˜ ˜˜˜˜
 int cINVENTORY::CheckFindinvestigatorTaleItemCount(DWORD CODE)
 {
 	int i = 0;
@@ -10567,11 +10582,11 @@ int cINVENTORY::CheckFindinvestigatorTaleItemCount(DWORD CODE)
 	return item_count;
 }
 
-//º¹ÁÖ¸Ó´Ï¿¡¼­ ÆÛÁñ·Î º¯°æÇÑ´Ù
+//˜˜˜???˜˜˜ ˜˜˜˜˜ ˜˜˜˜˜?˜
 int cINVENTORY::ChangePuzzle(sITEM* pItem)
 {
 	char szTestBuff2[256];
-	szTestBuff2[0] = 0; //¹öÆÛÃÊ±âÈ­  
+	szTestBuff2[0] = 0; //˜˜˜˜˜?˜?  
 	if ((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || (pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ2) {
 		if (pItem->sItemInfo.PotionCount <= 1) {
 			pItem->sItemInfo.PotionCount = 2;
@@ -10584,18 +10599,18 @@ int cINVENTORY::ChangePuzzle(sITEM* pItem)
 					pItem->lpItem = sItem[j].lpTempItem;
 					pItem->w = sItem[j].w;
 					pItem->h = sItem[j].h;
-					pItem->CODE = sItem[j].CODE;   //°³ÀÎ »óÁ¡À» ÀÌ¿ëÀ» À§ÇØ ÄÚµåµµ ³Ñ°ÜÁØ´Ù.
-					CheckWeight();//¹«°Ô º¸Á¤ 
+					pItem->CODE = sItem[j].CODE;   //˜˜˜˜ ˜˜˜˜˜˜ ˜?˜˜˜ ˜˜˜˜ ˜?? ˜?˜˜?˜.
+					CheckWeight();//˜˜˜˜ ˜˜˜˜ 
 					ReFormInvenItem();
 					sinMinusMoney(1000);
-					ReformCharForm();//ÀçÀÎÁõ 
-					SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+					ReformCharForm();//˜˜˜˜˜˜ 
+					SendSaveMoney(); //˜?˜ ˜˜˜˜˜˜ ˜˜˜?˜˜?˜˜˜˜˜ ?˜˜˜?˜ 
 					sinUsePotionDelayFlag = 1;
-					cInvenTory.UnionCoreParticle2(pItem->x, pItem->y, 1); //ÀÌÆåÆ® 
-					cInvenTory.UnionCoreParticle2(pItem->x, pItem->y, 1); //ÀÌÆåÆ® 
-					cInvenTory.UnionCoreParticle2(pItem->x, pItem->y, 1); //ÀÌÆåÆ® 
-//					SetPuzzleEffect(pItem->x , pItem->y); //ÀÌÆåÆ® 
-					sinPlaySound(SIN_SOUND_EAT_POTION2); //À¯´Ï¿ÂÄÚ¾î »ç¿îµå
+					cInvenTory.UnionCoreParticle2(pItem->x, pItem->y, 1); //˜˜˜˜? 
+					cInvenTory.UnionCoreParticle2(pItem->x, pItem->y, 1); //˜˜˜˜? 
+					cInvenTory.UnionCoreParticle2(pItem->x, pItem->y, 1); //˜˜˜˜? 
+//					SetPuzzleEffect(pItem->x , pItem->y); //˜˜˜˜? 
+					sinPlaySound(SIN_SOUND_EAT_POTION2); //˜˜˜?˜˜?˜ ˜˜˜˜
 					SaveGameData();
 					return TRUE;
 				}
@@ -10612,7 +10627,7 @@ DWORD CheckPuzzleIndex[4][4] = {
 	{sin07,0,sin08,0},
 };
 
-// Correção Puzzle mecânico
+// Corre˜˜o Puzzle mec˜nico
 DWORD CheckPuzzleIndex2[4][4] = {
 	{sin01,0,sin03,sin04},
 	{sin02,0,0,0},
@@ -10631,7 +10646,7 @@ DWORD CheckPuzzleIndex2[4][4] = {
 DWORD CheckPuzzleX[4] = { 8,9,10,11 };
 int   PuzzleIndex[8] = { 0, };
 
-//ÆÛÁñÀ» Ã¼Å©ÇÑ´Ù
+//˜˜˜˜˜˜ ??˜?˜
 int cINVENTORY::CheckPuzzle()
 {
 	int Count = 0;
@@ -10689,7 +10704,7 @@ int cINVENTORY::CheckPuzzle()
 }
 
 
-//¹Ùº§ÀÇ »ÔÀ» Ã¼Å©ÇÑ´Ù
+//˜?˜˜˜ ˜˜˜˜ ??˜?˜
 int cINVENTORY::CheckEventItem()
 {
 
@@ -10705,7 +10720,7 @@ int cINVENTORY::CheckEventItem()
 	return TRUE;
 }
 
-//¹Ùº§ÀÇ »ÔÀ» º¸³½´Ù
+//˜?˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendEventItem()
 {
 	int Count = 0;
@@ -10715,7 +10730,7 @@ int cINVENTORY::SendEventItem()
 	TempItem.h = 22 * 2;
 
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
 	ItemIndex = SearchItemIndex((sinGF1 | sin02), 0);
 	if (ItemIndex && ItemIndex < 100) {
@@ -10723,7 +10738,7 @@ int cINVENTORY::SendEventItem()
 			cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 			return FALSE;
 
-		}		//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+		}		//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 		if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 			cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 			return FALSE;
@@ -10738,7 +10753,7 @@ int cINVENTORY::SendEventItem()
 
 }
 
-//³ªÀÎÅ×ÀÏ ¾Æ¹°·¿À» Ã¼Å©ÇÑ´Ù
+//˜˜˜˜˜˜˜˜ ˜?˜˜˜˜˜ ??˜?˜
 int cINVENTORY::CheckFoxEventItem()
 {
 
@@ -10754,7 +10769,7 @@ int cINVENTORY::CheckFoxEventItem()
 	return TRUE;
 }
 
-//³ªÀÎÅ×ÀÏ ¾Æ¹°·¿À» º¸³½´Ù
+//˜˜˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendFoxEventItem()
 {
 	int Count = 0;
@@ -10765,7 +10780,7 @@ int cINVENTORY::SendFoxEventItem()
 	TempItem.h = 22 * 4;
 
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
 	ItemIndex = SearchItemIndex((sinGF1 | sin03), 0);
 	ItemIndex2 = SearchItemIndex((sinGF1 | sin04), 0);
@@ -10775,7 +10790,7 @@ int cINVENTORY::SendFoxEventItem()
 			return FALSE;
 
 		}
-		//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+		//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 		if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 			cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 			return FALSE;
@@ -10795,7 +10810,7 @@ int cINVENTORY::SendFoxEventItem()
 }
 
 
-//¹ÝÂ¦¹ÝÂ¦ °¡·ç¸¦ Ã¼Å©ÇÑ´Ù
+//˜˜˜˜˜˜ ˜˜˜? ??˜?˜
 int cINVENTORY::CheckChristMasEventItem()
 {
 
@@ -10810,7 +10825,7 @@ int cINVENTORY::CheckChristMasEventItem()
 	return TRUE;
 }
 
-//¹ÝÂ¦¹ÝÂ¦ °¡·ç¸¦ º¸³½´Ù
+//˜˜˜˜˜˜ ˜˜˜? ˜˜˜˜˜˜
 int cINVENTORY::SendChristmasEventItem()
 {
 	int Count = 0;
@@ -10821,7 +10836,7 @@ int cINVENTORY::SendChristmasEventItem()
 	TempItem.h = 22 * 4;
 
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
 	ItemIndex = SearchItemIndex((sinGF1 | sin05), 0);
 
@@ -10831,7 +10846,7 @@ int cINVENTORY::SendChristmasEventItem()
 			return FALSE;
 
 		}
-		//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+		//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 		if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 			cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 			return FALSE;
@@ -10846,11 +10861,11 @@ int cINVENTORY::SendChristmasEventItem()
 
 
 }
-//ÆÛÁñÀ» º¸³½´Ù
+//˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::CheckSendPuzzle()
 {
 	int Count = 0;
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 	for (int i = 0; i < 8; i++) {
 		if (PuzzleIndex[i] && InvenItem[PuzzleIndex[i] - 1].Flag) {
 			if ((InvenItem[PuzzleIndex[i] - 1].sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 ||
@@ -10863,7 +10878,7 @@ int cINVENTORY::CheckSendPuzzle()
 		}
 	}
 	if (Count == 8) {
-		////////ÆÛÁñ ÄÚµå ¼ÒÆÃ
+		////////˜˜˜˜ ˜?˜ ˜˜˜˜
 		DWORD Temp = 0;
 		for (int j = 0; j < 8; j++) {
 			for (int k = 0; k < 8; k++) {
@@ -10880,7 +10895,7 @@ int cINVENTORY::CheckSendPuzzle()
 		cMessageBox.ShowMessage(MESSAGE_FAILD_PUZZLE);
 		return FALSE;
 	}
-	if (sinChar->Weight[0] + 120 > sinChar->Weight[1]) {		//ÆÛÁñ¾ÆÀÌÅÛ ÀÎº¥Åä¸® ¹«°Ô(ÇöÀç120) (puzzle)
+	if (sinChar->Weight[0] + 120 > sinChar->Weight[1]) {		//˜˜˜˜˜˜˜˜˜ ˜?˜˜? ˜˜˜˜(˜˜˜˜120) (puzzle)
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 
@@ -10897,13 +10912,13 @@ int cINVENTORY::SendPuzzleNpc()
 		cMessageBox.ShowMessage3(MESSAGE_PUZZLE_SEND, PuzzleEvent5);
 	}
 	else {
-		WingItemQuestIndex = 1000; //À®¾ÆÀÌÅÛÀ» ±×´ë·Î µ¨²Ù¿Ô´Ù ÇÏÇÏÇÖ 
-		cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST_WING, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), WingQuestFilePath_a[6]);  //WingQuestFilePath_a[5]);  //¿ø·¡°ª //ÇØ¿Ü
+		WingItemQuestIndex = 1000; //˜˜˜˜˜˜˜˜˜˜ ˜?˜˜ ˜˜˜??˜ ˜˜˜˜˜˜ 
+		cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST_WING, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), WingQuestFilePath_a[6]);  //WingQuestFilePath_a[5]);  //˜˜˜˜˜˜ //˜?˜
 	}
 	return TRUE;
 }
 
-//º¸¿©Áö´Â µ¥¹ÌÁö¸¦ Á¶Á¤ÇÑ´Ù 
+//˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ 
 int cINVENTORY::IncreViewDamage(int Persent, int Num)
 {
 	ViewDamagePercent = Persent;
@@ -10912,10 +10927,10 @@ int cINVENTORY::IncreViewDamage(int Persent, int Num)
 	return TRUE;
 }
 
-//ForceOrbÀÇ ÀÌÆåÆ®¸¦ ±×¸°´Ù
+//ForceOrb˜˜ ˜˜˜˜?˜˜ ˜?˜˜˜
 int cINVENTORY::DrawForceOrbEffect(int x, int y)
 {
-	//ÀÌ¹ÌÁö ·Îµå
+	//˜?˜˜˜ ˜?˜
 
 	int i = 0;
 	char* Path = "image\\Sinimage\\Effect\\ForceOrb\\P_0%d.tga";
@@ -10926,7 +10941,7 @@ int cINVENTORY::DrawForceOrbEffect(int x, int y)
 			MatForceOrbEffect[i] = CreateTextureMaterial(szBuff, 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
 
 		}
-		ReadTextures();	//ÅØ½ºÃÄ ·Îµù
+		ReadTextures();	//˜?˜˜˜ ˜?˜
 	}
 
 
@@ -10992,7 +11007,7 @@ int cINVENTORY::UseForceOrb(sITEM* pItem, int Flag)
 	}
 
 
-	char* Path = "image\\Sinimage\\skill\\ForceOrb\\FOS_0%d.tga";   // ¹ÚÀç¿ø : ºô¸µ Æ÷½º(Æ÷½º ¾ÆÀÌÄÜ 10ºÎÅÍ 12Ãß°¡)
+	char* Path = "image\\Sinimage\\skill\\ForceOrb\\FOS_0%d.tga";   // ˜˜˜˜˜ : ˜˜˜˜ ˜˜˜˜(˜˜˜˜ ˜˜˜˜˜˜ 10˜˜˜˜ 12˜?˜)
 	char szBuff[128];
 
 	if (!MatForceOrb[UseFlag - 1])
@@ -11022,10 +11037,10 @@ int cINVENTORY::UseForceOrb(sITEM* pItem, int Flag)
 int cINVENTORY::UseMagicForceOrb(sITEM* pItem, int Flag)
 {
 	if (lpCurPlayer->OnStageField >= 0 && StageField[lpCurPlayer->OnStageField]->State == FIELD_STATE_VILLAGE)
-		return FALSE; //¸¶À»¿¡¼­´Â ¸ø»ç¿ëÇÑ´Ù
+		return FALSE; //˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜?˜
 
-	//if(!Flag && sinItemPickUpDelayFlag)return FALSE; //¹«ÇÑ¿¡Å×¸£ ÄÚ¾î¸¦ ¸·´Â´Ù    
-	if (sinItemPickUpDelayFlag)return FALSE; //¹«ÇÑ¿¡Å×¸£ ÄÚ¾î¸¦ ¸·´Â´Ù    
+	//if(!Flag && sinItemPickUpDelayFlag)return FALSE; //˜˜˜?˜˜?˜ ˜?? ˜˜˜?˜    
+	if (sinItemPickUpDelayFlag)return FALSE; //˜˜˜?˜˜?˜ ˜?? ˜˜˜?˜    
 	int UseFlag = 0;
 	sSKILL TempSkill;
 	memset(&TempSkill, 0, sizeof(sSKILL));
@@ -11061,18 +11076,18 @@ int cINVENTORY::UseMagicForceOrb(sITEM* pItem, int Flag)
 		return FALSE;
 	}
 
-	//ÅØ½ºÃÄ ·Îµù
-	char* Path = "image\\Sinimage\\skill\\ForceOrb\\FOS_0%d.tga";   // ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º(Æ÷½º ¾ÆÀÌÄÜ 21ºÎÅÍ 32Ãß°¡)
+	//˜?˜˜˜ ˜?˜
+	char* Path = "image\\Sinimage\\skill\\ForceOrb\\FOS_0%d.tga";   // ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜(˜˜˜˜ ˜˜˜˜˜˜ 21˜˜˜˜ 32˜?˜)
 	char szBuff[128];
 	if (!MatForceOrb[UseFlag - 1]) {
 		wsprintf(szBuff, Path, UseFlag);
 		MatForceOrb[UseFlag - 1] = CreateTextureMaterial(szBuff, 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-		ReadTextures();	//ÅØ½ºÃÄ ·Îµù
+		ReadTextures();	//˜?˜˜˜ ˜?˜
 	}
 
 	TempSkill.CODE = SKILL_FORCE_ORB;
 	TempSkill.Point = UseFlag;
-	TempSkill.ElementIndex = 2000; // ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º ±¸ºÐÀ» À§ÇÔ.(¸ÅÁ÷ Æ÷½º Ãß°¡)
+	TempSkill.ElementIndex = 2000; // ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜.(˜˜˜˜ ˜˜˜˜ ˜?˜)
 	TempSkill.UseTime = MagicForceOrbUseTime[UseFlag - 1];
 	TempSkill.MatIcon = MatForceOrb[UseFlag - 1];
 	sinContinueSkillSet(&TempSkill);
@@ -11080,22 +11095,22 @@ int cINVENTORY::UseMagicForceOrb(sITEM* pItem, int Flag)
 	sinThrowItemToFeild(pItem);
 	pItem->Flag = 0;
 
-	cInvenTory.SetItemToChar(); //¾ÆÀÌÅÛÀÌ ¼ÂÆÃµÇ¸é ´É·ÂÄ¡¸¦ ¼ÂÆÃÇÑ´Ù 
+	cInvenTory.SetItemToChar(); //˜˜˜˜˜˜˜˜ ˜˜˜??˜ ˜?˜?˜˜ ˜˜˜˜˜?˜ 
 	cInvenTory.ReFormInvenItem();
-	cInvenTory.CheckWeight();   //¹«°Ô¸¦ ¼ÂÆÃÇÑ´Ù 
+	cInvenTory.CheckWeight();   //˜˜˜?˜ ˜˜˜˜˜?˜ 
 	sinUsePotionDelayFlag = 1;
-	sinPlaySound(SIN_SOUND_EAT_POTION2);//´ë¹Ú »ç¿îµå
+	sinPlaySound(SIN_SOUND_EAT_POTION2);//˜˜˜ ˜˜˜˜
 	return TRUE;
 }
 
-// ¹ÚÀç¿ø - ºô¸µ ¸ÅÁ÷ Æ÷½º Ãß°¡(ºô¸µ ¸ÅÁ÷ Æ÷½º¸¦ »ç¿ëÇÑ´Ù)
+// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜?˜(˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜?˜)
 int cINVENTORY::UseBillingMagicForceOrb(sITEM* pItem, int Flag)
 {
 	if (lpCurPlayer->OnStageField >= 0 && StageField[lpCurPlayer->OnStageField]->State == FIELD_STATE_VILLAGE)
-		return FALSE; //¸¶À»¿¡¼­´Â ¸ø»ç¿ëÇÑ´Ù
+		return FALSE; //˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜?˜
 
-	//if(!Flag && sinItemPickUpDelayFlag)return FALSE; //¹«ÇÑ¿¡Å×¸£ ÄÚ¾î¸¦ ¸·´Â´Ù    
-	if (sinItemPickUpDelayFlag)return FALSE; //¹«ÇÑ¿¡Å×¸£ ÄÚ¾î¸¦ ¸·´Â´Ù    
+	//if(!Flag && sinItemPickUpDelayFlag)return FALSE; //˜˜˜?˜˜?˜ ˜?? ˜˜˜?˜    
+	if (sinItemPickUpDelayFlag)return FALSE; //˜˜˜?˜˜?˜ ˜?? ˜˜˜?˜    
 	int UseFlag = 0;
 	sSKILL TempSkill;
 	memset(&TempSkill, 0, sizeof(sSKILL));
@@ -11134,18 +11149,18 @@ int cINVENTORY::UseBillingMagicForceOrb(sITEM* pItem, int Flag)
 		return FALSE;
 	}
 
-	//ÅØ½ºÃÄ ·Îµù
-	char* Path = "image\\Sinimage\\skill\\ForceOrb\\FOS_0%d.tga";   // ¹ÚÀç¿ø : ºô¸µ ¸ÅÁ÷ Æ÷½º(Æ÷½º ¾ÆÀÌÄÜ 35ºÎÅÍ 37Ãß°¡)
+	//˜?˜˜˜ ˜?˜
+	char* Path = "image\\Sinimage\\skill\\ForceOrb\\FOS_0%d.tga";   // ˜˜˜˜˜ : ˜˜˜˜ ˜˜˜˜ ˜˜˜˜(˜˜˜˜ ˜˜˜˜˜˜ 35˜˜˜˜ 37˜?˜)
 	char szBuff[128];
 	if (!MatBillingMagicForceOrb[UseFlag - 1]) {
 		wsprintf(szBuff, Path, UseFlag + 34);
 		MatBillingMagicForceOrb[UseFlag - 1] = CreateTextureMaterial(szBuff, 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-		ReadTextures();	//ÅØ½ºÃÄ ·Îµù
+		ReadTextures();	//˜?˜˜˜ ˜?˜
 	}
 
 	TempSkill.CODE = SKILL_FORCE_ORB;
 	TempSkill.Point = UseFlag;
-	TempSkill.ElementIndex = 1000; // ºô¸µ ¸ÅÁ÷ Æ÷½º ±¸ºÐÀ» À§ÇÔ.
+	TempSkill.ElementIndex = 1000; // ˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜.
 	TempSkill.UseTime = BillingMagicForceOrbUseTime[UseFlag - 1];
 	TempSkill.MatIcon = MatBillingMagicForceOrb[UseFlag - 1];
 	sinContinueSkillSet(&TempSkill);
@@ -11153,24 +11168,24 @@ int cINVENTORY::UseBillingMagicForceOrb(sITEM* pItem, int Flag)
 	sinThrowItemToFeild(pItem);
 	pItem->Flag = 0;
 
-	cInvenTory.SetItemToChar(); //¾ÆÀÌÅÛÀÌ ¼ÂÆÃµÇ¸é ´É·ÂÄ¡¸¦ ¼ÂÆÃÇÑ´Ù 
+	cInvenTory.SetItemToChar(); //˜˜˜˜˜˜˜˜ ˜˜˜??˜ ˜?˜?˜˜ ˜˜˜˜˜?˜ 
 	cInvenTory.ReFormInvenItem();
-	cInvenTory.CheckWeight();   //¹«°Ô¸¦ ¼ÂÆÃÇÑ´Ù 
+	cInvenTory.CheckWeight();   //˜˜˜?˜ ˜˜˜˜˜?˜ 
 	sinUsePotionDelayFlag = 1;
-	sinPlaySound(SIN_SOUND_EAT_POTION2);//´ë¹Ú »ç¿îµå
+	sinPlaySound(SIN_SOUND_EAT_POTION2);//˜˜˜ ˜˜˜˜
 	return TRUE;
 }
 
-// ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º Ãß°¡ (¸ÅÁ÷ Æ÷½º¸¦ ¼ÂÆÃÇÑ´Ù.)
+// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜ ˜?˜ (˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜.)
 int cINVENTORY::SetMagicForceOrb(DWORD ItemCODE, int Time)
 {
 	int UseFlag = 0;
 	sSKILL TempSkill;
 	memset(&TempSkill, 0, sizeof(sSKILL));
 
-	for (int i = 0; i < 12; i++) // ¸ÅÁ÷ Æ÷½º
+	for (int i = 0; i < 12; i++) // ˜˜˜˜ ˜˜˜˜
 	{
-		if ((ItemCODE & sinITEM_MASK3) == MagicSheltomCode[i]) // ¸ÅÁ÷ ·¯¾¾µð Æ÷½º ~ ¸ÅÁ÷ ÀÌ´Ï±×¸¶ Æ÷½º
+		if ((ItemCODE & sinITEM_MASK3) == MagicSheltomCode[i]) // ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜ ~ ˜˜˜˜ ˜???˜ ˜˜˜˜
 		{
 			UseFlag = i + 1;
 		}
@@ -11181,7 +11196,7 @@ int cINVENTORY::SetMagicForceOrb(DWORD ItemCODE, int Time)
 	if (!MatForceOrb[UseFlag - 1]) {
 		wsprintf(szBuff, Path, UseFlag + 20);
 		MatForceOrb[UseFlag - 1] = CreateTextureMaterial(szBuff, 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-		ReadTextures();	//ÅØ½ºÃÄ ·Îµù
+		ReadTextures();	//˜?˜˜˜ ˜?˜
 	}
 
 	TempSkill.CODE = SKILL_FORCE_ORB;
@@ -11195,16 +11210,16 @@ int cINVENTORY::SetMagicForceOrb(DWORD ItemCODE, int Time)
 
 }
 
-// ¹ÚÀç¿ø - ºô¸µ ¸ÅÁ÷ Æ÷½º Ãß°¡ (ºô¸µ ¸ÅÁ÷ Æ÷½º¸¦ ¼ÂÆÃÇÑ´Ù.)
+// ˜˜˜˜˜ - ˜˜˜˜ ˜˜˜˜ ˜˜˜˜ ˜?˜ (˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜?˜.)
 int cINVENTORY::SetBillingMagicForceOrb(DWORD ItemCODE, int Time)
 {
 	int UseFlag = 0;
 	sSKILL TempSkill;
 	memset(&TempSkill, 0, sizeof(sSKILL));
 
-	for (int i = 0; i < 3; i++) // ºô¸µ ¸ÅÁ÷ Æ÷½º
+	for (int i = 0; i < 3; i++) // ˜˜˜˜ ˜˜˜˜ ˜˜˜˜
 	{
-		if ((ItemCODE & sinITEM_MASK3) == BillingMagicSheltomCode[i]) // ºô¸µ ¸ÅÁ÷ Æ÷½º´Â ½©ÅÒÀ» »ç¿ëÇÏÁö ¾ÊÁö¸¸ ÄÚµå ¹øÈ£¸¦ À§ÇØ »ç¿ëÇÑ´Ù.
+		if ((ItemCODE & sinITEM_MASK3) == BillingMagicSheltomCode[i]) // ˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜?˜ ˜˜?˜˜ ˜˜˜˜ ˜˜˜˜?˜.
 		{
 			UseFlag = i + 1;
 		}
@@ -11215,7 +11230,7 @@ int cINVENTORY::SetBillingMagicForceOrb(DWORD ItemCODE, int Time)
 	if (!MatForceOrb[UseFlag - 1]) {
 		wsprintf(szBuff, Path, UseFlag + 34);
 		MatForceOrb[UseFlag - 1] = CreateTextureMaterial(szBuff, 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-		ReadTextures();	//ÅØ½ºÃÄ ·Îµù
+		ReadTextures();	//˜?˜˜˜ ˜?˜
 	}
 
 	TempSkill.CODE = SKILL_FORCE_ORB;
@@ -11229,7 +11244,7 @@ int cINVENTORY::SetBillingMagicForceOrb(DWORD ItemCODE, int Time)
 
 }
 
-//Æ÷½º¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù(Á¢¼ÓÁ¾·á¹×,±âÅ¸µîµî)
+//˜˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜(˜˜˜˜˜˜˜˜˜,˜˜?˜˜˜)
 int cINVENTORY::SetForceOrb(DWORD ItemCODE, int Time)
 {
 	int UseFlag = 0;
@@ -11247,7 +11262,7 @@ int cINVENTORY::SetForceOrb(DWORD ItemCODE, int Time)
 	if (!MatForceOrb[UseFlag - 1]) {
 		wsprintf(szBuff, Path, UseFlag);
 		MatForceOrb[UseFlag - 1] = CreateTextureMaterial(szBuff, 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-		ReadTextures();	//ÅØ½ºÃÄ ·Îµù
+		ReadTextures();	//˜?˜˜˜ ˜?˜
 	}
 
 
@@ -11260,17 +11275,17 @@ int cINVENTORY::SetForceOrb(DWORD ItemCODE, int Time)
 	return TRUE;
 }
 
-// ¹ÚÀç¿ø - Ä¸½¶¾ÆÀÌÅÛ »ç¿ëÇÏ±â(È£¶ûÀÌ Ä¸½¶ »ç¿ë)
+// ˜˜˜˜˜ - ?˜˜˜˜˜˜˜˜ ˜˜˜˜?˜(?˜˜˜˜ ?˜˜ ˜˜˜)
 int cINVENTORY::UseCapsuleItem(sITEM* pItem)
 {
-	// ¹ÚÀç¿ø : Ä¸½¶¾ÆÀÌÅÛ º¸»óÀ¸·Î ÁÖ¾îÁö´Â ¾ÆÀÌÅÛÀ» À§ÇØ °ø°£À» È®º¸ÇÑ´Ù.
+	// ˜˜˜˜˜ : ?˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜?˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ?˜˜˜?˜.
 	sITEM TempItem;
 	TempItem.w = 22 * 2;
 	TempItem.h = 22 * 2;
 
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem))
 	{
-		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE); //°ø°£ºÎÁ·
+		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE); //˜˜˜˜˜˜˜˜
 		return FALSE;
 	}
 
@@ -11278,19 +11293,19 @@ int cINVENTORY::UseCapsuleItem(sITEM* pItem)
 	{
 		if (sinChar->Weight[0] + 5 >= sinChar->Weight[1])
 		{
-			cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT); //¹«°ÔÃÊ°ú
+			cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT); //˜˜˜˜˜?˜
 			return FALSE;
 		}
 	}
 
-	bGiftBoxDelay = true; // Ä¸½¶À» ±î´Â µ¿¾È ´Ù¸¥ Çàµ¿À» ¸øÇÏµµ·Ï µô·¹ÀÌ¸¦ ÁØ´Ù. ¼±¹°»óÀÚ µô·¹ÀÌ¿Í µ¿ÀÏ
+	bGiftBoxDelay = true; // ?˜˜˜˜ ˜˜˜ ˜˜˜˜ ˜?˜ ˜?˜˜ ˜˜˜?˜˜˜ ˜˜˜˜˜?˜ ˜?˜. ˜˜˜˜˜˜˜˜ ˜˜˜˜˜?˜ ˜˜˜˜
 
-	// Ä¸½¶ ¾ÆÀÌÅÛ »ç¿ë ¸ð¼ÇÀ» ¹°¾à»ç¿ë ¸ð¼ÇÃ³·³ µ¿ÀÏÇÏ°Ô »ç¿ëÇÑ´Ù.
+	// ?˜˜ ˜˜˜˜˜˜ ˜˜˜ ˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜?˜˜ ˜˜˜˜˜?˜ ˜˜˜˜?˜.
 	if (sinActionPotion())
 	{
 		pUsePotion = &InvenItem[SelectInvenItemIndex - 1];
 		cInvenTory.ReFormInvenItem();
-		cInvenTory.CheckWeight();   //¹«°Ô¸¦ ¼ÂÆÃÇÑ´Ù 
+		cInvenTory.CheckWeight();   //˜˜˜?˜ ˜˜˜˜˜?˜ 
 		sinUsePotionDelayFlag = 1;
 	}
 
@@ -11299,9 +11314,9 @@ int cINVENTORY::UseCapsuleItem(sITEM* pItem)
 
 int CristalEventItemIndex[7] = { 0, };
 
-int PristonAlphabetEventItemIndex[7] = { 0, }; // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ®
+int PristonAlphabetEventItemIndex[7] = { 0, }; // ˜˜˜˜˜ - ˜˜˜?˜ ˜˜˜˜ ˜?˜?
 
-//<ha>ÀÏ°ö°¡ÁöÀÇ  º¸Àº Å©¸®½ºÅ» Ã¼Å©
+//<ha>˜?˜˜˜˜˜˜˜  ˜˜˜˜ ?˜˜˜˜? ??
 int cINVENTORY::CheckCristalEventItem()
 {
 	int i, cnt = 0;
@@ -11309,7 +11324,7 @@ int cINVENTORY::CheckCristalEventItem()
 		CristalEventItemIndex[i] = 0;
 	}
 
-	//Å©¸®½ºÅ»À» Ã£¾Æ¼­ ÀÎµ¦½º¸¦ ³Ñ±ä´Ù.
+	//?˜˜˜˜?˜˜ ?˜?˜ ˜?˜˜˜˜˜ ˜?˜˜.
 	for (i = 0; i < 12; i++) {
 		if (cnt < 7) {
 			if (CristalEventItemIndex[cnt] == 0) {
@@ -11319,7 +11334,7 @@ int cINVENTORY::CheckCristalEventItem()
 				cnt++;
 		}
 	}
-	//7°³¸¦ ¸ð¾Ò´Ù.
+	//7˜˜˜˜ ˜˜?˜.
 	if (cnt == 7) {
 		cInterFace.CheckAllBox(SIN_INVENTORY);
 		cMessageBox.ShowMessage3(MESSAGE_CRISTALEVENTITEM_SEND, CristalItem);
@@ -11330,7 +11345,7 @@ int cINVENTORY::CheckCristalEventItem()
 
 	return TRUE;
 }
-//<ha>ÀÏ°ö°¡ÁöÀÇ º¸Àº Å©¸®½ºÅ»À» ¼­¹ö·Î º¸³½´Ù
+//<ha>˜?˜˜˜˜˜˜˜ ˜˜˜˜ ?˜˜˜˜?˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendCristalEventItem()
 {
 
@@ -11338,19 +11353,19 @@ int cINVENTORY::SendCristalEventItem()
 	TempItem.w = 22 * 3;
 	TempItem.h = 22 * 4;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
+	//˜˜˜?˜ ??˜?˜.
 	if (sinChar->Weight[0] + 100 > sinChar->Weight[1]) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (CristalEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[CristalEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11365,11 +11380,11 @@ int cINVENTORY::SendCristalEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
-//¹ÚÀç¿ø - ¼ö¹Ú ¸ð¾Æ¿À±â ¼ö¹Ú ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù.
+//˜˜˜˜˜ - ˜˜˜˜ ˜˜?˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜.
 int cINVENTORY::CheckWatermelonEventItem()
 {
 	int i, cnt = 0;
@@ -11380,25 +11395,25 @@ int cINVENTORY::CheckWatermelonEventItem()
 
 	cnt = CheckItemCount(WatermelonEventCODE);
 
-	//¾ÆÀÌÅÛ 7°³ÀÌ»óÀ» ¸ðÀ»°æ¿ì
+	//˜˜˜˜˜˜ 7˜˜˜?˜˜˜ ˜˜˜˜˜˜˜
 	if (cnt >= 7)
 	{
 		cInterFace.CheckAllBox(SIN_INVENTORY);
-		cMessageBox.ShowMessage3(MESSAGE_WATERMELON_EVENTITEM, "Deseja Trocar as suas Melâncias?"); // º°Á¶°¢ //¹ÚÀç¿ø - ¹ãÇÏ´ÃÀÇ ¼Ò¿ø ÀÌº¥Æ®  
-	//	cMessageBox.ShowMessage3(MESSAGE_WATERMELON_EVENTITEM,PumpkinItem); // È£¹Ú
-	//	cMessageBox.ShowMessage3(MESSAGE_WATERMELON_EVENTITEM,WatermelonItem); // ¼ö¹Ú
+		cMessageBox.ShowMessage3(MESSAGE_WATERMELON_EVENTITEM, "Deseja Trocar as suas Mel˜ncias?"); // ˜˜˜˜˜˜ //˜˜˜˜˜ - ˜˜˜?˜˜˜ ˜?˜ ˜?˜?  
+	//	cMessageBox.ShowMessage3(MESSAGE_WATERMELON_EVENTITEM,PumpkinItem); // ?˜˜
+	//	cMessageBox.ShowMessage3(MESSAGE_WATERMELON_EVENTITEM,WatermelonItem); // ˜˜˜˜
 
 	}
 	else
-		//cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), StarDoc);  // º°Á¶°¢ //¹ÚÀç¿ø - ¹ãÇÏ´ÃÀÇ ¼Ò¿ø ÀÌº¥Æ®  
-	//	cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL,QuestMessageBoxPosi2.x,QuestMessageBoxPosi2.y,QuestMessageBoxSize2.x,QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0,15,128,125),PumpkinDoc);  // È£¹Ú
-		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), WatermelonDoc);  // ¼ö¹Ú
+		//cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), StarDoc);  // ˜˜˜˜˜˜ //˜˜˜˜˜ - ˜˜˜?˜˜˜ ˜?˜ ˜?˜?  
+	//	cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL,QuestMessageBoxPosi2.x,QuestMessageBoxPosi2.y,QuestMessageBoxSize2.x,QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0,15,128,125),PumpkinDoc);  // ?˜˜
+		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), WatermelonDoc);  // ˜˜˜˜
 
 	return TRUE;
 }
 
 
-//Àåº° - ¹ß·»Å¸ÀÎ ÃÊÄÝ·¿ ¸ð¾Æ¿À±â ÃÊÄÝ·¿ ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù.
+//˜? - ˜?˜?˜˜ ˜˜˜?˜ ˜˜?˜˜˜ ˜˜˜?˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜.
 int cINVENTORY::CheckValentineEventItem()
 {
 	int i, cnt = 0;
@@ -11409,21 +11424,21 @@ int cINVENTORY::CheckValentineEventItem()
 
 	cnt = CheckValentineItemCount(ValentineEventCODE);
 
-	//¾ÆÀÌÅÛ 7°³ÀÌ»óÀ» ¸ðÀ»°æ¿ì
+	//˜˜˜˜˜˜ 7˜˜˜?˜˜˜ ˜˜˜˜˜˜˜
 	if (cnt >= 7)
 	{
 		cInterFace.CheckAllBox(SIN_INVENTORY);
-		cMessageBox.ShowMessage3(MESSAGE_VALENTINE_EVENTITEM, ValentineItem); // Àåº° - ¹ß·»Å¸ÀÎ ÀÌº¥Æ®  
+		cMessageBox.ShowMessage3(MESSAGE_VALENTINE_EVENTITEM, ValentineItem); // ˜? - ˜?˜?˜˜ ˜?˜?  
 	}
 	else
-		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), ValentineDoc);  // Àåº° - ¹ß·»Å¸ÀÎ ÀÌº¥Æ®  
+		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), ValentineDoc);  // ˜? - ˜?˜?˜˜ ˜?˜?  
 
 
 	return TRUE;
 }
 
 
-// Àåº° - Äµµðµ¥ÀÌÁî Äµµð ¸ð¾Æ¿À±â Äµµð ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù.
+// ˜? - ?˜˜˜˜˜˜ ?˜˜ ˜˜?˜˜˜ ?˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜.
 int cINVENTORY::CheckCandydaysEventItem()
 {
 	int i, cnt = 0;
@@ -11434,20 +11449,20 @@ int cINVENTORY::CheckCandydaysEventItem()
 
 	cnt = CheckCandyItemCount(CandydaysEventCODE);
 
-	//¾ÆÀÌÅÛ 7°³ÀÌ»óÀ» ¸ðÀ»°æ¿ì
+	//˜˜˜˜˜˜ 7˜˜˜?˜˜˜ ˜˜˜˜˜˜˜
 	if (cnt >= 7)
 	{
 		cInterFace.CheckAllBox(SIN_INVENTORY);
-		cMessageBox.ShowMessage3(MESSAGE_CANDYDAYS_EVENTITEM, CandydaysItem); // Àåº° - Äµµðµ¥ÀÌÁî 
+		cMessageBox.ShowMessage3(MESSAGE_CANDYDAYS_EVENTITEM, CandydaysItem); // ˜? - ?˜˜˜˜˜˜ 
 	}
 	else
-		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), CandydaysDoc);  // Àåº° - Äµµðµ¥ÀÌÁî
+		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), CandydaysDoc);  // ˜? - ?˜˜˜˜˜˜
 
 
 	return TRUE;
 }
 
-// Àåº° - ¸ÅÁöÄÃ±×¸°  ¿¡¸Þ¶öµå, ºñÃë ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù.
+// ˜? - ˜˜˜˜˜??˜  ˜˜˜?˜˜˜, ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜.
 int cINVENTORY::CheckMagicalGreenEventItem()
 {
 	int i, cnt = 0, cnt2 = 0;
@@ -11460,7 +11475,7 @@ int cINVENTORY::CheckMagicalGreenEventItem()
 	cnt = CheckMagicalGreenItemCount(MagicalGreenEventCODE[0]);
 	cnt2 = CheckMagicalGreenItemEmeraldCount(MagicalGreenEventCODE[1]);
 
-	//¾ÆÀÌÅÛ 7°³ÀÌ»óÀ» ¸ðÀ»°æ¿ì
+	//˜˜˜˜˜˜ 7˜˜˜?˜˜˜ ˜˜˜˜˜˜˜
 	if (cnt >= 7)
 	{
 		cInterFace.CheckAllBox(SIN_INVENTORY);
@@ -11480,7 +11495,7 @@ int cINVENTORY::CheckMagicalGreenEventItem()
 	return TRUE;
 }
 
-// Àåº° - Ä«¶óÀÇ ´«¹° ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù.
+// ˜? - ?˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜.
 int cINVENTORY::CheckTearOfKaraEventItem()
 {
 	int i, cnt = 0;
@@ -11491,11 +11506,11 @@ int cINVENTORY::CheckTearOfKaraEventItem()
 
 	cnt = CheckTearOfKaraItemCount(TeatOfKaraEventCODE);
 
-	//¾ÆÀÌÅÛ 7°³ÀÌ»óÀ» ¸ðÀ»°æ¿ì
+	//˜˜˜˜˜˜ 7˜˜˜?˜˜˜ ˜˜˜˜˜˜˜
 	if (cnt >= 7)
 	{
 		cInterFace.CheckAllBox(SIN_INVENTORY);
-		cMessageBox.ShowMessage3(MESSAGE_TEAROFKARA_EVENTITEM, TearOfKaraItem); // Àåº° - Äµµðµ¥ÀÌÁî 
+		cMessageBox.ShowMessage3(MESSAGE_TEAROFKARA_EVENTITEM, TearOfKaraItem); // ˜? - ?˜˜˜˜˜˜ 
 	}
 	else
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), TearOfKaraDoc);
@@ -11505,7 +11520,7 @@ int cINVENTORY::CheckTearOfKaraEventItem()
 }
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù. - ¸¶·Â ¿¬±¸°¡
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜. - ˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::CheckFindinvestigatorEventItem()
 {
 	int i, cnt = 0, cnt2 = 0;
@@ -11519,7 +11534,7 @@ int cINVENTORY::CheckFindinvestigatorEventItem()
 	cnt = CheckFindinvestigatorNineItemCount(FindinvestigatorEventCODE[0]);
 	cnt2 = CheckFindinvestigatorTaleItemCount(FindinvestigatorEventCODE[1]);
 
-	// ³ªÀÎ¾Æ¹Ä·¿, Å×ÀÏ¾Æ¹Ä·¿ µÑ´Ù ¼ÒÁöÇÏÁö ¾Ê°í ÀÖÀ»¶§
+	// ˜˜˜???˜, ˜˜˜???˜ ˜?˜ ˜˜˜˜˜˜˜˜ ˜?˜ ˜˜˜˜˜˜
 	if (cnt == 0 && cnt2 == 0)
 	{
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), Findinvestigator1_1Doc);
@@ -11527,13 +11542,13 @@ int cINVENTORY::CheckFindinvestigatorEventItem()
 
 	}
 
-	// ³ªÀÎ¾Æ¹Ä·¿ ¼ÒÁö(Å×ÀÏ¾ÆÀ²·¿ »ó°ü ¾øÀ½)
+	// ˜˜˜???˜ ˜˜˜˜(˜˜˜?˜˜˜˜˜ ˜˜˜ ˜˜˜˜)
 	else if (cnt == 1)
 	{
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), Findinvestigator1_2Doc);
 	}
 
-	// Å×ÀÏ¾Æ¹Ä·¿¸¸ ¼ÒÁö½Ã
+	// ˜˜˜???˜˜˜ ˜˜˜˜˜˜
 	else if (cnt == 0 && cnt2 == 1)
 	{
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), Findinvestigator1_3Doc);
@@ -11543,7 +11558,7 @@ int cINVENTORY::CheckFindinvestigatorEventItem()
 }
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù. - Ä«¹ÌÀ¯
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜. - ?˜˜˜˜
 int cINVENTORY::CheckFindinvestigatorKamiuEventItem()
 {
 	int i, cnt = 0;
@@ -11555,14 +11570,14 @@ int cINVENTORY::CheckFindinvestigatorKamiuEventItem()
 
 	cnt = CheckFindinvestigatorNineItemCount(FindinvestigatorEventCODE[0]);
 
-	// ³ªÀÎ¾Æ¹Ä·¿À» ¼ÒÁö
+	// ˜˜˜???˜˜˜ ˜˜˜˜
 	if (cnt == 1)
 	{
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), Findinvestigator2_1Doc);
 		cMessageBox.ShowMessage3(MESSAGE_FINDKAMIU_EVENTITEM, FindinvestigatorNineItem);
 	}
 
-	// ³ªÀÎ¾Æ¹Ä·¿ ¼ÒÁöÇÏÁö ¾ÊÀ» ¶§
+	// ˜˜˜???˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜
 	else if (cnt == 0)
 	{
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), Findinvestigator2_2Doc);
@@ -11574,7 +11589,7 @@ int cINVENTORY::CheckFindinvestigatorKamiuEventItem()
 }
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó ¾ÆÀÌÅÛ °¹¼ö¸¦ Ã¼Å©ÇÑ´Ù. - ¿¡Åä
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ??˜?˜. - ˜˜˜˜
 int cINVENTORY::CheckFindinvestigatorEtoEventItem()
 {
 	int i, cnt = 0;
@@ -11586,14 +11601,14 @@ int cINVENTORY::CheckFindinvestigatorEtoEventItem()
 
 	cnt = CheckFindinvestigatorTaleItemCount(FindinvestigatorEventCODE[1]);
 
-	// Å×ÀÏ¾Æ¹Ä·¿À» ¼ÒÁö
+	// ˜˜˜???˜˜˜ ˜˜˜˜
 	if (cnt == 1)
 	{
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), Findinvestigator3_1Doc);
 		cMessageBox.ShowMessage3(MESSAGE_FINDETO_EVENTITEM, FindinvestigatorTaleItem);
 	}
 
-	// Å×ÀÏ¾Æ¹Ä·¿ ¼ÒÁöÇÏÁö ¾ÊÀ» ¶§
+	// ˜˜˜???˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜
 	else if (cnt == 0)
 	{
 		cSinHelp.sinShowHelp(SIN_HELP_KIND_BABEL, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), Findinvestigator3_2Doc);
@@ -11605,26 +11620,26 @@ int cINVENTORY::CheckFindinvestigatorEtoEventItem()
 }
 
 
-//¹ÚÀç¿ø - ¼ö¹Ú ¸ð¾Æ¿À±â ¼ö¹Ú ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³½´Ù
+//˜˜˜˜˜ - ˜˜˜˜ ˜˜?˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendWatermelonEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 3;
 	TempItem.h = 22 * 4;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 10 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© (¼ö¹ÚÀÌº¥Æ®=130 / È£¹ÚÀÌº¥Æ®=30 / ¹ãÇÏ´ÃÀÇ ¼Ò¿ø ÀÌº¥Æ®=10  ) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 10 > sinChar->Weight[1]) { // ˜˜˜˜ ?? (˜˜˜˜˜?˜?=130 / ?˜˜˜?˜?=30 / ˜˜˜?˜˜˜ ˜?˜ ˜?˜?=10  ) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (WatermelonEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[WatermelonEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11639,33 +11654,33 @@ int cINVENTORY::SendWatermelonEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
 
 
 
-//Àåº° - ¹ß·»Å¸ÀÎ ÀÌº¥Æ® // ¹ß·»Å¸ÀÎ ÃÊÄÝ·¿ ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³½´Ù
+//˜? - ˜?˜?˜˜ ˜?˜? // ˜?˜?˜˜ ˜˜˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendValentineEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 3;
 	TempItem.h = 22 * 4;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 50 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© (¼ö¹ÚÀÌº¥Æ®=130 / È£¹ÚÀÌº¥Æ®=30 / ¹ãÇÏ´ÃÀÇ ¼Ò¿ø ÀÌº¥Æ®=10 / ¹ß·»Å¸ÀÎÀÌº¥Æ®= 50) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 50 > sinChar->Weight[1]) { // ˜˜˜˜ ?? (˜˜˜˜˜?˜?=130 / ?˜˜˜?˜?=30 / ˜˜˜?˜˜˜ ˜?˜ ˜?˜?=10 / ˜?˜?˜˜˜?˜?= 50) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (ValentineEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[ValentineEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11680,11 +11695,11 @@ int cINVENTORY::SendValentineEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
-// ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ®
+// ˜˜˜˜˜ - ˜˜˜?˜ ˜˜˜˜ ˜?˜?
 int cINVENTORY::CheckPristonAlphabetEventItem()
 {
 	int i, cnt = 0;
@@ -11693,7 +11708,7 @@ int cINVENTORY::CheckPristonAlphabetEventItem()
 	}
 
 
-	//Å©¸®½ºÅ»À» Ã£¾Æ¼­ ÀÎµ¦½º¸¦ ³Ñ±ä´Ù.
+	//?˜˜˜˜?˜˜ ?˜?˜ ˜?˜˜˜˜˜ ˜?˜˜.
 	for (i = 0; i < 7; i++) {
 		if (cnt < 7) {
 			if (PristonAlphabetEventItemIndex[cnt] == 0) {
@@ -11705,10 +11720,10 @@ int cINVENTORY::CheckPristonAlphabetEventItem()
 	}
 
 
-	//7°³¸¦ ¸ð¾Ò´Ù.
+	//7˜˜˜˜ ˜˜?˜.
 	if (cnt == 7) {
 		cInterFace.CheckAllBox(SIN_INVENTORY);
-		cMessageBox.ShowMessage3(MESSAGE_PRISTON_ALPHABET_EVENTITEM, PristonAlphabetItem); 	// ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ®
+		cMessageBox.ShowMessage3(MESSAGE_PRISTON_ALPHABET_EVENTITEM, PristonAlphabetItem); 	// ˜˜˜˜˜ - ˜˜˜?˜ ˜˜˜˜ ˜?˜?
 
 	}
 	else
@@ -11718,7 +11733,7 @@ int cINVENTORY::CheckPristonAlphabetEventItem()
 	return TRUE;
 }
 
-// ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ®(¾ËÆÄºª ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³½´Ù)
+// ˜˜˜˜˜ - ˜˜˜?˜ ˜˜˜˜ ˜?˜?(˜˜˜?˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜)
 int cINVENTORY::SendPristonAlphabetEventItem()
 {
 
@@ -11726,19 +11741,19 @@ int cINVENTORY::SendPristonAlphabetEventItem()
 	TempItem.w = 22 * 3;
 	TempItem.h = 22 * 4;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 20 > sinChar->Weight[1]) { // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ®(¹«°Ô¸¦ 70À¸·Î ¼öÁ¤) // Àåº° 20À¸·Î ¼öÁ¤
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 20 > sinChar->Weight[1]) { // ˜˜˜˜˜ - ˜˜˜?˜ ˜˜˜˜ ˜?˜?(˜˜˜?˜ 70˜˜˜˜ ˜˜˜˜) // ˜? 20˜˜˜˜ ˜˜˜˜
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (PristonAlphabetEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[PristonAlphabetEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11753,31 +11768,31 @@ int cINVENTORY::SendPristonAlphabetEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
 
-// Àåº° - Äµµðµ¥ÀÌÁî // Äµµð ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³½´Ù
+// ˜? - ?˜˜˜˜˜˜ // ?˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendCandydaysEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 3;
 	TempItem.h = 22 * 4;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 50 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© (¼ö¹ÚÀÌº¥Æ®=130 / È£¹ÚÀÌº¥Æ®=30 / ¹ãÇÏ´ÃÀÇ ¼Ò¿ø ÀÌº¥Æ®=10 / Äµµðµ¥ÀÌÁî = 50 ) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 50 > sinChar->Weight[1]) { // ˜˜˜˜ ?? (˜˜˜˜˜?˜?=130 / ?˜˜˜?˜?=30 / ˜˜˜?˜˜˜ ˜?˜ ˜?˜?=10 / ?˜˜˜˜˜˜ = 50 ) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (CandydaysEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[CandydaysEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11792,32 +11807,32 @@ int cINVENTORY::SendCandydaysEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
 
 
-// Àåº° - ¸ÅÁöÄÃ±×¸° - ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³½´Ù
+// ˜? - ˜˜˜˜˜??˜ - ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendMagicalGreenEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 3;
 	TempItem.h = 22 * 4;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 70 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© (Äµµðµ¥ÀÌÁî = 50 / ¸ÅÁöÄÃ±×¸° = 20 ) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 70 > sinChar->Weight[1]) { // ˜˜˜˜ ?? (?˜˜˜˜˜˜ = 50 / ˜˜˜˜˜??˜ = 20 ) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (MagicalGreenEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[MagicalGreenEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11832,31 +11847,31 @@ int cINVENTORY::SendMagicalGreenEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
 
-// Àåº° - ¸ÅÁöÄÃ±×¸° - ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³½´Ù
+// ˜? - ˜˜˜˜˜??˜ - ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendMagicalGreenEmeraldEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 3;
 	TempItem.h = 22 * 4;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 70 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© (Äµµðµ¥ÀÌÁî = 50 / ¸ÅÁöÄÃ±×¸° = 20 ) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 70 > sinChar->Weight[1]) { // ˜˜˜˜ ?? (?˜˜˜˜˜˜ = 50 / ˜˜˜˜˜??˜ = 20 ) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (MagicalGreenEmeraldEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[MagicalGreenEmeraldEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11871,31 +11886,31 @@ int cINVENTORY::SendMagicalGreenEmeraldEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
 
-// Àåº° - Ä«¶óÀÇ ´«¹° // ´«¹° ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³½´Ù
+// ˜? - ?˜˜˜˜ ˜˜˜˜ // ˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜
 int cINVENTORY::SendTearOfKaraEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 2;
 	TempItem.h = 22 * 2;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 10 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© ( Äµµðµ¥ÀÌÁî = 50 / Ä«¶óÀÇ ´«¹° = 10) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 10 > sinChar->Weight[1]) { // ˜˜˜˜ ?? ( ?˜˜˜˜˜˜ = 50 / ?˜˜˜˜ ˜˜˜˜ = 10) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 7; i++) {
 		if (TearOfKaraEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[TearOfKaraEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11910,49 +11925,49 @@ int cINVENTORY::SendTearOfKaraEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
-// ¹ÚÀç¿ø - 2010 ¿ùµåÄÅ ÀÌº¥Æ® - Ãà±¸°ø Æ÷¼Ç »ç¿ëÇÏ±â
+// ˜˜˜˜˜ - 2010 ˜˜˜˜˜˜ ˜?˜? - ˜?˜˜ ˜˜˜˜ ˜˜˜˜?˜
 int cINVENTORY::UseSoccerBallPotionItem(sITEM* pItem)
 {
 	pItem->sItemInfo.PotionCount = 100;
 	sinThrowItemToFeild(pItem);
 	pItem->Flag = 0;
 
-	cInvenTory.SetItemToChar(); //¾ÆÀÌÅÛÀÌ ¼ÂÆÃµÇ¸é ´É·ÂÄ¡¸¦ ¼ÂÆÃÇÑ´Ù 
+	cInvenTory.SetItemToChar(); //˜˜˜˜˜˜˜˜ ˜˜˜??˜ ˜?˜?˜˜ ˜˜˜˜˜?˜ 
 	cInvenTory.ReFormInvenItem();
-	cInvenTory.CheckWeight();   //¹«°Ô¸¦ ¼ÂÆÃÇÑ´Ù 
+	cInvenTory.CheckWeight();   //˜˜˜?˜ ˜˜˜˜˜?˜ 
 	sinUsePotionDelayFlag = 1;
-	sinPlaySound(SIN_SOUND_EAT_POTION2);//´ë¹Ú »ç¿îµå
+	sinPlaySound(SIN_SOUND_EAT_POTION2);//˜˜˜ ˜˜˜˜
 
 	return TRUE;
 }
 
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó - ¸¶·Â¿¬±¸ÀÚ
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ - ˜˜˜?˜˜˜˜˜
 int cINVENTORY::SendFindinvestigatorNineEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 2;
 	TempItem.h = 22 * 2;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 5 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© ( Äµµðµ¥ÀÌÁî = 50 / Ä«¶óÀÇ ´«¹° = 10) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 5 > sinChar->Weight[1]) { // ˜˜˜˜ ?? ( ?˜˜˜˜˜˜ = 50 / ?˜˜˜˜ ˜˜˜˜ = 10) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 1; i++) {
 		if (FindinvestigatorNineEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[FindinvestigatorNineEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -11967,31 +11982,31 @@ int cINVENTORY::SendFindinvestigatorNineEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó - Ä«¹ÌÀ¯
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ - ?˜˜˜˜
 int cINVENTORY::SendFindinvestigatorTaleEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 2;
 	TempItem.h = 22 * 2;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 5 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© ( Äµµðµ¥ÀÌÁî = 50 / Ä«¶óÀÇ ´«¹° = 10) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 5 > sinChar->Weight[1]) { // ˜˜˜˜ ?? ( ?˜˜˜˜˜˜ = 50 / ?˜˜˜˜ ˜˜˜˜ = 10) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 1; i++) {
 		if (FindinvestigatorNineEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[FindinvestigatorNineEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -12006,31 +12021,31 @@ int cINVENTORY::SendFindinvestigatorTaleEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }
 
 
-// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó - ¿¡Åä
+// ˜? - ˜˜˜˜˜˜˜ ?˜?˜ - ˜˜˜˜
 int cINVENTORY::SendFindinvestigatorTaleEtoEventItem()
 {
 	sITEM TempItem;
 	TempItem.w = 22 * 2;
 	TempItem.h = 22 * 2;
 
-	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ÃÊ±âÈ­
+	memset(&sWingItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //˜?˜?
 
-	//¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù.
-	if (sinChar->Weight[0] + 10 > sinChar->Weight[1]) { // ¹«°Ô Ã¼Å© ( Äµµðµ¥ÀÌÁî = 50 / Ä«¶óÀÇ ´«¹° = 10) 
+	//˜˜˜?˜ ??˜?˜.
+	if (sinChar->Weight[0] + 10 > sinChar->Weight[1]) { // ˜˜˜˜ ?? ( ?˜˜˜˜˜˜ = 50 / ?˜˜˜˜ ˜˜˜˜ = 10) 
 		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
 		return FALSE;
 	}
-	//¿©±â¼­ °¡»óÀÇ °ø°£Ã¼Å©¸¦ÇØº»´Ù
+	//˜˜˜? ˜˜˜˜˜˜ ˜˜˜˜??˜˜˜?˜˜˜
 	if (!cCraftItem.CraftCheckEmptyArea(&TempItem)) {
 		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
 		return FALSE;
 	}
-	//Ã¼Å©
+	//??
 	for (int i = 0; i < 1; i++) {
 		if (FindinvestigatorTaleEventItemIndex[i] > 100) {
 			sWingItem_Send.SheltomCode[i] = InvenItemTemp[FindinvestigatorTaleEventItemIndex[i] - 100 - 1].sItemInfo.CODE;
@@ -12045,6 +12060,6 @@ int cINVENTORY::SendFindinvestigatorTaleEtoEventItem()
 
 		}
 	}
-	sWingItem_Send.DocIndex = 2; //auto¼ÂÆÃ!!
+	sWingItem_Send.DocIndex = 2; //auto˜˜˜˜!!
 	return TRUE;
 }

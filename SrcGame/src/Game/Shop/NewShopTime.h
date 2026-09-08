@@ -1,13 +1,13 @@
-#ifndef NEWSHOP
-#define NEWSHOP
-#endif
+#pragma once
 
 #include "Utils\\strings.h"
+#include <vector>
+#include <string>
 
-#define NewShopItems_OPENNPC_Time	  0x252033
-#define NewShopItems_ReceiveItems_Time 0x252034
-#define NewShopItems_FinishPurchase_Time 0x252035
-#define PACKET_SEND_TIME_GAME   0x252036
+#define PACKET_SEND_TIME_GAME              0x252036
+#define NewShopItems_OPENNPC_Time          0x252033
+#define NewShopItems_ReceiveItems_Time     0x252034
+#define NewShopItems_FinishPurchase_Time   0x252035
 
 struct sCompressedDataShopTime
 {
@@ -59,31 +59,51 @@ struct sCoinPlayerTime
 class NewShopTime
 {
 private:
-	bool first = true;
-	bool restaureItem = false;
-	char Path[128] = { 0 };
-	int w = 0;
-	int h = 0;
+	int Time = 0;
+
+	float m_winX = 0.0f;
+	float m_winY = 0.0f;
+	float m_winW = 0.0f;
+	float m_winH = 0.0f;
+	void* m_titleTex = nullptr;
+	int m_titleW = 0;
+	int m_titleH = 0;
+	bool m_titleTried = false;
+	int m_category = 3;
+	int m_subTab = 6;
+	int m_selectedIndex = -1;
+	bool m_confirmBuy = false;
+	bool m_shopReady = false;
+
+	void PushWindowStyle();
+	void PopWindowStyle();
+	void DrawWindowChrome(float headerH);
+	void DrawConfirmChrome();
+	void DrawTitleHeader(bool* p_open);
+	void DrawSectionHeader(const char* title);
+	void EnsureTitleTexture();
+	void EnsureShopLoaded();
+	void DrawShopBody();
+	void DrawItemList();
+	void DrawItemDetail();
+	void DrawBuyConfirm();
+	void RequestPreview(const char* itemCode);
+	void EnsureSelection();
+	const ItemsByCategoryTime* SelectedItem() const;
+	const struct sITEM* FindPreview(const char* itemCode) const;
+	std::string ToUtf8(const char* src) const;
+	std::string PremiumDescription(const ItemsByCategoryTime& item) const;
 
 public:
-	static              NewShopTime* GetInstance() { static NewShopTime instance; return &instance; }
+	static NewShopTime* GetInstance() { static NewShopTime instance; return &instance; }
 
 	void ReceiveItems(NewShopTime_COMPRESSEDPCKG* Data);
 
 	std::vector<ItemsByCategoryTime> ShopItems;
 
-	// Donate PayPal
-	char idPaypal[32];
-	char Amount[32];
-
 	bool openFlag = false;
 	void OpenNpc(bool* p_open);
-	void Donation(char amount[32]);
-	void RestaureItems();
-	void LoadVipOptions();
 	void ReceiveTime(sCoinPlayerTime* pTime);
-
-private:
-	int Time = 0;
+	int  GetTime() { return Time; }
+	bool IsBlockingMouse(int x, int y) const;
 };
-

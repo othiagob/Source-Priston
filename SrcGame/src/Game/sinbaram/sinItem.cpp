@@ -1,40 +1,40 @@
 #include "..\globals.h"
 
 /*----------------------------------------------------------------------------*
-*	파일명 :  sinItem.cpp
-*	하는일 :  아이템 관리
-*	작성일 :  최종업데이트 12월
-*	적성자 :  박상열
+*	????? :  sinItem.cpp
+*	????? :  ?????? ????
+*	????? :  ??????????? 12??
+*	?????? :  ???
 *-----------------------------------------------------------------------------*/
 
 #include "sinLinkHeader.h"
 
 /*----------------------------------------------------------------------------*
-*    						전역 변수
+*    						???? ????
 *-----------------------------------------------------------------------------*/
 cITEM cItem;
 
-sITEM TempItem;      //잠시 저장될 아이템 구조체 변수 
-sITEM MouseItem;	 //마우스에 옮겨질 아이템 
+sITEM TempItem;      //??? ????? ?????? ????? ???? 
+sITEM MouseItem;	 //????J?? ????? ?????? 
 
-sITEMREQUIRE sRequire; //아이템 요구치 플랙  
-POINT ItemBoxPosi; //박스 위치 
-POINT ItemBoxSize; //박스 사이즈 
-POINT TextSetPosi; //텍스트가 놓여질 좌표 
+sITEMREQUIRE sRequire; //?????? ??? ????  
+POINT ItemBoxPosi; //??? ??? 
+POINT ItemBoxSize; //??? ?????? 
+POINT TextSetPosi; //?????? ?????? ??? 
 
 
-char	szInfoBuff[5000];		//아이템의 정보가 들어있는 버퍼 
-char    szInfoBuff2[5000];		//아이템의 정보 수치 
+char	szInfoBuff[5000];		//???????? ?????? ?????? ???? 
+char    szInfoBuff2[5000];		//???????? ???? ??? 
 
-int sinShowItemInfoFlag = 0;    //아이템 정보를 보여준다 
+int sinShowItemInfoFlag = 0;    //?????? ?????? ??????? 
 
 int tWeaponClass = 0;
 int AgingGageFlag = 0;
 int AgingBarLenght = 0;
 
-DWORD sinItemTime = 0; //아이템 유통기간 
+DWORD sinItemTime = 0; //?????? ????? 
 /*----------------------------------------------------------------------------*
-*	                아이템의 인터페이스 제한구역
+*	                ???????? ????????? ???????
 *-----------------------------------------------------------------------------*/
 int NotSell_Item_CODECnt = 0;
 int NotSell_Item_MASKCnt = 0;
@@ -762,51 +762,51 @@ sITEM sItem[MAX_ITEM] = {
 	{ sinDS1 | sin98, "Shields"				 ,"DS198", ITEMSIZE * 2, ITEMSIZE * 4, "Defense", ITEM_CLASS_SHIELDS, "ds198", INVENTORY_POS_LHAND, SIN_SOUND_SHIELDS },
 
 	// An?s (Quest's)
-	{ sinOR2 | sin01  ,"절대반지-_-"  ,"OR201",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or201" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin02  ,"아케인 링"    ,"OR202",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or202" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin03  ,"엠페러 링"    ,"OR203",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or203" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin04  ,"포커스 링"    ,"OR204",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or204" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin01  ,"???????-_-"  ,"OR201",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or201" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin02  ,"?????? ??"    ,"OR202",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or202" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin03  ,"???? ??"    ,"OR203",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or203" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin04  ,"?????? ??"    ,"OR204",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or204" ,0,SIN_SOUND_RING },
 
 	// An?s (N? us?eis)
-	{ sinOR2 | sin05  ,"발렌토 링"			  ,"OR205",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or205" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin06  ,"짱피 링"			  ,"OR206",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or206" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin07  ,"메키스트 링"		  ,"OR207",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or207" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin08  ,"이드 링    "		  ,"OR208",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or208" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin09  ,"플래틴 마브 링"       ,"OR209",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or209" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin10  ,"그레이브 샤킨스 링"   ,"OR210",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or210" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin11  ,"싸이클론 링"		  ,"OR211",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or211" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin12  ,"바우톤 링"			  ,"OR212",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or212" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin13  ,"길티 고든 링"		  ,"OR213",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or213" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin14  ,"엘 라시 쿤 링"		  ,"OR214",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or214" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin15  ,"프라이트 네뮨 링"	  ,"OR215",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or215" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin16  ,"어파스터시 링"		  ,"OR216",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or216" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin17  ,"언홀리 나이트 링"	  ,"OR217",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or217" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin18  ,"베가 드미르 링"		  ,"OR218",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or218" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin19  ,"베가 드미트리 링"	  ,"OR219",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or219" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin20  ,"슬레이온 링"		  ,"OR220",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or220" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin21  ,"블러디 로즈 링"		  ,"OR221",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or221" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin22  ,"헬싱 링"			  ,"OR222",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or222" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin23  ,"베르문 악타룬 링"	  ,"OR223",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or223" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin24  ,"스틱스 아르칸 링"	  ,"OR224",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or224" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin25  ,"라샤'스 링"			  ,"OR225",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or225" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin05  ,"????? ??"			  ,"OR205",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or205" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin06  ,"??? ??"			  ,"OR206",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or206" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin07  ,"?????? ??"		  ,"OR207",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or207" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin08  ,"??? ??    "		  ,"OR208",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or208" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin09  ,"????? ???? ??"       ,"OR209",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or209" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin10  ,"?????? ????? ??"   ,"OR210",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or210" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin11  ,"??????? ??"		  ,"OR211",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or211" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin12  ,"????? ??"			  ,"OR212",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or212" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin13  ,"??? ???? ??"		  ,"OR213",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or213" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin14  ,"?? ??? ?? ??"		  ,"OR214",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or214" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin15  ,"??????? ??? ??"	  ,"OR215",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or215" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin16  ,"???????? ??"		  ,"OR216",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or216" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin17  ,"????? ????? ??"	  ,"OR217",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or217" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin18  ,"???? ???? ??"		  ,"OR218",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or218" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin19  ,"???? ?????? ??"	  ,"OR219",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or219" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin20  ,"??????? ??"		  ,"OR220",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or220" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin21  ,"?????? ???? ??"		  ,"OR221",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or221" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin22  ,"??? ??"			  ,"OR222",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or222" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin23  ,"?????? ????? ??"	  ,"OR223",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or223" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin24  ,"????? ???? ??"	  ,"OR224",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or224" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin25  ,"???'?? ??"			  ,"OR225",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or225" ,0,SIN_SOUND_RING },
 	{ sinOR2 | sin27  ,"Santa Ring"			  ,"OR227",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or227" ,0,SIN_SOUND_RING },
 	{ sinOR2 | sin28  ,"Event Ring"			  ,"OR228",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or228" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin29  ,"Event Ring(1시간)"	  ,"OR229",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or228" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin30  ,"Event Ring(1일)"	  ,"OR230",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or228" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin29  ,"Event Ring(1????)"	  ,"OR229",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or228" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin30  ,"Event Ring(1??)"	  ,"OR230",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or228" ,0,SIN_SOUND_RING },
 	{ sinOR2 | sin31  ,"Babel Ring"			  ,"OR231",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or231" ,0,SIN_SOUND_RING },
 	{ sinOR2 | sin32  ,"Fury Ring"		 	  ,"OR232",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or232" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin33  ,"Heart Ring(7일)"	  ,"OR233",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or233" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin34  ,"후라이드 치킨 링"     ,"OR234",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or234" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin35  ,"양념 치킨 링"		  ,"OR235",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or235" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin36  ,"디코이 링"			  ,"OR236",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or236" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin37  ,"타이탄 링"			  ,"OR237",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or237" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin38  ,"위치 링"			  ,"OR238",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or238" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin39  ,"새드니스 링"		  ,"OR239",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or239" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin40  ,"굴가르 링"			  ,"OR240",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or240" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin53  ,"굴가르 링"			  ,"OR253",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or253" ,0,SIN_SOUND_RING },
-	{ sinOR2 | sin54  ,"굴가르 링"			  ,"OR254",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or254" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin33  ,"Heart Ring(7??)"	  ,"OR233",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or233" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin34  ,"?????? ?? ??"     ,"OR234",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or234" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin35  ,"??? ?? ??"		  ,"OR235",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or235" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin36  ,"?????? ??"			  ,"OR236",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or236" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin37  ,"???? ??"			  ,"OR237",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or237" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin38  ,"??? ??"			  ,"OR238",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or238" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin39  ,"?????? ??"		  ,"OR239",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or239" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin40  ,"?????? ??"			  ,"OR240",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or240" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin53  ,"?????? ??"			  ,"OR253",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or253" ,0,SIN_SOUND_RING },
+	{ sinOR2 | sin54  ,"?????? ??"			  ,"OR254",  ITEMSIZE * 1, ITEMSIZE * 1,"Accessory",ITEM_CLASS_RING,"or254" ,0,SIN_SOUND_RING },
 
-	// Po寤es
+	// Po??es
 	{ sinPM1 | sin01  ,"Small  Mana Potion"    ,"PM101",  ITEMSIZE * 1, ITEMSIZE * 1,"Potion",ITEM_CLASS_POTION,"pm101" ,0,SIN_SOUND_POTION },
 	{ sinPM1 | sin02  ,"Middle Mana Potion"    ,"PM102",  ITEMSIZE * 1, ITEMSIZE * 1,"Potion",ITEM_CLASS_POTION,"pm101" ,0,SIN_SOUND_POTION },
 	{ sinPM1 | sin03  ,"High   Mana Potion"    ,"PM103",  ITEMSIZE * 1, ITEMSIZE * 1,"Potion",ITEM_CLASS_POTION,"pm101" ,0,SIN_SOUND_POTION },
@@ -821,42 +821,42 @@ sITEM sItem[MAX_ITEM] = {
 	{ sinPS1 | sin04  ,"Greate Stamina Potion" ,"PS104",  ITEMSIZE * 1, ITEMSIZE * 1,"Potion",ITEM_CLASS_POTION,"ps101" ,0,SIN_SOUND_POTION },
 
 	// Cores
-	{ sinEC1 | sin01  ,"리카르텐 귀환","EC101",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec101",0,SIN_SOUND_Armlet },
-	{ sinEC1 | sin02  ,"네비스코 귀환","EC102",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
-	{ sinEC1 | sin03  ,"루이넨   귀환","EC103",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
-	{ sinEC1 | sin04  ,"필라이   귀환","EC104",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
-	{ sinEC1 | sin05  ,"유니온   코어","EC105",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
+	{ sinEC1 | sin01  ,"??????? ???","EC101",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec101",0,SIN_SOUND_Armlet },
+	{ sinEC1 | sin02  ,"????? ???","EC102",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
+	{ sinEC1 | sin03  ,"?????   ???","EC103",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
+	{ sinEC1 | sin04  ,"?????   ???","EC104",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
+	{ sinEC1 | sin05  ,"?????   ???","EC105",ITEMSIZE * 2, ITEMSIZE * 1,"Potion",ITEM_CLASS_ECORE,"ec102",0,SIN_SOUND_Armlet },
 
 	// Desafios I
-	{ sinQT1 | sin01 ,"전업아이템"		,"QT101",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT101",0,SIN_SOUND_Armlet },
-	{ sinQT1 | sin02 ,"전업아이템"		,"QT102",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT102",0,SIN_SOUND_Armlet },
-	{ sinQT1 | sin03 ,"전업아이템"		,"QT103",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT103",0,SIN_SOUND_Armlet },
-	{ sinQT1 | sin04 ,"로얄제리"		,"QT104",ITEMSIZE * 2,ITEMSIZE * 2,"Make",ITEM_CLASS_QUEST,"QT104",0,SIN_SOUND_MAGICIAL },
-	{ sinQT1 | sin05 ,"발모제"			,"QT105",ITEMSIZE * 2,ITEMSIZE * 2,"Make",ITEM_CLASS_QUEST,"QT105",0,SIN_SOUND_MAGICIAL },
-	{ sinQT1 | sin06 ,"뱀프쉘텀"		,"QT106",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT106",0,SIN_SOUND_SHELTOM },
-	{ sinQT1 | sin07 ,"로이트라"		,"QT107",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT107",0,SIN_SOUND_MAGICIAL },
-	{ sinQT1 | sin08 ,"칼리아의눈물"	,"QT108",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT108",0,SIN_SOUND_MAGICIAL },
-	{ sinQT1 | sin09 ,"골덴 뱀프"		,"QT109",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT109",0,SIN_SOUND_SHELTOM },
-	{ sinQT1 | sin10 ,"실버 뱀프"		,"QT110",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT110",0,SIN_SOUND_SHELTOM },
-	{ sinQT1 | sin11 ,"브론즈 뱀프"		,"QT111",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT111",0,SIN_SOUND_SHELTOM },
-	{ sinQT1 | sin12 ,"추천서"			,"QT112",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT112",0,SIN_SOUND_Armlet },
-	{ sinQT1 | sin13 ,"로열아뮬렛"		,"QT113",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT113",0,SIN_SOUND_RING },
-	{ sinQT1 | sin14 ,"막대사탕"		,"QT114",ITEMSIZE * 1,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT114",0,SIN_SOUND_SHELTOM },
-	{ sinQT1 | sin15 ,"생크림 케익"		,"QT115",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT115",0,SIN_SOUND_Armlet },
-	{ sinQT1 | sin16 ,"엄프의 망치"		,"QT116",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT116",0,SIN_SOUND_RING },
+	{ sinQT1 | sin01 ,"??????????"		,"QT101",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT101",0,SIN_SOUND_Armlet },
+	{ sinQT1 | sin02 ,"??????????"		,"QT102",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT102",0,SIN_SOUND_Armlet },
+	{ sinQT1 | sin03 ,"??????????"		,"QT103",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT103",0,SIN_SOUND_Armlet },
+	{ sinQT1 | sin04 ,"????????"		,"QT104",ITEMSIZE * 2,ITEMSIZE * 2,"Make",ITEM_CLASS_QUEST,"QT104",0,SIN_SOUND_MAGICIAL },
+	{ sinQT1 | sin05 ,"?????"			,"QT105",ITEMSIZE * 2,ITEMSIZE * 2,"Make",ITEM_CLASS_QUEST,"QT105",0,SIN_SOUND_MAGICIAL },
+	{ sinQT1 | sin06 ,"????????"		,"QT106",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT106",0,SIN_SOUND_SHELTOM },
+	{ sinQT1 | sin07 ,"???????"		,"QT107",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT107",0,SIN_SOUND_MAGICIAL },
+	{ sinQT1 | sin08 ,"??????????"	,"QT108",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT108",0,SIN_SOUND_MAGICIAL },
+	{ sinQT1 | sin09 ,"?? ????"		,"QT109",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT109",0,SIN_SOUND_SHELTOM },
+	{ sinQT1 | sin10 ,"??? ????"		,"QT110",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT110",0,SIN_SOUND_SHELTOM },
+	{ sinQT1 | sin11 ,"????? ????"		,"QT111",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT111",0,SIN_SOUND_SHELTOM },
+	{ sinQT1 | sin12 ,"?????"			,"QT112",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT112",0,SIN_SOUND_Armlet },
+	{ sinQT1 | sin13 ,"????????"		,"QT113",ITEMSIZE * 1,ITEMSIZE * 1,"Quest",ITEM_CLASS_QUEST,"QT113",0,SIN_SOUND_RING },
+	{ sinQT1 | sin14 ,"???????"		,"QT114",ITEMSIZE * 1,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT114",0,SIN_SOUND_SHELTOM },
+	{ sinQT1 | sin15 ,"????? ????"		,"QT115",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT115",0,SIN_SOUND_Armlet },
+	{ sinQT1 | sin16 ,"?????? ???"		,"QT116",ITEMSIZE * 2,ITEMSIZE * 2,"Quest",ITEM_CLASS_QUEST,"QT116",0,SIN_SOUND_RING },
 
 	// Eventos (Separ?eis)
-	{ sinSP1 | sin01  ,"작은 송편"			,"SP101",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP101" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin02  ,"큰   송편"			,"SP102",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP102" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin03  ,"삼계탕"				,"SP103",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP103" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin05  ,"선물상자1"			,"SP105",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin06  ,"선물상자2"			,"SP106",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin07  ,"선물상자3"			,"SP107",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin08  ,"선물상자4"			,"SP108",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin09  ,"선물상자5"			,"SP109",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin10  ,"선물상자6"			,"SP110",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin15  ,"수박"				,"SP115",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP115" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin26  ,"별"					,"SP126",  ITEMSIZE, ITEMSIZE,	"Event",ITEM_CLASS_ECORE,"SP126" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin01  ,"???? ????"			,"SP101",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP101" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin02  ,"?   ????"			,"SP102",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP102" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin03  ,"?????"				,"SP103",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP103" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin05  ,"????????1"			,"SP105",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin06  ,"????????2"			,"SP106",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin07  ,"????????3"			,"SP107",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin08  ,"????????4"			,"SP108",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin09  ,"????????5"			,"SP109",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin10  ,"????????6"			,"SP110",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP105" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin15  ,"????"				,"SP115",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP115" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin26  ,"??"					,"SP126",  ITEMSIZE, ITEMSIZE,	"Event",ITEM_CLASS_ECORE,"SP126" ,0,SIN_SOUND_Armlet },
 	{ sinSP1 | sin27  ,"P"					,"SP127",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP127" ,0,SIN_SOUND_Armlet },
 	{ sinSP1 | sin28  ,"R"					,"SP128",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP128" ,0,SIN_SOUND_Armlet },
 	{ sinSP1 | sin29  ,"I"					,"SP129",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP129" ,0,SIN_SOUND_Armlet },
@@ -864,256 +864,256 @@ sITEM sItem[MAX_ITEM] = {
 	{ sinSP1 | sin31  ,"T"					,"SP131",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP131" ,0,SIN_SOUND_Armlet },
 	{ sinSP1 | sin32  ,"O"					,"SP132",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP132" ,0,SIN_SOUND_Armlet },
 	{ sinSP1 | sin33  ,"N"					,"SP133",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP133" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin34  ,"호랑이 캡슐"		,"SP134",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP134" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin35  ,"초콜릿"				,"SP135",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP135" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin36  ,"캔디"				,"SP136",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP136" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin37  ,"비취"				,"SP137",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP137" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin38  ,"에메랄드"			,"SP138",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP138" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin39  ,"카라의 눈물"		,"SP139",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP139" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin40  ,"축구공 포션"		,"SP140",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP140" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin42  ,"수박"				,"SP142",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP142" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin60  ,"영"					,"SP160",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP160" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin61  ,"화"					,"SP161",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP161" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin62  ,"혈"					,"SP162",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP162" ,0,SIN_SOUND_Armlet },
-	{ sinSP1 | sin63  ,"투"					,"SP163",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP163" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin34  ,"????? ????"		,"SP134",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"SP134" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin35  ,"?????"				,"SP135",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP135" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin36  ,"???"				,"SP136",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP136" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin37  ,"????"				,"SP137",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP137" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin38  ,"???????"			,"SP138",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP138" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin39  ,"????? ????"		,"SP139",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP139" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin40  ,"???? ????"		,"SP140",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP140" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin42  ,"????"				,"SP142",  ITEMSIZE * 1, ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SP142" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin60  ,"??"					,"SP160",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP160" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin61  ,"?"					,"SP161",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP161" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin62  ,"??"					,"SP162",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP162" ,0,SIN_SOUND_Armlet },
+	{ sinSP1 | sin63  ,"??"					,"SP163",  ITEMSIZE, ITEMSIZE,"Event",ITEM_CLASS_ECORE,"SP163" ,0,SIN_SOUND_Armlet },
 
 	// Cristais
-	{ sinGP1 | sin01  ,"호피	  "			,"GP101",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP101" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin02  ,"홉고블린 "			,"GP102",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP102" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin03  ,"디코이   "			,"GP103",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP103" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin04  ,"바곤     "			,"GP104",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP104" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin05  ,"헤드커터 "			,"GP105",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP105" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin06  ,"파이곤   "			,"GP106",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP106" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin07  ,"킹호피   "			,"GP107",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP107" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin08  ,"헐크     "			,"GP108",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP108" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin09  ,"랜덤     "			,"GP109",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP109" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin10  ,"클랜     "			,"GP110",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP110" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin11  ,"웹       "			,"GP111",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP111" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin12  ,"다크스팩터"			,"GP112",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP112" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin13  ,"아이언가드"			,"GP113",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP113" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin14  ,"리카르덴 민병대"	,"GP114",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP114" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin15  ,"리카르덴 경비대"	,"GP115",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP115" ,0,SIN_SOUND_MAGICIAL },
-	{ sinGP1 | sin16  ,"블레스왕국 수비대"  ,"GP116",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP116" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin01  ,"???	  "			,"GP101",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP101" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin02  ,"??????? "			,"GP102",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP102" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin03  ,"??????   "			,"GP103",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP103" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin04  ,"???     "			,"GP104",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP104" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin05  ,"??????? "			,"GP105",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP105" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin06  ,"?????   "			,"GP106",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP106" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin07  ,"????   "			,"GP107",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP107" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin08  ,"???     "			,"GP108",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP108" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin09  ,"????     "			,"GP109",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP109" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin10  ,"???     "			,"GP110",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP110" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin11  ,"??       "			,"GP111",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP111" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin12  ,"?????????"			,"GP112",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP112" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin13  ,"??????"			,"GP113",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP113" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin14  ,"??????? ??????"	,"GP114",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP114" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin15  ,"??????? ????"	,"GP115",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP115" ,0,SIN_SOUND_MAGICIAL },
+	{ sinGP1 | sin16  ,"????????? ?????"  ,"GP116",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP116" ,0,SIN_SOUND_MAGICIAL },
 	{ sinGP1 | sin23 ,"Cristal"			    ,"GP123",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP123" ,0,SIN_SOUND_MAGICIAL },
 	{ sinGP1 | sin24 ,"Cristal"			    ,"GP124",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP124" ,0,SIN_SOUND_MAGICIAL },
 	{ sinGP1 | sin25 ,"Cristal"			    ,"GP125",  ITEMSIZE * 2, ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP125" ,0,SIN_SOUND_MAGICIAL },
 
 	// Cristais (N? us?eis)
-	{ sinGP2 | sin01,"그린 소울스톤"		,"GP201",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP201",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin02,"옐로우 소울스톤"		,"GP202",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP202",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin03,"블루 소울스톤"		,"GP203",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP203",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin04,"마젠타 소울스톤"		,"GP204",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP204",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin05,"싸이언 소울스톤"		,"GP205",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP205",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin06,"바이올렛 소울스톤"	,"GP206",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP206",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin07,"레드 소울스톤"		,"GP207",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP207",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin08,"블랙 소울스톤"		,"GP208",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP208",0,SIN_SOUND_MAGICIAL },
-	{ sinGP2 | sin09,"플래티넘 소울스톤"	,"GP209",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP209",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin01,"??? ?????"		,"GP201",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP201",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin02,"?????? ?????"		,"GP202",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP202",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin03,"???? ?????"		,"GP203",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP203",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin04,"????? ?????"		,"GP204",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP204",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin05,"????? ?????"		,"GP205",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP205",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin06,"??????? ?????"	,"GP206",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP206",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin07,"???? ?????"		,"GP207",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP207",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin08,"???? ?????"		,"GP208",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP208",0,SIN_SOUND_MAGICIAL },
+	{ sinGP2 | sin09,"??????? ?????"	,"GP209",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"GP209",0,SIN_SOUND_MAGICIAL },
 
 	// Asas
-	{ sinQW1 | sin01  ,"윙1	          " ,"QW101",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW101" ,0,SIN_SOUND_MAGICIAL },
-	{ sinQW1 | sin02  ,"윙2		      " ,"QW102",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW102" ,0,SIN_SOUND_MAGICIAL },
-	{ sinQW1 | sin03  ,"윙3			  " ,"QW103",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW103" ,0,SIN_SOUND_MAGICIAL },
-	{ sinQW1 | sin04  ,"윙4			  "	,"QW104",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW104" ,0,SIN_SOUND_MAGICIAL },
-	{ sinQW1 | sin05  ,"윙5			  "	,"QW105",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW105" ,0,SIN_SOUND_MAGICIAL },
-	{ sinQW1 | sin06  ,"윙6			  "	,"QW106",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW106" ,0,SIN_SOUND_MAGICIAL },
+	{ sinQW1 | sin01  ,"??1	          " ,"QW101",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW101" ,0,SIN_SOUND_MAGICIAL },
+	{ sinQW1 | sin02  ,"??2		      " ,"QW102",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW102" ,0,SIN_SOUND_MAGICIAL },
+	{ sinQW1 | sin03  ,"??3			  " ,"QW103",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW103" ,0,SIN_SOUND_MAGICIAL },
+	{ sinQW1 | sin04  ,"??4			  "	,"QW104",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW104" ,0,SIN_SOUND_MAGICIAL },
+	{ sinQW1 | sin05  ,"??5			  "	,"QW105",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW105" ,0,SIN_SOUND_MAGICIAL },
+	{ sinQW1 | sin06  ,"??6			  "	,"QW106",  ITEMSIZE * 2, ITEMSIZE * 2,"Wing",ITEM_CLASS_ECORE,"QW106" ,0,SIN_SOUND_MAGICIAL },
 
 	// Desafios II																										   
-	{ sinMA1 | sin01  ,"유리병           " ,"MA101",  ITEMSIZE * 2, ITEMSIZE * 2,"Make",ITEM_CLASS_QUEST,"MA101" ,0,SIN_SOUND_MAGICIAL },
-	{ sinMA2 | sin01  ,"벌꿀             " ,"MA201",  ITEMSIZE * 1, ITEMSIZE * 1,"Make",ITEM_CLASS_QUEST,"MA201" ,0,SIN_SOUND_POTION },
-	{ sinMA2 | sin02  ,"검은기름         " ,"MA202",  ITEMSIZE * 1, ITEMSIZE * 1,"Make",ITEM_CLASS_QUEST,"MA202" ,0,SIN_SOUND_POTION },
+	{ sinMA1 | sin01  ,"??????           " ,"MA101",  ITEMSIZE * 2, ITEMSIZE * 2,"Make",ITEM_CLASS_QUEST,"MA101" ,0,SIN_SOUND_MAGICIAL },
+	{ sinMA2 | sin01  ,"????             " ,"MA201",  ITEMSIZE * 1, ITEMSIZE * 1,"Make",ITEM_CLASS_QUEST,"MA201" ,0,SIN_SOUND_POTION },
+	{ sinMA2 | sin02  ,"??????         " ,"MA202",  ITEMSIZE * 1, ITEMSIZE * 1,"Make",ITEM_CLASS_QUEST,"MA202" ,0,SIN_SOUND_POTION },
 
 	// Presentes
-	{ sinGF1 | sin01 ,"별상품권"		,"GF101",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_QUEST,"GF101",0,SIN_SOUND_Armlet },
-	{ sinGF1 | sin03 ,"구미호목걸이1"	,"GF103",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF103",0,SIN_SOUND_SHELTOM },
-	{ sinGF1 | sin04 ,"구미호목걸이2"	,"GF104",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF104",0,SIN_SOUND_SHELTOM },
-	{ sinGF1 | sin05 ,"빛나는 가루"		,"GF105",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF105",0,SIN_SOUND_Armlet },
-	{ sinGF1 | sin06 ,"반짝   가루"		,"GF106",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF106",0,SIN_SOUND_Armlet },
-	{ sinGF1 | sin07 ,"나인아뮬렛"		,"GF107",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_QUEST,"GF107",0,SIN_SOUND_Armlet },
-	{ sinGF1 | sin08 ,"테일아뮬렛"		,"GF108",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_QUEST,"GF108",0,SIN_SOUND_Armlet },
-	{ sinGF1 | sin02 ,"역겨운 진액"		,"GF102",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF102",0,SIN_SOUND_POTION},
+	{ sinGF1 | sin01 ,"???????"		,"GF101",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_QUEST,"GF101",0,SIN_SOUND_Armlet },
+	{ sinGF1 | sin03 ,"??????????1"	,"GF103",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF103",0,SIN_SOUND_SHELTOM },
+	{ sinGF1 | sin04 ,"??????????2"	,"GF104",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF104",0,SIN_SOUND_SHELTOM },
+	{ sinGF1 | sin05 ,"?????? ????"		,"GF105",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF105",0,SIN_SOUND_Armlet },
+	{ sinGF1 | sin06 ,"???   ????"		,"GF106",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF106",0,SIN_SOUND_Armlet },
+	{ sinGF1 | sin07 ,"????????"		,"GF107",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_QUEST,"GF107",0,SIN_SOUND_Armlet },
+	{ sinGF1 | sin08 ,"???????"		,"GF108",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_QUEST,"GF108",0,SIN_SOUND_Armlet },
+	{ sinGF1 | sin02 ,"????? ????"		,"GF102",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_QUEST,"GF102",0,SIN_SOUND_POTION},
 
 	// Pluzze (Eventos)
-	{ sinPZ1 | sin00 ,"복주머니"			,"PZ100",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ100",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin00 ,"??????"			,"PZ100",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ100",0,SIN_SOUND_Armlet },
 
 	// Eventos (Desc.)
-	{ sinSD2 | sin01 ,"폭탄"         ,"SD201",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD201",0,SIN_SOUND_Armlet },
-	{ sinSD2 | sin02 ,"시계"         ,"SD202",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD202",0,SIN_SOUND_Armlet },
-	{ sinSD2 | sin03 ,"아이스크림"   ,"SD203",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD203",0,SIN_SOUND_Armlet },
-	{ sinSD2 | sin04 ,"토끼인형"     ,"SD204",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD204",0,SIN_SOUND_Armlet },
-	{ sinSD2 | sin05 ,"달의 수정구"  ,"SD205",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD205",0,SIN_SOUND_Armlet },
-	{ sinSD2 | sin06 ,"태양의 수정구","SD206",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD206",0,SIN_SOUND_Armlet },
-	{ sinSD2 | sin07 ,"천공의 수정구","SD207",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD207",0,SIN_SOUND_Armlet },
+	{ sinSD2 | sin01 ,"???"         ,"SD201",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD201",0,SIN_SOUND_Armlet },
+	{ sinSD2 | sin02 ,"????"         ,"SD202",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD202",0,SIN_SOUND_Armlet },
+	{ sinSD2 | sin03 ,"????????"   ,"SD203",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD203",0,SIN_SOUND_Armlet },
+	{ sinSD2 | sin04 ,"??????"     ,"SD204",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD204",0,SIN_SOUND_Armlet },
+	{ sinSD2 | sin05 ,"???? ??????"  ,"SD205",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD205",0,SIN_SOUND_Armlet },
+	{ sinSD2 | sin06 ,"?????? ??????","SD206",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD206",0,SIN_SOUND_Armlet },
+	{ sinSD2 | sin07 ,"????? ??????","SD207",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"SD207",0,SIN_SOUND_Armlet },
 
 	// Eventos (Desc.)
-	{ sinBS1 | sin01 ,"벨라토스톤(소)","BS101",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BS101",0,SIN_SOUND_SHELTOM },
-	{ sinBS1 | sin02 ,"벨라토스톤(중)","BS102",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BS102",0,SIN_SOUND_SHELTOM },
-	{ sinBS1 | sin03 ,"벨라토스톤(대)","BS103",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BS103",0,SIN_SOUND_SHELTOM },
+	{ sinBS1 | sin01 ,"?????????(??)","BS101",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BS101",0,SIN_SOUND_SHELTOM },
+	{ sinBS1 | sin02 ,"?????????(??)","BS102",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BS102",0,SIN_SOUND_SHELTOM },
+	{ sinBS1 | sin03 ,"?????????(??)","BS103",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BS103",0,SIN_SOUND_SHELTOM },
 
 	// BC
-	{ sinBC1 | sin01 ,"아타나시아"          ,"BC101",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
-	{ sinBC1 | sin02 ,"데들리 에지"         ,"BC102",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
-	{ sinBC1 | sin03 ,"어베일 오브 이베이드","BC103",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
-	{ sinBC1 | sin04 ,"볼스터 리커버리"     ,"BC104",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
-	{ sinBC1 | sin05 ,"리스토레이션"        ,"BC105",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
-	{ sinBC1 | sin06 ,"디파이언스 스톤"		,"BC106",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin07 ,"디파이언스 스톤"		,"BC107",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin08 ,"디파이언스 스톤"		,"BC108",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin09 ,"마이트 스톤"			,"BC109",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin10 ,"마이트 스톤"			,"BC110",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin11 ,"마이트 스톤"			,"BC111",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin12 ,"마이트 스톤"			,"BC112",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin13 ,"마이트 스톤"			,"BC113",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin14 ,"마이트 스톤"			,"BC114",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin15 ,"마이트 스톤"			,"BC115",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin16 ,"마이트 스톤"			,"BC116",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin21 ,"생명력 부스터(1시간)"  ,"BC121",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC121",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin22 ,"생명력 부스터(3시간)"  ,"BC122",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC122",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin23 ,"생명력 부스터(1일)"    ,"BC123",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC123",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin24 ,"기력 부스터(1시간)"  ,"BC124",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC124",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin25 ,"기력 부스터(3시간)"  ,"BC125",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC125",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin26 ,"기력 부스터(1일)"    ,"BC126",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC126",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin27 ,"근력 부스터(1시간)"  ,"BC127",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC127",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin28 ,"근력 부스터(3시간)"  ,"BC128",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC128",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin29 ,"근력 부스터(1일)"    ,"BC129",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC129",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin30 ,"스킬 딜레이(1시간)"  ,"BC130",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC130",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin31 ,"스킬 딜레이(3시간)"  ,"BC131",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC131",0,SIN_SOUND_SHELTOM },
-	{ sinBC1 | sin32 ,"스킬 딜레이(1일)"    ,"BC132",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC132",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin01 ,"?????????"          ,"BC101",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
+	{ sinBC1 | sin02 ,"???? ????"         ,"BC102",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
+	{ sinBC1 | sin03 ,"???? ???? ??????","BC103",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
+	{ sinBC1 | sin04 ,"?????? ????????"     ,"BC104",ITEMSIZE * 2,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
+	{ sinBC1 | sin05 ,"?????????"        ,"BC105",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC101",0,SIN_SOUND_Armlet },
+	{ sinBC1 | sin06 ,"??????? ????"		,"BC106",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin07 ,"??????? ????"		,"BC107",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin08 ,"??????? ????"		,"BC108",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin09 ,"????? ????"			,"BC109",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin10 ,"????? ????"			,"BC110",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin11 ,"????? ????"			,"BC111",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin12 ,"????? ????"			,"BC112",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin13 ,"????? ????"			,"BC113",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin14 ,"????? ????"			,"BC114",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin15 ,"????? ????"			,"BC115",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin16 ,"????? ????"			,"BC116",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC102",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin21 ,"?????? ??????(1????)"  ,"BC121",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC121",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin22 ,"?????? ??????(3????)"  ,"BC122",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC122",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin23 ,"?????? ??????(1??)"    ,"BC123",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC123",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin24 ,"??? ??????(1????)"  ,"BC124",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC124",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin25 ,"??? ??????(3????)"  ,"BC125",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC125",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin26 ,"??? ??????(1??)"    ,"BC126",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC126",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin27 ,"??? ??????(1????)"  ,"BC127",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC127",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin28 ,"??? ??????(3????)"  ,"BC128",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC128",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin29 ,"??? ??????(1??)"    ,"BC129",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC129",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin30 ,"??? ??????(1????)"  ,"BC130",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC130",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin31 ,"??? ??????(3????)"  ,"BC131",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC131",0,SIN_SOUND_SHELTOM },
+	{ sinBC1 | sin32 ,"??? ??????(1??)"    ,"BC132",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"BC132",0,SIN_SOUND_SHELTOM },
 
 	// Premiuns
-	{ sinBI1 | sin01 ,"블루 스톤"       ,"BI101",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI101",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin02 ,"레드 스톤"       ,"BI102",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI102",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin03 ,"그린 스톤"       ,"BI103",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI103",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin04 ,"부활주문서"      ,"BI104",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI104",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin05 ,"이터널 라이프"   ,"BI105",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI105",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin06 ,"페이틀 에지"     ,"BI106",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI106",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin07 ,"어버트 스크롤"   ,"BI107",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI107",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin08 ,"텔레포트 코어"   ,"BI108",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI108",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin09 ,"얼큰이 물약"     ,"BI109",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI109",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin10 ,"에이징 스톤"     ,"BI110",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI110",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin11 ,"코퍼 오어"       ,"BI111",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI111",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin12 ,"써드 아이즈(1일)"       ,"BI112",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI112",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin13 ,"경험치증가 포션(1일)"   ,"BI113",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI113",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin14 ,"써드 아이즈(7일)"       ,"BI114",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI114",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin15 ,"경험치증가 포션(7일)"   ,"BI115",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI115",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin01 ,"???? ????"       ,"BI101",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI101",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin02 ,"???? ????"       ,"BI102",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI102",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin03 ,"??? ????"       ,"BI103",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI103",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin04 ,"????????"      ,"BI104",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI104",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin05 ,"????? ??????"   ,"BI105",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI105",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin06 ,"????? ????"     ,"BI106",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI106",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin07 ,"???? ?????"   ,"BI107",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI107",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin08 ,"?????? ???"   ,"BI108",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI108",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin09 ,"????? ????"     ,"BI109",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI109",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin10 ,"?????? ????"     ,"BI110",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI110",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin11 ,"???? ????"       ,"BI111",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI111",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin12 ,"??? ??????(1??)"       ,"BI112",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI112",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin13 ,"????????? ????(1??)"   ,"BI113",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI113",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin14 ,"??? ??????(7??)"       ,"BI114",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI114",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin15 ,"????????? ????(7??)"   ,"BI115",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI115",0,SIN_SOUND_POTION },
 
 	// Cabelos 1
-	{ sinBI1 | sin16 ,"헤어틴트 포션(A형)"	    ,"BI116",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI116",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin17 ,"헤어틴트 포션(B형)"     ,"BI117",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI117",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin18 ,"헤어틴트 포션(C형)"     ,"BI118",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI118",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin16 ,"????? ????(A??)"	    ,"BI116",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI116",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin17 ,"????? ????(B??)"     ,"BI117",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI117",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin18 ,"????? ????(C??)"     ,"BI118",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI118",0,SIN_SOUND_POTION },
 
 	// Premiuns
-	{ sinBI1 | sin19 ,"뱀피릭 커스핏(15분)"    ,"BI119",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI119",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin20 ,"뱀피릭 커스핏(30분)"    ,"BI120",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI120",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin21 ,"마나 리차징 포션(15분)" ,"BI121",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI121",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin22 ,"마나 리차징 포션(30분)" ,"BI122",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI122",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin23 ,      "폭 죽"            ,"BI123",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI123",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin24 ,"경험치증가 포션(50% 1일)","BI124",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI124",0,SIN_SOUND_POTION},
-	{ sinBI1 | sin25 ,"경험치증가 포션(50% 7일)","BI125",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI125",0,SIN_SOUND_POTION},
-	{ sinBI1 | sin26 ,"마이트 오브 아웰(7일)"   ,"BI126",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI126",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin27 ,"마이트 오브 아웰(30일)"   ,"BI127",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI127",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin28 ,"마나 리듀스 포션(1일)"   ,"BI128",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI128",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin29 ,"마나 리듀스 포션(7일)"   ,"BI129",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI129",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin30 ,"마이트 오브 아웰2(7일)"   ,"BI130",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI130",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin31 ,"마이트 오브 아웰2(30일)"   ,"BI131",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI131",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin32 ,"피닉스펫(1일)"          ,"BI132",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI132",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin33 ,"피닉스펫(7일)"          ,"BI133",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI132",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin34 ,"피닉스펫(3시간)"        ,"BI134",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI132",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin36 ,"에이징 마스터(A)"		,"BI136",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI136",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin37 ,"에이징 마스터(B)"		,"BI137",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI137",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin38 ,"에이징 마스터(C)"		,"BI138",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI138",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin39 ,"스킬 마스터(1차)"		,"BI139",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI139",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin40 ,"스킬 마스터(2차)"		,"BI140",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI140",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin41 ,"스킬 마스터(3차)"		,"BI141",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI141",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin42 ,"이동 상점"		,"BI142",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI142",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin43 ,"경험치증가 포션(100% 1일)","BI143",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI143",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin44 ,"경험치증가 포션(100% 7일)","BI144",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI144",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin45 ,"힘 스톤"       ,"BI145",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI145",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin46 ,"정신 스톤"     ,"BI146",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI146",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin47 ,"재능 스톤"     ,"BI147",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI147",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin48 ,"민첩성 스톤"   ,"BI148",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI148",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin49 ,"건강 스톤"     ,"BI149",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI149",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin50 ,"경험치증가 포션(100% 30일)","BI150",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI150",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin51 ,"피닉스펫(30일)"         ,"BI151",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI151",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin52 ,"테리(30일)"    ,"BI152",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI152",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin53 ,"넵시스(30일)"  ,"BI153",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI153",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin54 ,"이오(30일)"    ,"BI154",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI154",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin55 ,"무트(30일)"    ,"BI155",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI155",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin60 ,"엘더 코퍼 오어"     ,"BI160",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI160",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin61 ,"슈퍼 에이징 스톤"   ,"BI161",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI161",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin62 ,"에이징 마스터(D)"		,"BI162",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI162",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin63 ,"에이징 마스터(E)"		,"BI163",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI163",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin64 ,"에이징 마스터(F)"		,"BI164",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI164",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin65 ,"테리(7일)"    ,"BI165",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI165",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin66 ,"넵시스(7일)"  ,"BI166",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI166",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin67 ,"이오(7일)"    ,"BI167",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI167",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin68 ,"무트(7일)"    ,"BI168",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI168",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin69 ,"테리(1일)"    ,"BI169",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI169",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin70 ,"넵시스(1일)"  ,"BI170",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI170",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin71 ,"이오(1일)"    ,"BI171",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI171",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin72 ,"무트(1일)"    ,"BI172",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI172",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin73 ,"테리(1시간)"    ,"BI173",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI173",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin74 ,"넵시스(1시간)"  ,"BI174",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI174",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin75 ,"이오(1시간)"    ,"BI175",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI175",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin76 ,"무트(1시간)"    ,"BI176",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI176",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin77 ,"피닉스펫(1시간)"   ,"BI177",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI177",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin78 ,"써드 아이즈(1시간)"       ,"BI178",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI178",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin79 ,"경험치증가 포션(1시간)"   ,"BI179",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI179",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin80 ,"경험치 2배 증가약(1시간)"   ,"BI180",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI180",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin81 ,"뱀피릭 커스핏(1시간)"    ,"BI181",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI181",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin82 ,"마나 리차징 포션(1시간)" ,"BI182",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI182",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin83 ,"마나 리듀스 포션(1시간)"   ,"BI183",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI183",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin84 ,"그라비티 스톤"   ,"BI184",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI184",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin85 ,"슈페리어 코퍼오어"   ,"BI185",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI185",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin86 ,"슈퍼 뱀피릭 커스핏(1시간)"    ,"BI186",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI186",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin87 ,"슈퍼 뱀피릭 커스핏(3시간)"    ,"BI187",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI187",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin88 ,"슈퍼 뱀피릭 커스핏(1일)"    ,"BI188",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI188",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin89 ,"믹스쳐 리셋 스톤"	,"BI189",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI189",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin90 ,"리스펙 스톤"		,"BI190",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI190",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin91 ,"근력 리듀스 포션(1일)"    ,"BI191",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI191",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin92 ,"근력 리듀스 포션(7일)"    ,"BI192",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI192",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin93 ,"필드 코어(1일)"		,"BI193",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI193",0,SIN_SOUND_POTION },
-	{ sinBI1 | sin94 ,"필드 코어(7일)"		,"BI194",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI194",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin95 ,"필드 코어(7일)"		,"BI195",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI195",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin96 ,"필드 코어(7일)"		,"BI196",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI196",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin97 ,"필드 코어(7일)"		,"BI197",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI197",0,SIN_SOUND_SHELTOM },
-	{ sinBI1 | sin98 ,"필드 코어(7일)"		,"BI198",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI198",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin01 ,"Bronze Package(3시간)"	,"BI201",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI201",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin02 ,"Bronze Package(1일)"    ,"BI202",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI202",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin03 ,"Bronze Package(7일)"    ,"BI203",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI203",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin04 ,"Bronze Package(30일)"   ,"BI204",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI204",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin05 ,"Siver Package(3시간)"   ,"BI205",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI205",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin06 ,"Siver Package(1일)"     ,"BI206",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI206",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin07 ,"Siver Package(7일)"     ,"BI207",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI207",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin08 ,"Siver Package(30일)"	,"BI208",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI208",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin09 ,"Gold Package(3시간)"    ,"BI209",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI209",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin10 ,"Gold Package(1일)"      ,"BI210",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI210",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin11 ,"Gold Package(7일)"      ,"BI211",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI211",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin12 ,"Gold Package(30일)"     ,"BI212",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI212",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin13 ,"헤어틴트 포션(D형)"	,"BI213",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI213",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin14 ,"헤어틴트 포션(E형)" ,"BI214",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI214",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin15 ,"헤어틴트 포션(F형)" ,"BI215",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI215",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin16 ,"헤어틴트 포션(G형)" ,"BI216",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI216",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin17 ,"헤어틴트 포션(H형)" ,"BI217",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI217",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin18 ,"헤어틴트 포션(I형)"	,"BI218",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI218",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin19 ,"헤어틴트 포션(J형)" ,"BI219",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI219",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin20 ,"헤어틴트 포션(K형)" ,"BI220",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI220",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin21 ,"헤어틴트 포션(L형)" ,"BI221",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI221",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin22 ,"헤어틴트 포션(M형)" ,"BI222",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI222",0,SIN_SOUND_POTION },
-	{ sinBI2 | sin23 ,"Superior Package(3시간)" ,"BI223",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI223",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin24 ,"Superior Package(1일)"   ,"BI224",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI224",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin25 ,"Superior Package(7일)"   ,"BI225",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI225",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin26 ,"Bronze Package2(3시간)" ,"BI226",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI226",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin27 ,"Bronze Package2(1일)"   ,"BI227",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI227",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin28 ,"Bronze Package2(7일)"   ,"BI228",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI228",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin29 ,"Siver Package2(3시간)"   ,"BI229",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI229",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin30 ,"Siver Package2(1일)"     ,"BI230",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI230",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin31 ,"Siver Package2(7일)"     ,"BI231",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI231",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin32 ,"Gold Package2(3시간)"    ,"BI232",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI232",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin33 ,"Gold Package2(1일)"      ,"BI233",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI233",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin34 ,"Gold Package2(7일)"      ,"BI234",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI234",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin35 ,"Superior Package2(3시간)" ,"BI235",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI235",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin36 ,"Superior Package2(1일)"   ,"BI236",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI236",0,SIN_SOUND_SHELTOM },
-	{ sinBI2 | sin37 ,"Superior Package2(7일)"   ,"BI237",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI237",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin19 ,"????? ??????(15??)"    ,"BI119",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI119",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin20 ,"????? ??????(30??)"    ,"BI120",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI120",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin21 ,"???? ?????? ????(15??)" ,"BI121",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI121",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin22 ,"???? ?????? ????(30??)" ,"BI122",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI122",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin23 ,      "?? ??"            ,"BI123",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI123",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin24 ,"????????? ????(50% 1??)","BI124",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI124",0,SIN_SOUND_POTION},
+	{ sinBI1 | sin25 ,"????????? ????(50% 7??)","BI125",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI125",0,SIN_SOUND_POTION},
+	{ sinBI1 | sin26 ,"????? ???? ????(7??)"   ,"BI126",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI126",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin27 ,"????? ???? ????(30??)"   ,"BI127",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI127",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin28 ,"???? ???? ????(1??)"   ,"BI128",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI128",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin29 ,"???? ???? ????(7??)"   ,"BI129",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI129",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin30 ,"????? ???? ????2(7??)"   ,"BI130",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI130",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin31 ,"????? ???? ????2(30??)"   ,"BI131",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI131",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin32 ,"???????(1??)"          ,"BI132",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI132",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin33 ,"???????(7??)"          ,"BI133",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI132",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin34 ,"???????(3????)"        ,"BI134",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI132",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin36 ,"?????? ??????(A)"		,"BI136",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI136",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin37 ,"?????? ??????(B)"		,"BI137",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI137",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin38 ,"?????? ??????(C)"		,"BI138",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI138",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin39 ,"??? ??????(1??)"		,"BI139",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI139",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin40 ,"??? ??????(2??)"		,"BI140",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI140",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin41 ,"??? ??????(3??)"		,"BI141",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI141",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin42 ,"??? ????"		,"BI142",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI142",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin43 ,"????????? ????(100% 1??)","BI143",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI143",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin44 ,"????????? ????(100% 7??)","BI144",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI144",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin45 ,"?? ????"       ,"BI145",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI145",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin46 ,"???? ????"     ,"BI146",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI146",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin47 ,"??? ????"     ,"BI147",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI147",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin48 ,"?????? ????"   ,"BI148",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI148",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin49 ,"??? ????"     ,"BI149",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI149",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin50 ,"????????? ????(100% 30??)","BI150",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI150",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin51 ,"???????(30??)"         ,"BI151",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI151",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin52 ,"???(30??)"    ,"BI152",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI152",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin53 ,"????(30??)"  ,"BI153",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI153",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin54 ,"???(30??)"    ,"BI154",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI154",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin55 ,"???(30??)"    ,"BI155",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI155",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin60 ,"???? ???? ????"     ,"BI160",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI160",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin61 ,"???? ?????? ????"   ,"BI161",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI161",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin62 ,"?????? ??????(D)"		,"BI162",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI162",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin63 ,"?????? ??????(E)"		,"BI163",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI163",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin64 ,"?????? ??????(F)"		,"BI164",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI164",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin65 ,"???(7??)"    ,"BI165",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI165",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin66 ,"????(7??)"  ,"BI166",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI166",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin67 ,"???(7??)"    ,"BI167",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI167",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin68 ,"???(7??)"    ,"BI168",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI168",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin69 ,"???(1??)"    ,"BI169",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI169",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin70 ,"????(1??)"  ,"BI170",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI170",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin71 ,"???(1??)"    ,"BI171",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI171",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin72 ,"???(1??)"    ,"BI172",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI172",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin73 ,"???(1????)"    ,"BI173",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI173",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin74 ,"????(1????)"  ,"BI174",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI174",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin75 ,"???(1????)"    ,"BI175",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI175",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin76 ,"???(1????)"    ,"BI176",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI176",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin77 ,"???????(1????)"   ,"BI177",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI177",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin78 ,"??? ??????(1????)"       ,"BI178",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI178",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin79 ,"????????? ????(1????)"   ,"BI179",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI179",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin80 ,"????? 2?? ??????(1????)"   ,"BI180",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI180",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin81 ,"????? ??????(1????)"    ,"BI181",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI181",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin82 ,"???? ?????? ????(1????)" ,"BI182",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI182",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin83 ,"???? ???? ????(1????)"   ,"BI183",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI183",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin84 ,"????? ????"   ,"BI184",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI184",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin85 ,"?????? ???????"   ,"BI185",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI185",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin86 ,"???? ????? ??????(1????)"    ,"BI186",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI186",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin87 ,"???? ????? ??????(3????)"    ,"BI187",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI187",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin88 ,"???? ????? ??????(1??)"    ,"BI188",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI188",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin89 ,"????? ???? ????"	,"BI189",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI189",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin90 ,"?????? ????"		,"BI190",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI190",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin91 ,"??? ???? ????(1??)"    ,"BI191",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI191",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin92 ,"??? ???? ????(7??)"    ,"BI192",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI192",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin93 ,"??? ???(1??)"		,"BI193",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI193",0,SIN_SOUND_POTION },
+	{ sinBI1 | sin94 ,"??? ???(7??)"		,"BI194",ITEMSIZE * 2,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI194",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin95 ,"??? ???(7??)"		,"BI195",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI195",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin96 ,"??? ???(7??)"		,"BI196",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI196",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin97 ,"??? ???(7??)"		,"BI197",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI197",0,SIN_SOUND_SHELTOM },
+	{ sinBI1 | sin98 ,"??? ???(7??)"		,"BI198",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI198",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin01 ,"Bronze Package(3????)"	,"BI201",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI201",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin02 ,"Bronze Package(1??)"    ,"BI202",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI202",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin03 ,"Bronze Package(7??)"    ,"BI203",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI203",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin04 ,"Bronze Package(30??)"   ,"BI204",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI204",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin05 ,"Siver Package(3????)"   ,"BI205",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI205",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin06 ,"Siver Package(1??)"     ,"BI206",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI206",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin07 ,"Siver Package(7??)"     ,"BI207",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI207",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin08 ,"Siver Package(30??)"	,"BI208",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI208",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin09 ,"Gold Package(3????)"    ,"BI209",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI209",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin10 ,"Gold Package(1??)"      ,"BI210",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI210",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin11 ,"Gold Package(7??)"      ,"BI211",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI211",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin12 ,"Gold Package(30??)"     ,"BI212",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI212",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin13 ,"????? ????(D??)"	,"BI213",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI213",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin14 ,"????? ????(E??)" ,"BI214",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI214",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin15 ,"????? ????(F??)" ,"BI215",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI215",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin16 ,"????? ????(G??)" ,"BI216",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI216",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin17 ,"????? ????(H??)" ,"BI217",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI217",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin18 ,"????? ????(I??)"	,"BI218",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI218",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin19 ,"????? ????(J??)" ,"BI219",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI219",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin20 ,"????? ????(K??)" ,"BI220",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI220",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin21 ,"????? ????(L??)" ,"BI221",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI221",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin22 ,"????? ????(M??)" ,"BI222",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI222",0,SIN_SOUND_POTION },
+	{ sinBI2 | sin23 ,"Superior Package(3????)" ,"BI223",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI223",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin24 ,"Superior Package(1??)"   ,"BI224",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI224",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin25 ,"Superior Package(7??)"   ,"BI225",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI225",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin26 ,"Bronze Package2(3????)" ,"BI226",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI226",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin27 ,"Bronze Package2(1??)"   ,"BI227",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI227",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin28 ,"Bronze Package2(7??)"   ,"BI228",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI228",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin29 ,"Siver Package2(3????)"   ,"BI229",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI229",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin30 ,"Siver Package2(1??)"     ,"BI230",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI230",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin31 ,"Siver Package2(7??)"     ,"BI231",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI231",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin32 ,"Gold Package2(3????)"    ,"BI232",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI232",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin33 ,"Gold Package2(1??)"      ,"BI233",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI233",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin34 ,"Gold Package2(7??)"      ,"BI234",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI234",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin35 ,"Superior Package2(3????)" ,"BI235",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI235",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin36 ,"Superior Package2(1??)"   ,"BI236",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI236",0,SIN_SOUND_SHELTOM },
+	{ sinBI2 | sin37 ,"Superior Package2(7??)"   ,"BI237",ITEMSIZE * 1,ITEMSIZE * 1,"Premium",ITEM_CLASS_ECORE,"BI237",0,SIN_SOUND_SHELTOM },
 	// Aging Direto
 	{ sinBI2 | sin38, "Age", "BI272", ITEMSIZE * 1, ITEMSIZE * 1, "Premium", ITEM_CLASS_ECORE, "BI272", 0, SIN_SOUND_SHELTOM },
 	{ sinBI2 | sin52, "Age", "BI273", ITEMSIZE * 1, ITEMSIZE * 1, "Premium", ITEM_CLASS_ECORE, "BI273", 0, SIN_SOUND_SHELTOM },
@@ -1216,36 +1216,36 @@ sITEM sItem[MAX_ITEM] = {
 	{ sinCA2 | sin16, "Traje4", "CA132", ITEMSIZE * 3, ITEMSIZE * 4, "Defense", ITEM_CLASS_COSTUME, "ca132", INVENTORY_POS_COSTUME, SIN_SOUND_ARMOR },
 
 	// Eventos (Partes)
-	{ sinPZ1 | sin01 ,"퍼즐1","PZ101",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ1 | sin02 ,"퍼즐2","PZ102",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ1 | sin03 ,"퍼즐3","PZ103",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ1 | sin04 ,"퍼즐4","PZ104",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ1 | sin05 ,"퍼즐5","PZ105",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ1 | sin06 ,"퍼즐6","PZ106",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ1 | sin07 ,"퍼즐7","PZ107",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ1 | sin08 ,"퍼즐8","PZ108",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin01 ,"????1","PZ101",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin02 ,"????2","PZ102",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin03 ,"????3","PZ103",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin04 ,"????4","PZ104",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin05 ,"????5","PZ105",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin06 ,"????6","PZ106",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin07 ,"????7","PZ107",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ1 | sin08 ,"????8","PZ108",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
 
 	// Eventos (Partes)
-	{ sinPZ2 | sin01 ,"퍼즐1","PZ201",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ2 | sin02 ,"퍼즐2","PZ202",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ2 | sin03 ,"퍼즐3","PZ203",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ2 | sin04 ,"퍼즐4","PZ204",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ2 | sin05 ,"퍼즐5","PZ205",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ2 | sin06 ,"퍼즐6","PZ206",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ2 | sin07 ,"퍼즐7","PZ207",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
-	{ sinPZ2 | sin08 ,"퍼즐8","PZ208",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin01 ,"????1","PZ201",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin02 ,"????2","PZ202",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin03 ,"????3","PZ203",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin04 ,"????4","PZ204",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin05 ,"????5","PZ205",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin06 ,"????6","PZ206",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin07 ,"????7","PZ207",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
+	{ sinPZ2 | sin08 ,"????8","PZ208",ITEMSIZE * 2,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"PZ101",0,SIN_SOUND_Armlet },
 
 	// VL's
-	{ sinCH1 | sin01 ,"초콜렛1","CH101",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH101",0,SIN_SOUND_Armlet },
-	{ sinCH1 | sin02 ,"초콜렛2","CH102",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH102",0,SIN_SOUND_Armlet },
-	{ sinCH1 | sin03 ,"사탕1"  ,"CH103",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH103",0,SIN_SOUND_Armlet },
-	{ sinCH1 | sin04 ,"사탕2"  ,"CH104",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH104",0,SIN_SOUND_Armlet },
+	{ sinCH1 | sin01 ,"?????1","CH101",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH101",0,SIN_SOUND_Armlet },
+	{ sinCH1 | sin02 ,"?????2","CH102",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH102",0,SIN_SOUND_Armlet },
+	{ sinCH1 | sin03 ,"????1"  ,"CH103",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH103",0,SIN_SOUND_Armlet },
+	{ sinCH1 | sin04 ,"????2"  ,"CH104",ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_ECORE,"CH104",0,SIN_SOUND_Armlet },
 
 	// Re-Spec
-	{ sinSE1 | sin01 ,"제라"	  ,"SE101"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE101",0,SIN_SOUND_SHELTOM },
-	{ sinSE1 | sin02 ,"니이드"	  ,"SE102"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE102",0,SIN_SOUND_SHELTOM },
-	{ sinSE1 | sin03 ,"지푸"	  ,"SE103"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE103",0,SIN_SOUND_SHELTOM },
-	{ sinSE1 | sin04 ,"테이와즈"  ,"SE104"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE104",0,SIN_SOUND_SHELTOM },
+	{ sinSE1 | sin01 ,"????"	  ,"SE101"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE101",0,SIN_SOUND_SHELTOM },
+	{ sinSE1 | sin02 ,"?????"	  ,"SE102"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE102",0,SIN_SOUND_SHELTOM },
+	{ sinSE1 | sin03 ,"???"	  ,"SE103"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE103",0,SIN_SOUND_SHELTOM },
+	{ sinSE1 | sin04 ,"???????"  ,"SE104"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Accessory",ITEM_CLASS_SEEL,"SE104",0,SIN_SOUND_SHELTOM },
 
 	// Spec Stones
 	{ sinSE1 | sin05, "Spec Stone", "RS101", ITEMSIZE * 1, ITEMSIZE * 1, "Premium", ITEM_CLASS_SEEL, "RS101", SIN_SOUND_SHELTOM },
@@ -1260,76 +1260,76 @@ sITEM sItem[MAX_ITEM] = {
 	{ sinSE1 | sin14, "Spec Stone", "RS110", ITEMSIZE * 1, ITEMSIZE * 1, "Premium", ITEM_CLASS_SEEL, "RS110", SIN_SOUND_SHELTOM },
 
 	// Craft (Partes)
-	{ sinPR1 | sin01, "보라빛 광석",	"PR101"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR101",0,SIN_SOUND_SHELTOM },
-	{ sinPR1 | sin02, "은빛 광석",		"PR102"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR102",0,SIN_SOUND_SHELTOM },
-	{ sinPR1 | sin03, "금빛 광석",		"PR103"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR103",0,SIN_SOUND_SHELTOM },
-	{ sinPR1 | sin04, "하늘빛 광석",	"PR104"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR104",0,SIN_SOUND_SHELTOM },
-	{ sinPR1 | sin05, "남빛 광석",		"PR105"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR105",0,SIN_SOUND_SHELTOM },
-	{ sinPR1 | sin06, "주황빛 광석" ,	"PR106"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR106",0,SIN_SOUND_SHELTOM },
-	{ sinPR1 | sin07, "붉은빛 광석" ,	"PR107"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR107",0,SIN_SOUND_SHELTOM },
-	{ sinPR1 | sin08, "초록빛 광석" ,	"PR108"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR108",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin01, "보라빛 수정",	"PR201"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR201",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin02, "은빛 수정",		"PR202"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR202",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin03, "금빛 수정",		"PR203"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR203",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin04, "하늘빛 수정",	"PR204"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR204",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin05, "남빛 수정",		"PR205"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR205",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin06, "주황빛 수정",	"PR206"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR206",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin07, "붉은빛 수정",	"PR207"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR207",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin08, "초록빛 수정",	"PR208"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR208",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin09, "눈의 결정",		"PR209"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR209",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin10, "스노우플라워",	"PR210"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR210",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin11, "하얀 눈물",		"PR211"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR211",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin12, "녹슨 수정",		"PR212"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR212",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin13, "원석 조각",		"PR213"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR213",0,SIN_SOUND_SHELTOM },
-	{ sinPR2 | sin14, "검은빛 수정",		"PR214"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR214",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin01, "보라빛 룬(A)",	"PR301"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR301",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin02, "은빛 룬(A)",	"PR302"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR302",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin03, "금빛 룬(A)",	"PR303"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR303",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin04, "하늘빛 룬(A)",	"PR304"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR304",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin05, "남빛 룬(A)",	"PR305"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR305",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin06, "주황빛 룬(A)",	"PR306"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR306",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin07, "붉은빛 룬(A)",	"PR307"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR307",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin08, "초록빛 룬(A)",	"PR308"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR308",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin09, "스노우 룬(A)",	"PR309"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR309",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin10, "플라워 룬(A)",	"PR310"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR310",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin11, "화이트 룬(A)",	"PR311"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR311",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin12, "일루젼 룬(A)",	"PR312"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR312",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin13, "아이디얼 룬(A)",	"PR313"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR313",0,SIN_SOUND_SHELTOM },
-	{ sinPR3 | sin14, "브레이크 룬(A)",	"PR314"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR314",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin01, "보라빛 룬(B)",	"PR401"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR401",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin02, "은빛 룬(B)",	"PR402"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR402",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin03, "금빛 룬(B)",	"PR403"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR403",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin04, "하늘빛 룬(B)",	"PR404"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR404",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin05, "남빛 룬(B)",	"PR405"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR405",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin06, "주황빛 룬(B)",	"PR406"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR406",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin07, "붉은빛 룬(B)",	"PR407"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR407",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin08, "초록빛 룬(B)",	"PR408"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR408",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin09, "스노우 룬(B)",	"PR409"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR409",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin10, "플라워 룬(B)",	"PR410"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR410",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin11, "화이트 룬(B)",	"PR411"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR411",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin12, "일루젼 룬(B)",	"PR412"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR412",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin13, "아이디얼 룬(B)",	"PR413"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR413",0,SIN_SOUND_SHELTOM },
-	{ sinPR4 | sin14, "브레이크 룬(B)",	"PR414"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR414",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin01 ,"잊혀진 무기 제작서",	"WR101",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR101",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin02 ,"고대의 무기 제작서",	"WR102",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR102",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin03 ,"대지의 무기 제작서",	"WR103",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR103",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin04 ,"어둠의 무기 제작서",	"WR104",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR104",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin05 ,"화염의 무기 제작서",	"WR105",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR105",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin06 ,"바람의 무기 제작서",	"WR106",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR106",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin07 ,"태양의 무기 제작서",	"WR107",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR107",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin08 ,"광포한 무기 제작서",	"WR108",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR108",0,SIN_SOUND_SHELTOM },
-	{ sinWR1 | sin09 ,"천상의 무기 제작서",	"WR109",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR109",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin01 ,"잊혀진 방어구 제작서",	"DR101",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR101",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin02 ,"고대의 방어구 제작서",	"DR102",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR102",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin03 ,"대지의 방어구 제작서",	"DR103",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR103",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin04 ,"어둠의 방어구 제작서",	"DR104",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR104",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin05 ,"화염의 방어구 제작서",	"DR105",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR105",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin06 ,"바람의 방어구 제작서",	"DR106",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR106",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin07 ,"태양의 방어구 제작서",	"DR107",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR107",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin08 ,"광포한 방어구 제작서",	"DR108",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR108",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin09 ,"천상의 방어구 제작서",	"DR109",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR109",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin10 ,"포설의 제작서",			"DR110",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR110",0,SIN_SOUND_SHELTOM },
-	{ sinDR1 | sin11 ,"기억의 제작서",			"DR111",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR111",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin01, "????? ????",	"PR101"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR101",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin02, "???? ????",		"PR102"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR102",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin03, "??? ????",		"PR103"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR103",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin04, "???? ????",	"PR104"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR104",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin05, "???? ????",		"PR105"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR105",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin06, "????? ????" ,	"PR106"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR106",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin07, "?????? ????" ,	"PR107"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR107",0,SIN_SOUND_SHELTOM },
+	{ sinPR1 | sin08, "???? ????" ,	"PR108"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR108",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin01, "????? ????",	"PR201"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR201",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin02, "???? ????",		"PR202"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR202",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin03, "??? ????",		"PR203"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR203",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin04, "???? ????",	"PR204"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR204",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin05, "???? ????",		"PR205"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR205",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin06, "????? ????",	"PR206"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR206",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin07, "?????? ????",	"PR207"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR207",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin08, "???? ????",	"PR208"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR208",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin09, "???? ????",		"PR209"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR209",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin10, "?????????",	"PR210"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR210",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin11, "??? ????",		"PR211"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR211",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin12, "??L ????",		"PR212"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR212",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin13, "???? ????",		"PR213"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR213",0,SIN_SOUND_SHELTOM },
+	{ sinPR2 | sin14, "?????? ????",		"PR214"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR214",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin01, "????? ??(A)",	"PR301"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR301",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin02, "???? ??(A)",	"PR302"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR302",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin03, "??? ??(A)",	"PR303"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR303",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin04, "???? ??(A)",	"PR304"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR304",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin05, "???? ??(A)",	"PR305"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR305",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin06, "????? ??(A)",	"PR306"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR306",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin07, "?????? ??(A)",	"PR307"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR307",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin08, "???? ??(A)",	"PR308"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR308",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin09, "????? ??(A)",	"PR309"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR309",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin10, "???? ??(A)",	"PR310"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR310",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin11, "???? ??(A)",	"PR311"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR311",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin12, "????? ??(A)",	"PR312"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR312",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin13, "?????? ??(A)",	"PR313"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR313",0,SIN_SOUND_SHELTOM },
+	{ sinPR3 | sin14, "?????? ??(A)",	"PR314"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR314",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin01, "????? ??(B)",	"PR401"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR401",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin02, "???? ??(B)",	"PR402"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR402",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin03, "??? ??(B)",	"PR403"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR403",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin04, "???? ??(B)",	"PR404"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR404",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin05, "???? ??(B)",	"PR405"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR405",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin06, "????? ??(B)",	"PR406"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR406",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin07, "?????? ??(B)",	"PR407"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR407",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin08, "???? ??(B)",	"PR408"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR408",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin09, "????? ??(B)",	"PR409"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR409",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin10, "???? ??(B)",	"PR410"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR410",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin11, "???? ??(B)",	"PR411"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR411",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin12, "????? ??(B)",	"PR412"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR412",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin13, "?????? ??(B)",	"PR413"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR413",0,SIN_SOUND_SHELTOM },
+	{ sinPR4 | sin14, "?????? ??(B)",	"PR414"  ,ITEMSIZE * 1,ITEMSIZE * 1,"Event",ITEM_CLASS_SEEL,"PR414",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin01 ,"?????? ???? ?????",	"WR101",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR101",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin02 ,"?????? ???? ?????",	"WR102",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR102",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin03 ,"?????? ???? ?????",	"WR103",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR103",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin04 ,"????? ???? ?????",	"WR104",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR104",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin05 ,"????? ???? ?????",	"WR105",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR105",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin06 ,"????? ???? ?????",	"WR106",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR106",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin07 ,"?????? ???? ?????",	"WR107",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR107",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin08 ,"?????? ???? ?????",	"WR108",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR108",0,SIN_SOUND_SHELTOM },
+	{ sinWR1 | sin09 ,"????? ???? ?????",	"WR109",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"WR109",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin01 ,"?????? ??? ?????",	"DR101",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR101",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin02 ,"?????? ??? ?????",	"DR102",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR102",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin03 ,"?????? ??? ?????",	"DR103",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR103",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin04 ,"????? ??? ?????",	"DR104",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR104",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin05 ,"????? ??? ?????",	"DR105",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR105",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin06 ,"????? ??? ?????",	"DR106",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR106",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin07 ,"?????? ??? ?????",	"DR107",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR107",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin08 ,"?????? ??? ?????",	"DR108",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR108",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin09 ,"????? ??? ?????",	"DR109",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR109",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin10 ,"?????? ?????",			"DR110",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR110",0,SIN_SOUND_SHELTOM },
+	{ sinDR1 | sin11 ,"????? ?????",			"DR111",ITEMSIZE * 1,ITEMSIZE * 2,"Event",ITEM_CLASS_ECORE,"DR111",0,SIN_SOUND_SHELTOM },
 
 	////SKINS ITENS ZERUS
 	//{ sinSK1 | sin01 ,"Skin Stone" ,"SK101",ITEMSIZE * 2,ITEMSIZE * 2,"skins",ITEM_CLASS_ECORE,"SK101",0,SIN_SOUND_SHELTOM },
@@ -1516,7 +1516,7 @@ void cITEM::Init()
 
 	int CheckCount = 0;
 	while (1) {
-		//////////////////////팔수없는 아이템 목록
+		//////////////////////??????? ?????? ???
 		if (NotSell_Item_CODE[NotSell_Item_CODECnt])
 			NotSell_Item_CODECnt++;
 		else CheckCount++;
@@ -1527,7 +1527,7 @@ void cITEM::Init()
 			NotSell_Item_KINDCnt++;
 		else CheckCount++;
 
-		//////////////////////버릴수없는 아이템목록
+		//////////////////////?????????? ????????
 		if (NotDrow_Item_CODE[NotDrow_Item_CODECnt])
 			NotDrow_Item_CODECnt++;
 		else CheckCount++;
@@ -1538,7 +1538,7 @@ void cITEM::Init()
 			NotDrow_Item_KINDCnt++;
 		else CheckCount++;
 
-		//////////////////////셋팅할수없는 아이템목록
+		//////////////////////??????????? ????????
 		if (NotSet_Item_CODE[NotSet_Item_CODECnt])
 			NotSet_Item_CODECnt++;
 		else CheckCount++;
@@ -1552,11 +1552,11 @@ void cITEM::Init()
 		if (CheckCount >= 9)break;
 
 	}
-	// pluto 제작 아이템 무게 가격 초기화
+	// pluto ???? ?????? ???? ???? ????
 	memset(g_Manufacture_ItemInfo, 0, sizeof(SManufacture_ResultItemInfo));
 }
 /*----------------------------------------------------------------------------*
-*						    Bmp파일을 로드한다
+*						    Bmp?????? ???????
 *-----------------------------------------------------------------------------*/
 void cITEM::Load()
 {
@@ -1585,7 +1585,7 @@ void cITEM::Release()
 	}
 }
 /*----------------------------------------------------------------------------*
-*							     그리기
+*							     ?????
 *-----------------------------------------------------------------------------*/
 void cITEM::Draw()
 {
@@ -1636,7 +1636,7 @@ void cITEM::Draw()
 	}
 }
 /*----------------------------------------------------------------------------*
-*							     메인
+*							     ????
 *-----------------------------------------------------------------------------*/
 void cITEM::Main()
 {
@@ -1677,7 +1677,7 @@ void cITEM::GetMousePos(int* MouseX, int* MouseY)
 
 }
 /*----------------------------------------------------------------------------*
-*							     종료
+*							     ????
 *-----------------------------------------------------------------------------*/
 void cITEM::Close()
 {
@@ -1900,5 +1900,96 @@ int cITEM::CheckItemTable()
 	const DWORD CheckSumItemData = 3977515816;
 
 	return TRUE;
+}
+
+static LPDIRECT3DTEXTURE9 TryLoadItemBmp(const char* folder, const char* code)
+{
+	if (!folder || !folder[0] || !code || !code[0])
+		return nullptr;
+
+	char path[256] = { 0 };
+	wsprintf(path, "Image\\sinImage\\Items\\%s\\it%s.bmp", folder, code);
+	return LoadDibSurfaceOffscreen(path);
+}
+
+LPDIRECT3DTEXTURE9 LoadItemBmpWithFallback(const char* folder, const char* lastCategory, DWORD itemClass)
+{
+	if (!folder || !folder[0] || !lastCategory || !lastCategory[0])
+		return nullptr;
+
+	LPDIRECT3DTEXTURE9 tex = TryLoadItemBmp(folder, lastCategory);
+	if (tex)
+		return tex;
+
+	const char* fallbacks[8] = { 0 };
+	int n = 0;
+	if (!_strnicmp(lastCategory, "OR", 2) || itemClass == ITEM_CLASS_RING)
+	{
+		fallbacks[n++] = "OR125";
+		fallbacks[n++] = "OR124";
+		fallbacks[n++] = "OR121";
+		fallbacks[n++] = "OR101";
+	}
+	else if (!_strnicmp(lastCategory, "OA2", 3) || itemClass == ITEM_CLASS_ARMLET)
+	{
+		fallbacks[n++] = "OA201";
+	}
+	else if (!_strnicmp(lastCategory, "OA", 2) || itemClass == ITEM_CLASS_AMULET)
+	{
+		fallbacks[n++] = "OA125";
+		fallbacks[n++] = "OA124";
+		fallbacks[n++] = "OA121";
+		fallbacks[n++] = "OA101";
+	}
+	else if (!_strnicmp(lastCategory, "OE", 2) || itemClass == ITEM_CLASS_EARRRINGS)
+	{
+		fallbacks[n++] = "OE101";
+		fallbacks[n++] = "oe101";
+	}
+	else if (!_strnicmp(lastCategory, "DB", 2) || itemClass == ITEM_CLASS_BOOTS)
+		fallbacks[n++] = "DB101";
+	else if (!_strnicmp(lastCategory, "DG", 2) || itemClass == ITEM_CLASS_GLOVES)
+		fallbacks[n++] = "DG101";
+	else if (!_strnicmp(lastCategory, "DS", 2) || itemClass == ITEM_CLASS_SHIELDS)
+		fallbacks[n++] = "DS101";
+	else if (!_strnicmp(lastCategory, "DA2", 3))
+		fallbacks[n++] = "DA202";
+	else if (!_strnicmp(lastCategory, "DA", 2) || itemClass == ITEM_CLASS_ARMOR)
+		fallbacks[n++] = "DA102";
+	else if (!_strnicmp(lastCategory, "OM", 2) || itemClass == ITEM_CLASS_MAGICIAL_STUFFS)
+		fallbacks[n++] = "OM101";
+	else if (!_strnicmp(lastCategory, "OS", 2) || itemClass == ITEM_CLASS_SHELTOM)
+		fallbacks[n++] = "OS101";
+	else if (!_strnicmp(lastCategory, "FO", 2) || itemClass == ITEM_CLASS_FORCEORB)
+		fallbacks[n++] = "FO101";
+	else if (!_strnicmp(lastCategory, "WA", 2))
+		fallbacks[n++] = "WA101";
+	else if (!_strnicmp(lastCategory, "WC", 2))
+		fallbacks[n++] = "WC101";
+	else if (!_strnicmp(lastCategory, "WH", 2))
+		fallbacks[n++] = "WH101";
+	else if (!_strnicmp(lastCategory, "WM", 2))
+		fallbacks[n++] = "WM101";
+	else if (!_strnicmp(lastCategory, "WP", 2))
+		fallbacks[n++] = "WP101";
+	else if (!_strnicmp(lastCategory, "WS1", 3))
+		fallbacks[n++] = "WS101";
+	else if (!_strnicmp(lastCategory, "WS2", 3))
+		fallbacks[n++] = "WS201";
+	else if (!_strnicmp(lastCategory, "WT", 2))
+		fallbacks[n++] = "WT101";
+	else if (!_strnicmp(lastCategory, "CA", 2) || itemClass == ITEM_CLASS_COSTUME)
+		fallbacks[n++] = "CA101";
+
+	for (int i = 0; i < n; i++)
+	{
+		if (!fallbacks[i] || !_stricmp(fallbacks[i], lastCategory))
+			continue;
+		tex = TryLoadItemBmp(folder, fallbacks[i]);
+		if (tex)
+			return tex;
+	}
+
+	return nullptr;
 }
 

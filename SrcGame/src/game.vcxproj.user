@@ -4,11 +4,11 @@
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerWorkingDirectory>E:\Games\WPT - 1074 -V01 - Source\WPT - 1074</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Cliente Full</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerWorkingDirectory>E:\Games\WPT - 1074 -V01 - Source\WPT - 1074</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Cliente Full</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

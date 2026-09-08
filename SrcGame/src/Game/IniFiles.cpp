@@ -101,3 +101,10 @@ VOID IniFiles::WriteString(LPCSTR pszSection, LPCSTR pszKey, LPCSTR pszValue)
 {
 	WritePrivateProfileString(pszSection, pszKey, pszValue, m_szFileName);
 }
+
+VOID IniFiles::ReadStringTo(LPCSTR pszSection, LPCSTR pszKey, LPSTR pszOut, DWORD dwOutSize, LPCSTR pszDefault)
+{
+	if (!pszOut || dwOutSize == 0)
+		return;
+	GetPrivateProfileString(pszSection, pszKey, pszDefault ? pszDefault : "", pszOut, dwOutSize, m_szFileName);
+}

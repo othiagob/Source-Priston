@@ -960,6 +960,11 @@ void ImGuiFlags::InstancesFlag()
 		QuestWindow::GetInstance()->questOverlay(&QuestWindow::GetInstance()->openOverlay);
 	}
 
+	if (Settings::GetInstance()->IsOpen())
+	{
+		Settings::GetInstance()->Draw();
+	}
+
 	if (EventoArena::GetInstance()->openFlag)
 	{
 		extern int horaHost;

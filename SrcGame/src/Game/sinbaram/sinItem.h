@@ -769,3 +769,6 @@ extern DWORD NotDrow_Item_KIND[];
 extern DWORD NotSet_Item_CODE[];
 extern DWORD NotSet_Item_MASK[];
 extern DWORD NotSet_Item_KIND[];
+
+// Tries it<code>.bmp, then a generic icon of the same slot if the file is missing.
+LPDIRECT3DTEXTURE9 LoadItemBmpWithFallback(const char* folder, const char* lastCategory, DWORD itemClass);

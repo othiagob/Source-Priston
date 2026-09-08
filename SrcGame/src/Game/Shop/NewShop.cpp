@@ -3,6 +3,7 @@
 #include <atlconv.h>
 #include "..\\HUD\\RestaureWindow.h"
 #include "..\\sinbaram\\sinLinkHeader.h"
+#include "..\\HUD\\ImGuiWindowChrome.h"
 #include "imGui/imgui_impl_dx9.h"
 #include "../smLib3d/smDsx.h"
 #include "..\\ConfirmationBox.h"
@@ -11,6 +12,11 @@
 #include <d3d9.h>
 #include <d3dx9tex.h>
 #include <zlib.h>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <cfloat>
 
 #include <curl/curl.h>
 #include <TitleBox/TitleBox.h>
@@ -23,92 +29,726 @@
 #pragma comment (lib, "Game/API/libcurl_a_debug.lib")
 #endif
 
+#define U8_A "\xC3\xA1"
+#define U8_E "\xC3\xA9"
+#define U8_I "\xC3\xAD"
+#define U8_O "\xC3\xB3"
+#define U8_U "\xC3\xBA"
+#define U8_AN "\xC3\xA3"
+#define U8_ON "\xC3\xB5"
+#define U8_C "\xC3\xA7"
 
-struct Categorias {
-	std::string CategoryName;
-	short CategoryID;
-};
-
-Categorias sCategorias;
-std::vector<Categorias> vCategorias;
-ItemsByCategory Items[300] = { 0 };
-
-bool init = true;
-bool finish = false;
-
-// Troca de nick
-int nickIsAvailable = 0;
-char NewNick[30] = { 0 };
-
-static void addCategorias()
-{
-	vCategorias.clear();
-
-	sCategorias.CategoryID = 1;
-	sCategorias.CategoryName = "Ataque";
-
-	vCategorias.push_back(sCategorias);
-
-	sCategorias.CategoryID = 2;
-	sCategorias.CategoryName = "Defesa";
-
-	vCategorias.push_back(sCategorias);
-
-	sCategorias.CategoryID = 3;
-	sCategorias.CategoryName = u8"Acessórios";
-
-	vCategorias.push_back(sCategorias);
-
-	sCategorias.CategoryID = 4;
-	sCategorias.CategoryName = "Trajes";
-
-	vCategorias.push_back(sCategorias);
-
-	sCategorias.CategoryID = 5;
-	sCategorias.CategoryName = "Premium";
-
-	vCategorias.push_back(sCategorias);
-
-	sCategorias.CategoryID = 6;
-	sCategorias.CategoryName = u8"Serviços";
-
-	vCategorias.push_back(sCategorias);
-}
-
-PDIRECT3DTEXTURE9 my_texture4[4];
-PDIRECT3DTEXTURE9 ClassImages[12];
-LPDIRECT3DTEXTURE9 ItemShopImage[150];
-LPDIRECT3DTEXTURE9 ShopImages[1];
-LPDIRECT3DTEXTURE9 RestaureImage[20];
-LPDIRECT3DTEXTURE9 DonateImages[6];
+static const ImU32 kGold = IM_COL32(200, 170, 90, 220);
+static const ImU32 kGoldBright = IM_COL32(230, 200, 110, 255);
+static const ImU32 kGoldDim = IM_COL32(200, 170, 90, 90);
+static const ImU32 kGoldFill = IM_COL32(20, 24, 32, 255);
+static const char* kTitleImagePath = "game\\images\\shop\\loja-de-coins.png";
+static const float kMainHeaderH = 50.0f;
+static const float kHeaderBtnW = 28.0f;
+static const float kHeaderBtnH = 22.0f;
+static const float kHeaderBtnRound = 3.0f;
+static const float kWindowW = 720.0f;
+static const float kWindowH = 520.0f;
 
 extern BOOL DecryptBMP(char* pBuffer, unsigned int uBufferSize);
 extern LPDIRECT3DTEXTURE9 LoadDibSurfaceOffscreen(char* Filename);
-extern bool LoadTextureFromFile2(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height);
 extern sITEM TempPerfectItem;
 extern BOOL bIsPerfect;
-extern sITEM TempPerfectItem;;
 extern int sinShowItemInfoFlag;
-extern char* WChar_to_UTF82(const wchar_t* string);
-
 extern FailedItemsPckg failedItems;
+extern int smScreenWidth;
+extern int smScreenHeight;
 
-std::vector<string> ItemsAlreadySent;
-std::vector<int> ItemsAlreadySentRestaure;
 std::vector<sITEM> ItemsDetails;
 std::vector<sITEM> ItemsDetailsRestaure;
-bool isShowingDetails = false;
-bool isShowingDetailsRestaure = false;
-int LastSelectedClass = 0;
-int selectedClass = 0;
-int selectedChangeClass = 0;
+std::vector<std::string> ItemsAlreadySent;
+std::vector<int> ItemsAlreadySentRestaure;
+
+int nickIsAvailable = 0;
+char NewNick[30] = { 0 };
+
+static int selectedClass = 0;
+static int selectedChangeClass = 0;
+static int LastSelectedClass = 0;
+
+static PDIRECT3DTEXTURE9 ClassImages[12] = {};
+static PDIRECT3DTEXTURE9 ShopUiImages[4] = {};
+static LPDIRECT3DTEXTURE9 CoinImage = nullptr;
+static LPDIRECT3DTEXTURE9 RestaureImage[20] = {};
+static std::vector<LPDIRECT3DTEXTURE9> ItemShopImage;
+static std::vector<int> ItemShopImageW;
+static std::vector<int> ItemShopImageH;
+static int RestaureImageW[20] = {};
+static int RestaureImageH[20] = {};
+
+extern int g_DibLastReadWidth;
+extern int g_DibLastReadHeight;
+
+const char* Classes[] = { "Sem Classe", "Lutador", "Mec" U8_AN "nico", "Arqueira", "Pikeman", "Atalanta", "Cavaleiro", "Mago", "Sacerdotisa" };
+
+struct ShopSubTab
+{
+	int id;
+	const char* label;
+};
+
+struct ShopCategory
+{
+	int id;
+	const char* label;
+	const ShopSubTab* subs;
+	int subCount;
+};
+
+static const ShopSubTab kAtaqueSubs[] = {
+	{ 1, "Caixas" }, { 2, "Espadas" }, { 3, "Foices" }, { 4, "Garras" },
+	{ 5, "Lan" U8_C "as" }, { 6, "Machados" }, { 7, "Martelos" }, { 8, "Varinhas" },
+	{ 9, "Arcos" }
+};
+static const ShopSubTab kDefesaSubs[] = {
+	{ 1, "Caixas" }, { 2, "Roup" U8_ON "es" }, { 3, "Escudos" }, { 4, "Orbitais" },
+	{ 5, "Armaduras" }, { 6, "Luvas" }
+};
+static const ShopSubTab kAcessoriosSubs[] = {
+	{ 1, "Braceletes" }, { 2, "Botas" }, { 3, "Brincos" },
+	{ 4, "An" U8_E "is" }, { 5, "Colares" }, { 6, "Pedras" }
+};
+static const ShopSubTab kTrajesSubs[] = {
+	{ 1, "Masculinos" }, { 2, "Femininos" }
+};
+static const ShopSubTab kPremiumSubs[] = {
+	{ 1, "Aprimoramento" }, { 2, "Aging e Mix" }, { 3, "For" U8_C "as" }, { 4, "Utilit" U8_A "rios" }
+};
+static const ShopSubTab kServicosSubs[] = {
+	{ 1, "Restaurar Item" }, { 2, "VIP" }, { 3, "Troca de Nick" }
+};
+
+static const ShopCategory kCategories[] = {
+	{ 1, "Ataque", kAtaqueSubs, 9 },
+	{ 2, "Defesa", kDefesaSubs, 6 },
+	{ 3, "Acess" U8_O "rios", kAcessoriosSubs, 6 },
+	{ 4, "Trajes", kTrajesSubs, 2 },
+	{ 5, "Premium", kPremiumSubs, 4 },
+	{ 6, "Servi" U8_C "os", kServicosSubs, 3 }
+};
+static const int kCategoryCount = 6;
+
+static const ShopCategory* FindCategory(int id)
+{
+	for (int i = 0; i < kCategoryCount; i++)
+	{
+		if (kCategories[i].id == id)
+			return &kCategories[i];
+	}
+	return &kCategories[0];
+}
+
+static ImVec2 FitImageSize(int srcW, int srcH, float maxW, float maxH)
+{
+	if (srcW <= 0 || srcH <= 0 || maxW <= 0.0f || maxH <= 0.0f)
+		return ImVec2(0.0f, 0.0f);
+	const float scale = ((float)srcW / maxW > (float)srcH / maxH)
+		? (maxW / (float)srcW)
+		: (maxH / (float)srcH);
+	return ImVec2((float)srcW * scale, (float)srcH * scale);
+}
+
+static void GetTextureSize(LPDIRECT3DTEXTURE9 tex, int* w, int* h)
+{
+	if (w) *w = 0;
+	if (h) *h = 0;
+	if (!tex)
+		return;
+
+	D3DSURFACE_DESC desc;
+	if (FAILED(tex->GetLevelDesc(0, &desc)))
+		return;
+	if (w) *w = (int)desc.Width;
+	if (h) *h = (int)desc.Height;
+}
+
+static void DrawTextureInBox(ImDrawList* draw, LPDIRECT3DTEXTURE9 tex, const ImVec2& boxMin, float boxW, float boxH, int srcW = 0, int srcH = 0)
+{
+	const ImVec2 boxMax(boxMin.x + boxW, boxMin.y + boxH);
+	int texW = 0, texH = 0;
+	GetTextureSize(tex, &texW, &texH);
+	if (!tex || texW <= 0 || texH <= 0)
+	{
+		draw->AddRectFilled(boxMin, boxMax, IM_COL32(40, 40, 48, 255), 3.0f);
+		return;
+	}
+
+	int contentW = (srcW > 0) ? srcW : texW;
+	int contentH = (srcH > 0) ? srcH : texH;
+	if (contentW > texW)
+		contentW = texW;
+	if (contentH > texH)
+		contentH = texH;
+
+	float drawW = (float)contentW;
+	float drawH = (float)contentH;
+	if (drawW > boxW || drawH > boxH)
+	{
+		const ImVec2 sz = FitImageSize(contentW, contentH, boxW, boxH);
+		drawW = sz.x;
+		drawH = sz.y;
+	}
+
+	const float x = boxMin.x + (boxW - drawW) * 0.5f;
+	const float y = boxMin.y + (boxH - drawH) * 0.5f;
+	const ImVec2 uv1((float)contentW / (float)texW, (float)contentH / (float)texH);
+	draw->AddImage((ImTextureID)tex, ImVec2(x, y), ImVec2(x + drawW, y + drawH), ImVec2(0.0f, 0.0f), uv1);
+}
+
+static const char* ShopItemTypeName(DWORD code)
+{
+	const DWORD mask = code & sinITEM_MASK2;
+	if (mask == sinOA1) return "Amuleto";
+	if (mask == sinDA1) return "Armadura";
+	if (mask == sinWA1) return "Machado";
+	if (mask == sinDB1) return "Botas";
+	if (mask == sinWS1) return "Arco";
+	if (mask == sinOA2) return "Bracelete";
+	if (mask == sinWC1) return "Garra";
+	if (mask == sinDG1) return "Luvas";
+	if (mask == sinWH1) return "Martelo";
+	if (mask == sinWT1) return "Lan" U8_C "a";
+	if (mask == sinOR1 || mask == sinOR2) return "Anel";
+	if (mask == sinDA2) return "Roup" U8_AN "o";
+	if (mask == sinWP1) return "Foice";
+	if (mask == sinDS1) return "Escudo";
+	if (mask == sinWS2) return "Espada";
+	if (mask == sinWM1) return "Varinha";
+	if (mask == sinOM1) return "Orbital";
+	if (mask == sinOS1) return "Sheltom";
+	if (mask == sinOE1) return "Brinco";
+	if (mask == sinCA1 || mask == sinCA2) return "Traje";
+	if (mask == sinFO1) return "For" U8_C "a";
+	return "";
+}
+
+static void ShopStatRow(const char* label, const char* value, bool warn = false)
+{
+	const float startX = ImGui::GetCursorPosX();
+	const float width = ImGui::GetContentRegionAvail().x;
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90f, 0.86f, 0.78f, 1.0f));
+	ImGui::TextUnformatted(label);
+	ImGui::PopStyleColor();
+
+	const ImVec2 vs = ImGui::CalcTextSize(value);
+	float valueX = startX + width - vs.x;
+	if (valueX < startX + ImGui::CalcTextSize(label).x + 8.0f)
+		valueX = startX + ImGui::CalcTextSize(label).x + 8.0f;
+	ImGui::SameLine(valueX);
+	ImGui::PushStyleColor(ImGuiCol_Text, warn
+		? ImVec4(0.85f, 0.32f, 0.32f, 1.0f)
+		: ImVec4(0.94f, 0.84f, 0.48f, 1.0f));
+	ImGui::TextUnformatted(value);
+	ImGui::PopStyleColor();
+}
+
+static void ShopStatSection(const char* title)
+{
+	ImGui::Spacing();
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90f, 0.78f, 0.43f, 1.0f));
+	ImGui::TextUnformatted(title);
+	ImGui::PopStyleColor();
+	ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.78f, 0.67f, 0.35f, 0.40f));
+	ImGui::Separator();
+	ImGui::PopStyleColor();
+}
+
+static bool ShopShowsWeaponCombatStats(DWORD code)
+{
+	const DWORD mask = code & sinITEM_MASK2;
+	return mask == sinWA1 || mask == sinWC1 || mask == sinWH1 || mask == sinWM1
+		|| mask == sinWP1 || mask == sinWS1 || mask == sinWS2 || mask == sinWT1;
+}
+
+static void DrawShopItemStats(const sITEM* preview)
+{
+	if (!preview)
+		return;
+
+	const sITEMINFO& info = preview->sItemInfo;
+	char buf[64] = { 0 };
+	const smCHAR_INFO* me = lpCurPlayer ? &lpCurPlayer->smCharInfo : nullptr;
+	const bool weaponCombat = ShopShowsWeaponCombatStats(info.CODE);
+	const DWORD mask2 = info.CODE & sinITEM_MASK2;
+	const bool showAttackRating = weaponCombat
+		|| mask2 == sinOA2 || mask2 == sinOE1 || mask2 == sinOR1 || mask2 == sinOR2;
+
+	const char* typeName = ShopItemTypeName(info.CODE);
+	if (typeName[0])
+	{
+		if (weaponCombat && preview->WeaponClass == ITEM_CLASS_WEAPON_TWO)
+			sprintf_s(buf, sizeof(buf), "Two-Handed %s", typeName);
+		else if (weaponCombat && preview->WeaponClass == ITEM_CLASS_WEAPON_ONE)
+			sprintf_s(buf, sizeof(buf), "One-Handed %s", typeName);
+		else
+			sprintf_s(buf, sizeof(buf), "%s", typeName);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.66f, 0.58f, 1.0f));
+		ImGui::TextWrapped("%s", buf);
+		ImGui::PopStyleColor();
+	}
+
+	ShopStatSection("ATRIBUTOS");
+
+	if (weaponCombat && (info.Damage[0] || info.Damage[1]))
+	{
+		sprintf_s(buf, sizeof(buf), "%d-%d", info.Damage[0], info.Damage[1]);
+		ShopStatRow("Poder de Ataque:", buf);
+	}
+	if (weaponCombat && info.Attack_Speed)
+	{
+		sprintf_s(buf, sizeof(buf), "%d", info.Attack_Speed);
+		ShopStatRow("Velocidade:", buf);
+	}
+	if (weaponCombat && info.Shooting_Range)
+	{
+		sprintf_s(buf, sizeof(buf), "%d", info.Shooting_Range);
+		ShopStatRow("Alcance:", buf);
+	}
+	if (weaponCombat && info.Critical_Hit)
+	{
+		sprintf_s(buf, sizeof(buf), "%d%%", info.Critical_Hit);
+		ShopStatRow("Cr" U8_I "tico:", buf);
+	}
+	if (showAttackRating && info.Attack_Rating)
+	{
+		sprintf_s(buf, sizeof(buf), "%d", info.Attack_Rating);
+		ShopStatRow("Taxa de Ataque:", buf);
+	}
+	if (info.Defence)
+	{
+		sprintf_s(buf, sizeof(buf), "%d", info.Defence);
+		ShopStatRow("Defesa:", buf);
+	}
+	if (info.fAbsorb)
+	{
+		sprintf_s(buf, sizeof(buf), "%.1f", info.fAbsorb);
+		ShopStatRow("Absor" U8_C U8_AN "o:", buf);
+	}
+	if (info.fBlock_Rating)
+	{
+		if (fabs(info.fBlock_Rating - std::round(info.fBlock_Rating)) < FLT_MIN)
+			sprintf_s(buf, sizeof(buf), "%.0f%%", std::round(info.fBlock_Rating));
+		else
+			sprintf_s(buf, sizeof(buf), "%.1f%%", info.fBlock_Rating);
+		ShopStatRow("Bloqueio:", buf);
+	}
+	if (info.fSpeed)
+	{
+		sprintf_s(buf, sizeof(buf), "%.1f", info.fSpeed);
+		ShopStatRow("Vel. de M.:", buf);
+	}
+	if (info.Durability[0] || info.Durability[1])
+	{
+		sprintf_s(buf, sizeof(buf), "%d/%d", info.Durability[0], info.Durability[1]);
+		ShopStatRow("Integridade:", buf);
+	}
+	if (info.Mana[0] || info.Mana[1])
+	{
+		sprintf_s(buf, sizeof(buf), "%d-%d", info.Mana[0], info.Mana[1]);
+		ShopStatRow("Rec. de MP:", buf);
+	}
+	if (info.Life[0] || info.Life[1])
+	{
+		sprintf_s(buf, sizeof(buf), "%d-%d", info.Life[0], info.Life[1]);
+		ShopStatRow("Rec. de HP:", buf);
+	}
+	if (info.Stamina[0] || info.Stamina[1])
+	{
+		sprintf_s(buf, sizeof(buf), "%d-%d", info.Stamina[0], info.Stamina[1]);
+		ShopStatRow("Rec. de RES:", buf);
+	}
+	if (info.fLife_Regen && (info.CODE & sinITEM_MASK2) != sinFO1)
+	{
+		sprintf_s(buf, sizeof(buf), "%.1f", info.fLife_Regen);
+		ShopStatRow("HP Regen.:", buf);
+	}
+	if (info.fMana_Regen && (info.CODE & sinITEM_MASK2) != sinFO1)
+	{
+		sprintf_s(buf, sizeof(buf), "%.1f", info.fMana_Regen);
+		ShopStatRow("MP Regen.:", buf);
+	}
+	if (info.fStamina_Regen && (info.CODE & sinITEM_MASK2) != sinFO1)
+	{
+		sprintf_s(buf, sizeof(buf), "%.1f", info.fStamina_Regen);
+		ShopStatRow("RES Regen.:", buf);
+	}
+	if (info.fMagic_Mastery)
+	{
+		sprintf_s(buf, sizeof(buf), "%.0f", info.fMagic_Mastery);
+		ShopStatRow("Ataque M" U8_A "gico:", buf);
+	}
+	if (info.fIncrease_Life)
+	{
+		sprintf_s(buf, sizeof(buf), "%.0f", info.fIncrease_Life);
+		ShopStatRow("Add HP:", buf);
+	}
+	if (info.fIncrease_Mana)
+	{
+		sprintf_s(buf, sizeof(buf), "%.0f", info.fIncrease_Mana);
+		ShopStatRow("Add MP:", buf);
+	}
+	if (info.fIncrease_Stamina)
+	{
+		sprintf_s(buf, sizeof(buf), "%.0f", info.fIncrease_Stamina);
+		ShopStatRow("Add RES:", buf);
+	}
+	if (info.Potion_Space)
+	{
+		sprintf_s(buf, sizeof(buf), "%d", info.Potion_Space);
+		ShopStatRow("Po" U8_C U8_ON "es:", buf);
+	}
+
+	if (info.Resistance[sITEMINFO_BIONIC] || info.Resistance[sITEMINFO_FIRE] ||
+		info.Resistance[sITEMINFO_ICE] || info.Resistance[sITEMINFO_LIGHTING] ||
+		info.Resistance[sITEMINFO_POISON])
+	{
+		ShopStatSection("RESIST" U8_E "NCIAS");
+		if (info.Resistance[sITEMINFO_BIONIC])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Resistance[sITEMINFO_BIONIC]);
+			ShopStatRow("Org" U8_AN "nico:", buf);
+		}
+		if (info.Resistance[sITEMINFO_FIRE])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Resistance[sITEMINFO_FIRE]);
+			ShopStatRow("Fogo:", buf);
+		}
+		if (info.Resistance[sITEMINFO_ICE])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Resistance[sITEMINFO_ICE]);
+			ShopStatRow("Gelo:", buf);
+		}
+		if (info.Resistance[sITEMINFO_LIGHTING])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Resistance[sITEMINFO_LIGHTING]);
+			ShopStatRow("Raio:", buf);
+		}
+		if (info.Resistance[sITEMINFO_POISON])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Resistance[sITEMINFO_POISON]);
+			ShopStatRow("Veneno:", buf);
+		}
+	}
+
+	if (info.Level || info.Strength || info.Spirit || info.Talent || info.Dexterity || info.Health)
+	{
+		ShopStatSection("REQUISITOS");
+		if (info.Level)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Level);
+			ShopStatRow("Req. Level:", buf, me && me->Level < info.Level);
+		}
+		if (info.Strength)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Strength);
+			ShopStatRow("Req. For" U8_C "a:", buf, me && me->Strength < info.Strength);
+		}
+		if (info.Spirit)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Spirit);
+			ShopStatRow("Req. Int.:", buf, me && me->Spirit < info.Spirit);
+		}
+		if (info.Talent)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Talent);
+			ShopStatRow("Req. Talento:", buf, me && me->Talent < info.Talent);
+		}
+		if (info.Dexterity)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Dexterity);
+			ShopStatRow("Req. Agilidade:", buf, me && me->Dexterity < info.Dexterity);
+		}
+		if (info.Health)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", info.Health);
+			ShopStatRow("Req. Vida:", buf, me && me->Health < info.Health);
+		}
+	}
+
+	const sITEM_SPECIAL& spec = info.JobItem;
+	const bool hasSpec = info.JobCodeMask != 0 && (
+		spec.Add_Attack_Speed || spec.Add_Critical_Hit || spec.Add_Defence ||
+		spec.Add_fAbsorb || spec.Add_fBlock_Rating || spec.Add_fMagic_Mastery ||
+		spec.Add_fSpeed || spec.Add_Shooting_Range || spec.Lev_Damage[1] ||
+		spec.Lev_Attack_Rating || spec.Lev_Life || spec.Lev_Mana ||
+		spec.Per_Life_Regen || spec.Per_Mana_Regen || spec.Per_Stamina_Regen ||
+		spec.Add_Resistance[sITEMINFO_BIONIC] || spec.Add_Resistance[sITEMINFO_FIRE] ||
+		spec.Add_Resistance[sITEMINFO_ICE] || spec.Add_Resistance[sITEMINFO_LIGHTING] ||
+		spec.Add_Resistance[sITEMINFO_POISON]);
+
+	if (hasSpec)
+	{
+		const char* specName = (selectedClass >= 0 && selectedClass < IM_ARRAYSIZE(Classes))
+			? Classes[selectedClass] : "SPEC";
+		sprintf_s(buf, sizeof(buf), "%s +", specName);
+		ShopStatSection(buf);
+
+		if (weaponCombat && spec.Add_Attack_Speed)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Attack_Speed);
+			ShopStatRow("Vel. de Ataque:", buf);
+		}
+		if (weaponCombat && spec.Add_Critical_Hit)
+		{
+			sprintf_s(buf, sizeof(buf), "%d%%", spec.Add_Critical_Hit);
+			ShopStatRow("Taxa de Cr" U8_I "tico:", buf);
+		}
+		if (spec.Add_Defence)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Defence);
+			ShopStatRow("Defesa:", buf);
+		}
+		if (spec.Add_fAbsorb)
+		{
+			sprintf_s(buf, sizeof(buf), "%.1f", spec.Add_fAbsorb);
+			ShopStatRow("Absor" U8_C U8_AN "o:", buf);
+		}
+		if (spec.Add_fBlock_Rating)
+		{
+			if (fabs(spec.Add_fBlock_Rating - std::round(spec.Add_fBlock_Rating)) < FLT_MIN)
+				sprintf_s(buf, sizeof(buf), "%.0f%%", std::round(spec.Add_fBlock_Rating));
+			else
+				sprintf_s(buf, sizeof(buf), "%.1f%%", spec.Add_fBlock_Rating);
+			ShopStatRow("Bloqueio:", buf);
+		}
+		if (spec.Add_fMagic_Mastery)
+		{
+			sprintf_s(buf, sizeof(buf), "%.0f", spec.Add_fMagic_Mastery);
+			ShopStatRow("Ataque M" U8_A "gico:", buf);
+		}
+		if (spec.Add_fSpeed)
+		{
+			sprintf_s(buf, sizeof(buf), "%.1f", spec.Add_fSpeed);
+			ShopStatRow("Velocidade:", buf);
+		}
+		if (weaponCombat && spec.Add_Shooting_Range)
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Shooting_Range);
+			ShopStatRow("Alcance:", buf);
+		}
+		if (weaponCombat && spec.Lev_Damage[1])
+		{
+			sprintf_s(buf, sizeof(buf), "LV/%d", spec.Lev_Damage[1]);
+			ShopStatRow("Poder de Ataque:", buf);
+		}
+		if (showAttackRating && spec.Lev_Attack_Rating)
+		{
+			sprintf_s(buf, sizeof(buf), "LV/%d", spec.Lev_Attack_Rating);
+			ShopStatRow("Taxa de Ataque:", buf);
+		}
+		if (spec.Lev_Life)
+		{
+			sprintf_s(buf, sizeof(buf), "LV/%d", spec.Lev_Life);
+			ShopStatRow("Max. HP Boost:", buf);
+		}
+		if (spec.Lev_Mana)
+		{
+			sprintf_s(buf, sizeof(buf), "LV/%d", spec.Lev_Mana);
+			ShopStatRow("Max. MP Boost:", buf);
+		}
+		if (spec.Per_Life_Regen && (info.CODE & sinITEM_MASK2) != sinFO1)
+		{
+			sprintf_s(buf, sizeof(buf), "%.1f", spec.Per_Life_Regen);
+			ShopStatRow("HP Regen.:", buf);
+		}
+		if (spec.Per_Mana_Regen && (info.CODE & sinITEM_MASK2) != sinFO1)
+		{
+			sprintf_s(buf, sizeof(buf), "%.1f", spec.Per_Mana_Regen);
+			ShopStatRow("MP Regen.:", buf);
+		}
+		if (spec.Per_Stamina_Regen && (info.CODE & sinITEM_MASK2) != sinFO1)
+		{
+			sprintf_s(buf, sizeof(buf), "%.1f", spec.Per_Stamina_Regen);
+			ShopStatRow("RES Regen.:", buf);
+		}
+		if (spec.Add_Resistance[sITEMINFO_BIONIC])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Resistance[sITEMINFO_BIONIC]);
+			ShopStatRow("Org" U8_AN "nico:", buf);
+		}
+		if (spec.Add_Resistance[sITEMINFO_FIRE])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Resistance[sITEMINFO_FIRE]);
+			ShopStatRow("Fogo:", buf);
+		}
+		if (spec.Add_Resistance[sITEMINFO_ICE])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Resistance[sITEMINFO_ICE]);
+			ShopStatRow("Gelo:", buf);
+		}
+		if (spec.Add_Resistance[sITEMINFO_LIGHTING])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Resistance[sITEMINFO_LIGHTING]);
+			ShopStatRow("Raio:", buf);
+		}
+		if (spec.Add_Resistance[sITEMINFO_POISON])
+		{
+			sprintf_s(buf, sizeof(buf), "%d", spec.Add_Resistance[sITEMINFO_POISON]);
+			ShopStatRow("Veneno:", buf);
+		}
+	}
+}
+
+static bool LoadPngTexture(const char* path, void** outTex, int* outW, int* outH)
+{
+	if (!GRAPHICDEVICE || !path || !outTex)
+		return false;
+
+	LPDIRECT3DTEXTURE9 tex = nullptr;
+	D3DXIMAGE_INFO info = {};
+	const HRESULT hr = D3DXCreateTextureFromFileExA(
+		GRAPHICDEVICE, path,
+		D3DX_DEFAULT, D3DX_DEFAULT,
+		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
+		D3DX_FILTER_LINEAR, D3DX_FILTER_NONE,
+		0, &info, nullptr, &tex);
+
+	if (FAILED(hr) || !tex)
+		return false;
+
+	*outTex = tex;
+	if (outW) *outW = (int)info.Width;
+	if (outH) *outH = (int)info.Height;
+	return true;
+}
+
+bool LoadTextureFromFile4(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height)
+{
+	PDIRECT3DTEXTURE9 texture = nullptr;
+	if (D3DXCreateTextureFromFileA(GRAPHICDEVICE, filename, &texture) != S_OK)
+		return false;
+
+	D3DSURFACE_DESC desc;
+	texture->GetLevelDesc(0, &desc);
+	*out_texture = texture;
+	*out_width = (int)desc.Width;
+	*out_height = (int)desc.Height;
+	return true;
+}
+
+static void DrawActiveTabOrnament()
+{
+	const ImVec2 a = ImGui::GetItemRectMin();
+	const ImVec2 b = ImGui::GetItemRectMax();
+	const float width = b.x - a.x;
+	if (width <= 2.0f)
+		return;
+
+	const float cap = width * 0.5f - 1.0f;
+	float rounding = 3.0f;
+	if (rounding > cap)
+		rounding = cap;
+	if (rounding < 0.0f)
+		rounding = 0.0f;
+	const float y1 = a.y + 1.0f;
+	const float y2 = b.y - 1.0f;
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+	draw->PathLineTo(ImVec2(a.x + 0.5f, y2));
+	draw->PathArcToFast(ImVec2(a.x + rounding + 0.5f, y1 + rounding + 0.5f), rounding, 6, 9);
+	draw->PathArcToFast(ImVec2(b.x - rounding - 0.5f, y1 + rounding + 0.5f), rounding, 9, 12);
+	draw->PathLineTo(ImVec2(b.x - 0.5f, y2));
+	draw->PathStroke(kGold, false, 1.5f);
+}
+
+static bool DrawHeaderClose()
+{
+	const ImVec2 win = ImGui::GetWindowSize();
+	ImGui::SetCursorPos(ImVec2(win.x - kHeaderBtnW - 12.0f, (kMainHeaderH - kHeaderBtnH) * 0.5f));
+	ImGui::InvisibleButton("##ShopClose", ImVec2(kHeaderBtnW, kHeaderBtnH));
+	const bool hovered = ImGui::IsItemHovered();
+	const bool clicked = ImGui::IsItemClicked();
+	const ImVec2 p = ImGui::GetItemRectMin();
+	const ImVec2 b1(p.x + kHeaderBtnW, p.y + kHeaderBtnH);
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+	draw->AddRectFilled(p, b1, hovered ? IM_COL32(56, 46, 22, 255) : IM_COL32(18, 20, 24, 255), kHeaderBtnRound);
+	draw->AddRect(p, b1, hovered ? kGoldBright : kGold, kHeaderBtnRound, 0, 1.2f);
+	const ImVec2 c((p.x + b1.x) * 0.5f, (p.y + b1.y) * 0.5f);
+	const float arm = 4.8f;
+	const ImU32 xCol = IM_COL32(236, 220, 160, 255);
+	draw->AddLine(ImVec2(c.x - arm, c.y - arm), ImVec2(c.x + arm, c.y + arm), xCol, 1.7f);
+	draw->AddLine(ImVec2(c.x + arm, c.y - arm), ImVec2(c.x - arm, c.y + arm), xCol, 1.7f);
+	return clicked;
+}
+
+static void CenterTextUnformatted(const char* text)
+{
+	const ImVec2 ts = ImGui::CalcTextSize(text);
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ts.x) * 0.5f);
+	ImGui::TextUnformatted(text);
+}
+
+static const char* ShopItemFolder(const ItemsByCategory& item)
+{
+	const char c0 = (char)toupper((unsigned char)item.ItemCode[0]);
+	const char c1 = (char)toupper((unsigned char)item.ItemCode[1]);
+	const char* folder = "Premium";
+
+	if (c0 == 'W')
+		folder = "Weapon";
+	else if (c0 == 'D')
+		folder = "Defense";
+	else if (c0 == 'O')
+		folder = (c1 == 'S' || c1 == 'B') ? "Defense" : "Accessory";
+	else if ((c0 == 'G' && c1 == 'P') || (c0 == 'S' && c1 == 'P'))
+		folder = "Event";
+	else if (c0 == 'S' && c1 == 'E')
+		folder = "Accessory";
+	else if (c0 == 'B' && c1 == 'I')
+		folder = "Premium";
+	else if (c0 == 'F' && c1 == 'O')
+		folder = "Accessory";
+	else if (c0 == 'C' && c1 == 'A')
+		folder = "Defense";
+	else
+	{
+		switch (item.CategoryID)
+		{
+		case 1: folder = "Weapon"; break;
+		case 2: folder = "Defense"; break;
+		case 3:
+			folder = (item.SubCategoryID == 2) ? "Defense" : "Accessory";
+			break;
+		case 4: folder = "Defense"; break;
+		case 5:
+			if (item.SubCategoryID == 3)
+				folder = "Accessory";
+			else
+				folder = "Premium";
+			break;
+		default:
+			folder = "Premium";
+			break;
+		}
+	}
+
+	return folder;
+}
+
+static void ReleaseShopIcons()
+{
+	for (size_t i = 0; i < ItemShopImage.size(); i++)
+	{
+		if (ItemShopImage[i])
+		{
+			ItemShopImage[i]->Release();
+			ItemShopImage[i] = nullptr;
+		}
+	}
+	ItemShopImage.clear();
+	ItemShopImageW.clear();
+	ItemShopImageH.clear();
+}
 
 int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bool isRestaure = false, int AgingNum = 0)
 {
 	if (!isRestaure)
 	{
-		auto searchItem = find(ItemsAlreadySent.begin(), ItemsAlreadySent.end(), itemCode);
-
+		auto searchItem = std::find(ItemsAlreadySent.begin(), ItemsAlreadySent.end(), itemCode);
 		if (searchItem == ItemsAlreadySent.end())
 		{
 			struct Pck
@@ -121,7 +761,6 @@ int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bo
 			};
 
 			Pck smPacket;
-
 			ZeroMemory(&smPacket, sizeof(Pck));
 			smPacket.code = 0x43550002;
 			smPacket.shopTime = false;
@@ -129,16 +768,15 @@ int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bo
 			sprintf_s(smPacket.itemID, sizeof(smPacket.itemID), "%s", itemCode);
 			smPacket.size = sizeof(Pck);
 
-			smWsockDataServer->Send((char*)&smPacket, smPacket.size, TRUE);
+			if (smWsockDataServer)
+				smWsockDataServer->Send((char*)&smPacket, smPacket.size, TRUE);
 			ItemsAlreadySent.push_back(itemCode);
-
-			return true;
+			return TRUE;
 		}
 	}
 	else
 	{
-		auto searchItem = find(ItemsAlreadySentRestaure.begin(), ItemsAlreadySentRestaure.end(), itemHead);
-
+		auto searchItem = std::find(ItemsAlreadySentRestaure.begin(), ItemsAlreadySentRestaure.end(), itemHead);
 		if (searchItem == ItemsAlreadySentRestaure.end())
 		{
 			struct Pck
@@ -152,7 +790,6 @@ int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bo
 			};
 
 			Pck smPacket;
-
 			ZeroMemory(&smPacket, sizeof(Pck));
 			smPacket.code = 0x43550003;
 			smPacket.ItemHead = itemHead;
@@ -161,11 +798,10 @@ int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bo
 			sprintf_s(smPacket.itemCode, sizeof(smPacket.itemCode), "%s", itemCode);
 			smPacket.size = sizeof(Pck);
 
-			smWsockDataServer->Send((char*)&smPacket, smPacket.size, TRUE);
-
+			if (smWsockDataServer)
+				smWsockDataServer->Send((char*)&smPacket, smPacket.size, TRUE);
 			ItemsAlreadySentRestaure.push_back(itemHead);
-
-			return true;
+			return TRUE;
 		}
 	}
 
@@ -175,7 +811,6 @@ int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bo
 		{
 			if (boost::iequals(getItemToShow.DorpItem, itemCode))
 			{
-
 				if (LastSelectedClass != selectedClass)
 				{
 					ItemsAlreadySent.clear();
@@ -186,7 +821,6 @@ int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bo
 					TempPerfectItem = getItemToShow;
 					bIsPerfect = true;
 				}
-
 				break;
 			}
 		}
@@ -208,102 +842,46 @@ int SendItemToServer(char itemCode[32], int itemHead = 0, int ItemChkSum = 0, bo
 	return TRUE;
 }
 
-int wd = 0;
-int hd = 0;
-
-bool LoadTextureFromFile4(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height)
-{
-	PDIRECT3DTEXTURE9 texture;
-	HRESULT hr = D3DXCreateTextureFromFileA(GRAPHICDEVICE, filename, &texture);
-	if (hr != S_OK)
-		return false;
-
-	D3DSURFACE_DESC my_image_desc;
-	texture->GetLevelDesc(0, &my_image_desc);
-	*out_texture = texture;
-	*out_width = (int)my_image_desc.Width;
-	*out_height = (int)my_image_desc.Height;
-	return true;
-
-}
-
-const char* Classes[] = { "Sem Classe", "Lutador", u8"Mecânico", "Arqueira", "Pikeman", "Atalanta", "Cavaleiro", "Mago", "Sacerdotisa" };
-
-const int DonationValues[] = { 5, 10, 30, 50, 100, 200 };
-const int DonationResults[] = { 25, 50, 150, 250, 500, 1000 };
-
-INT RecoverItem(int ItemHead, int ItemChkSum)
-{
-	smTRANS_COMMAND getFailedItems;
-	getFailedItems.code = RECOVER_AGING_ITEM;
-	getFailedItems.size = sizeof(smTRANS_COMMAND);
-	getFailedItems.WParam = ItemHead;
-	getFailedItems.LParam = ItemChkSum;
-	getFailedItems.SParam = 0;
-
-	if (smWsockServer)
-		smWsockServer->Send((char*)&getFailedItems, getFailedItems.size, TRUE);
-
-	return TRUE;
-}
-
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
 	((std::string*)userp)->append((char*)contents, size * nmemb);
 	return size * nmemb;
 }
 
-void NewShop::Donation(char amount[32]) {
-
+void NewShop::Donation(char amount[32])
+{
 	CURL* curl = curl_easy_init();
-
 	std::string urlDonate;
 
 	if (curl)
 	{
-		CURLcode res;
-
 		char szstring[128] = { 0 };
-		//Arquivo de shop desconhecido - DRACKO
 		sprintf_s(szstring, sizeof(szstring), "http://www.dnsprotect.com.br/PristonTale/WDPT/CreateOrder.asp?amount=%s", amount);
 		urlDonate.clear();
 		curl_easy_setopt(curl, CURLOPT_URL, szstring);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &urlDonate);
-
-		res = curl_easy_perform(curl);
-
+		curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 
 		std::vector<std::string> vTransaction = split(urlDonate.c_str(), '=');
-
-		sprintf_s(idPaypal, sizeof(idPaypal), "%s", vTransaction[1].c_str());
+		if (vTransaction.size() > 1)
+			sprintf_s(idPaypal, sizeof(idPaypal), "%s", vTransaction[1].c_str());
 		sprintf_s(Amount, sizeof(Amount), "%s", amount);
 	}
 
 	ShellExecute(NULL, NULL, urlDonate.c_str(), NULL, NULL, NULL);
-
-	//Donate packetDonate;
-	//sprintf_s(packetDonate.PckDonate.Amount, sizeof(packetDonate.PckDonate.Amount), "%s", Amount);
-	//sprintf_s(packetDonate.PckDonate.IDPaypal, sizeof(packetDonate.PckDonate.IDPaypal), "%s", idPaypal);
-	//packetDonate.size = sizeof(NEW_DONATE);
-	//packetDonate.code = PACKET_DONATE_PAYPAL;
-
-	//if (smWsockUserServer)
-	//	smWsockUserServer->Send((char*)&packetDonate, packetDonate.size, TRUE);
 }
 
 void SentPurchaseToServer(ItemsByCategory Item, int Spec)
 {
-	// Verifica peso e espaço no inventário
-
 	for (auto& getItemToShow : ItemsDetails)
 	{
 		if (boost::iequals(getItemToShow.DorpItem, Item.ItemCode))
 		{
 			if (!cInvenTory.CheckSetEmptyArea(&getItemToShow))
 			{
-				TitleBox::GetInstance()->SetText("Você não tem espaço suficiente no inventário!", 3);
+				TitleBox::GetInstance()->SetText("Voc" "\xEA" " n" "\xE3" "o tem espa" "\xE7" "o suficiente no invent" "\xE1" "rio!", 3);
 				return;
 			}
 
@@ -316,11 +894,9 @@ void SentPurchaseToServer(ItemsByCategory Item, int Spec)
 	}
 
 	sFinishPurchase sFinal;
-
 	sFinal.Item = Item;
 	sFinal.Quantity = 1;
 	sFinal.Spec = Spec;
-
 	sFinal.code = NewShopItems_FinishPurchase;
 	sFinal.size = sizeof(sFinishPurchase);
 
@@ -328,46 +904,41 @@ void SentPurchaseToServer(ItemsByCategory Item, int Spec)
 		smWsockDataServer->Send((char*)&sFinal, sFinal.size, TRUE);
 }
 
-void SentCheckNickToServer(ItemsByCategory Item, int Spec)
+static void SentCheckNickToServer(ItemsByCategory Item, int Spec)
 {
 	sFinishPurchase sCheckNick;
-
 	sCheckNick.Item = Item;
 	sCheckNick.Quantity = 1;
 	sCheckNick.Spec = Spec;
-
 	sCheckNick.code = NewShopItems_CheckNick;
 	sCheckNick.size = sizeof(sFinishPurchase);
-
-	smWsockDataServer->Send((char*)&sCheckNick, sCheckNick.size, TRUE);
+	if (smWsockDataServer)
+		smWsockDataServer->Send((char*)&sCheckNick, sCheckNick.size, TRUE);
 }
 
-void SentChangeNickToServer(ItemsByCategory Item, int Spec)
+static void SentChangeNickToServer(ItemsByCategory Item, int Spec)
 {
 	sFinishPurchase sChangeNick;
-
 	sChangeNick.Item = Item;
 	sChangeNick.Quantity = 1;
 	sChangeNick.Spec = Spec;
-
 	sChangeNick.code = NewShopItems_ChangeNick;
 	sChangeNick.size = sizeof(sFinishPurchase);
-
-	smWsockDataServer->Send((char*)&sChangeNick, sChangeNick.size, TRUE);
+	if (smWsockDataServer)
+		smWsockDataServer->Send((char*)&sChangeNick, sChangeNick.size, TRUE);
 }
 
-void SentChangeClassToServer(ItemsByCategory Item, int Spec)
+INT RecoverItem(int ItemHead, int ItemChkSum)
 {
-	sFinishPurchase sChangeClass;
-
-	sChangeClass.Item = Item;
-	sChangeClass.Quantity = 1;
-	sChangeClass.Spec = Spec;
-
-	sChangeClass.code = NewShopItems_ChangeClass;
-	sChangeClass.size = sizeof(sFinishPurchase);
-
-	smWsockDataServer->Send((char*)&sChangeClass, sChangeClass.size, TRUE);
+	smTRANS_COMMAND getFailedItems;
+	getFailedItems.code = RECOVER_AGING_ITEM;
+	getFailedItems.size = sizeof(smTRANS_COMMAND);
+	getFailedItems.WParam = ItemHead;
+	getFailedItems.LParam = ItemChkSum;
+	getFailedItems.SParam = 0;
+	if (smWsockServer)
+		smWsockServer->Send((char*)&getFailedItems, getFailedItems.size, TRUE);
+	return TRUE;
 }
 
 void NewShop::RecvCoin(int coin)
@@ -385,1355 +956,1147 @@ void NewShop::PlusCoin(int coin)
 	Coin = Coin + coin;
 }
 
-static int selectedDonation = 0;
-
-void showDonationOptions()
+void NewShop::ReceiveItems(NEWSHOP_COMPRESSEDPCKG* Data)
 {
-	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	if (!Data)
+		return;
 
-	if (ImGui::BeginPopupModal(u8"Efetuar uma doação", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+	int chunkIndex = 0;
+	int totalChunks = 1;
+	if (Data->size >= (int)sizeof(NEWSHOP_COMPRESSEDPCKG))
 	{
-		int posInicial = 70;
-		ImGui::Text(u8"Selecione uma opção de doação e aguarde");
-		ImGui::Text(u8"Você será redirecionado automaticamente");
+		chunkIndex = Data->chunkIndex;
+		if (Data->totalChunks > 0)
+			totalChunks = Data->totalChunks;
+	}
 
-		for (int x = 0; x < 6; x++)
+	ITEMS_INFOCKG getAllItems;
+	ZeroMemory(&getAllItems, sizeof(ITEMS_INFOCKG));
+
+	unsigned long nCompressedDataSize = Data->CompressedDataPckg.compressedSize;
+	unsigned long UnCompressedDataSize = sizeof(getAllItems.Items);
+
+	uncompress((Bytef*)&getAllItems.Items, &UnCompressedDataSize, (Bytef*)Data->CompressedDataPckg.pCompressedData, nCompressedDataSize);
+
+	if (chunkIndex <= 0)
+		ShopItems.clear();
+
+	for (int i = 0; i < 200; i++)
+	{
+		if (getAllItems.Items[i].CategoryID == 0)
+			break;
+		ShopItems.push_back(getAllItems.Items[i]);
+	}
+
+	if (chunkIndex + 1 >= totalChunks)
+	{
+		m_shopReady = false;
+		m_selectedIndex = -1;
+		openFlag = true;
+	}
+}
+
+bool NewShop::IsBlockingMouse(int x, int y) const
+{
+	if (!openFlag)
+		return false;
+	if (m_confirmBuy || m_confirmVip || m_confirmNick || m_confirmRestaure >= 0)
+		return true;
+	return m_winW > 0.0f && m_winH > 0.0f
+		&& x >= m_winX && x <= (m_winX + m_winW)
+		&& y >= m_winY && y <= (m_winY + m_winH);
+}
+
+std::string NewShop::ToUtf8(const char* src) const
+{
+	if (!src || !src[0])
+		return {};
+
+	const int wideLen = MultiByteToWideChar(CP_ACP, 0, src, -1, nullptr, 0);
+	if (wideLen <= 0)
+		return src;
+
+	std::wstring wide((size_t)wideLen, L'\0');
+	MultiByteToWideChar(CP_ACP, 0, src, -1, &wide[0], wideLen);
+
+	const int utfLen = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	if (utfLen <= 0)
+		return src;
+
+	std::string utf((size_t)utfLen, '\0');
+	WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, &utf[0], utfLen, nullptr, nullptr);
+	if (!utf.empty() && utf.back() == '\0')
+		utf.pop_back();
+	return utf;
+}
+
+const ItemsByCategory* NewShop::SelectedItem() const
+{
+	if (m_selectedIndex < 0 || m_selectedIndex >= (int)ShopItems.size())
+		return nullptr;
+	return &ShopItems[m_selectedIndex];
+}
+
+const sITEM* NewShop::FindPreview(const char* itemCode) const
+{
+	if (!itemCode || !itemCode[0])
+		return nullptr;
+	for (auto& item : ItemsDetails)
+	{
+		if (boost::iequals(item.DorpItem, itemCode))
+			return &item;
+	}
+	return nullptr;
+}
+
+void NewShop::RequestPreview(const char* itemCode)
+{
+	if (!itemCode || !itemCode[0])
+		return;
+	char code[32] = { 0 };
+	sprintf_s(code, sizeof(code), "%s", itemCode);
+	SendItemToServer(code);
+}
+
+void NewShop::PlacePreviewNearMouse()
+{
+	const ImVec2 mouse = ImGui::GetIO().MousePos;
+	TempPerfectItem.x = (int)mouse.x;
+	TempPerfectItem.y = (int)mouse.y;
+	TempPerfectItem.w = 0;
+	TempPerfectItem.h = 0;
+}
+
+void NewShop::EnsureSelection()
+{
+	if (m_category == 6)
+		return;
+
+	if (m_selectedIndex >= 0 && m_selectedIndex < (int)ShopItems.size())
+	{
+		const ItemsByCategory& cur = ShopItems[m_selectedIndex];
+		if (cur.CategoryID == m_category && cur.SubCategoryID == m_subTab)
+			return;
+	}
+
+	m_selectedIndex = -1;
+	for (int i = 0; i < (int)ShopItems.size(); i++)
+	{
+		if (ShopItems[i].CategoryID == m_category && ShopItems[i].SubCategoryID == m_subTab)
 		{
-			ImGui::PushID(x);
-
-			char msg[64] = { 0 };
-			sprintf_s(msg, sizeof(msg), u8"Valor da doação: R$ %d,00", DonationValues[x]);
-			ImGui::SetCursorPosX(250);
-			ImGui::Image(DonateImages[x], ImVec2(40, 40));
-
-			ImGui::SetCursorPosY(posInicial); posInicial += 20;
-
-			// Clicou na doação
-			if (ImGui::Selectable(msg, selectedDonation == DonationValues[x], 0, ImVec2(240, 36)))
-			{
-				char amount[32] = { 0 };
-				sprintf_s(amount, sizeof(amount), "%d", DonationValues[x]);
-				NewShop::GetInstance()->Donation(amount);
-			}
-
-			if (x == 3)
-				sprintf_s(msg, sizeof(msg), u8"Valor em Coins: %d + 50 Bônus", DonationResults[x]);
-			else if (x == 4)
-				sprintf_s(msg, sizeof(msg), u8"Valor em Coins: %d + 75 Bônus", DonationResults[x]);
-			else if (x == 5)
-				sprintf_s(msg, sizeof(msg), u8"Valor em Coins: %d + 100 Bônus", DonationResults[x]);
-			else
-				sprintf_s(msg, sizeof(msg), "Valor em Coins: %d", DonationResults[x]);
-
-			ImGui::SetCursorPosY(posInicial);
-			ImGui::Text(msg);
-			ImGui::Separator();
-			ImGui::Text("");
-
-			ImGui::PopID();
-			posInicial += 40;
-		}
-
-		ImGui::SetCursorPosX(80);
-		if (ImGui::Button("Fechar", ImVec2(140, 0)))
-			ImGui::CloseCurrentPopup();
-
-		ImGui::EndPopup();
-	}
-}
-
-void FinishPurchase(ItemsByCategory Item)
-{
-	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-	if (ImGui::BeginPopupModal("Confirmar Compra?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
-	{
-		finish = true;
-
-		ImGui::SetCursorPosX(320);
-
-		if (TempPerfectItem.sItemInfo.JobCodeMask == 0)
-			ImGui::Image(ClassImages[0], ImVec2(40, 40));
-		else
-			ImGui::Image(ClassImages[selectedClass], ImVec2(40, 40));
-
-		ImGui::SetCursorPosY(25);
-		ImGui::Text("Item:");
-		ImGui::SameLine();
-		char msg[64] = { 0 };
-		sprintf_s(msg, sizeof(msg), u8"Item: %s", Item.ItemName);
-		CA2W pszWide2(msg);
-		wsprintf(msg, "%s", WChar_to_UTF82(pszWide2));
-		ImGui::Text(msg);
-
-		char classe[64] = { 0 };
-		if (TempPerfectItem.sItemInfo.JobCodeMask == 0)
-			sprintf_s(classe, sizeof(classe), "Classe: NS");
-		else
-			sprintf_s(classe, sizeof(classe), "Classe: %s", Classes[selectedClass]);
-
-		ImGui::Text(classe);
-
-		char quantity[64] = { 0 };
-		sprintf_s(quantity, sizeof(quantity), "Quantidade: %d", 1);
-		ImGui::Text(quantity);
-
-		char price[64] = { 0 };
-		sprintf_s(price, sizeof(price), "Total: %d coins", Item.Price);
-		ImGui::Text(price);
-
-		ImGui::Separator();
-		ImGui::Text(u8"Aviso: Itens sem SPEC suportado serão entregues NS!!!");
-		ImGui::Separator();
-
-		ImGui::Text("");
-		ImGui::SetCursorPosX(60);
-		if (ImGui::Button("Confirmar", ImVec2(120, 0))) { ImGui::CloseCurrentPopup();  finish = false; SentPurchaseToServer(Item, selectedClass); }
-		ImGui::SetItemDefaultFocus();
-		ImGui::SameLine();
-		if (ImGui::Button("Cancelar", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); finish = false; }
-		ImGui::EndPopup();
-	}
-}
-
-void BuyVIP()
-{
-	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-	if (ImGui::BeginPopupModal("Deseja comprar o VIP?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
-	{
-		finish = true;
-
-		ImGui::SetCursorPosX(320);
-		ImGui::Image(my_texture4[2], ImVec2(48, 48));
-
-		ImGui::SetCursorPosY(25);
-
-		char msg[64] = { 0 };
-		sprintf_s(msg, sizeof(msg), u8"Seu VIP será ativado imediatamente!");
-		ImGui::Text(msg);
-
-		ImGui::Text("");
-		ImGui::SetCursorPosX(60);
-		if (ImGui::Button("Confirmar", ImVec2(120, 0)))
-		{
-			ImGui::CloseCurrentPopup();
-			finish = false;
-
-			ItemsByCategory Vip;
-
-			Vip.CategoryID = 6;
-			Vip.SubCategoryID = 100;
-			sprintf_s(Vip.ItemName, sizeof(Vip.ItemName), "VIP 30 Dias");
-			sprintf_s(Vip.ItemCode, sizeof(Vip.ItemCode), "VP101");
-			Vip.Price = 2000;
-			Vip.Discount = 0;
-
-			SentPurchaseToServer(Vip, 0);
-		}
-		ImGui::SetItemDefaultFocus();
-		ImGui::SameLine();
-		if (ImGui::Button("Cancelar", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); finish = false; }
-		ImGui::EndPopup();
-	}
-}
-
-void FinishRestaure(FailedItems Item)
-{
-	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-	if (ImGui::BeginPopupModal("Deseja restaurar o Item?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
-	{
-		finish = true;
-
-		ImGui::SetCursorPosX(320);
-		ImGui::Image(RestaureImage[Item.imgPosition], ImVec2(33, 44));
-
-		ImGui::SetCursorPosY(25);
-
-		char msg[64] = { 0 };
-		sprintf_s(msg, sizeof(msg), u8"Item: %s", Item.ItemName);
-		CA2W pszWide2(msg);
-		wsprintf(msg, "%s", WChar_to_UTF82(pszWide2));
-		ImGui::Text(msg);
-
-		sprintf_s(msg, sizeof(msg), u8"Nível do aging: %d", Item.AgingNum);
-		ImGui::Text(msg);
-
-		sprintf_s(msg, sizeof(msg), u8"Total: %d coins", failedItems.price);
-		ImGui::Text(msg);
-
-		ImGui::Separator();
-
-		ImGui::Text("");
-		ImGui::SetCursorPosX(60);
-		if (ImGui::Button("Confirmar", ImVec2(120, 0))) { ImGui::CloseCurrentPopup();  finish = false; RecoverItem(Item.ItemHead, Item.ItemChkSum); }
-		ImGui::SetItemDefaultFocus();
-		ImGui::SameLine();
-		if (ImGui::Button("Cancelar", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); finish = false; }
-		ImGui::EndPopup();
-	}
-}
-
-
-void ShowDetails(std::string sItemCode)
-{
-	if (!bIsPerfect && !isShowingDetails)
-	{
-		char itemCode[32] = { 0 };
-		sprintf_s(itemCode, sizeof(itemCode), "%s", sItemCode.c_str());
-		SendItemToServer(itemCode);
-		isShowingDetails = true;
-	}
-}
-
-void ShowDetailsRestaure(char itemCode[32], int itemHead, int ItemChkSum, int AgingNum)
-{
-	if (!bIsPerfect && !isShowingDetailsRestaure)
-	{
-		SendItemToServer(itemCode, itemHead, ItemChkSum, true, AgingNum);
-		isShowingDetailsRestaure = true;
-	}
-}
-
-void initShop()
-{
-	ZeroMemory(ShopImages, sizeof(ShopImages));
-	ZeroMemory(ClassImages, sizeof(ClassImages));
-	ZeroMemory(my_texture4, sizeof(my_texture4));
-	ZeroMemory(ItemShopImage, sizeof(ItemShopImage));
-	ZeroMemory(DonateImages, sizeof(DonateImages));
-	ZeroMemory(RestaureImage, sizeof(RestaureImage));
-	ZeroMemory(NewNick, sizeof(NewNick));
-
-	nickIsAvailable = 0;
-
-	ItemsAlreadySent.clear();
-	ItemsAlreadySentRestaure.clear();
-	ItemsDetails.clear();
-	ItemsDetailsRestaure.clear();
-
-	addCategorias();
-
-	char Path[64] = { 0 };
-	sprintf_s(Path, sizeof(Path), "game\\images\\shop\\coin.png");
-	ShopImages[0] = LoadDibSurfaceOffscreen(Path);
-
-	sprintf_s(Path, sizeof(Path), "game\\images\\shop\\buyItem.png");
-	bool ret = LoadTextureFromFile4(Path, &my_texture4[0], &wd, &hd);
-	IM_ASSERT(ret);
-
-	sprintf_s(Path, sizeof(Path), "game\\images\\shop\\Restaure.png");
-	ret = LoadTextureFromFile4(Path, &my_texture4[1], &wd, &hd);
-	IM_ASSERT(ret);
-
-	sprintf_s(Path, sizeof(Path), "game\\images\\shop\\Vip.png");
-	ret = LoadTextureFromFile4(Path, &my_texture4[2], &wd, &hd);
-	IM_ASSERT(ret);
-
-	sprintf_s(Path, sizeof(Path), "game\\images\\shop\\Rename.png");
-	ret = LoadTextureFromFile4(Path, &my_texture4[3], &wd, &hd);
-	IM_ASSERT(ret);
-
-	int y = 0;
-	int pos = 0;
-
-	for (int x = 0; x <= 10; x++)
-	{
-		sprintf_s(Path, sizeof(Path), "game\\images\\shop\\Classes\\%d.png", x);
-		bool ret = LoadTextureFromFile4(Path, &ClassImages[x], &wd, &hd);
-		IM_ASSERT(ret);
-	}
-
-	//for (int x = 0; x <= 5; x++)
-	//{
-	//	sprintf_s(Path, sizeof(Path), "game\\images\\shop\\Donates\\%d.png", x);
-	//	bool ret = LoadTextureFromFile4(Path, &DonateImages[x], &wd, &hd);
-	//	IM_ASSERT(ret);
-	//}
-
-	for (auto& Items : NewShop::GetInstance()->ShopItems)
-	{
-		Items.imgPosition = y;
-
-		switch (Items.CategoryID)
-		{
-		case 1:
-			sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Premium\\it%s.bmp", Items.ItemCode);
-			ItemShopImage[y] = LoadDibSurfaceOffscreen(Path);
-			y++;
-			break;
-
-		case 2:
-			sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Premium\\it%s.bmp", Items.ItemCode);
-			ItemShopImage[y] = LoadDibSurfaceOffscreen(Path);
-			y++;
-			break;
-		case 4:
-			if (Items.CategoryID == 2 && Items.SubCategoryID == 4)
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Accessory\\it%s.bmp", Items.ItemCode);
-			else
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Defense\\it%s.bmp", Items.ItemCode);
-			ItemShopImage[y] = LoadDibSurfaceOffscreen(Path);
-			y++;
-			break;
-		case 3:
-			if (Items.SubCategoryID == 2 || Items.SubCategoryID == 3)
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Defense\\it%s.bmp", Items.ItemCode);
-			else
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Accessory\\it%s.bmp", Items.ItemCode);
-			ItemShopImage[y] = LoadDibSurfaceOffscreen(Path);
-			y++;
-			break;
-		case 5:
-			if ((Items.ItemCode[0] == 'G' && Items.ItemCode[1] == 'P') || (Items.ItemCode[0] == 'g' && Items.ItemCode[1] == 'p') || (Items.ItemCode[0] == 'S' && Items.ItemCode[1] == 'P'))
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Event\\it%s.bmp", Items.ItemCode);
-			else if (Items.SubCategoryID == 3 || (Items.ItemCode[0] == 'S' && Items.ItemCode[1] == 'E'))
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Accessory\\it%s.bmp", Items.ItemCode);
-			else
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Premium\\it%s.bmp", Items.ItemCode);
-			ItemShopImage[y] = LoadDibSurfaceOffscreen(Path);
-			y++;
+			m_selectedIndex = i;
+			RequestPreview(ShopItems[i].ItemCode);
 			break;
 		}
 	}
+}
 
+std::string NewShop::PremiumDescription(const ItemsByCategory& item) const
+{
+	char upperName[64] = { 0 };
+	sprintf_s(upperName, sizeof(upperName), "%s", item.ItemName);
+	for (char* p = upperName; *p; p++)
+		*p = (char)toupper((unsigned char)*p);
+
+	if (strstr(upperName, "EXP") || strstr(upperName, "E. DE") || strstr(upperName, "EXPER"))
+		return "Po" U8_C U8_AN "o de experi" U8_E "ncia. Aumenta o EXP recebido dos monstros pelo per" U8_I "odo indicado no nome.";
+	if (strstr(upperName, "OLHO") || strstr(upperName, "MAGIC"))
+		return "Olho m" U8_A "gico. Revela monstros e itens no minimapa pelo per" U8_I "odo indicado no nome.";
+	if (strstr(upperName, "CHAVE") || strstr(upperName, "KEY"))
+		return "Chave de uso especial. Confira o nome para saber em qual ba" U8_U " ou evento ela serve.";
+	if (item.SubCategoryID == 2)
+		return "Material de Aging ou Mix. Use na forja para aprimorar ou recombinar equipamentos.";
+	if (item.SubCategoryID == 3)
+		return "Pedra de for" U8_C "a. Aplica um b" U8_ON "nus tempor" U8_A "rio ao personagem ao ser usada.";
+	if (item.SubCategoryID == 1)
+		return "Item de aprimoramento. O nome indica o efeito e a dura" U8_C U8_AN "o ap" U8_O "s o uso.";
+	return "Item premium. Use no invent" U8_A "rio para ativar o efeito descrito no nome.";
+}
+
+void NewShop::EnsureTitleTexture()
+{
+	if (m_titleTried)
+		return;
+	m_titleTried = true;
+
+	if (LoadPngTexture(kTitleImagePath, &m_titleTex, &m_titleW, &m_titleH) && m_titleTex)
+		return;
+
+	char exePath[MAX_PATH] = { 0 };
+	if (GetModuleFileNameA(nullptr, exePath, MAX_PATH) <= 0)
+		return;
+
+	char* slash = strrchr(exePath, '\\');
+	if (!slash)
+		return;
+	slash[1] = 0;
+
+	char full[MAX_PATH] = { 0 };
+	sprintf_s(full, sizeof(full), "%s%s", exePath, kTitleImagePath);
+	LoadPngTexture(full, &m_titleTex, &m_titleW, &m_titleH);
+}
+
+void NewShop::EnsureShopLoaded()
+{
+	if (m_shopReady)
+		return;
+
+	char path[128] = { 0 };
+	int tw = 0, th = 0;
+
+	if (!CoinImage)
+	{
+		sprintf_s(path, sizeof(path), "game\\images\\shop\\coin.png");
+		CoinImage = LoadDibSurfaceOffscreen(path);
+	}
+
+	if (!ShopUiImages[0])
+	{
+		sprintf_s(path, sizeof(path), "game\\images\\shop\\buyItem.png");
+		LoadTextureFromFile4(path, &ShopUiImages[0], &tw, &th);
+	}
+	if (!ShopUiImages[1])
+	{
+		sprintf_s(path, sizeof(path), "game\\images\\shop\\Restaure.png");
+		LoadTextureFromFile4(path, &ShopUiImages[1], &tw, &th);
+	}
+	if (!ShopUiImages[2])
+	{
+		sprintf_s(path, sizeof(path), "game\\images\\shop\\Vip.png");
+		LoadTextureFromFile4(path, &ShopUiImages[2], &tw, &th);
+	}
+	if (!ShopUiImages[3])
+	{
+		sprintf_s(path, sizeof(path), "game\\images\\shop\\Rename.png");
+		LoadTextureFromFile4(path, &ShopUiImages[3], &tw, &th);
+	}
+
+	if (!ClassImages[0])
+	{
+		for (int x = 0; x <= 10; x++)
+		{
+			sprintf_s(path, sizeof(path), "game\\images\\shop\\Classes\\%d.png", x);
+			LoadTextureFromFile4(path, &ClassImages[x], &tw, &th);
+		}
+	}
+
+	ReleaseShopIcons();
+	ItemShopImage.resize(ShopItems.size(), nullptr);
+	ItemShopImageW.resize(ShopItems.size(), 0);
+	ItemShopImageH.resize(ShopItems.size(), 0);
+	for (int i = 0; i < (int)ShopItems.size(); i++)
+	{
+		ShopItems[i].imgPosition = i;
+		ItemShopImage[i] = LoadItemBmpWithFallback(ShopItemFolder(ShopItems[i]), ShopItems[i].ItemCode, 0);
+		if (ItemShopImage[i])
+		{
+			ItemShopImageW[i] = g_DibLastReadWidth;
+			ItemShopImageH[i] = g_DibLastReadHeight;
+		}
+	}
 
 	for (int x = 0; x < 20; x++)
 	{
-		if (failedItems.FailedItems[x].ItemHead)
+		if (!failedItems.FailedItems[x].ItemHead)
+			continue;
+
+		failedItems.FailedItems[x].imgPosition = x;
+		const char c0 = failedItems.FailedItems[x].ItemCode[0];
+		const char c1 = failedItems.FailedItems[x].ItemCode[1];
+		if (c0 == 'D' && c1 == 'A')
+			sprintf_s(path, sizeof(path), "image\\Sinimage\\Items\\Defense\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
+		else if (c0 == 'W')
+			sprintf_s(path, sizeof(path), "image\\Sinimage\\Items\\Weapon\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
+		else if (c0 == 'B' && c1 == 'I')
+			sprintf_s(path, sizeof(path), "image\\Sinimage\\Items\\Premium\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
+		else
+			sprintf_s(path, sizeof(path), "image\\Sinimage\\Items\\Accessory\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
+		if (RestaureImage[x])
 		{
-			failedItems.FailedItems[x].imgPosition = x;
-
-			if (failedItems.FailedItems[x].ItemCode[0] == 'D' && failedItems.FailedItems[x].ItemCode[1] == 'A')
-			{
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Defense\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
-				RestaureImage[x] = LoadDibSurfaceOffscreen(Path);
-			}
-
-			else if (failedItems.FailedItems[x].ItemCode[0] == 'W')
-			{
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Weapon\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
-				RestaureImage[x] = LoadDibSurfaceOffscreen(Path);
-			}
-			else if (failedItems.FailedItems[x].ItemCode[0] == 'B' && failedItems.FailedItems[x].ItemCode[1] == 'I')
-			{
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Premium\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
-				RestaureImage[x] = LoadDibSurfaceOffscreen(Path);
-			}
-			else
-			{
-				sprintf_s(Path, sizeof(Path), "image\\Sinimage\\Items\\Accessory\\it%s.bmp", failedItems.FailedItems[x].ItemCode);
-				RestaureImage[x] = LoadDibSurfaceOffscreen(Path);
-			}
+			RestaureImage[x]->Release();
+			RestaureImage[x] = nullptr;
+		}
+		RestaureImageW[x] = 0;
+		RestaureImageH[x] = 0;
+		RestaureImage[x] = LoadDibSurfaceOffscreen(path);
+		if (RestaureImage[x])
+		{
+			RestaureImageW[x] = g_DibLastReadWidth;
+			RestaureImageH[x] = g_DibLastReadHeight;
 		}
 	}
 
-	selectedClass = lpCurPlayer->smCharInfo.JOB_CODE;
+	if (lpCurPlayer)
+		selectedClass = lpCurPlayer->smCharInfo.JOB_CODE;
 
-	init = false;
+	m_shopReady = true;
 }
 
-void selectChangeClass()
+void NewShop::PushWindowStyle()
 {
-	const char* combo_label = Classes[selectedChangeClass];
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 12.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 7.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 12.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 3.0f);
 
-	int isPrs = 0;
-	if (lpCurPlayer->smCharInfo.JOB_CODE == 8)
-		isPrs = 1;
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.06f, 0.07f, 0.09f, 0.92f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.50f));
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_TextDisabled, ImVec4(0.62f, 0.62f, 0.68f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.12f, 0.13f, 0.16f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.32f, 0.26f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.45f, 0.36f, 0.14f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.22f, 0.18f, 0.10f, 0.85f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.30f, 0.24f, 0.12f, 0.95f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.36f, 0.28f, 0.14f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Tab, ImVec4(0.10f, 0.11f, 0.14f, 0.90f));
+	ImGui::PushStyleColor(ImGuiCol_TabHovered, ImVec4(0.30f, 0.24f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_TabActive, ImVec4(0.24f, 0.20f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.78f, 0.67f, 0.35f, 0.35f));
+	ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.78f, 0.62f, 0.28f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.05f, 0.06f, 0.08f, 0.95f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.08f, 0.09f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.08f, 0.09f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrab, ImVec4(0.55f, 0.46f, 0.24f, 0.80f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabHovered, ImVec4(0.78f, 0.67f, 0.35f, 0.90f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabActive, ImVec4(0.90f, 0.78f, 0.40f, 1.0f));
+}
 
-	if (ImGui::BeginCombo("Classe", combo_label, ImGuiComboFlags_NoArrowButton | ImGuiWindowFlags_NoSavedSettings))
+void NewShop::PopWindowStyle()
+{
+	ImGui::PopStyleColor(22);
+	ImGui::PopStyleVar(10);
+}
+
+void NewShop::DrawWindowChrome(float headerH)
+{
+	DrawPlayerWindowChrome(ImGui::GetWindowDrawList(), headerH, kGold, kGoldFill);
+}
+
+void NewShop::DrawConfirmChrome()
+{
+	DrawWindowChrome(34.0f);
+}
+
+void NewShop::DrawSectionHeader(const char* title)
+{
+	ImGui::Spacing();
+	const ImVec2 ts = ImGui::CalcTextSize(title);
+	const float avail = ImGui::GetContentRegionAvail().x;
+	const float padX = 16.0f;
+	const float padY = 4.0f;
+	const float boxW = ts.x + padX * 2.0f;
+	const float boxH = ts.y + padY * 2.0f;
+	const ImVec2 origin = ImGui::GetCursorScreenPos();
+	const float boxX = origin.x + (avail - boxW) * 0.5f;
+	const float midY = origin.y + boxH * 0.5f;
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+
+	draw->AddLine(ImVec2(origin.x + 8.0f, midY), ImVec2(origin.x + avail - 8.0f, midY), kGoldDim, 1.2f);
+	draw->AddRectFilled(ImVec2(boxX, origin.y), ImVec2(boxX + boxW, origin.y + boxH), IM_COL32(18, 20, 26, 255), 3.0f);
+	draw->AddRect(ImVec2(boxX, origin.y), ImVec2(boxX + boxW, origin.y + boxH), kGold, 3.0f, 0, 1.4f);
+	draw->AddText(ImVec2(boxX + padX, origin.y + padY), kGoldBright, title);
+	ImGui::Dummy(ImVec2(avail, boxH + 6.0f));
+}
+
+void NewShop::DrawTitleHeader(bool* p_open)
+{
+	EnsureTitleTexture();
+
+	const ImVec2 p0 = ImGui::GetWindowPos();
+	const ImVec2 size = ImGui::GetWindowSize();
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+
+	if (m_titleTex && m_titleW > 0 && m_titleH > 0)
 	{
-		for (int n = 0; n < IM_ARRAYSIZE(Classes) - isPrs; n++)
-		{
-			if (n == lpCurPlayer->smCharInfo.JOB_CODE)
-				n++;
-
-			const bool is_selected = (selectedChangeClass == n);
-
-			if (ImGui::Selectable(Classes[n], is_selected))
-			{
-				selectedChangeClass = n;
-			}
-
-			if (is_selected)
-				ImGui::SetItemDefaultFocus();
-		}
-		ImGui::EndCombo();
+		const float headerTop = p0.y + 6.0f;
+		const float headerBot = p0.y + kMainHeaderH - 4.0f;
+		const float areaH = headerBot - headerTop;
+		const ImVec2 sz = FitImageSize(m_titleW, m_titleH, 320.0f, areaH);
+		const float x = p0.x + (size.x - sz.x) * 0.5f;
+		const float y = headerTop + (areaH - sz.y) * 0.5f;
+		draw->AddImage((ImTextureID)m_titleTex, ImVec2(x, y), ImVec2(x + sz.x, y + sz.y));
 	}
-}
-
-void selectSpec()
-{
-	const char* combo_label = Classes[selectedClass];
-
-	if (ImGui::BeginCombo("Selecionar Classe", combo_label, ImGuiComboFlags_NoArrowButton | ImGuiWindowFlags_NoSavedSettings))
+	else
 	{
-		for (int n = 0; n < IM_ARRAYSIZE(Classes); n++)
+		const char* title = "LOJA DE COINS";
+		const ImVec2 ts = ImGui::CalcTextSize(title);
+		draw->AddText(ImVec2(p0.x + (size.x - ts.x) * 0.5f, p0.y + 16.0f), kGoldBright, title);
+	}
+
+	char coins[48] = { 0 };
+	sprintf_s(coins, sizeof(coins), "%d Coins", GetCoin());
+	const ImVec2 coinTs = ImGui::CalcTextSize(coins);
+	const float coinX = p0.x + size.x - kHeaderBtnW - 24.0f - coinTs.x - 28.0f;
+	const float coinY = p0.y + (kMainHeaderH - coinTs.y) * 0.5f;
+	if (CoinImage)
+		draw->AddImage((ImTextureID)CoinImage, ImVec2(coinX - 22.0f, coinY - 4.0f), ImVec2(coinX - 2.0f, coinY + 16.0f));
+	draw->AddText(ImVec2(coinX, coinY), kGoldBright, coins);
+
+	if (p_open && DrawHeaderClose())
+		*p_open = false;
+}
+
+void NewShop::DrawItemList()
+{
+	DrawSectionHeader("ITENS");
+
+	int shown = 0;
+	for (int i = 0; i < (int)ShopItems.size(); i++)
+	{
+		const ItemsByCategory& item = ShopItems[i];
+		if (item.CategoryID != m_category || item.SubCategoryID != m_subTab)
+			continue;
+
+		shown++;
+		ImGui::PushID(i);
+		RequestPreview(item.ItemCode);
+
+		const bool selected = (m_selectedIndex == i);
+		if (ImGui::Selectable("##shopitem", selected, 0, ImVec2(0.0f, 60.0f)))
 		{
-			const bool is_selected = (selectedClass == n);
-			if (ImGui::Selectable(Classes[n], is_selected))
-			{
-				selectedClass = n;
-				ItemsAlreadySent.clear();
-				ItemsDetails.clear();
-				SendItemToServer(TempPerfectItem.DorpItem);
-			}
-
-			if (is_selected)
-				ImGui::SetItemDefaultFocus();
-
+			m_selectedIndex = i;
+			RequestPreview(item.ItemCode);
 		}
-		ImGui::EndCombo();
+
+		const ImVec2 rectMin = ImGui::GetItemRectMin();
+		const ImVec2 rectMax = ImGui::GetItemRectMax();
+		ImDrawList* draw = ImGui::GetWindowDrawList();
+		if (selected)
+			draw->AddRect(rectMin, rectMax, kGold, 3.0f, 0, 1.2f);
+
+		LPDIRECT3DTEXTURE9 icon = nullptr;
+		int iconW = 0, iconH = 0;
+		if (item.imgPosition >= 0 && item.imgPosition < (int)ItemShopImage.size())
+		{
+			icon = ItemShopImage[item.imgPosition];
+			iconW = ItemShopImageW[item.imgPosition];
+			iconH = ItemShopImageH[item.imgPosition];
+		}
+
+		const float iconBox = 44.0f;
+		const float iconX = rectMin.x + 8.0f;
+		const float iconY = rectMin.y + (rectMax.y - rectMin.y - iconBox) * 0.5f;
+		DrawTextureInBox(draw, icon, ImVec2(iconX, iconY), iconBox, iconBox, iconW, iconH);
+
+		const std::string name = ToUtf8(item.ItemName);
+		const float textX = rectMin.x + 62.0f;
+		draw->AddText(ImVec2(textX, rectMin.y + 8.0f), IM_COL32(255, 255, 255, 255), name.c_str());
+
+		char price[32] = { 0 };
+		sprintf_s(price, sizeof(price), "%d Coins", item.Price);
+		draw->AddText(ImVec2(textX, rectMin.y + 26.0f), kGoldBright, price);
+
+		if (const sITEM* prev = FindPreview(item.ItemCode))
+		{
+			if (prev->sItemInfo.Level > 0)
+			{
+				char level[24] = { 0 };
+				sprintf_s(level, sizeof(level), "Nv. %d", prev->sItemInfo.Level);
+				const ImVec2 ls = ImGui::CalcTextSize(level);
+				const bool unmet = lpCurPlayer && lpCurPlayer->smCharInfo.Level < prev->sItemInfo.Level;
+				draw->AddText(ImVec2(rectMax.x - ls.x - 10.0f, rectMin.y + 26.0f),
+					unmet ? IM_COL32(210, 80, 80, 255) : IM_COL32(180, 180, 190, 255), level);
+			}
+		}
+
+		ImGui::PopID();
+	}
+
+	if (shown == 0)
+		ImGui::TextDisabled("Nenhum item nesta aba.");
+}
+
+void NewShop::DrawItemDetail()
+{
+	DrawSectionHeader("DETALHES");
+
+	const ItemsByCategory* item = SelectedItem();
+	if (!item)
+	{
+		ImGui::TextDisabled("Selecione um item na lista.");
+		return;
+	}
+
+	RequestPreview(item->ItemCode);
+	const sITEM* preview = FindPreview(item->ItemCode);
+
+	LPDIRECT3DTEXTURE9 icon = nullptr;
+	int iconW = 0, iconH = 0;
+	if (item->imgPosition >= 0 && item->imgPosition < (int)ItemShopImage.size())
+	{
+		icon = ItemShopImage[item->imgPosition];
+		iconW = ItemShopImageW[item->imgPosition];
+		iconH = ItemShopImageH[item->imgPosition];
+	}
+
+	const ImVec2 iconPos = ImGui::GetCursorScreenPos();
+	ImGui::Dummy(ImVec2(48.0f, 48.0f));
+	DrawTextureInBox(ImGui::GetWindowDrawList(), icon, iconPos, 48.0f, 48.0f, iconW, iconH);
+
+	ImGui::SameLine();
+	ImGui::BeginGroup();
+	const std::string name = ToUtf8(item->ItemName);
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90f, 0.78f, 0.43f, 1.0f));
+	ImGui::TextWrapped("%s", name.c_str());
+	ImGui::PopStyleColor();
+	ImGui::Text("%d Coins", item->Price);
+	ImGui::EndGroup();
+
+	ImGui::Spacing();
+
+	if (item->CategoryID != 5)
+	{
+		const char* combo_label = Classes[selectedClass];
+		if (ImGui::BeginCombo("Classe (SPEC)", combo_label, ImGuiComboFlags_NoArrowButton))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(Classes); n++)
+			{
+				const bool is_selected = (selectedClass == n);
+				if (ImGui::Selectable(Classes[n], is_selected))
+				{
+					selectedClass = n;
+					ItemsAlreadySent.clear();
+					ItemsDetails.clear();
+					RequestPreview(item->ItemCode);
+				}
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
+
+	const bool canBuy = GetCoin() >= item->Price;
+	const float buyH = 34.0f;
+	const float extra = canBuy ? 8.0f : 28.0f;
+	const float statsH = ImGui::GetContentRegionAvail().y - buyH - extra;
+	ImGui::BeginChild("##ShopStats", ImVec2(0.0f, statsH > 60.0f ? statsH : 60.0f), true);
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.90f, 0.86f, 0.78f, 1.0f));
+	if (item->CategoryID == 5)
+	{
+		ImGui::TextWrapped("%s", PremiumDescription(*item).c_str());
+	}
+	else if (preview)
+	{
+		DrawShopItemStats(preview);
+	}
+	else
+	{
+		ImGui::TextDisabled("Carregando informa" U8_C U8_ON "es do item...");
+	}
+	ImGui::PopStyleColor();
+	ImGui::EndChild();
+
+	if (!canBuy)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.32f, 0.32f, 1.0f));
+		ImGui::TextUnformatted("Coins insuficientes.");
+		ImGui::PopStyleColor();
+	}
+
+	if (ImGui::Button("COMPRAR", ImVec2(-1.0f, buyH)))
+		m_confirmBuy = true;
+}
+
+void NewShop::DrawShopBody()
+{
+	const ShopCategory* cat = FindCategory(m_category);
+	if (m_category == 6)
+	{
+		DrawServicePanel();
+		return;
+	}
+
+	if (ImGui::BeginTabBar("##ShopSubTabs", ImGuiTabBarFlags_FittingPolicyScroll))
+	{
+		for (int i = 0; i < cat->subCount; i++)
+		{
+			if (ImGui::BeginTabItem(cat->subs[i].label))
+			{
+				DrawActiveTabOrnament();
+				if (m_subTab != cat->subs[i].id)
+				{
+					m_subTab = cat->subs[i].id;
+					m_selectedIndex = -1;
+				}
+				EnsureSelection();
+
+				ImGui::BeginChild("##ShopList", ImVec2(300.0f, 0.0f), false);
+				DrawItemList();
+				ImGui::EndChild();
+
+				ImGui::SameLine();
+				DrawPlayerColumnSplit();
+				ImGui::BeginChild("##ShopDetail", ImVec2(0.0f, 0.0f), false);
+				DrawItemDetail();
+				ImGui::EndChild();
+
+				ImGui::EndTabItem();
+			}
+		}
+		ImGui::EndTabBar();
 	}
 }
 
-int posInicial = 30;
-
-void ShowSubCategories(ItemsByCategory SubCategories)
+void NewShop::DrawBuyConfirm()
 {
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::PushID(SubCategories.imgPosition);
+	if (!m_confirmBuy)
+		return;
 
-	// Áre de seleção de compra
-	ImGui::Selectable("##BuyItem", false, 0, ImVec2(300, 90));
-
-	if (ImGui::IsItemHovered() && !finish && SubCategories.CategoryID != 5)
-		ShowDetails(SubCategories.ItemCode);
-	else
-		isShowingDetails = false;
-
-	ImGui::SetCursorPosX(310);
-	ImGui::SetCursorPosY(posInicial - 4);
-
-	if (ImGui::ImageButton(my_texture4[0], ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0)))
-		ImGui::OpenPopup("Confirmar Compra?");
-
-	FinishPurchase(SubCategories);
-
-	ImGui::SetCursorPosX(310);
-	ImGui::SetCursorPosY(posInicial + 60);
-	selectSpec();
-
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::SetCursorPosX(10);
-
-	if (SubCategories.CategoryID == 3 || SubCategories.CategoryID == 5) {
-		ImGui::SetCursorPosY(posInicial + 12);
-		ImGui::SetCursorPosX(22);
-		ImGui::Image(ItemShopImage[SubCategories.imgPosition], ImVec2(22, 22));
+	const ItemsByCategory* item = SelectedItem();
+	if (!item)
+	{
+		m_confirmBuy = false;
+		return;
 	}
-	else if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 4)
-		ImGui::Image(ItemShopImage[SubCategories.imgPosition], ImVec2(44, 44));
-	else if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 5)
-		ImGui::Image(ItemShopImage[SubCategories.imgPosition], ImVec2(22, 22));
-	else if (SubCategories.CategoryID == 2 && SubCategories.SubCategoryID == 4)
-		ImGui::Image(ItemShopImage[SubCategories.imgPosition], ImVec2(44, 44));
-	else
-		ImGui::Image(ItemShopImage[SubCategories.imgPosition], ImVec2(44, 44));
 
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial); posInicial += 20;
-	ImGui::Text("Nome: ");
-	ImGui::SameLine();
+	ImGui::OpenPopup("##ShopBuyConfirm");
+	ImGui::SetNextWindowSize(ImVec2(360.0f, 196.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2((float)smScreenWidth * 0.5f, (float)smScreenHeight * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
-	char itemName[64] = { 0 };
-	sprintf_s(itemName, sizeof(itemName), "%s", SubCategories.ItemName);
-	CA2W pszWide2(itemName);
-	wsprintf(itemName, "%s", WChar_to_UTF82(pszWide2));
-	ImGui::Text(itemName);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.0f, 0.0f, 0.0f, 0.80f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.80f));
 
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial); posInicial += 10;
-	char price[32] = { 0 };
-	sprintf_s(price, sizeof(price), "%d Coins", SubCategories.Price);
-	ImGui::SetCursorPosY(posInicial); posInicial += 60;
-	ImGui::Text(u8"Preço: ");
-	ImGui::SameLine();
-	ImGui::Text(price);
-	ImGui::SetCursorPosY(posInicial); posInicial += 20;
-	ImGui::Separator();
-	ImGui::PopID();
+	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::BeginPopupModal("##ShopBuyConfirm", nullptr, flags))
+	{
+		DrawConfirmChrome();
+		ImGui::SetCursorPosY(11.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.84f, 0.48f, 1.0f));
+		CenterTextUnformatted("Confirmar compra?");
+		ImGui::PopStyleColor();
+
+		ImGui::SetCursorPosY(48.0f);
+		const std::string name = ToUtf8(item->ItemName);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.96f, 0.90f, 0.70f, 1.0f));
+		CenterTextUnformatted(name.c_str());
+		ImGui::PopStyleColor();
+
+		char line[80] = { 0 };
+		if (item->CategoryID == 5)
+			sprintf_s(line, sizeof(line), "Total: %d Coins", item->Price);
+		else
+			sprintf_s(line, sizeof(line), "Classe: %s   |   %d Coins", Classes[selectedClass], item->Price);
+		ImGui::Dummy(ImVec2(0.0f, 4.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 0.70f, 0.66f, 1.0f));
+		CenterTextUnformatted(line);
+		ImGui::PopStyleColor();
+
+		const float btnW = 128.0f;
+		const float gap = 14.0f;
+		ImGui::SetCursorPos(ImVec2((360.0f - (btnW * 2.0f + gap)) * 0.5f, 148.0f));
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.15f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.26f, 0.14f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.38f, 0.32f, 0.16f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.74f, 0.40f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.88f, 0.62f, 1.0f));
+		if (ImGui::Button("VOLTAR", ImVec2(btnW, 30.0f)))
+		{
+			m_confirmBuy = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+
+		ImGui::SameLine(0.0f, gap);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.28f, 0.10f, 0.10f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.42f, 0.14f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.50f, 0.16f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.42f, 0.34f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.86f, 0.82f, 1.0f));
+		if (ImGui::Button("CONFIRMAR", ImVec2(btnW, 30.0f)))
+		{
+			SentPurchaseToServer(*item, item->CategoryID == 5 ? 0 : selectedClass);
+			m_confirmBuy = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar(2);
+}
+
+void NewShop::DrawVipConfirm()
+{
+	if (!m_confirmVip)
+		return;
+
+	ImGui::OpenPopup("##ShopVipConfirm");
+	ImGui::SetNextWindowSize(ImVec2(360.0f, 176.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2((float)smScreenWidth * 0.5f, (float)smScreenHeight * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.0f, 0.0f, 0.0f, 0.80f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.80f));
+
+	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::BeginPopupModal("##ShopVipConfirm", nullptr, flags))
+	{
+		DrawConfirmChrome();
+		ImGui::SetCursorPosY(11.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.84f, 0.48f, 1.0f));
+		CenterTextUnformatted("Ativar VIP 30 dias?");
+		ImGui::PopStyleColor();
+		ImGui::SetCursorPosY(56.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 0.70f, 0.66f, 1.0f));
+		CenterTextUnformatted("Valor: 2000 Coins");
+		ImGui::PopStyleColor();
+
+		const float btnW = 128.0f;
+		const float gap = 14.0f;
+		ImGui::SetCursorPos(ImVec2((360.0f - (btnW * 2.0f + gap)) * 0.5f, 128.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.15f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.26f, 0.14f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.38f, 0.32f, 0.16f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.74f, 0.40f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.88f, 0.62f, 1.0f));
+		if (ImGui::Button("VOLTAR", ImVec2(btnW, 30.0f)))
+		{
+			m_confirmVip = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+		ImGui::SameLine(0.0f, gap);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.28f, 0.10f, 0.10f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.42f, 0.14f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.50f, 0.16f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.42f, 0.34f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.86f, 0.82f, 1.0f));
+		if (ImGui::Button("CONFIRMAR", ImVec2(btnW, 30.0f)))
+		{
+			ItemsByCategory vip = {};
+			vip.CategoryID = 6;
+			vip.SubCategoryID = 100;
+			sprintf_s(vip.ItemName, sizeof(vip.ItemName), "VIP 30 Dias");
+			sprintf_s(vip.ItemCode, sizeof(vip.ItemCode), "VP101");
+			vip.Price = 2000;
+			SentPurchaseToServer(vip, 0);
+			m_confirmVip = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar(2);
+}
+
+void NewShop::DrawRestaureConfirm()
+{
+	if (m_confirmRestaure < 0 || m_confirmRestaure >= 20)
+		return;
+
+	FailedItems& item = failedItems.FailedItems[m_confirmRestaure];
+	if (!item.ItemHead)
+	{
+		m_confirmRestaure = -1;
+		return;
+	}
+
+	ImGui::OpenPopup("##ShopRestaureConfirm");
+	ImGui::SetNextWindowSize(ImVec2(360.0f, 196.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2((float)smScreenWidth * 0.5f, (float)smScreenHeight * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.0f, 0.0f, 0.0f, 0.80f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.80f));
+
+	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::BeginPopupModal("##ShopRestaureConfirm", nullptr, flags))
+	{
+		DrawConfirmChrome();
+		ImGui::SetCursorPosY(11.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.84f, 0.48f, 1.0f));
+		CenterTextUnformatted("Restaurar item?");
+		ImGui::PopStyleColor();
+
+		const std::string name = ToUtf8(item.ItemName);
+		ImGui::SetCursorPosY(48.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.96f, 0.90f, 0.70f, 1.0f));
+		CenterTextUnformatted(name.c_str());
+		ImGui::PopStyleColor();
+
+		char line[80] = { 0 };
+		sprintf_s(line, sizeof(line), "Aging +%d   |   %d Coins", item.AgingNum, failedItems.price);
+		ImGui::Dummy(ImVec2(0.0f, 4.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 0.70f, 0.66f, 1.0f));
+		CenterTextUnformatted(line);
+		ImGui::PopStyleColor();
+
+		const float btnW = 128.0f;
+		const float gap = 14.0f;
+		ImGui::SetCursorPos(ImVec2((360.0f - (btnW * 2.0f + gap)) * 0.5f, 148.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.15f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.26f, 0.14f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.38f, 0.32f, 0.16f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.74f, 0.40f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.88f, 0.62f, 1.0f));
+		if (ImGui::Button("VOLTAR", ImVec2(btnW, 30.0f)))
+		{
+			m_confirmRestaure = -1;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+		ImGui::SameLine(0.0f, gap);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.28f, 0.10f, 0.10f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.42f, 0.14f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.50f, 0.16f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.42f, 0.34f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.86f, 0.82f, 1.0f));
+		if (ImGui::Button("CONFIRMAR", ImVec2(btnW, 30.0f)))
+		{
+			RecoverItem(item.ItemHead, item.ItemChkSum);
+			m_confirmRestaure = -1;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar(2);
+}
+
+void NewShop::DrawNickConfirm()
+{
+	if (!m_confirmNick)
+		return;
+
+	ImGui::OpenPopup("##ShopNickConfirm");
+	ImGui::SetNextWindowSize(ImVec2(380.0f, 210.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2((float)smScreenWidth * 0.5f, (float)smScreenHeight * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.0f, 0.0f, 0.0f, 0.80f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.80f));
+
+	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::BeginPopupModal("##ShopNickConfirm", nullptr, flags))
+	{
+		DrawConfirmChrome();
+		ImGui::SetCursorPosY(11.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.84f, 0.48f, 1.0f));
+		CenterTextUnformatted("Confirmar troca de nick?");
+		ImGui::PopStyleColor();
+
+		char line[80] = { 0 };
+		sprintf_s(line, sizeof(line), "%s  >  %s", lpCurPlayer ? lpCurPlayer->smCharInfo.szName : "?", NewNick);
+		ImGui::SetCursorPosY(50.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.96f, 0.90f, 0.70f, 1.0f));
+		CenterTextUnformatted(line);
+		ImGui::PopStyleColor();
+		ImGui::Dummy(ImVec2(0.0f, 6.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 0.70f, 0.66f, 1.0f));
+		CenterTextUnformatted("5000 Coins  |  Voc" U8_E " ser" U8_A " desconectado.");
+		ImGui::PopStyleColor();
+
+		const float btnW = 128.0f;
+		const float gap = 14.0f;
+		ImGui::SetCursorPos(ImVec2((380.0f - (btnW * 2.0f + gap)) * 0.5f, 162.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.15f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.26f, 0.14f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.38f, 0.32f, 0.16f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.74f, 0.40f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.88f, 0.62f, 1.0f));
+		if (ImGui::Button("VOLTAR", ImVec2(btnW, 30.0f)))
+		{
+			m_confirmNick = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+		ImGui::SameLine(0.0f, gap);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.28f, 0.10f, 0.10f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.42f, 0.14f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.50f, 0.16f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.42f, 0.34f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.86f, 0.82f, 1.0f));
+		if (ImGui::Button("CONFIRMAR", ImVec2(btnW, 30.0f)))
+		{
+			ItemsByCategory change = {};
+			change.CategoryID = 6;
+			change.SubCategoryID = 101;
+			sprintf_s(change.ItemName, sizeof(change.ItemName), "%s", NewNick);
+			sprintf_s(change.ItemCode, sizeof(change.ItemCode), "SR101");
+			change.Price = 5000;
+			SentChangeNickToServer(change, 0);
+			m_confirmNick = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar(2);
+}
+
+void NewShop::RestaureItems()
+{
+	DrawSectionHeader("RESTAURAR");
+	ImGui::TextWrapped("Itens quebrados no Aging. A restaura" U8_C U8_AN "o cobra Coins e devolve o item.");
+	ImGui::Spacing();
+
+	int shown = 0;
+	for (int x = 0; x < 20; x++)
+	{
+		if (!failedItems.FailedItems[x].ItemHead)
+			continue;
+
+		shown++;
+		FailedItems& item = failedItems.FailedItems[x];
+		ImGui::PushID(x);
+		if (ImGui::Selectable("##rest", false, 0, ImVec2(0.0f, 56.0f)))
+			m_confirmRestaure = x;
+
+		if (ImGui::IsItemHovered() && m_confirmRestaure < 0)
+		{
+			SendItemToServer(item.ItemCode, item.ItemHead, item.ItemChkSum, true, item.AgingNum);
+			if (bIsPerfect && TempPerfectItem.sItemInfo.ItemHeader.Head == item.ItemHead)
+			{
+				PlacePreviewNearMouse();
+				m_hoverPreview = true;
+			}
+		}
+
+		const ImVec2 rectMin = ImGui::GetItemRectMin();
+		ImDrawList* draw = ImGui::GetWindowDrawList();
+		DrawTextureInBox(draw, RestaureImage[item.imgPosition], ImVec2(rectMin.x + 6.0f, rectMin.y + 4.0f), 44.0f, 44.0f,
+			RestaureImageW[item.imgPosition], RestaureImageH[item.imgPosition]);
+
+		const std::string name = ToUtf8(item.ItemName);
+		draw->AddText(ImVec2(rectMin.x + 62.0f, rectMin.y + 6.0f), IM_COL32(255, 255, 255, 255), name.c_str());
+		char line[80] = { 0 };
+		sprintf_s(line, sizeof(line), "Aging +%d   %d Coins   %02d/%02d/%04d",
+			item.AgingNum, failedItems.price, item.Date.wDay, item.Date.wMonth, item.Date.wYear);
+		draw->AddText(ImVec2(rectMin.x + 62.0f, rectMin.y + 28.0f), kGoldBright, line);
+		ImGui::PopID();
+	}
+
+	if (shown == 0)
+		ImGui::TextDisabled("Nenhum item quebrado para restaurar.");
 }
 
 void NewShop::LoadVipOptions()
 {
-	posInicial = 30;
-
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Selectable("##VIP", false, 0, ImVec2(380, 120));
-
-	ImGui::SetCursorPosX(390);
-	ImGui::SetCursorPosY(posInicial);
-
-	if (ImGui::ImageButton(my_texture4[0], ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0)))
-		ImGui::OpenPopup("Deseja comprar o VIP?");
-
-	BuyVIP();
-
-	ImGui::SetCursorPosY(65);
-	ImGui::SetCursorPosX(10);
-	ImGui::Image(my_texture4[2], ImVec2(48, 48));
-
-	char msg[64] = { 0 };
-	sprintf_s(msg, sizeof(msg), u8"VIP: Válido por 30 dias");
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg);
-
-	posInicial += 20;
-
-	sprintf_s(msg, sizeof(msg), u8"Vantagens que o VIP oferece:");
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg);
-
-	posInicial += 20;
-
-	sprintf_s(msg, sizeof(msg), u8"Comando /repot (Abre a Loja da Allya)");
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg);
-
-	posInicial += 20;
-
-	sprintf_s(msg, sizeof(msg), u8"Comando /premium (Abre o Negociante Mughy)");
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg);
-
-	posInicial += 20;
-
-	sprintf_s(msg, sizeof(msg), u8"%d %s de Exp. Add. dos Monstros", 10, "%%");
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg);
-
-	posInicial += 20;
-
-	sprintf_s(msg, sizeof(msg), u8"Valor: %d Coins", 2000);
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg);
+	DrawSectionHeader("VIP");
+	if (ShopUiImages[2])
+	{
+		ImGui::Image((ImTextureID)ShopUiImages[2], ImVec2(48.0f, 48.0f));
+		ImGui::SameLine();
+	}
+	ImGui::BeginGroup();
+	ImGui::TextUnformatted(u8"VIP 30 dias");
+	ImGui::Text("2000 Coins");
+	ImGui::EndGroup();
+	ImGui::Spacing();
+	ImGui::TextWrapped(u8"Vantagens:");
+	ImGui::BulletText(u8"/repot abre a Loja da Allya");
+	ImGui::BulletText(u8"/premium abre o Negociante Mughy");
+	ImGui::BulletText("+10%% de experi" U8_E "ncia dos monstros");
+	ImGui::Spacing();
+	if (ImGui::Button("COMPRAR VIP", ImVec2(-1.0f, 34.0f)))
+		m_confirmVip = true;
 }
 
 int NewShop::TextEditCallback2(ImGuiInputTextCallbackData* data)
 {
-	switch (data->EventFlag)
-	{
-
-	case ImGuiInputTextFlags_CallbackAlways:
-	{
-		break;
-	}
-
-	case ImGuiInputTextFlags_CallbackHistory:
-	{
-		break;
-	}
-
-	}
+	(void)data;
 	return 0;
 }
 
 static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
 {
 	ImWchar c = data->EventChar;
-
-	if (ImGuiInputTextFlags_CharsHexadecimal)
-		if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')))
-			return true;
-
-	NewShop* console = (NewShop*)data->UserData;
-	return console->TextEditCallback2(data);
+	if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')))
+		return 1;
+	NewShop* shop = (NewShop*)data->UserData;
+	return shop->TextEditCallback2(data);
 }
 
-void ConfirmarTrocaClasse()
+void NewShop::ChangeNick()
 {
-	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	editingNick = true;
+	DrawSectionHeader("TROCA DE NICK");
+	ImGui::TextWrapped(u8"O chat fica bloqueado enquanto esta aba estiver aberta.");
+	ImGui::Text("Custo: 5000 Coins");
+	ImGui::Spacing();
 
-	if (ImGui::BeginPopupModal("Confirmar Troca de Classe", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+	if (ImGui::InputText("Nick", NewNick, IM_ARRAYSIZE(NewNick),
+		ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackCharFilter,
+		&TextEditCallbackStub, (void*)this))
 	{
-		finish = true;
-
-		ImGui::SetCursorPosY(20);
-		ImGui::SetCursorPosX(240);
-		ImGui::Image(ClassImages[lpCurPlayer->smCharInfo.JOB_CODE], ImVec2(32, 32));
-		ImGui::SetCursorPosY(32);
-		ImGui::SetCursorPosX(285);
-		ImGui::Text(">");
-		ImGui::SetCursorPosY(20);
-		ImGui::SetCursorPosX(300);
-		ImGui::Image(ClassImages[selectedChangeClass], ImVec2(32, 32));
-
-		ImGui::SetCursorPosY(25);
-
-		char msg[64] = { 0 };
-		sprintf_s(msg, sizeof(msg), u8"Classe Anterior: %s", Classes[lpCurPlayer->smCharInfo.JOB_CODE]);
-		ImGui::Text(msg);
-
-		sprintf_s(msg, sizeof(msg), u8"Nova Classe: %s", Classes[selectedChangeClass]);
-		ImGui::Text(msg);
-
-		ImGui::SetCursorPosY(70);
-		ImGui::Separator();
-
-		ImGui::SetCursorPosY(70);
-		sprintf_s(msg, sizeof(msg), u8"O valor: 10000 Coins");
-		ImGui::Text(msg);
-
-		ImGui::Separator();
-
-		ImGui::SetCursorPosY(100);
-
-		sprintf_s(msg, sizeof(msg), u8"ATENÇÃO: Você será desconectado após a confirmação");
-		ImGui::Text(msg);
-
-		sprintf_s(msg, sizeof(msg), u8"Entre novamente no jogo para visualizar a nova classe");
-		ImGui::Text(msg);
-
-		ImGui::Separator();
-
-		ImGui::Text("");
-		ImGui::SetCursorPosX(60);
-		if (ImGui::Button("Confirmar", ImVec2(120, 0)))
-		{
-			ImGui::CloseCurrentPopup();
-			finish = false;
-
-			ItemsByCategory cChangeClass;
-
-			cChangeClass.CategoryID = 6;
-			cChangeClass.SubCategoryID = 102;
-			sprintf_s(cChangeClass.ItemName, sizeof(cChangeClass.ItemName), NewNick);
-			sprintf_s(cChangeClass.ItemCode, sizeof(cChangeClass.ItemCode), "SR102");
-			cChangeClass.Price = 10000;
-			cChangeClass.Discount = 0;
-
-			SentChangeClassToServer(cChangeClass, selectedChangeClass);
-		}
-		ImGui::SetItemDefaultFocus();
-		ImGui::SameLine();
-		if (ImGui::Button("Cancelar", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); finish = false; }
-		ImGui::EndPopup();
+		nickIsAvailable = 0;
 	}
-}
 
-void ConfirmarTrocaNick(std::string newName)
-{
-	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-	if (ImGui::BeginPopupModal("Confirmar Troca de Nick", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+	if (ImGui::Button(u8"Verificar disponibilidade", ImVec2(-1.0f, 30.0f)))
 	{
-		finish = true;
-
-		ImGui::SetCursorPosY(18);
-		ImGui::SetCursorPosX(320);
-		ImGui::Image(my_texture4[3], ImVec2(45, 45));
-
-		ImGui::SetCursorPosY(25);
-
-		char msg[64] = { 0 };
-		sprintf_s(msg, sizeof(msg), u8"Nick Anterior: %s", lpCurPlayer->smCharInfo.szName);
-		ImGui::Text(msg);
-
-		sprintf_s(msg, sizeof(msg), u8"Novo Nick: %s", newName.c_str());
-		ImGui::Text(msg);
-
-		ImGui::Separator();
-
-		sprintf_s(msg, sizeof(msg), u8"O preço: 5000 Coins");
-		ImGui::Text(msg);
-
-		ImGui::Separator();
-
-		ImGui::SetCursorPosY(80);
-
-		sprintf_s(msg, sizeof(msg), u8"ATENÇÃO: Você será desconectado após a confirmação");
-		ImGui::Text(msg);
-
-		sprintf_s(msg, sizeof(msg), u8"Entre novamente no jogo para visualizar o seu novo nome");
-		ImGui::Text(msg);
-
-		ImGui::Separator();
-
-		ImGui::Text("");
-		ImGui::SetCursorPosX(60);
-		if (ImGui::Button("Confirmar", ImVec2(120, 0)))
+		if (NewNick[0])
 		{
-			ImGui::CloseCurrentPopup();
-			finish = false;
-
-			ItemsByCategory ChangeName;
-
-			ChangeName.CategoryID = 6;
-			ChangeName.SubCategoryID = 101;
-			sprintf_s(ChangeName.ItemName, sizeof(ChangeName.ItemName), NewNick);
-			sprintf_s(ChangeName.ItemCode, sizeof(ChangeName.ItemCode), "SR101");
-			ChangeName.Price = 5000;
-			ChangeName.Discount = 0;
-
-			SentChangeNickToServer(ChangeName, 0);
+			ItemsByCategory check = {};
+			check.CategoryID = 6;
+			check.SubCategoryID = 101;
+			sprintf_s(check.ItemName, sizeof(check.ItemName), "%s", NewNick);
+			sprintf_s(check.ItemCode, sizeof(check.ItemCode), "SR101");
+			check.Price = 5000;
+			SentCheckNickToServer(check, 0);
 		}
-		ImGui::SetItemDefaultFocus();
-		ImGui::SameLine();
-		if (ImGui::Button("Cancelar", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); finish = false; }
-		ImGui::EndPopup();
+	}
+
+	if (nickIsAvailable == 1)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.28f, 0.72f, 0.36f, 1.0f));
+		ImGui::TextUnformatted("Nome dispon" U8_I "vel.");
+		ImGui::PopStyleColor();
+		if (ImGui::Button("CONFIRMAR TROCA", ImVec2(-1.0f, 34.0f)))
+			m_confirmNick = true;
+	}
+	else if (nickIsAvailable == 2)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.32f, 0.32f, 1.0f));
+		ImGui::TextUnformatted("Este nome j" U8_A " est" U8_A " em uso.");
+		ImGui::PopStyleColor();
 	}
 }
 
 void NewShop::ChangeClass()
 {
-	posInicial = 30;
-
-	char msg[256] = { 0 };
-	sprintf_s(msg, sizeof(msg), u8"NENHUM item é trocado junto com a classe!");
-	ImGui::SetCursorPosX(5);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg); posInicial += 30;
-
-	ImGui::SetCursorPosY(posInicial + 20);
-	ImGui::Separator();
-
-	sprintf_s(msg, sizeof(msg), u8"Custo para troca: 10000 Coins");
-	ImGui::SetCursorPosX(5);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg); posInicial += 30;
-
-	ImGui::SetCursorPosX(75);
-	ImGui::SetCursorPosY(posInicial + 30);
-	selectChangeClass();
-
-	posInicial += 30;
-	ImGui::SetCursorPosX(150);
-	ImGui::SetCursorPosY(posInicial + 60);
-
-	if (ImGui::Button("Confirmar Nova Classe", ImVec2(150, 40)))
-	{
-		ImGui::OpenPopup("Confirmar Troca de Classe");
-	}
-
-	ConfirmarTrocaClasse();
+	DrawSectionHeader("TROCA DE CLASSE");
+	ImGui::TextWrapped("Nenhum item " U8_E " trocado junto com a classe.");
+	ImGui::Text("Custo: 10000 Coins");
 }
 
-void NewShop::ChangeNick()
+void NewShop::DrawServicePanel()
 {
-	posInicial = 30;
-	editingNick = true;
+	const ShopCategory* cat = FindCategory(6);
+	if (!ImGui::BeginTabBar("##ShopServiceTabs", ImGuiTabBarFlags_None))
+		return;
 
-	char msg[256] = { 0 };
-	sprintf_s(msg, sizeof(msg), u8"Você não conseguirá utilizar o chat enquanto estiver nessa aba!");
-	ImGui::SetCursorPosX(5);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg); posInicial += 30;
-
-	ImGui::SetCursorPosY(posInicial + 20);
-	ImGui::Separator();
-
-	sprintf_s(msg, sizeof(msg), u8"Custo para troca: 5000 Coins");
-	ImGui::SetCursorPosX(5);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg); posInicial += 30;
-
-	sprintf_s(msg, sizeof(msg), u8"Preencha o novo nick desejado e clique no botão 'Verificar Disponibilidade'");
-	ImGui::SetCursorPosX(5);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg); posInicial += 20;
-
-	sprintf_s(msg, sizeof(msg), u8"Se o nome escolhido esteja disponível, o botão de confirmar será habilitado!");
-	ImGui::SetCursorPosX(5);
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Text(msg); posInicial += 30;
-
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Separator();
-
-	posInicial += 30;
-	ImGui::SetCursorPosX(80);
-	ImGui::SetCursorPosY(posInicial);
-
-	if (ImGui::InputText("Nick", NewNick, IM_ARRAYSIZE(NewNick), ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackCharFilter, &TextEditCallbackStub, (void*)this))
+	if (ImGui::BeginTabItem(cat->subs[0].label))
 	{
-		nickIsAvailable = 0;
+		DrawActiveTabOrnament();
+		m_subTab = 1;
+		editingNick = false;
+		ImGui::BeginChild("##ServiceRest", ImVec2(0.0f, 0.0f), false);
+		RestaureItems();
+		ImGui::EndChild();
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem(cat->subs[1].label))
+	{
+		DrawActiveTabOrnament();
+		m_subTab = 2;
+		editingNick = false;
+		ImGui::BeginChild("##ServiceVip", ImVec2(0.0f, 0.0f), false);
+		LoadVipOptions();
+		ImGui::EndChild();
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem(cat->subs[2].label))
+	{
+		DrawActiveTabOrnament();
+		m_subTab = 3;
+		ImGui::BeginChild("##ServiceNick", ImVec2(0.0f, 0.0f), false);
+		ChangeNick();
+		ImGui::EndChild();
+		ImGui::EndTabItem();
 	}
 
-	posInicial += 45;
-
-	ImGui::SetCursorPosX(150);
-	ImGui::SetCursorPosY(posInicial);
-
-	if (ImGui::Button("Verificar Disponibilidade", ImVec2(150, 40)))
-	{
-		// Evita nome em branco
-		if (NewNick != "" && strlen(NewNick) > 0)
-		{
-			ItemsByCategory CheckName;
-
-			CheckName.CategoryID = 6;
-			CheckName.SubCategoryID = 101;
-			sprintf_s(CheckName.ItemName, sizeof(CheckName.ItemName), NewNick);
-			sprintf_s(CheckName.ItemCode, sizeof(CheckName.ItemCode), "SR101");
-			CheckName.Price = 5000;
-			CheckName.Discount = 0;
-
-			SentCheckNickToServer(CheckName, 0);
-		}
-	}
-
-	if (nickIsAvailable == 1)
-	{
-		sprintf_s(msg, sizeof(msg), u8"O Nome escolhido está disponível!");
-		ImGui::SetCursorPosX(122);
-		ImGui::SetCursorPosY(posInicial - 24);
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.04f, 0.74f, 0.10f, 0.78f));
-		ImGui::LabelText("##NickOk", msg, 12);
-		ImGui::PopStyleColor();
-	}
-	else if (nickIsAvailable == 2)
-	{
-		sprintf_s(msg, sizeof(msg), u8"O nome escolhido já está em uso!");
-		ImGui::SetCursorPosX(122);
-		ImGui::SetCursorPosY(posInicial - 24);
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.04f, 0.04f, 0.78f));
-		ImGui::LabelText("##NickNotOk", msg, 12);
-		ImGui::PopStyleColor();
-	}
-
-	posInicial += 60;
-	ImGui::SetCursorPosY(posInicial);
-	ImGui::Separator();
-
-	if (nickIsAvailable == 1)
-	{
-		posInicial += 20;
-		ImGui::SetCursorPosX(150);
-		ImGui::SetCursorPosY(posInicial);
-
-		if (ImGui::Button("Confirmar Troca", ImVec2(150, 40)))
-		{
-			ImGui::OpenPopup("Confirmar Troca de Nick");
-		}
-
-		ConfirmarTrocaNick(NewNick);
-	}
-
-}
-
-void NewShop::RestaureItems()
-{
-	posInicial = 30;
-
-	for (int x = 0; x < 20; x++)
-	{
-		if (failedItems.FailedItems[x].ItemHead)
-		{
-			ImGui::SetCursorPosY(posInicial);
-			ImGui::PushID(x);
-
-			ImGui::Selectable("##RestaureItem", false, 0, ImVec2(300, 90));
-
-			if (ImGui::IsItemHovered() && !finish)
-				ShowDetailsRestaure(failedItems.FailedItems[x].ItemCode, failedItems.FailedItems[x].ItemHead, failedItems.FailedItems[x].ItemChkSum, failedItems.FailedItems[x].AgingNum);
-			else
-				isShowingDetailsRestaure = false;
-
-
-			ImGui::SetCursorPosX(340);
-			ImGui::SetCursorPosY(posInicial);
-
-			if (ImGui::ImageButton(my_texture4[1], ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0)))
-				ImGui::OpenPopup("Deseja restaurar o Item?");
-
-			FinishRestaure(failedItems.FailedItems[x]);
-
-			ImGui::SetCursorPosY(posInicial);
-			ImGui::SetCursorPosX(10);
-			ImGui::Image(RestaureImage[failedItems.FailedItems[x].imgPosition], ImVec2(56, 78));
-
-			char msg[64] = { 0 };
-			sprintf_s(msg, sizeof(msg), u8"Nome do Item: %s", failedItems.FailedItems[x].ItemName);
-			ImGui::SetCursorPosX(80);
-			ImGui::SetCursorPosY(posInicial);
-			CA2W pszWide2(msg);
-			wsprintf(msg, "%s", WChar_to_UTF82(pszWide2));
-			ImGui::Text(msg); posInicial += 20;
-
-			sprintf_s(msg, sizeof(msg), u8"NÍvel do aging: %d", failedItems.FailedItems[x].AgingNum);
-			ImGui::SetCursorPosX(80);
-			ImGui::SetCursorPosY(posInicial);
-			ImGui::Text(msg); posInicial += 20;
-
-			sprintf_s(msg, sizeof(msg), u8"Data da quebra: %02d/%02d/%02d", failedItems.FailedItems[x].Date.wDay, failedItems.FailedItems[x].Date.wMonth, failedItems.FailedItems[x].Date.wYear);
-			ImGui::SetCursorPosX(80);
-			ImGui::SetCursorPosY(posInicial);
-			ImGui::Text(msg); posInicial += 20;
-
-			sprintf_s(msg, sizeof(msg), u8"O valor: %d Coins", failedItems.price);
-			ImGui::SetCursorPosX(80);
-			ImGui::SetCursorPosY(posInicial);
-			ImGui::Text(msg); posInicial += 30;
-
-			ImGui::SetCursorPosY(posInicial);
-			ImGui::Separator();
-			ImGui::PopID();
-			posInicial += 20;
-		}
-	}
-}
-
-void NewShop::ReceiveItems(NEWSHOP_COMPRESSEDPCKG* Data)
-{
-	ITEMS_INFOCKG getAllItems;
-	ZeroMemory(&getAllItems, sizeof(ITEMS_INFOCKG));
-
-	unsigned long nCompressedDataSize = Data->CompressedDataPckg.compressedSize;
-	unsigned long UnCompressedDataSize = 30000;
-
-	uncompress((Bytef*)&getAllItems.Items, &UnCompressedDataSize, (Bytef*)Data->CompressedDataPckg.pCompressedData, nCompressedDataSize);
-
-	ShopItems.clear();
-
-	int i = 0;
-	while (true)
-	{
-		if (getAllItems.Items[i].CategoryID == 0) break;
-
-		ShopItems.push_back(getAllItems.Items[i]);
-		i++;
-	}
-
-	init = true;
-	openFlag = true;
+	ImGui::EndTabBar();
 }
 
 void NewShop::OpenNpc(bool* p_open)
 {
-	if (init)
-		initShop();
+	EnsureShopLoaded();
+	m_hoverPreview = false;
+	editingNick = false;
 
-	ImGui::SetNextWindowSize(ImVec2(600, 390), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2((smScreenWidth / 2) - 280, (smScreenHeight / 2) - 220));
-	ImGui::SetNextWindowBgAlpha(0.90f);
+	ImGui::SetNextWindowSize(ImVec2(kWindowW, kWindowH), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2((float)(smScreenWidth / 2) - (kWindowW * 0.5f), (float)(smScreenHeight / 2) - (kWindowH * 0.5f)));
 
-	ImGui::StyleColorArmageddon();
+	PushWindowStyle();
 
-	if (ImGui::Begin("Loja de Itens", p_open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse))
+	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse;
+
+	ImGui::Begin("##LojaDeCoins", p_open, flags);
 	{
-		// Left
-		static int selected = 0;
-		static int selectedItem = 0;
-		editingNick = false;
+		const ImVec2 pos = ImGui::GetWindowPos();
+		const ImVec2 size = ImGui::GetWindowSize();
+		m_winX = pos.x;
+		m_winY = pos.y;
+		m_winW = size.x;
+		m_winH = size.y;
 
+		DrawWindowChrome(kMainHeaderH);
+		DrawTitleHeader(p_open);
+
+		SetPlayerWindowBodyCursor(kMainHeaderH);
+
+		if (ImGui::BeginTabBar("##ShopCats", ImGuiTabBarFlags_FittingPolicyScroll))
 		{
-			ImGui::BeginChild("Categorias", ImVec2(150, 0), true);
-
-			for (auto Categorias : vCategorias)
+			for (int i = 0; i < kCategoryCount; i++)
 			{
-				char label[128];
-				sprintf(label, "%s", Categorias.CategoryName.c_str());
-
-				if (ImGui::Button(label, ImVec2(140, 40)))
+				if (ImGui::BeginTabItem(kCategories[i].label))
 				{
-					selected = Categorias.CategoryID;
+					DrawActiveTabOrnament();
+					if (m_category != kCategories[i].id)
+					{
+						m_category = kCategories[i].id;
+						m_subTab = (m_category == 6) ? 1 : kCategories[i].subs[0].id;
+						m_selectedIndex = -1;
+					}
+					DrawShopBody();
+					ImGui::EndTabItem();
 				}
 			}
-
-			ImGui::SetCursorPosY(300);
-			ImGui::Image(ShopImages[0], ImVec2(50, 50));
-			char coins[32] = { 0 };
-			sprintf_s(coins, sizeof(coins), "%d Coins", GetCoin());
-			ImGui::SetCursorPosY(317);
-			ImGui::SetCursorPosX(60);
-			ImGui::Text(coins);
-
-			//ImGui::SetCursorPosY(354);
-			//if (ImGui::Button(u8"Adicionar Créditos")) // Donates
-			//	ImGui::OpenPopup(u8"Efetuar uma doação");
-			// 
-			//showDonationOptions();
-
-			ImGui::EndChild();
+			ImGui::EndTabBar();
 		}
 
-		if (bIsPerfect && !finish) // Mostra os detalhes do item
+		ImGui::End();
+	}
+
+	DrawBuyConfirm();
+	DrawVipConfirm();
+	DrawRestaureConfirm();
+	DrawNickConfirm();
+
+	if (m_hoverPreview && !m_confirmBuy && !m_confirmVip && m_confirmRestaure < 0 && !m_confirmNick)
+	{
+		if (smScreenWidth > 800 && smScreenHeight > 600)
 		{
-			if (smScreenWidth > 800 && smScreenHeight > 600) // 800x600 não suporta o preview do item
-			{
-				sinShowItemInfoFlag = 1;
+			sinShowItemInfoFlag = 1;
+			if (GAMECOREHANDLE && GAMECOREHANDLE->pcItemInfoBox)
 				GAMECOREHANDLE->pcItemInfoBox->PrepareShowItem(&TempPerfectItem, FALSE, FALSE, FALSE);
-			}
-		}
-
-		if (!isShowingDetailsRestaure && !isShowingDetails)
-			bIsPerfect = false;
-
-		if (selected > 0)
-		{
-			ImGui::SameLine();
-			ImGui::BeginGroup();
-			ImGui::BeginChild("Itens da Categoria", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
-			ImGui::Separator();
-		}
-
-		// Categorias do shop
-		switch (selected) // subcategorias
-		{
-		case 1:
-
-			// Armas
-			if (ImGui::BeginTabBar("##Ataque", ImGuiTabBarFlags_None))
-			{
-				posInicial = 30;
-
-				for (auto& SubCategories : ShopItems)
-				{
-					if (ImGui::BeginTabItem("Caixas"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 1)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem("Espadas"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 2)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Foices"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 3)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Garras"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 4)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Lanças"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 5)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Machados"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 6)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Martelos"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 7)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Varinhas"))
-					{
-						if (SubCategories.CategoryID == 1 && SubCategories.SubCategoryID == 8)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-
-				}
-
-
-				ImGui::EndTabBar();
-			}
-			ImGui::EndChild();
-			ImGui::EndGroup();
-			break;
-
-		case 2:
-			// Armaduras
-			if (ImGui::BeginTabBar("##Defesa", ImGuiTabBarFlags_None))
-			{
-				posInicial = 30;
-
-				for (auto& SubCategories : ShopItems)
-				{
-					if (ImGui::BeginTabItem("Caixas"))
-					{
-						if (SubCategories.CategoryID == 2 && SubCategories.SubCategoryID == 1)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem(u8"Roupões"))
-					{
-						if (SubCategories.CategoryID == 2 && SubCategories.SubCategoryID == 2)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Escudos"))
-					{
-						if (SubCategories.CategoryID == 2 && SubCategories.SubCategoryID == 3)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Orbitais"))
-					{
-						if (SubCategories.CategoryID == 2 && SubCategories.SubCategoryID == 4)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-				}
-
-				ImGui::EndTabBar();
-			}
-			ImGui::EndChild();
-			ImGui::EndGroup();
-			break;
-		case 3:
-			// Acessórios
-			if (ImGui::BeginTabBar("##Acessórios", ImGuiTabBarFlags_None))
-			{
-				posInicial = 30;
-
-				for (auto& SubCategories : ShopItems)
-				{
-					if (ImGui::BeginTabItem("Braceletes"))
-					{
-						if (SubCategories.CategoryID == 3 && SubCategories.SubCategoryID == 1)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem("Botas"))
-					{
-						if (SubCategories.CategoryID == 3 && SubCategories.SubCategoryID == 2)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Brincos"))
-					{
-						if (SubCategories.CategoryID == 3 && SubCategories.SubCategoryID == 3)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Anéis"))
-					{
-						if (SubCategories.CategoryID == 3 && SubCategories.SubCategoryID == 4)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Colares"))
-					{
-						if (SubCategories.CategoryID == 3 && SubCategories.SubCategoryID == 5)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Pedras"))
-					{
-						if (SubCategories.CategoryID == 3 && SubCategories.SubCategoryID == 6)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-				}
-
-				ImGui::EndTabBar();
-			}
-			ImGui::EndChild();
-			ImGui::EndGroup();
-			break;
-		case 4:
-			// Trajes
-			if (ImGui::BeginTabBar("##Trajes", ImGuiTabBarFlags_None))
-			{
-				posInicial = 30;
-
-				for (auto& SubCategories : ShopItems)
-				{
-					if (ImGui::BeginTabItem("Masculinos"))
-					{
-						if (SubCategories.CategoryID == 4 && SubCategories.SubCategoryID == 1)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem("Femininos"))
-					{
-						if (SubCategories.CategoryID == 4 && SubCategories.SubCategoryID == 2)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					/*if (ImGui::BeginTabItem(u8"Roupões Masculinos"))
-					{
-						if (SubCategories.CategoryID == 4 && SubCategories.SubCategoryID == 3)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Roupões Femininos"))
-					{
-						if (SubCategories.CategoryID == 4 && SubCategories.SubCategoryID == 4)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}*/
-				}
-				ImGui::EndTabBar();
-			}
-			ImGui::EndChild();
-			ImGui::EndGroup();
-			break;
-		case 5:
-			// Premiuns
-			if (ImGui::BeginTabBar("##Premium", ImGuiTabBarFlags_None))
-			{
-				posInicial = 30;
-
-				for (auto& SubCategories : ShopItems)
-				{
-					if (ImGui::BeginTabItem("Aprimoramento"))
-					{
-						if (SubCategories.CategoryID == 5 && SubCategories.SubCategoryID == 1)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem("Aging e Mix"))
-					{
-						if (SubCategories.CategoryID == 5 && SubCategories.SubCategoryID == 2)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Forças"))
-					{
-						if (SubCategories.CategoryID == 5 && SubCategories.SubCategoryID == 3)
-						{
-							ShowSubCategories(SubCategories);
-						}
-
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem(u8"Utilitários"))
-					{
-						if (SubCategories.CategoryID == 5 && SubCategories.SubCategoryID == 4)
-						{
-							ShowSubCategories(SubCategories);
-						}
-						ImGui::EndTabItem();
-					}
-				}
-				ImGui::EndTabBar();
-			}
-			ImGui::EndChild();
-			ImGui::EndGroup();
-			break;
-		case 6:
-			// Serviços
-			if (ImGui::BeginTabBar("##Serviços", ImGuiTabBarFlags_None))
-			{
-				posInicial = 30;
-				if (ImGui::BeginTabItem("Restaurar Item"))
-				{
-					RestaureItems();
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("VIP"))
-				{
-					LoadVipOptions();
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Troca de Nick"))
-				{
-					ChangeNick();
-					ImGui::EndTabItem();
-				}
-
-				//if (ImGui::BeginTabItem("Troca de Classe"))
-				//{
-				//	ChangeClass();
-				//	ImGui::EndTabItem();
-				//}
-
-				ImGui::EndTabBar();
-			}
-			ImGui::EndChild();
-			ImGui::EndGroup();
-			break;
 		}
 	}
-	ImGui::End();
+
+	PopWindowStyle();
 }

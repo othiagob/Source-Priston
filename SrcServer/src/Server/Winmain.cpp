@@ -13,6 +13,7 @@
 #include "fileread.h"
 #include "smLib3d/smSin.h"
 #include "AreaServer.h"
+#include "HUD/ServerPanel.h"
 
 #define WM_CALLMEMMAP				WM_USER+3 
 
@@ -79,13 +80,14 @@ LONG WINAPI RedirectedSetUnhandledExceptionFilter(EXCEPTION_POINTERS* p)
 	return NULL;
 }
 
-// Entry Point
-int main(int argv, char* argc[])
+// Entry Point (subsystem Windows: sem janela preta de console)
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	SetUnhandledExceptionFilter(unhandled_handler);
 	HookAPI("kernel32.dll", "SetUnhandledExceptionFilter", RedirectedSetUnhandledExceptionFilter);
 
-	SetConsoleTitle("Server");
+	ServerPanel_StartLogCapture();
+
 	smConfigDecode("Server\\Config\\Devices.ini");
 
 	initSinCos();

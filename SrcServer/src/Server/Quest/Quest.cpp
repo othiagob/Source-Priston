@@ -10,55 +10,80 @@
 QUESTPCKG questPckg = {};
 int nQuestAtivas = 0;
 
+// Chat do client e Windows-1252. Acentos nas Alert() com \xNN, nunca UTF-8.
+// Se a letra seguinte for 0-9/a-f, quebre a string ("\xED" "do") senao o MSVC junta os hex.
+
+static bool IsRepeatableQuestType(int questType)
+{
+	return questType == Quest::QUEST_REPEAT_SOLOPARTY
+		|| questType == Quest::QUEST_REPEAT_PARTY
+		|| questType == Quest::QUEST_REPEAT_SOLO;
+}
+
+static void ApplyQuestTurnInMemory(rsPLAYINFO* Player, int questID, int questType)
+{
+	if (!Player || questID < 1 || questID > 60)
+		return;
+
+	QUEST_INFO& info = Player->questInfoPckg.QuestPckg[questID];
+	info.questID = questID;
+	info.isActive = false;
+	info.isReadyToComplete = false;
+	if (IsRepeatableQuestType(questType))
+	{
+		info.isComplete = false;
+	}
+	else
+	{
+		info.isComplete = true;
+		GetLocalTime(&info.EndTime);
+	}
+}
+
+static void SendQuestStatusToPlayer(rsPLAYINFO* Player)
+{
+	if (!Player || !Player->lpsmSock)
+		return;
+
+	Player->questInfoPckg.size = sizeof(QUEST_INFOPCKG);
+	Player->questInfoPckg.code = smTRANSCODE_GET_QUEST_STATUS;
+	Player->lpsmSock->Send((char*)&Player->questInfoPckg, Player->questInfoPckg.size, TRUE);
+}
+
 void updateSQL(rsPLAYINFO* Player, smCHAR* Monster, bool PartyFlag, int questID, int y)
 {
+	if (!Player || questID < 1 || questID > 60 || y < 1 || y > 3)
+		return;
+
 	auto db = SQLConnection::GetConnection(DATABASEID_Quest);
+	if (!db || !db->Open())
+		return;
 
-	if (db && db->Open())
+	const char* const query = FormatString("UPDATE PlayerActiveQuest SET questProgress%d += 1 WHERE questID = ? AND PlayerName = ?", y);
+	bool updated = false;
+	if (db->Prepare(query))
 	{
-		int progress[3] = { 0 };
+		db->BindInputParameter(&questID, 1, PARAMTYPE_Integer);
+		db->BindInputParameter(Player->szName, 2, PARAMTYPE_String);
+		updated = db->Execute(FALSE) != FALSE;
+	}
+	db->Close();
 
-		const char* const query = FormatString("UPDATE PlayerActiveQuest SET questProgress%d += 1 WHERE questID = ? AND PlayerName = ?", y);
+	if (!updated)
+		return;
 
-		// Atualiza o status da quest
-		if (db->Prepare(query))
-		{
-			db->BindInputParameter(&questID, 1, PARAMTYPE_Integer);
-			db->BindInputParameter(Player->szName, 2, PARAMTYPE_String);
-			db->Execute();
-		}
+	QUEST_INFO& info = Player->questInfoPckg.QuestPckg[questID];
+	info.questProgress[y - 1] += 1;
 
-		if (db->Prepare("SELECT questProgress1, questProgress2, questProgress3 FROM PlayerActiveQuest WHERE questID=? AND PlayerName=?"))
-		{
-			db->BindInputParameter(&questID, 1, PARAMTYPE_Integer);
-			db->BindInputParameter(Player->szName, 2, PARAMTYPE_String);
-
-			if (db->Execute())
-			{
-				db->GetData(1, PARAMTYPE_Integer, &progress[0]);
-				db->GetData(2, PARAMTYPE_Integer, &progress[1]);
-				db->GetData(3, PARAMTYPE_Integer, &progress[2]);
-			}
-		}
-
-		// Encontra a quest e verifica se está completa
-		for (int x = 0; x <= 60; x++)
-		{
-			if (questID == questPckg.QuestPckg[x].questID)
-			{
-				if ((progress[0] >= questPckg.QuestPckg[x].monsterNum[0]) &&
-					(progress[1] >= questPckg.QuestPckg[x].monsterNum[1]) &&
-					(progress[2] >= questPckg.QuestPckg[x].monsterNum[2]))
-				{
-					GameMasters::getInstance()->Alert(Player, "> Desafio Concluído!");
-					GameMasters::getInstance()->Packet(Player, 0x50600008, questID, progress[0], progress[1], progress[2]);
-				}
-
-				break;
-			}
-		}
-
-		db->Close();
+	const QUEST_BODY& def = questPckg.QuestPckg[questID];
+	if ((info.questProgress[0] >= def.monsterNum[0]) &&
+		(info.questProgress[1] >= def.monsterNum[1]) &&
+		(info.questProgress[2] >= def.monsterNum[2]))
+	{
+		info.isActive = false;
+		info.isReadyToComplete = true;
+		GameMasters::getInstance()->Alert(Player, "> Desafio Conclu\xED" "do!");
+		GameMasters::getInstance()->Packet(Player, 0x50600008, questID, info.questProgress[0], info.questProgress[1], info.questProgress[2]);
 	}
 }
 
@@ -112,8 +137,6 @@ int Quest::updatePVPKill(rsPLAYINFO* Player)
 int Quest::updateStatus(rsPLAYINFO* Player, smCHAR* Monster, int PartyFlag) {
 	int x = 0, y = 0, z = 0, isSpecificMap = 0, killToGo = 0, flag = 0;
 	char monsterName[32] = { 0 };
-
-	getStatus(Player, false);
 
 	for (x = 0; x <= 60; x++)
 	{
@@ -528,7 +551,7 @@ bool Quest::checkCheat(rsPLAYINFO* Player, int questID)
 
 	auto db = SQLConnection::GetConnection(DATABASEID_Quest);
 
-	bool isOk = FALSE; // Tentando entregar quest que não está ativa no char
+	bool isOk = FALSE;
 
 	if (db->Open())
 	{
@@ -565,12 +588,14 @@ void GetDateTimeQ(char* pszDateTime)
 int Quest::rewardQuest(rsPLAYINFO* Player, int questID, int questType, int questObjective)
 {
 	// Tentativa de crash
-	if (questID > 60)
+	if (!Player || questID < 1 || questID > 60)
 		return FALSE;
 
 	if (!Player->questInfoPckg.QuestPckg[questID].isReadyToComplete)
 	{
-		return FALSE;
+		getStatus(Player, false);
+		if (!Player->questInfoPckg.QuestPckg[questID].isReadyToComplete)
+			return FALSE;
 
 		/*auto db = SQLConnection::GetConnection(DATABASEID_LogDB);
 
@@ -631,114 +656,122 @@ int Quest::rewardQuest(rsPLAYINFO* Player, int questID, int questType, int quest
 		return FALSE;*/
 	}
 
-	auto db = SQLConnection::GetConnection(DATABASEID_Quest);
-
 	char rewardItemCode[3][12] = { 0 };
 	int  rewardQuantity[3] = { 0 };
 	INT64 rewardGold = 0, rewardEXP = 0;
+	bool claimed = false;
+	auto db = SQLConnection::GetConnection(DATABASEID_Quest);
 
-	GameMasters::getInstance()->Alert(Player, "Quest> Você completou o Desafio!");
-	GameMasters::getInstance()->Alert(Player, "Quest> Recompensas são enviadas ao distribuidor.");
-
-	if (db->Open())
+	if (db && db->Open())
 	{
-		const char* const query = "SELECT * FROM QuestRewards WHERE questID=?";
-
-		if (db->Prepare(query))
-		{
-			db->BindInputParameter(&questID, 1, PARAMTYPE_Integer);
-
-			if (db->Execute())
-			{
-				int RewardGoldTemp = 0;
-				INT64 RewardExpTemp = 0;
-
-				db->GetData(2, PARAMTYPE_String, rewardItemCode[0], sizeof(rewardItemCode[0]));
-				db->GetData(3, PARAMTYPE_String, rewardItemCode[1], sizeof(rewardItemCode[1]));
-				db->GetData(4, PARAMTYPE_String, rewardItemCode[2], sizeof(rewardItemCode[2]));
-				db->GetData(5, PARAMTYPE_Integer, &rewardQuantity[0]);
-				db->GetData(6, PARAMTYPE_Integer, &rewardQuantity[1]);
-				db->GetData(7, PARAMTYPE_Integer, &rewardQuantity[2]);
-				db->GetData(8, PARAMTYPE_Integer, &RewardGoldTemp);
-				db->GetData(9, PARAMTYPE_Int64, &RewardExpTemp);
-
-				rewardGold = RewardGoldTemp;
-				rewardEXP = RewardExpTemp;
-			}
-
-		}
-
-		if (db->Prepare("DELETE FROM PlayerActiveQuest WHERE PlayerName=? AND questID=?"))
+		bool hasActive = false;
+		if (db->Prepare("SELECT questID FROM PlayerActiveQuest WHERE PlayerName=? AND questID=?"))
 		{
 			db->BindInputParameter(Player->szName, 1, PARAMTYPE_String);
 			db->BindInputParameter(&questID, 2, PARAMTYPE_Integer);
-			db->Execute();
+			if (db->Execute())
+				hasActive = true;
 		}
 
-		if (questType != QUEST_REPEAT_SOLOPARTY && questType != QUEST_REPEAT_PARTY && questType != QUEST_REPEAT_SOLO)
+		if (hasActive)
 		{
-			if (db->Prepare("INSERT INTO PlayerCompletedQuest VALUES (?,?,?,GETDATE())"))
+			if (db->Prepare("SELECT * FROM QuestRewards WHERE questID=?"))
+			{
+				db->BindInputParameter(&questID, 1, PARAMTYPE_Integer);
+				if (db->Execute())
+				{
+					int RewardGoldTemp = 0;
+					INT64 RewardExpTemp = 0;
+					db->GetData(2, PARAMTYPE_String, rewardItemCode[0], sizeof(rewardItemCode[0]));
+					db->GetData(3, PARAMTYPE_String, rewardItemCode[1], sizeof(rewardItemCode[1]));
+					db->GetData(4, PARAMTYPE_String, rewardItemCode[2], sizeof(rewardItemCode[2]));
+					db->GetData(5, PARAMTYPE_Integer, &rewardQuantity[0]);
+					db->GetData(6, PARAMTYPE_Integer, &rewardQuantity[1]);
+					db->GetData(7, PARAMTYPE_Integer, &rewardQuantity[2]);
+					db->GetData(8, PARAMTYPE_Integer, &RewardGoldTemp);
+					db->GetData(9, PARAMTYPE_Int64, &RewardExpTemp);
+					rewardGold = RewardGoldTemp;
+					rewardEXP = RewardExpTemp;
+				}
+			}
+
+			if (db->Prepare("DELETE FROM PlayerActiveQuest WHERE PlayerName=? AND questID=?"))
 			{
 				db->BindInputParameter(Player->szName, 1, PARAMTYPE_String);
 				db->BindInputParameter(&questID, 2, PARAMTYPE_Integer);
-				db->BindInputParameter(&questType, 3, PARAMTYPE_Integer);
-				db->Execute();
+				if (db->Execute(FALSE))
+					claimed = true;
 			}
-		}
 
-		if (rewardQuantity[0])
-		{
-			if (boost::iequals(rewardItemCode[0], "Coin"))
-				NewShop::GetInstance()->addCoinsToPlayer(Player, Player->szID, rewardQuantity[0], 1, WhereCoinsComeFrom::FROM_QUEST);
-			else
-				SendReward(Player->szID, Player->szName, rewardItemCode[0], rewardQuantity[0], 0);
-		}
-
-		if (rewardQuantity[1])
-		{
-			if (boost::iequals(rewardItemCode[1], "Coin"))
-				NewShop::GetInstance()->addCoinsToPlayer(Player, Player->szID, rewardQuantity[1], 1, WhereCoinsComeFrom::FROM_QUEST);
-			else
-				SendReward(Player->szID, Player->szName, rewardItemCode[1], rewardQuantity[1], 0);
-		}
-
-		if (rewardQuantity[2])
-		{
-			if (boost::iequals(rewardItemCode[2], "Coin"))
-				NewShop::GetInstance()->addCoinsToPlayer(Player, Player->szID, rewardQuantity[2], 1, WhereCoinsComeFrom::FROM_QUEST);
-			else
-				SendReward(Player->szID, Player->szName, rewardItemCode[2], rewardQuantity[2], 0);
-		}
-
-		if (rewardGold)
-		{
-			SendReward(Player->szID, Player->szName, "GG101", 1, rewardGold);
-		}
-		if (rewardEXP)
-		{
-			// Verifica se o personagem já atingiu o nível máximo
-			if (Player->smCharInfo.Level >= g_LevelFinal)
+			if (claimed && !IsRepeatableQuestType(questType))
 			{
-				// Personagem já atingiu o nível máximo, não ganha XP da quest
-				GameMasters::getInstance()->Alert(Player, "Quest> Você não ganhou XP pois já atingiu o nível máximo!");
-			}
-			else
-			{
-				GameMasters::getInstance()->AddExpToPlayer(Player, rewardEXP);
-				Player->LastExp += rewardEXP;
-				Player->dwGameServerExp[0] += rewardEXP;
+				if (db->Prepare("INSERT INTO PlayerCompletedQuest VALUES (?,?,?,GETDATE())"))
+				{
+					db->BindInputParameter(Player->szName, 1, PARAMTYPE_String);
+					db->BindInputParameter(&questID, 2, PARAMTYPE_Integer);
+					db->BindInputParameter(&questType, 3, PARAMTYPE_Integer);
+					db->Execute(FALSE);
+				}
 			}
 		}
 
 		db->Close();
-		getStatus(Player, true);
-
-		return TRUE;
 	}
 
-	return FALSE;
+	if (!claimed)
+		return FALSE;
 
+	ApplyQuestTurnInMemory(Player, questID, questType);
+	SendQuestStatusToPlayer(Player);
+
+	GameMasters::getInstance()->Alert(Player, "Quest> Voc\xEA completou o Desafio!");
+	GameMasters::getInstance()->Alert(Player, "Quest> Recompensas s\xE3o enviadas ao distribuidor.");
+
+	if (rewardQuantity[0])
+	{
+		if (boost::iequals(rewardItemCode[0], "Coin"))
+			NewShop::GetInstance()->addCoinsToPlayer(Player, Player->szID, rewardQuantity[0], 1, WhereCoinsComeFrom::FROM_QUEST);
+		else
+			SendReward(Player->szID, Player->szName, rewardItemCode[0], rewardQuantity[0], 0);
+	}
+
+	if (rewardQuantity[1])
+	{
+		if (boost::iequals(rewardItemCode[1], "Coin"))
+			NewShop::GetInstance()->addCoinsToPlayer(Player, Player->szID, rewardQuantity[1], 1, WhereCoinsComeFrom::FROM_QUEST);
+		else
+			SendReward(Player->szID, Player->szName, rewardItemCode[1], rewardQuantity[1], 0);
+	}
+
+	if (rewardQuantity[2])
+	{
+		if (boost::iequals(rewardItemCode[2], "Coin"))
+			NewShop::GetInstance()->addCoinsToPlayer(Player, Player->szID, rewardQuantity[2], 1, WhereCoinsComeFrom::FROM_QUEST);
+		else
+			SendReward(Player->szID, Player->szName, rewardItemCode[2], rewardQuantity[2], 0);
+	}
+
+	if (rewardGold)
+	{
+		SendReward(Player->szID, Player->szName, "GG101", 1, rewardGold);
+	}
+	if (rewardEXP)
+	{
+		if (Player->smCharInfo.Level >= g_LevelFinal)
+		{
+			GameMasters::getInstance()->Alert(Player, "Quest> Voc\xEA n\xE3o ganhou XP pois j\xE1 atingiu o n\xEDvel m\xE1" "ximo!");
+		}
+		else
+		{
+			GameMasters::getInstance()->AddExpToPlayer(Player, rewardEXP);
+			Player->LastExp += rewardEXP;
+			Player->dwGameServerExp[0] += rewardEXP;
+		}
+	}
+
+	return TRUE;
 }
+
 int Quest::cancelQuest(rsPLAYINFO* Player, int questID, int questType) {
 
 	auto db = SQLConnection::GetConnection(DATABASEID_Quest);
@@ -765,14 +798,14 @@ int Quest::cancelQuest(rsPLAYINFO* Player, int questID, int questType) {
 			if (db->Execute(false))
 			{
 				char msgOk[156];
-				sprintf_s(msgOk, sizeof(msgOk), "Quest> Você cancelou o desafio [%s]!", questName);
+				sprintf_s(msgOk, sizeof(msgOk), "Quest> Voc\xEA cancelou o desafio [%s]!", questName);
 				GameMasters::getInstance()->Alert(Player, msgOk);
 			}
 
 		}
 
-		getStatus(Player, true);
 		db->Close();
+		getStatus(Player, true);
 
 		return TRUE;
 	}
@@ -801,7 +834,7 @@ int Quest::startNewQuest(rsPLAYINFO* Player, int questID, int questType) {
 
 				if (totalInProgress >= 5)
 				{
-					GameMasters::getInstance()->Alert(Player, "Quest> Você só pode estar em 5 Desafios por vez!");
+					GameMasters::getInstance()->Alert(Player, "Quest> Voc\xEA s\xF3 pode estar em 5 Desafios por vez!");
 					db->Close();
 					return FALSE;
 				}
@@ -824,11 +857,10 @@ int Quest::startNewQuest(rsPLAYINFO* Player, int questID, int questType) {
 
 		if (Player->smCharInfo.Level < questlvlMin || Player->smCharInfo.Level > questlvlMax)
 		{
-			GameMasters::getInstance()->Alert(Player, "Quest> Você não atende aos requisitos de nível!");
+			GameMasters::getInstance()->Alert(Player, "Quest> Voc\xEA n\xE3o atende aos requisitos de n\xEDvel!");
 			db->Close();
 			return FALSE;
 		}
-
 
 		if (db->Prepare("INSERT INTO PlayerActiveQuest VALUES (?,?,?,0,0,0,0,GETDATE(),?,?)"))
 		{
@@ -845,7 +877,7 @@ int Quest::startNewQuest(rsPLAYINFO* Player, int questID, int questType) {
 		getStatus(Player, true);
 
 		char msgOk[128] = { 0 };
-		sprintf_s(msgOk, sizeof(msgOk), "Quest> Você iniciou o desafio [%s]!", questName);
+		sprintf_s(msgOk, sizeof(msgOk), "Quest> Voc\xEA iniciou o desafio [%s]!", questName);
 		GameMasters::getInstance()->Alert(Player, msgOk);
 
 		return TRUE;

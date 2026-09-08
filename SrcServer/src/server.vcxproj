@@ -42,9 +42,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)\Library;C:\Libs;C:\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\Library;C:\Libs;C:\Libs\zlib\lib;C:\Temp\Libs\DX9\Lib\x86;C:\Libs\DX9\Lib\x86;C:\Source\Libs\DX9\Lib\x86;$(LibraryPath)</LibraryPath>
     <IntDir>..\..\OutDir\DebugServer\</IntDir>
-    <IncludePath>C:\Libs;C:\Libs\zlib\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libs;C:\Libs\zlib\include;C:\Temp\Libs\DX9\Include;C:\Libs\DX9\Include;C:\Source\Libs\DX9\Include;$(IncludePath)</IncludePath>
     <TargetName>Server</TargetName>
     <OutDir>..\..\..\PTServer\</OutDir>
   </PropertyGroup>
@@ -52,8 +52,8 @@
     <OutDir>..\..\..</OutDir>
     <IntDir>..\..\OutDir\ReleaseServer\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)\Library;C:\Temp\Libs;C:\Temp\Libs\zlib\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Temp\Libs;C:\Temp\Libs\zlib\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Library;C:\Temp\Libs;C:\Temp\Libs\zlib\lib;C:\Temp\Libs\DX9\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Temp\Libs;C:\Temp\Libs\zlib\include;C:\Temp\Libs\DX9\Include;$(IncludePath)</IncludePath>
     <TargetName>Server</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -74,7 +74,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(ProjectDir)Server\;$(SolutionDir)..\Shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Server\;$(SolutionDir)..\Shared\;$(ProjectDir)..\..\SrcGame\src\Game\imGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -87,7 +87,7 @@
       <ModuleDefinitionFile />
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <BaseAddress>0x00400000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -131,7 +131,7 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Server\;$(SolutionDir)..\Shared\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Server\;$(SolutionDir)..\Shared\;$(ProjectDir)..\..\SrcGame\src\Game\imGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalOptions>
@@ -142,7 +142,7 @@
       </IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -181,6 +181,16 @@
     <ClCompile Include="Server\Character\SkillSub.cpp" />
     <ClCompile Include="Server\Chat\ChatServer.cpp" />
     <ClCompile Include="Server\CLI\CLI.cpp" />
+    <ClCompile Include="Server\HUD\ServerPanel.cpp" />
+    <ClCompile Include="Server\HUD\ServerConfigPages.cpp" />
+    <ClCompile Include="..\..\SrcGame\src\Game\imGui\imgui.cpp" />
+    <ClCompile Include="..\..\SrcGame\src\Game\imGui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\SrcGame\src\Game\imGui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\SrcGame\src\Game\imGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\SrcGame\src\Game\imGui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="..\..\SrcGame\src\Game\imGui\imgui_impl_win32.cpp">
+      <PreprocessorDefinitions>IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="Server\ConnectReader.cpp" />
     <ClCompile Include="Server\cSkinChanger.cpp" />
     <ClCompile Include="Server\Database\SQLConnection.cpp" />
@@ -281,6 +291,9 @@
     <ClInclude Include="Server\Chat\Chat.h" />
     <ClInclude Include="Server\Chat\ChatServer.h" />
     <ClInclude Include="Server\CLI\CLI.h" />
+    <ClInclude Include="Server\HUD\ToolTheme.h" />
+    <ClInclude Include="Server\HUD\ServerConfigPages.h" />
+    <ClInclude Include="Server\HUD\ServerPanel.h" />
     <ClInclude Include="Server\ConnectReader.h" />
     <ClInclude Include="Server\cSkinChanger.h" />
     <ClInclude Include="Server\Database\SQLConnection.h" />

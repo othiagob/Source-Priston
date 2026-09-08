@@ -19,6 +19,7 @@ public:
 	VOID			WriteOnOff(LPCSTR pszSection, LPCSTR pszKey, BOOL bValue);
 	VOID			WriteFloat(LPCSTR pszSection, LPCSTR pszKey, FLOAT fValue);
 	VOID			WriteString(LPCSTR pszSection, LPCSTR pszKey, LPCSTR pszValue);
+	VOID			ReadStringTo(LPCSTR pszSection, LPCSTR pszKey, LPSTR pszOut, DWORD dwOutSize, LPCSTR pszDefault);
 
 private:
 	CHAR			m_szFileName[MAX_PATH];

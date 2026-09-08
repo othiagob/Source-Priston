@@ -1,6 +1,13 @@
 #include "StdAfx.h"
 #include "GameCore.h"
 #include "Def.h"
+#include "imGui/imgui.h"
+#include "Quest/QuestWindow.h"
+#include "Settings.h"
+#include "Shop/NewShop.h"
+#include "Shop/NewShopTime.h"
+#include "HUD/RankingWindow.h"
+#include "HUD/MixWindow.h"
 
 std::vector<CBaseHandle*> vHandleElement;
 std::vector<CBaseWindow*> vWindowElement;
@@ -147,6 +154,25 @@ BOOL CGameCore::OnKeyPress(CKeyboard* pcKeyboard)
 }
 BOOL CGameCore::OnMouseClick(CMouse* pcMouse)
 {
+	if (ImGui::GetCurrentContext())
+	{
+		extern POINT pCursorPos;
+		if (ImGui::GetIO().WantCaptureMouse)
+			return TRUE;
+		if (QuestWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (Settings::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (NewShop::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (NewShopTime::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+	}
+
 	if (SKILLMANAGERHANDLER->OnMouseClick(pcMouse))
 		return TRUE;
 
@@ -166,6 +192,25 @@ BOOL CGameCore::OnMouseClick(CMouse* pcMouse)
 }
 BOOL CGameCore::OnMouseScroll(CMouse* pcMouse)
 {
+	if (ImGui::GetCurrentContext())
+	{
+		extern POINT pCursorPos;
+		if (ImGui::GetIO().WantCaptureMouse)
+			return TRUE;
+		if (QuestWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (Settings::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (NewShop::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (NewShopTime::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+	}
+
 	for (int t = (int)vWindowElement.size() - 1; t >= 0; t--)
 	{
 		if (vWindowElement[t]->OnMouseScroll(pcMouse))

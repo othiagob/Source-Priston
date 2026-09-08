@@ -1,5 +1,6 @@
 #include <zlib.h>
 #include <algorithm>
+#include <vector>
 #include <boost/algorithm/string.hpp>
 #include "..\\Database\\SQLConnection.h"
 #include "NewShop.h"
@@ -106,7 +107,7 @@ bool NewShop::TransferTradeCoin(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2,
 		}
 
 		char msg[128] = { 0 };
-		sprintf_s(msg, sizeof(msg), "> Você enviou %d Coins para %s, saldo restante %d Coins", Coin, lpPlayInfo2->szName, (UserCoin - Coin));
+		sprintf_s(msg, sizeof(msg), "> Voc? enviou %d Coins para %s, saldo restante %d Coins", Coin, lpPlayInfo2->szName, (UserCoin - Coin));
 		GameMasters::getInstance()->Alert(lpPlayInfo, msg);
 
 		return true;
@@ -151,7 +152,7 @@ void NewShop::receivePaypalDonation(rsPLAYINFO* Player, Donate* NewDonate)
 	int Amount = 0;
 	int Value = atoi(NewDonate->PckDonate.Amount);
 
-	// Valores de coins referentes as doações
+	// Valores de coins referentes as doa??es
 	switch (Value) {
 	case 5:
 		Amount = 25;
@@ -236,7 +237,7 @@ bool NewShop::checkNick(rsPLAYINFO* Player, sFinishPurchase* Item)
 		{
 			db->BindInputParameter(Item->Item.ItemName, 1, PARAMTYPE_String);
 
-			// Nick já em uso
+			// Nick j? em uso
 			if (db->Execute())
 			{
 				GameMasters::getInstance()->Packet(Player, NewShopItems_CheckNick, 1, 0, 0, 0);
@@ -282,7 +283,7 @@ int setChangeNickPrice()
 		db->Close();
 	}
 
-	return price; // Padrão
+	return price; // Padr?o
 }
 
 int setChangeClassPrice()
@@ -304,7 +305,7 @@ int setChangeClassPrice()
 		db->Close();
 	}
 
-	return price; // Padrão
+	return price; // Padr?o
 }
 
 
@@ -507,13 +508,13 @@ void NewShop::ChangeClass(rsPLAYINFO* Player, sFinishPurchase* Item)
 
 	if (userCoin < preco)
 	{
-		UTILS->Alert(Player, "> Você não possui saldo suficiente!");
+		UTILS->Alert(Player, "> Voc? n?o possui saldo suficiente!");
 		return;
 	}
 
 	// Remove os coins do player
 	removePlayerCoins(Player, preco);
-	UTILS->Alert(Player, "> Mudança Concluída, desconectando...");
+	UTILS->Alert(Player, "> Mudan?a Conclu?da, desconectando...");
 
 	// Atualiza a classe na tabela de BPS
 	auto db = SQLConnection::GetConnection(DATABASEID_UserDB);
@@ -571,13 +572,13 @@ void NewShop::ChangeNick(rsPLAYINFO* Player, sFinishPurchase* Item)
 
 	if (userCoin < preco)
 	{
-		UTILS->Alert(Player, "> Você não possui saldo suficiente!");
+		UTILS->Alert(Player, "> Voc? n?o possui saldo suficiente!");
 		return;
 	}
 
 	// Remove os coins do player
 	removePlayerCoins(Player, preco);
-	UTILS->Alert(Player, "> Mudança Concluída, desconectando...");
+	UTILS->Alert(Player, "> Mudan?a Conclu?da, desconectando...");
 
 	auto db = SQLConnection::GetConnection(DATABASEID_UserDB);
 
@@ -670,7 +671,7 @@ void NewShop::ChangeNick(rsPLAYINFO* Player, sFinishPurchase* Item)
 		db->Close();
 	}
 
-	// Log da mudança
+	// Log da mudan?a
 
 	db = SQLConnection::GetConnection(DATABASEID_LogDB);
 
@@ -810,21 +811,14 @@ void NewShop::removePlayerCoins(rsPLAYINFO* Player, int coinsToRemove)
 
 void NewShop::SendItems(rsPLAYINFO* Player)
 {
-	NEWSHOP_COMPRESSEDPCKG pckgToSend;
-	ZeroMemory(&pckgToSend, sizeof(NEWSHOP_COMPRESSEDPCKG));
-	pckgToSend.size = sizeof(NEWSHOP_COMPRESSEDPCKG);
-	pckgToSend.code = NewShopItems_ReceiveItems;
-
-	ITEMS_INFOCKG pckg;
-	ZeroMemory(&pckg, sizeof(ITEMS_INFOCKG));
-
-	int i = 0;
+	std::vector<ItemsByCategory> all;
+	all.reserve(256);
 
 	auto db = SQLConnection::GetConnection(DATABASEID_ShopCoin);
 
 	if (db && db->Open())
 	{
-		const char* const query = "SELECT * FROM ShopItems";
+		const char* const query = "SELECT ID, CategoryID, SubCategoryID, ItemCode, ItemName, Price, ISNULL(DiscountPercent, 0) FROM ShopItems ORDER BY CategoryID, SubCategoryID, ItemCode";
 
 		if (db->Prepare(query))
 		{
@@ -832,36 +826,67 @@ void NewShop::SendItems(rsPLAYINFO* Player)
 
 			while (db->NextRow())
 			{
-				db->GetData(2, PARAMTYPE_Integer, &pckg.Items[i].CategoryID);
-				db->GetData(3, PARAMTYPE_Integer, &pckg.Items[i].SubCategoryID);
-				db->GetData(4, PARAMTYPE_String, pckg.Items[i].ItemCode, sizeof(pckg.Items[i].ItemCode));
-				db->GetData(5, PARAMTYPE_String, pckg.Items[i].ItemName, sizeof(pckg.Items[i].ItemName));
-				db->GetData(6, PARAMTYPE_Integer, &pckg.Items[i].Price);
-				db->GetData(7, PARAMTYPE_Integer, &pckg.Items[i].Discount);
-				pckg.Items[i].imgPosition = 0;
-				i++;
+				ItemsByCategory row;
+				ZeroMemory(&row, sizeof(row));
+				db->GetData(2, PARAMTYPE_Integer, &row.CategoryID);
+				db->GetData(3, PARAMTYPE_Integer, &row.SubCategoryID);
+				db->GetData(4, PARAMTYPE_String, row.ItemCode, sizeof(row.ItemCode));
+				db->GetData(5, PARAMTYPE_String, row.ItemName, sizeof(row.ItemName));
+				db->GetData(6, PARAMTYPE_Integer, &row.Price);
+				db->GetData(7, PARAMTYPE_Integer, &row.Discount);
+				row.imgPosition = 0;
+				if (row.CategoryID > 0 && row.ItemCode[0])
+					all.push_back(row);
 			}
 		}
 
 		db->Close();
 	}
 
-	unsigned long nCompressedDataSize = pckgToSend.size;
-	unsigned char* UnpCompressedData = new unsigned char[nCompressedDataSize];
-	int nResult = compress2((Bytef*)pckgToSend.CompressedDataPckg.pCompressedData, &nCompressedDataSize, (Bytef*)&pckg.Items, sizeof(pckg.Items), 9);
-	pckgToSend.CompressedDataPckg.compressedSize = nCompressedDataSize;
+	const int perChunk = 200;
+	const int total = (int)all.size();
+	int chunks = (total + perChunk - 1) / perChunk;
+	if (chunks < 1)
+		chunks = 1;
 
-	if (nResult == Z_OK)
+	for (int c = 0; c < chunks; c++)
 	{
-		if (Player != nullptr)
-			Player->lpsmSock->Send((char*)&pckgToSend, pckgToSend.size, TRUE); // Pacote com os itens
+		NEWSHOP_COMPRESSEDPCKG pckgToSend;
+		ZeroMemory(&pckgToSend, sizeof(NEWSHOP_COMPRESSEDPCKG));
+		pckgToSend.size = sizeof(NEWSHOP_COMPRESSEDPCKG);
+		pckgToSend.code = NewShopItems_ReceiveItems;
+		pckgToSend.chunkIndex = c;
+		pckgToSend.totalChunks = chunks;
+
+		ITEMS_INFOCKG pckg;
+		ZeroMemory(&pckg, sizeof(ITEMS_INFOCKG));
+
+		const int start = c * perChunk;
+		int n = 0;
+		if (start < total)
+		{
+			n = total - start;
+			if (n > perChunk)
+				n = perChunk;
+		}
+
+		for (int i = 0; i < n; i++)
+			pckg.Items[i] = all[(size_t)start + i];
+
+		unsigned long nCompressedDataSize = sizeof(pckgToSend.CompressedDataPckg.pCompressedData);
+		int nResult = compress2((Bytef*)pckgToSend.CompressedDataPckg.pCompressedData, &nCompressedDataSize,
+			(Bytef*)&pckg.Items, sizeof(pckg.Items), 9);
+		pckgToSend.CompressedDataPckg.compressedSize = (int)nCompressedDataSize;
+
+		if (nResult == Z_OK && Player != nullptr && Player->lpsmSock)
+			Player->lpsmSock->Send((char*)&pckgToSend, pckgToSend.size, TRUE);
 	}
 
 	if (!isDoubleDonation)
-		SERVERCHAT->SendChat(Player, CHATCOLOR_Global, "> A compra de Coins é feita pelo nosso Painel!");
+		SERVERCHAT->SendChat(Player, CHATCOLOR_Global, "> A compra de Coins e feita pelo nosso Painel!");
 	else
 	{
-		SERVERCHAT->SendChatEx(Player, CHATCOLOR_Global, "Evento x%d ativo!, você vai receber %dx a quantidade de coins mostrada!", isDoubleDonation, isDoubleDonation);
+		SERVERCHAT->SendChatEx(Player, CHATCOLOR_Global, "Evento x%d ativo!, voce vai receber %dx a quantidade de coins mostrada!", isDoubleDonation, isDoubleDonation);
 	}
 
 }
@@ -908,7 +933,7 @@ void NewShop::addCoinsToPlayer(rsPLAYINFO* gm, char* id, int coins, int isFromDo
 			{
 				SendCoinToGame(Player);
 				char msg[64] = { 0 };
-				sprintf_s(msg, sizeof(msg), "> Você recebeu %d Coins, novo saldo %d Coins", coins, UserCoin);
+				sprintf_s(msg, sizeof(msg), "> Voc? recebeu %d Coins, novo saldo %d Coins", coins, UserCoin);
 				UTILS->Alert(Player, msg);
 
 			}
@@ -921,7 +946,7 @@ void NewShop::addCoinsToPlayer(rsPLAYINFO* gm, char* id, int coins, int isFromDo
 		else
 		{
 			if (!isFromDonation)
-				UTILS->Alert(gm, "ID não localizada");
+				UTILS->Alert(gm, "ID n?o localizada");
 		}
 
 
@@ -979,8 +1004,8 @@ void NewShop::FinishPurchase(rsPLAYINFO* Player, sFinishPurchase* Item)
 {
 	if (Item->Item.SubCategoryID == 100 && Player->vipLevel > 0)
 	{
-		UTILS->Alert(Player, "> Você já possui VIP!");
-		UTILS->Alert(Player, "> Não é possível renovar antes do término");
+		UTILS->Alert(Player, "> Voc? j? possui VIP!");
+		UTILS->Alert(Player, "> N?o ? poss?vel renovar antes do t?rmino");
 		return;
 	}
 
@@ -1008,7 +1033,7 @@ void NewShop::FinishPurchase(rsPLAYINFO* Player, sFinishPurchase* Item)
 			if (Player->lpsmSock)
 				Player->lpsmSock->Send((char*)&TransItemInfo, TransItemInfo.size, TRUE);
 
-			SERVERCHAT->SendChatEx(Player, EChatColor::CHATCOLOR_Global, "> Item %s (x%d) comprado, Você agora possui %d Coins restantes", Item->Item.ItemName, Item->Quantity, PlayerCoins);
+			SERVERCHAT->SendChatEx(Player, EChatColor::CHATCOLOR_Global, "> Item %s (x%d) comprado, Voc? agora possui %d Coins restantes", Item->Item.ItemName, Item->Quantity, PlayerCoins);
 			SendCoinToGame(Player);
 
 			// Log da compra
@@ -1034,7 +1059,7 @@ void NewShop::FinishPurchase(rsPLAYINFO* Player, sFinishPurchase* Item)
 				CloseHandle(hFile);
 			}
 
-			// Limpa o item da memória
+			// Limpa o item da mem?ria
 			if (lpsItem)
 				delete lpsItem;
 		}
@@ -1045,7 +1070,7 @@ void NewShop::FinishPurchase(rsPLAYINFO* Player, sFinishPurchase* Item)
 	}
 	else
 	{
-		SERVERCHAT->SendChat(Player, EChatColor::CHATCOLOR_Error, "Você não possui Coins suficientes.");
+		SERVERCHAT->SendChat(Player, EChatColor::CHATCOLOR_Error, "Voc? n?o possui Coins suficientes.");
 	}
 }
 

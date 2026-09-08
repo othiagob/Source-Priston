@@ -1,9 +1,9 @@
-#ifndef NEWSHOP
-#define NEWSHOP
-#endif
+#pragma once
 
 #include "Utils\\strings.h"
 #include "imGui/imgui.h"
+#include <vector>
+#include <string>
 
 #define PACKET_SEND_COIN_GAME   0x49470002
 
@@ -19,7 +19,7 @@
 
 struct sCompressedDataShop
 {
-	char pCompressedData[6000];
+	char pCompressedData[7800];
 	int compressedSize;
 };
 
@@ -27,6 +27,8 @@ struct NEWSHOP_COMPRESSEDPCKG {
 	int size;
 	int code;
 	sCompressedDataShop CompressedDataPckg;
+	int chunkIndex;
+	int totalChunks;
 };
 
 struct ItemsByCategory
@@ -60,26 +62,62 @@ struct ITEMS_INFOCKG {
 class NewShop
 {
 private:
-	bool first = true;
-	bool restaureItem = false;
-	char Path[128] = { 0 };
-	int w = 0;
-	int h = 0;
+	int Coin = 0;
 
-	int Coin;
+	float m_winX = 0.0f;
+	float m_winY = 0.0f;
+	float m_winW = 0.0f;
+	float m_winH = 0.0f;
+	void* m_titleTex = nullptr;
+	int m_titleW = 0;
+	int m_titleH = 0;
+	bool m_titleTried = false;
+	int m_category = 1;
+	int m_subTab = 1;
+	int m_selectedIndex = -1;
+	bool m_confirmBuy = false;
+	bool m_confirmVip = false;
+	int m_confirmRestaure = -1;
+	bool m_confirmNick = false;
+	bool m_hoverPreview = false;
+	bool m_shopReady = false;
+
+	void PushWindowStyle();
+	void PopWindowStyle();
+	void DrawWindowChrome(float headerH);
+	void DrawConfirmChrome();
+	void DrawTitleHeader(bool* p_open);
+	void DrawSectionHeader(const char* title);
+	void EnsureTitleTexture();
+	void EnsureShopLoaded();
+	void DrawShopBody();
+	void DrawItemList();
+	void DrawItemDetail();
+	void DrawServicePanel();
+	void DrawBuyConfirm();
+	void DrawVipConfirm();
+	void DrawRestaureConfirm();
+	void DrawNickConfirm();
+	void RequestPreview(const char* itemCode);
+	void PlacePreviewNearMouse();
+	void EnsureSelection();
+	const ItemsByCategory* SelectedItem() const;
+	const struct sITEM* FindPreview(const char* itemCode) const;
+	std::string ToUtf8(const char* src) const;
+	std::string PremiumDescription(const ItemsByCategory& item) const;
+
 public:
-	static              NewShop* GetInstance() { static NewShop instance; return &instance; }
+	static NewShop* GetInstance() { static NewShop instance; return &instance; }
 
 	void ReceiveItems(NEWSHOP_COMPRESSEDPCKG* Data);
 
 	std::vector<ItemsByCategory> ShopItems;
 
-	// Donate PayPal
-	char idPaypal[32];
-	char Amount[32];
+	char idPaypal[32] = {};
+	char Amount[32] = {};
 
 	bool openFlag = false;
-	bool editingNick;
+	bool editingNick = false;
 	void OpenNpc(bool* p_open);
 	void Donation(char amount[32]);
 	void RestaureItems();
@@ -88,9 +126,9 @@ public:
 	int TextEditCallback2(ImGuiInputTextCallbackData* data);
 	void LoadVipOptions();
 
-	void	 MinusCoin(int coin);
-	void	 PlusCoin(int coin);
+	void MinusCoin(int coin);
+	void PlusCoin(int coin);
 	void RecvCoin(int coin);
-	int  GetCoin() { return Coin; };
+	int  GetCoin() { return Coin; }
+	bool IsBlockingMouse(int x, int y) const;
 };
-

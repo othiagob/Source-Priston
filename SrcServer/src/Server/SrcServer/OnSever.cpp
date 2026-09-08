@@ -13,6 +13,7 @@
 #include "..\\Database\\SQLConnection.h"
 #include "Utils/_common.h"
 #include "..\\CLI\CLI.h"
+#include "..\\HUD\\ServerPanel.h"
 #include "Party/CPartyHandler.h"
 #include "Chat/ChatServer.h"
 #include "cSkinChanger.h"
@@ -27,10 +28,10 @@ int eventodrop = 0;
 
 BOOL bMaintenanceMode = FALSE;
 
-// N�vel inicial configur�vel
+// N�vel inicial configur�vel
 int g_LevelInicial = 1;
 
-// N�vel m�ximo configur�vel
+// N�vel m�ximo configur�vel
 int g_LevelFinal = 150;
 
 #include <locale.h>
@@ -152,19 +153,19 @@ HFONT	hServerFont = 0;
 
 int		Svr_DisplayMode = 0;
 
-// Monstro que substitui os npcs em navisko á noite
+// Monstro que substitui os npcs em navisko � noite
 char* srEventMonName1 = "Zumbi";
 
 char* sinGold = "%dOuro";
 
 char* UpKeepItemName[] = {
-	"Olho Mágico",
-	"Poção da Experiência",
+	"Olho M�gico",
+	"Po��o da Experi�ncia",
 	"Presa de Vampiro",
 	"Drena Almas.",
 	"Poder de Awell",
-	"Poção de redução de Mana",
-	"Fênix",
+	"Po��o de redu��o de Mana",
+	"F�nix",
 	0,
 };
 
@@ -307,12 +308,12 @@ srCRISTAL_MONSTER	srCristalMonster[srCRISTAL_MAX] = {
 	{ "Figon"					, 0 , 10	},
 	{ "Rei Hopi"				, 0 , 10	},
 	{ "Hulk"					, 0 , 10	},
-	{ "·£´ý"					, 0 , 0		},
-	{ "Guardião Santo"			, 0 , 0		},
+	{ "����"					, 0 , 0		},
+	{ "Guardi�o Santo"			, 0 , 0		},
 	{ "Aranha"					, 0 , 0		},
 	{ "Espectro Negro"			, 0 , 0		},
 	{ "Guarda de Ferro"			, 0 , 0		},
-	{ "Milícia de Ricarten"		, 0 , 0		},
+	{ "Mil�cia de Ricarten"		, 0 , 0		},
 	{ "Guarda de Ricarten"		, 0 , 0		},
 	{ "Arqueiro do Castelo"		, 0 , 0		},
 	{ ""						, 0 , 0		},
@@ -360,7 +361,7 @@ srCRISTAL_MONSTER srMarvelCristalMonsterBoss[MARVELCRISTAL_MAX] = {
 	{ " ???? ???? "			, 0 , 20	},
 	{ " ??? "				, 0 , 15	},
 	{ " ?????? "			, 0 , 15	},
-	{ " Ÿ??O "				, 0 , 12	},
+	{ " �??O "				, 0 , 12	},
 	{ " ????? "				, 0 , 10	},
 	{ " ??u ???? "			, 0 , 5		},
 	{ " ?????? ???? "		, 0 , 3		}
@@ -398,14 +399,14 @@ srCRISTAL_MONSTER	srCristalMonsterEnemy2[7] = {
 	{ " u??T?? ??? "			, 0 , 15	},
 	{ " ????? ??? "		, 0 , 15	},
 	{ " ????? ??? "				, 0 , 10	},
-	{ " Ÿ??z?? ??? "			, 0 , 5		}
+	{ " �??z?? ??? "			, 0 , 5		}
 };
 
 srCRISTAL_MONSTER	srCristalMonsterEnemy3[7] = {
 	{ " ????? ??? "				, 0 , 20	},
 	{ " ????????? ??? "		, 0 , 20	},
 	{ " ???????? ??? "		, 0 , 15	},
-	{ " Ÿ?? ?????? ??? "			, 0 , 15	},
+	{ " �?? ?????? ??? "			, 0 , 15	},
 	{ " ????? ??? "		, 0 , 15	},
 	{ " ?????? ??? "				, 0 , 10	},
 	{ " ??g?? ??? "			, 0 , 5		}
@@ -413,7 +414,7 @@ srCRISTAL_MONSTER	srCristalMonsterEnemy3[7] = {
 
 srCRISTAL_MONSTER	srCristalMonsterEnemy4[7] = {
 	{ " ??????? ??? "				, 0 , 20	},
-	{ " Ÿ??O?? ??? "		, 0 , 20	},
+	{ " �??O?? ??? "		, 0 , 20	},
 	{ " ???????u?? ??? "		, 0 , 15	},
 	{ " ?????????? ??? "			, 0 , 15	},
 	{ " ??????? ??? "		, 0 , 15	},
@@ -445,7 +446,7 @@ srCRISTAL_MONSTER	srCristalMonsterEnemy7[7] = {
 	{ " ????? ??? "				, 0 , 20	},
 	{ " ????????? ??? "		, 0 , 20	},
 	{ " ???????? ??? "		, 0 , 15	},
-	{ " Ÿ?? ?????? ??? "			, 0 , 15	},
+	{ " �?? ?????? ??? "			, 0 , 15	},
 	{ " ????? ??? "		, 0 , 15	},
 	{ " ?????? ??? "				, 0 , 10	},
 	{ " ???????? ??? "			, 0 , 5		}
@@ -453,7 +454,7 @@ srCRISTAL_MONSTER	srCristalMonsterEnemy7[7] = {
 
 srCRISTAL_MONSTER	srCristalMonsterEnemy8[7] = {
 	{ " ??????? ??? "				, 0 , 20	},
-	{ " Ÿ??O?? ??? "		, 0 , 20	},
+	{ " �??O?? ??? "		, 0 , 20	},
 	{ " ???????u?? ??? "		, 0 , 15	},
 	{ " ?????????? ??? "			, 0 , 15	},
 	{ " ??????? ??? "		, 0 , 15	},
@@ -571,7 +572,11 @@ static	int	ShutDownLeftTime = 0;
 INT SetupDefWindow()
 {
 	WNDCLASS windowClass = {};
+	windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
 	windowClass.lpfnWndProc = (WNDPROC)WndProc;
+	windowClass.hInstance = GetModuleHandle(NULL);
+	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 	windowClass.lpszClassName = szAppName;
 
 	if (!RegisterClass(&windowClass))
@@ -580,13 +585,31 @@ INT SetupDefWindow()
 		return FALSE;
 	}
 
-	hwnd = CreateWindow(szAppName, 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0);
+	const DWORD winStyle = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+	RECT rc = { 0, 0, SERVER_PANEL_W, SERVER_PANEL_H };
+	AdjustWindowRectEx(&rc, winStyle, FALSE, WS_EX_APPWINDOW);
+	const int winW = rc.right - rc.left;
+	const int winH = rc.bottom - rc.top;
+	const int posX = (GetSystemMetrics(SM_CXSCREEN) - winW) / 2;
+	const int posY = (GetSystemMetrics(SM_CYSCREEN) - winH) / 2;
+
+	hwnd = CreateWindowEx(
+		WS_EX_APPWINDOW,
+		szAppName,
+		"Source Priston - Servidor",
+		winStyle,
+		posX, posY, winW, winH,
+		NULL, NULL, windowClass.hInstance, NULL);
 
 	if (!hwnd)
 	{
-		std::cout << "Falha ao criar janela de message-only." << std::endl;
+		std::cout << "Falha ao criar janela do servidor." << std::endl;
 		return FALSE;
 	}
+
+	ShowWindow(hwnd, SW_SHOW);
+	UpdateWindow(hwnd);
+	ServerPanel_Init(hwnd);
 
 	ServerMode = TRUE;
 	szServer_DebugString[0] = 0;
@@ -620,9 +643,11 @@ INT SetupDefWindow()
 	else
 		InitBindSock(TCP_SERVPORT);
 
-	Sleep(4 * 1000);
-
-	system("cls");
+	if (!ServerPanel_IsActive())
+	{
+		Sleep(4 * 1000);
+		system("cls");
+	}
 
 	return	TRUE;
 
@@ -1311,7 +1336,7 @@ int rsRefreshConfig()
 
 	char cwd[512];
 	GetCurrentDirectoryA(512, cwd);
-	//std::cout << "Diretório atual: " << cwd << std::endl;
+	//std::cout << "Diret�rio atual: " << cwd << std::endl;
 
 	smConfigDecode("Server\\Config\\Devices.ini");
 
@@ -1341,13 +1366,13 @@ int rsRefreshConfig()
 		Multiplicador[x] = atof(szBuf2);
 	}
 
-	// Carrega o n�vel inicial do arquivo Base.ini
+	// Carrega o n�vel inicial do arquivo Base.ini
 	g_LevelInicial = LeIniInt("Config", "LevelInicial", "Server\\Config\\Base.ini");
-	if (g_LevelInicial <= 0) g_LevelInicial = 1; // Valor padr�o se n�o conseguir ler
+	if (g_LevelInicial <= 0) g_LevelInicial = 1; // Valor padr�o se n�o conseguir ler
 
-	// Carrega o n�vel m�ximo do arquivo Base.ini
+	// Carrega o n�vel m�ximo do arquivo Base.ini
 	g_LevelFinal = LeIniInt("Config", "LevelFinal", "Server\\Config\\Base.ini");
-	if (g_LevelFinal <= 0) g_LevelFinal = 150; // Valor padr�o se n�o conseguir ler
+	if (g_LevelFinal <= 0) g_LevelFinal = 150; // Valor padr�o se n�o conseguir ler
 
 
 	InitAdminCommand();
@@ -3330,7 +3355,7 @@ int	OpenMonsterFromCristal(DWORD dwItemCode, int x, int y, int z, rsPLAYINFO* lp
 
 	CodeCount = ((dwItemCode & 0xFFFF) >> 8) - 1;
 
-	// Cristal místico
+	// Cristal m�stico
 	if (CodeCount == srCRISTAL_RANDOM) {
 		CodeCount = 0;
 
@@ -3383,7 +3408,7 @@ int	OpenMonsterFromCristal(DWORD dwItemCode, int x, int y, int z, rsPLAYINFO* lp
 		}
 	}
 
-	// Verifica se o evento de boss dos cristais está ativo
+	// Verifica se o evento de boss dos cristais est� ativo
 	if (rsCristalEvent)
 	{
 		if (srCRISTAL_RANDOM == ((dwItemCode & 0xFFFF) >> 8) - 1)
@@ -4377,11 +4402,11 @@ DWORD rsRegist_EnterKey(DWORD _dwCode, DWORD _dwAdd)
 
 sHCORE_MONSTER	sHCoreEvent1[] = {
 	{ { "??" , 0, 40 }			, { "??u????", 0, 40 }		, { "??????", 0, 20 }		, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 6 , 0 , 40 , SOD_DEFAULT_DELAY },
-	{ { "???" , 0, 35 }		, { "????????ó", 0, 20 }		, { "u??T", 0, 45 }		, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 8 , 0 , 40 , SOD_DEFAULT_DELAY },
-	{ { "????U??? ????T" , 0, 35 }		, { "????????ó", 0, 30 }		, { "????????????", 0, 35 }		, { "", 0, 0 }		, { "????? ????T", 0, 0 }		, 100 , 10 , 0 , 40 , SOD_DEFAULT_DELAY },
+	{ { "???" , 0, 35 }		, { "????????�", 0, 20 }		, { "u??T", 0, 45 }		, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 8 , 0 , 40 , SOD_DEFAULT_DELAY },
+	{ { "????U??? ????T" , 0, 35 }		, { "????????�", 0, 30 }		, { "????????????", 0, 35 }		, { "", 0, 0 }		, { "????? ????T", 0, 0 }		, 100 , 10 , 0 , 40 , SOD_DEFAULT_DELAY },
 	{ { "??????" , 0, 45 }		, { "???????????", 0, 25 }	, { "??? ??????", 0, 20 }	, { "??", 0, 10 }	, { "", 0, 0 }		, 100 , 12 , 0 , 35 , SOD_DEFAULT_DELAY * 2 },
 	{ { "?????????T" , 0, 30 }			, { "?????", 0, 20 }	, { "?? ????", 0, 40 }		, { "?????", 0, 10 }	, { "", 0, 0 }		, 100 , 15 , 0 , 30 , SOD_DEFAULT_DELAY},
-	{ { "??u" , 0, 20 }			, { "?????", 0, 20 }	, { "??????", 0, 40 }		, { "??????", 0, 20 }	, { "?????? ??Ÿ??", 0, 0 }		, 100 , 18 , 0 , 25, SOD_DEFAULT_DELAY },
+	{ { "??u" , 0, 20 }			, { "?????", 0, 20 }	, { "??????", 0, 40 }		, { "??????", 0, 20 }	, { "?????? ??�??", 0, 0 }		, 100 , 18 , 0 , 25, SOD_DEFAULT_DELAY },
 	{ { "????u??" , 0, 30 }			, { "???????", 0, 40 }		, { "??u", 0, 20 } 	, { "?? ????", 0, 10 }	, { "", 0, 0 }		, 100 , 21 , 0 , 20, SOD_DEFAULT_DELAY * 3 },
 	{ { "????? ????" , 0, 20 }			, { "y???", 0, 30 }		, { "??t????", 0, 30 }		, { "?????? ???", 0, 20 }	, { "?? ?e?", 0, 0 }		, 100 , 0 , 50000 , 15 , SOD_DEFAULT_DELAY },
 	{ { "" , 0, 0 } 			, { "", 0, 0 } 			, { "", 0, 0 } 			, { "", 0, 0 } 		, { "", 0, 0 }		, 0 , 3 , 0 , 0}
@@ -4390,10 +4415,10 @@ sHCORE_MONSTER	sHCoreEvent1[] = {
 sHCORE_MONSTER	sHCoreEvent2[] = {
 	{ { "????" , 0, 40 }		, { "????????", 0, 40 }		, { "???????? T??", 0, 20 }		, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 6 , 0 , 40	,	SOD_DEFAULT_DELAY	},
 	{ { "???" , 0, 25 }		, { "????", 0, 40 }		, { "???", 0, 35 }		, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 8 , 0 , 40	,	SOD_DEFAULT_DELAY	},
-	{ { "????U??? ????T" , 0, 30 }			, { "????????ó", 0, 30 }		, { "????????????", 0, 40 }		, { "", 0, 0 }		, { "????? ????T", 0, 0 }		, 100 , 10 , 0 , 40,	SOD_DEFAULT_DELAY	},
+	{ { "????U??? ????T" , 0, 30 }			, { "????????�", 0, 30 }		, { "????????????", 0, 40 }		, { "", 0, 0 }		, { "????? ????T", 0, 0 }		, 100 , 10 , 0 , 40,	SOD_DEFAULT_DELAY	},
 	{ { "?????????T" , 0, 45 }		, { "???????????", 0, 25 }	, { "????? U??", 0, 20 }	, { "??", 0, 10 }	, { "", 0, 0 }		, 100 , 12 , 0 , 35,	SOD_DEFAULT_DELAY * 2	},
 	{ { "??????" , 0, 30 }	, { "?????", 0, 20 }		, { "??u ????T", 0, 40 }		, { "?????", 0, 10 }	, { "", 0, 0 }		, 100 , 15 , 0 , 30,	SOD_DEFAULT_DELAY	},
-	{ { "??u", 0, 20 }		, { "??????", 0, 20 }	, { "???????u-L", 0, 40 }	, { "??????" , 0, 20 }	, { "?????? ??Ÿ??", 0, 0 }		, 100 , 18 , 0 , 25,	SOD_DEFAULT_DELAY },
+	{ { "??u", 0, 20 }		, { "??????", 0, 20 }	, { "???????u-L", 0, 40 }	, { "??????" , 0, 20 }	, { "?????? ??�??", 0, 0 }		, 100 , 18 , 0 , 25,	SOD_DEFAULT_DELAY },
 	{ { "???" , 0, 30 }			, { "???????", 0, 40 }	, { "??u", 0, 20 }	, { "?? ????", 0, 10 }	, { "", 0, 0 }		, 100 , 21 , 0 , 20,	SOD_DEFAULT_DELAY * 3	},
 	{ { "????? ????" , 0, 20}			, { "y???", 0, 30 }	, { "???????u ?e?", 0, 30 }	, { "?????? ???", 0, 20 }	, { "?? ?e?", 0, 0 }		, 100 , 0 , 50000 , 15,	SOD_DEFAULT_DELAY	},
 	{ { "" , 0, 0 } 			, { "", 0, 0 } 			, { "", 0, 0 } 			, { "", 0, 0 } 		, { "", 0, 0 }		, 0 , 3 , 0 , 0}
@@ -4402,13 +4427,13 @@ sHCORE_MONSTER	sHCoreEvent2[] = {
 
 sHCORE_MONSTER	sHCoreEvent3[] = {
 	{ { "????" , 0, 40 }		, { "????", 0, 40 }		, { "??????? I", 0, 20 }		, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 6 , 0 , 40,	SOD_DEFAULT_DELAY},
-	{ { "????" , 0, 25 }			, { "????????ó", 0, 40 }		, { "????U???", 0, 35 }	, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 8 , 0 , 40,	SOD_DEFAULT_DELAY},
-	{ { "???????????" , 0, 30 }		, { "????????ó", 0, 30 }		, { "???? ???", 0, 40 }		, { "", 0, 0 }		, { "????? ????T", 0, 0 }		, 100 , 10 , 0 , 40,	SOD_DEFAULT_DELAY},
-	{ { "Ÿ??z" , 0, 45 }		, { "???????????", 0, 25 }		, { "??? ????", 0, 20 }	, { "??", 0, 10 }	, { "", 0, 0 }		, 100 , 12 , 0 , 35,	SOD_DEFAULT_DELAY * 2},
+	{ { "????" , 0, 25 }			, { "????????�", 0, 40 }		, { "????U???", 0, 35 }	, { "", 0, 0 }		, { "", 0, 0 }		, 100 , 8 , 0 , 40,	SOD_DEFAULT_DELAY},
+	{ { "???????????" , 0, 30 }		, { "????????�", 0, 30 }		, { "???? ???", 0, 40 }		, { "", 0, 0 }		, { "????? ????T", 0, 0 }		, 100 , 10 , 0 , 40,	SOD_DEFAULT_DELAY},
+	{ { "�??z" , 0, 45 }		, { "???????????", 0, 25 }		, { "??? ????", 0, 20 }	, { "??", 0, 10 }	, { "", 0, 0 }		, 100 , 12 , 0 , 35,	SOD_DEFAULT_DELAY * 2},
 	{ { "????T???" , 0, 30 }		, { "?????", 0, 20 }		, { "???", 0, 40 }		, { "?????", 0, 10 }	, { "", 0, 0 }		, 100 , 15 , 0 , 30,	SOD_DEFAULT_DELAY},
-	{ { "??u", 0, 20 }		, { "??????", 0, 20 }	, { "???????u-L", 0, 40 }	, { "??????" , 0, 20 }	, { "?????? ??Ÿ??", 0, 0 }		, 100 , 18 , 0 , 25,	SOD_DEFAULT_DELAY},
+	{ { "??u", 0, 20 }		, { "??????", 0, 20 }	, { "???????u-L", 0, 40 }	, { "??????" , 0, 20 }	, { "?????? ??�??", 0, 0 }		, 100 , 18 , 0 , 25,	SOD_DEFAULT_DELAY},
 	{ { "????u??" , 0, 30 }			, { "???????", 0, 40 }		, { "??u", 0, 20 }	, { "?? ????", 0, 10 }	, { "", 0, 0 }		, 100 , 21 , 0 , 20,	SOD_DEFAULT_DELAY * 3},
-	{ { "????? ????" , 0, 20 }			, { "ü?? ????", 0, 30 }	, { "??g", 0, 30 }		, { "?????? ???", 0, 20 }	, { "?? ?e?", 0, 0 }		, 100 , 0 , 50000 , 15,	SOD_DEFAULT_DELAY},
+	{ { "????? ????" , 0, 20 }			, { "�?? ????", 0, 30 }	, { "??g", 0, 30 }		, { "?????? ???", 0, 20 }	, { "?? ?e?", 0, 0 }		, 100 , 0 , 50000 , 15,	SOD_DEFAULT_DELAY},
 	{ { "" , 0, 0 } 			, { "", 0, 0 } 			, { "", 0, 0 } 			, { "", 0, 0 } 		, { "", 0, 0 }		, 0 , 3 , 0 , 0}
 };
 
@@ -5120,7 +5145,7 @@ int rsHardCoreEvent_OpenMonster(STG_AREA* lpStgArea, STG_CHAR_INFO* lpStgCharInf
 			}
 			else
 			{
-				// Correção nascendo mob do mapa em sod aqui
+				// Corre��o nascendo mob do mapa em sod aqui
 				if (hCoreMonsters[0].lpCharInfo && cnt <= hCoreMonsters[0].perCount)
 				{
 					memcpy(&lpStgCharInfo->smCharInfo, hCoreMonsters[0].lpCharInfo, sizeof(smCHAR_INFO));
@@ -5492,7 +5517,7 @@ int rsSoD_CatchItem_SD204(rsPLAYINFO* lpPlayInfo, int StagePos, STG_AREA* lpStgA
 		StgCharInfo.smCharInfo.Life[1] = 100;
 		StgCharInfo.smCharInfo.State = TRUE;
 
-		// Correção crash quando o mob do item não existe em sod
+		// Corre��o crash quando o mob do item n�o existe em sod
 		if (!lpCharInfoBoss)
 			return FALSE;
 
@@ -6027,7 +6052,7 @@ int EventMonsterTime()
 				{
 					EventoArena::GetInstance()->arenaStage = 0;
 
-					SERVERCHAT->SendChatAll(EChatColor::CHATCOLOR_Global, "Arena> A equipe não derrotou o boss a tempo :(");
+					SERVERCHAT->SendChatAll(EChatColor::CHATCOLOR_Global, "Arena> A equipe n�o derrotou o boss a tempo :(");
 
 					for (int cnt = 0; cnt < CONNECTMAX; cnt++)
 					{
@@ -6419,7 +6444,7 @@ int EventMonsterTime()
 		}
 	}
 
-	// Evento Questões
+	// Evento Quest�es
 	if (!QuestionEvent->getStage())
 	{
 		if (!EventQuestion && (dwEventBossMonterTime + 60 * 1000 * 10) < dwPlayServTime)
@@ -6765,7 +6790,7 @@ int STG_AREA::OpenNpc(smTRNAS_PLAYERINFO* lpTransPlayerInfo)
 			lpChar->szChatMessage[0] = 0;
 			ZeroMemory(&lpChar->smMonsterInfo, sizeof(smCHAR_MONSTER_INFO));
 
-			// Lê os npcs no SQL
+			// L� os npcs no SQL
 			Gameserver->readNpcsFromDB(lpChar, lpTransPlayerInfo->code);
 
 			//smCharDecode( lpFileName , &lpChar->smCharInfo , &lpChar->smMonsterInfo, lpChar->szChatMessage );
@@ -7913,7 +7938,7 @@ int STG_AREA::Main()
 						rnd = chrAutoPlayer[cnt].smCharInfo.bUpdateInfo[0];
 						OsCode = chrAutoPlayer[cnt].dwObjectSerial;
 
-						if (chrNpcMonsterInfo) { // Previne crash noturno em navisko se o mob não existir
+						if (chrNpcMonsterInfo) { // Previne crash noturno em navisko se o mob n�o existir
 
 							memcpy(&chrAutoPlayer[cnt].smCharInfo, chrNpcMonsterInfo, sizeof(smCHAR_INFO));
 							memcpy(&chrAutoPlayer[cnt].smMonsterInfo, chrNpcMonsterInfo->lpMonInfo, sizeof(smCHAR_MONSTER_INFO));
@@ -8917,7 +8942,7 @@ int rsOpen_MonsterItemExp(smCHAR* lpChar, rsPLAYINFO* lprsPlayInfo)
 	// Verifica roleta
 	if (rsUserListDamageTop10Roleta.dwCharCode && rsUserListDamageTop10Roleta.dwCharCode == lpChar->dwObjectSerial && lpChar->smMonsterInfo.EventCode == 1905)  // 1905 = Roleta
 	{
-		// Chama a função da roleta pra enviar para o game
+		// Chama a fun��o da roleta pra enviar para o game
 		Roleta::GetInstance()->SendTopPlayers(rsUserListDamageTop10Roleta, lpChar);
 
 		ZeroMemory(&rsUserListDamageTop10Roleta, sizeof(rsUSER_LIST_TOP10));
@@ -9059,7 +9084,7 @@ int rsOpen_MonsterItemExp(smCHAR* lpChar, rsPLAYINFO* lprsPlayInfo)
 		}
 	}
 
-	// Bônus Drop Modo PK aqui
+	// B�nus Drop Modo PK aqui
 	if (lprsPlayInfo->PkMode > 0)
 	{
 		if ((rand() % 100) <= 10)
@@ -9092,7 +9117,7 @@ int rsOpen_MonsterItemExp(smCHAR* lpChar, rsPLAYINFO* lprsPlayInfo)
 		if (srGetMonsterItem(lprsPlayInfo, lpChar, lpsItem) == TRUE)
 		{
 
-			// Evento de multiplicador de poções
+			// Evento de multiplicador de po��es
 			if (rsServerConfig.Event_Potion)
 			{
 				if ((lpsItem->ItemInfo.CODE & sinITEM_MASK1) == (sinPM1 & sinITEM_MASK1))
@@ -9120,7 +9145,7 @@ int rsOpen_MonsterItemExp(smCHAR* lpChar, rsPLAYINFO* lprsPlayInfo)
 					lpsItem->state = TRUE;
 					lpStgItem = ((STG_AREA*)lpChar->lpExt1)->AddItem(lpsItem, lpChar->pX >> FLOATNS, lpChar->pY >> FLOATNS, lpChar->pZ >> FLOATNS, TRUE);
 
-					// Drop público ou não
+					// Drop p�blico ou n�o
 					if (lpStgItem)
 					{
 						if (lpChar->smMonsterInfo.AllSeeItem)
@@ -9131,7 +9156,7 @@ int rsOpen_MonsterItemExp(smCHAR* lpChar, rsPLAYINFO* lprsPlayInfo)
 						{
 							if (DmgPlayUse) // Verifica se o player deu dano no mob
 							{
-								for (cnt2 = 0; cnt2 < 6; cnt2++) // Vários participantes
+								for (cnt2 = 0; cnt2 < 6; cnt2++) // V�rios participantes
 								{
 									if (lpDamagePlayInfo[cnt2])
 									{
@@ -9224,10 +9249,10 @@ skipRoleta:
 	{
 		Quest::GetInstance()->updateStatus(lprsPlayInfo, lpChar, 0);
 
-		// Verifica se o personagem j� atingiu o n�vel m�ximo
+		// Verifica se o personagem j� atingiu o n�vel m�ximo
 		if (lprsPlayInfo->smCharInfo.Level >= g_LevelFinal)
 		{
-			// Personagem j� atingiu o n�vel m�ximo, n�o ganha XP
+			// Personagem j� atingiu o n�vel m�ximo, n�o ganha XP
 			return TRUE;
 		}
 
@@ -9697,7 +9722,7 @@ int srAutoCharMain(smCHAR* lpChar)
 					lpChar->lpMasterPlayInfo->lpsmSock->Send((char*)&TransCommand, TransCommand.size, true);
 			}
 
-			if (lpChar->dwUpdateCharInfoTime && lpChar->dwUpdateCharInfoTime < dwPlayServTime && lpChar->smCharInfo.Life[0] > 0 && !lpChar->smCharInfo.lpMonInfo->Caravana) // Não mata as caravanas
+			if (lpChar->dwUpdateCharInfoTime && lpChar->dwUpdateCharInfoTime < dwPlayServTime && lpChar->smCharInfo.Life[0] > 0 && !lpChar->smCharInfo.lpMonInfo->Caravana) // N�o mata as caravanas
 			{
 				lpChar->smCharInfo.Life[0] = 0;
 				lpChar->SetMotionFromCode(CHRMOTION_STATE_DEAD);
@@ -9709,7 +9734,7 @@ int srAutoCharMain(smCHAR* lpChar)
 				{
 					rsPLAYINFO* Player = srFindUserFromSerial(lpChar->lpMasterPlayInfo->dwObjectSerial);
 
-					// Dono da caravana não está online, mata ela
+					// Dono da caravana n�o est� online, mata ela
 					if (!Player)
 					{
 						lpChar->smCharInfo.Life[0] = 0;
@@ -10952,12 +10977,12 @@ int SendUpdatePremiumItemTime(rsPLAYINFO* lpPlayInfo)
 				if (lpPlayInfo->dwTime_CaravanHopy > 0) lpPlayInfo->dwTime_CaravanHopy--;
 				if (lpPlayInfo->dwTime_CaravanBuma > 0) lpPlayInfo->dwTime_CaravanBuma--;
 
-				// Timer novos chapéus
+				// Timer novos chap�us
 				if (lpPlayInfo->dwTime_Hat > 0)	lpPlayInfo->dwTime_Hat--;
 			}
 		}
 
-		// Montarias contando dentro da cidade também
+		// Montarias contando dentro da cidade tamb�m
 		if (lpPlayInfo->dwTime_PrimeItem_Mount > 0) lpPlayInfo->dwTime_PrimeItem_Mount--;
 
 		if (lpPlayInfo->dwTime_PrimeItem_X2 > MAX_TIME_PRIMEITEM)				lpPlayInfo->dwTime_PrimeItem_X2 = MAX_TIME_PRIMEITEM;
@@ -14274,7 +14299,7 @@ int rsRecvManufactureItem(rsPLAYINFO* lpPlayInfo, SManufactureItem_Server* pManu
 					{
 						bProbability = TRUE;
 
-						// Itens + 18 temporários do craft aqui
+						// Itens + 18 tempor�rios do craft aqui
 						if (pManufactureItem_Server->RuneCode[0] == (sinWR1 | sin05) || pManufactureItem_Server->RuneCode[0] == (sinWR1 | sin06) || pManufactureItem_Server->RuneCode[0] == (sinWR1 | sin07) || pManufactureItem_Server->RuneCode[0] == (sinWR1 | sin08) ||
 							pManufactureItem_Server->RuneCode[0] == (sinDR1 | sin05) || pManufactureItem_Server->RuneCode[0] == (sinDR1 | sin06) || pManufactureItem_Server->RuneCode[0] == (sinDR1 | sin07) || pManufactureItem_Server->RuneCode[0] == (sinDR1 | sin08))
 						{
@@ -14588,7 +14613,7 @@ int rsRecvItemEventPRISTON(rsPLAYINFO* lpPlayInfo, sCRAFTITEM_SERVER* pCraftItem
 
 					// envia msg player
 					TRANS_CHATMESSAGE	TransChatMessage;
-					wsprintf(TransChatMessage.szMessage, "> '%s' Criado no Inventário.", p->szItemName);
+					wsprintf(TransChatMessage.szMessage, "> '%s' Criado no Invent�rio.", p->szItemName);
 					TransChatMessage.code = smTRANSCODE_WHISPERMESSAGE;
 					TransChatMessage.size = 32 + lstrlen(TransChatMessage.szMessage);
 					TransChatMessage.dwIP = 0;
@@ -14900,7 +14925,7 @@ int rsRecvUseLinkCore(rsPLAYINFO* lpPlayInfo, TRANS_ITEMINFO* lpTransItemInfo)
 				lpPlayInfo->Position.Area == QUEST_ARENA_FIELD || lpPlayInfo2->Position.Area == rsCASTLE_FIELD)
 			{
 
-				lstrcpy(TransChatMessage.szMessage, "Impossível usar o core de grupo");
+				lstrcpy(TransChatMessage.szMessage, "Imposs�vel usar o core de grupo");
 				TransChatMessage.code = smTRANSCODE_MESSAGEBOX;
 				TransChatMessage.dwIP = 0;
 				TransChatMessage.dwObjectSerial = 0;
@@ -15894,7 +15919,7 @@ int rsRecvSellShopItem(rsPLAYINFO* lpPlayInfo, TRANS_ITEMINFO* lpTransItemInfo)
 		smTransCommand.SParam = lpTransItemInfo->Item.ItemHeader.dwChkSum;
 
 
-		if (lpTransItemInfo->Item.itemType == 3 || lpTransItemInfo->Item.itemType == 4 || lpTransItemInfo->Item.itemType == 5) // Gold bar pelo mesmo preço de venda/troca aqui
+		if (lpTransItemInfo->Item.itemType == 3 || lpTransItemInfo->Item.itemType == 4 || lpTransItemInfo->Item.itemType == 5) // Gold bar pelo mesmo pre�o de venda/troca aqui
 		{
 			smTransCommand.EParam = lpTransItemInfo->Item.Price;
 		}
@@ -18028,7 +18053,7 @@ int LowLevelItems(rsPLAYINFO* lpPlayInfo)
 	//case 1:
 	//	createLowLevelItems(lpPlayInfo, "WA112", 0);
 	//	break;
-	//	// Mecânico
+	//	// Mec�nico
 	//case 2:
 	//	createLowLevelItems(lpPlayInfo, "WC114", 0);
 	//	break;
@@ -18912,7 +18937,7 @@ pRetry:
 
 		case 0x48476971:
 		{
-			SERVERCHAT->SendChatAllEx(EChatColor::CHATCOLOR_Global, "> Aviso para %s. Morto não corta cabelo, que feio!", lpPlayInfo->smCharInfo.szName);
+			SERVERCHAT->SendChatAllEx(EChatColor::CHATCOLOR_Global, "> Aviso para %s. Morto n�o corta cabelo, que feio!", lpPlayInfo->smCharInfo.szName);
 			break;
 		}
 
@@ -18971,11 +18996,11 @@ pRetry:
 
 			if (itemPos >= 0)
 			{
-				// Verifica se o personagem j� atingiu o n�vel m�ximo
+				// Verifica se o personagem j� atingiu o n�vel m�ximo
 				if (lpPlayInfo->smCharInfo.Level >= g_LevelFinal)
 				{
-					// Personagem j� atingiu o n�vel m�ximo, n�o pode usar Vale-Level
-					SERVERCHAT->SendChatAllEx(EChatColor::CHATCOLOR_Global, "> %s n�o pode usar Vale-Level pois j� atingiu o n�vel m�ximo %d!", lpPlayInfo->smCharInfo.szName, g_LevelFinal);
+					// Personagem j� atingiu o n�vel m�ximo, n�o pode usar Vale-Level
+					SERVERCHAT->SendChatAllEx(EChatColor::CHATCOLOR_Global, "> %s n�o pode usar Vale-Level pois j� atingiu o n�vel m�ximo %d!", lpPlayInfo->smCharInfo.szName, g_LevelFinal);
 					break;
 				}
 
@@ -19071,7 +19096,7 @@ pRetry:
 			smTRANS_COMMAND* smPacket;
 			smPacket = (smTRANS_COMMAND*)SockInfo->Buff;
 
-			// Verifica a existência do item no inventário
+			// Verifica a exist�ncia do item no invent�rio
 			int itemPos = rsFindInvenItem(lpPlayInfo, smPacket->SParam, smPacket->LParam, smPacket->EParam);
 
 			if (itemPos >= 0)
@@ -20138,7 +20163,7 @@ pRetry:
 					((TRANS_RECORD_DATA*)lpPlayInfo->lpRecordDataBuff)->size = 0;
 					((TRANS_RECORD_DATA*)lpPlayInfo->lpRecordDataBuff)->code = 0;
 
-					// Nível inicial aqui
+					// N�vel inicial aqui
 					lpPlayInfo->spLevel_Start = g_LevelInicial;
 
 					ZeroMemory(lpPlayInfo->bSkillPoint, SKILL_POINT_COLUM_MAX);
@@ -20150,7 +20175,7 @@ pRetry:
 					lpPlayInfo->smCharInfo.ChangeJob = 0;
 					SendSaveClientData(lpPlayInfo);
 
-					// Novo nível inicial
+					// Novo n�vel inicial
 					NewStartLevel(lpPlayInfo);
 				}
 				else {
@@ -20516,7 +20541,7 @@ pRetry:
 			}
 
 
-			// Tabela CT Usuários online
+			// Tabela CT Usu�rios online
 			{
 				auto db = SQLConnection::GetConnection(DATABASEID_ClanDB);
 
@@ -20588,7 +20613,7 @@ pRetry:
 
 			}
 
-			// Cadastra o player na UserInfo caso não exista
+			// Cadastra o player na UserInfo caso n�o exista
 			{
 				auto db = SQLConnection::GetConnection(DATABASEID_UserDB);
 
@@ -20608,7 +20633,7 @@ pRetry:
 				}
 			}
 
-			// Verifica se a classe do player é a mesma na tabela <Quando cria pelo jogo o primeiro login seta como 0> 
+			// Verifica se a classe do player � a mesma na tabela <Quando cria pelo jogo o primeiro login seta como 0> 
 			{
 				auto db = SQLConnection::GetConnection(DATABASEID_UserDB);
 
@@ -20886,7 +20911,7 @@ pRetry:
 			if (sizeof(lpTransCharCommand2) > sizeof(smTRANS_CHAR_COMMAND2))
 				break;
 
-			// Evita atribuição da ID antes da verificação da chave de login
+			// Evita atribui��o da ID antes da verifica��o da chave de login
 			lstrcpy(lpPlayInfo->szID, lpTransCharCommand2->szId);
 			lpPlayInfo->dwCode_ID = GetSpeedSum(lpPlayInfo->szID);
 
@@ -20904,7 +20929,7 @@ pRetry:
 				break;
 			}
 
-			// Verifica se usuário está banido, modo manutenção etc
+			// Verifica se usu�rio est� banido, modo manuten��o etc
 			{
 				int resultLogin = rsLogAccount(lpPlayInfo, lpTransCharCommand2->szId, lpTransCharCommand2->szName, lpTransCharCommand2->szMac, lpTransCharCommand2->szPath, lpTransCharCommand2->szPCName, lpTransCharCommand2->szHDMac);
 
@@ -20918,7 +20943,7 @@ pRetry:
 					lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 					srLogFailedCount++;
 				}
-				else if (resultLogin == 10) // Conta não confirmada
+				else if (resultLogin == 10) // Conta n�o confirmada
 				{
 					smTransCommand.code = smTRANSCODE_FAILCONNECT;
 					smTransCommand.size = sizeof(smTRANS_COMMAND);
@@ -23049,7 +23074,7 @@ pRetry:
 							}
 						}
 
-						SERVERCHAT->SendChatEx(lpPlayInfo, CHATCOLOR_Notice, "PVP> Você foi morto por %s!", lpPlayInfo2->szName);
+						SERVERCHAT->SendChatEx(lpPlayInfo, CHATCOLOR_Notice, "PVP> Voc� foi morto por %s!", lpPlayInfo2->szName);
 
 						char Classe[32] = { 0 };
 
@@ -23120,7 +23145,7 @@ pRetry:
 					}
 
 
-					// Envia pontuação Arena		
+					// Envia pontua��o Arena		
 					if (lpPlayInfo2->Position.Area == FIELD_ARENA && isArenaActive)
 					{
 						EventoArena::GetInstance()->onArena(lpPlayInfo2, rsPlayInfo, 0);
@@ -24696,10 +24721,15 @@ static LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam
 	int cnt;
 	DWORD dwOldTime;
 
+	ServerPanel_HandleMessage(hWnd, messg, wParam, lParam);
+
 	switch (messg)
 	{
 	case WM_CREATE:
 		break;
+
+	case WM_ERASEBKGND:
+		return 1;
 
 	case WSA_ACCEPT: /* Notification if a socket connection is pending. */
 		cnt = WSAMessage_Accept(wParam, lParam);
@@ -24723,14 +24753,21 @@ static LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam
 		RecvMessage((smTHREADSOCK*)wParam);
 		break;
 
+	case WM_GETMINMAXINFO:
+	{
+		MINMAXINFO* mm = (MINMAXINFO*)lParam;
+		mm->ptMinTrackSize.x = 900;
+		mm->ptMinTrackSize.y = 560;
+		break;
+	}
+
+	case WM_SIZE:
+		if (wParam != SIZE_MINIMIZED)
+			ServerPanel_Resize((int)LOWORD(lParam), (int)HIWORD(lParam));
+		break;
+
 	case WM_CLOSE:
-		if (!Quit)
-		{
-			EnterCriticalSection(&cSerSection);
-			rsSaveCastleInfo();		//????????? ???? (????? ????? ????)
-			LeaveCriticalSection(&cSerSection);
-		}
-		Quit = 1;
+		ShowWindow(hWnd, SW_MINIMIZE);
 		break;
 	case WM_KEYDOWN:
 		break;
@@ -24826,6 +24863,7 @@ static LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam
 			}
 		}
 		dwTimeCounter++;
+		ServerPanel_Render();
 		break;
 
 	case WM_COMMAND:
@@ -24949,17 +24987,17 @@ int ServerWinMain()
 	InitializeCriticalSection(&cSerSection);
 	InitializeCriticalSection(&cOdbcSection);
 
-	// SQL SHOP IN GAME - CORREÇÃO: Ler configurações do SQL.ini
+	// SQL SHOP IN GAME - CORRE��O: Ler configura��es do SQL.ini
 	char szSQLHost[128] = { 0 };
 	char szSQLUser[128] = { 0 };
 	char szSQLPassword[128] = { 0 };
 
-	// Ler configurações do SQL.ini
+	// Ler configura��es do SQL.ini
 	LeIniStr("Database", "Host", "Server\\Config\\SQL.ini", szSQLHost);
 	LeIniStr("Database", "User", "Server\\Config\\SQL.ini", szSQLUser);
 	LeIniStr("Database", "Password", "Server\\Config\\SQL.ini", szSQLPassword);
 
-	// Verificar se conseguiu ler as configurações
+	// Verificar se conseguiu ler as configura��es
 	if (strlen(szSQLHost) > 0 && strlen(szSQLUser) > 0 && strlen(szSQLPassword) > 0)
 	{
 		SQL::GetInstance()->Connect(szSQLHost, szSQLUser, szSQLPassword);
@@ -24967,10 +25005,10 @@ int ServerWinMain()
 	}
 	else
 	{
-		// Fallback para valores padrão se não conseguir ler do arquivo
+		// Fallback para valores padr�o se n�o conseguir ler do arquivo
 
 		SQL::GetInstance()->Connect("PRIME\\DRACO", "sa", "DRACO123@#");
-	//	std::cout << "SQL Connect usando valores RELEASE padrão" << std::endl;
+	//	std::cout << "SQL Connect usando valores RELEASE padr�o" << std::endl;
 
 	}
 
@@ -24979,9 +25017,17 @@ int ServerWinMain()
 	{
 		bool done = false;
 
-		std::thread cmd(&CLI::run, CLI::getInstance(), &done);
-
-		cmd.detach();
+		if (!ServerPanel_IsActive())
+		{
+			AllocConsole();
+			SetConsoleTitle("Server");
+			FILE* fp = nullptr;
+			freopen_s(&fp, "CONOUT$", "w", stdout);
+			freopen_s(&fp, "CONOUT$", "w", stderr);
+			freopen_s(&fp, "CONIN$", "r", stdin);
+			std::thread cmd(&CLI::run, CLI::getInstance(), &done);
+			cmd.detach();
+		}
 
 		while (!done)
 		{
@@ -25002,7 +25048,7 @@ int ServerWinMain()
 
 		rsSaveCastleInfo();
 
-
+		ServerPanel_Shutdown();
 
 		quit = 1;
 
@@ -25297,7 +25343,7 @@ DWORD WINAPI LogAccountThreadProc(void* pInfo)
 
 		val = TRUE;
 
-		// Verifica se a conta já está logada
+		// Verifica se a conta j� est� logada
 		for (cnt = 0; cnt < CONNECTMAX; cnt++)
 		{
 			if (rsPlayInfo[cnt].lpsmSock && rsPlayInfo[cnt].szID[0] &&
@@ -25471,7 +25517,7 @@ int rsLogAccount(rsPLAYINFO* lpPlayInfo, char* szID, char* szPassword, char* szM
 		}
 	}
 
-	// Verificar se Mac do HD está banido
+	// Verificar se Mac do HD est� banido
 	{
 		int iHas = 0;
 
@@ -25496,7 +25542,7 @@ int rsLogAccount(rsPLAYINFO* lpPlayInfo, char* szID, char* szPassword, char* szM
 		}
 	}
 
-	// Modo de manutenção para gms
+	// Modo de manuten��o para gms
 	if (bMaintenanceMode)
 	{
 		if (db->Open())
@@ -25521,7 +25567,7 @@ int rsLogAccount(rsPLAYINFO* lpPlayInfo, char* szID, char* szPassword, char* szM
 		}
 	}
 
-	// Verifica se a conta está ativada
+	// Verifica se a conta est� ativada
 	//{
 	//	int Ativa = 1;
 
@@ -27394,7 +27440,7 @@ int RecordHackLogFile(rsPLAYINFO* lpPlayInfo, void* lpBuff)
 
 		if (lpTransCommand->WParam == 55) return TRUE;
 
-		// Bane o usuário que utilizar hacker
+		// Bane o usu�rio que utilizar hacker
 		if (lpTransCommand->WParam == 100) {
 
 			bool bGM = false;
@@ -27838,7 +27884,7 @@ int RecordAgingItem(rsPLAYINFO* lpPlayInfo, sITEMINFO* lpSrcItem, sITEMINFO* lpM
 
 		rsSaveAgingItemToHDD(lpSrcItem);
 
-		// Pega o código do item
+		// Pega o c�digo do item
 		char itemCode[32] = { 0 };
 		sprintf_s(itemCode, sizeof(itemCode), "%s", getFailedAgingItem(lpSrcItem->CODE).c_str());
 
@@ -34130,7 +34176,7 @@ DWORD ManufactureCheckRune(rsPLAYINFO* lpPlayInfo, DWORD RecipeCode, DWORD* pRun
 }
 
 
-// Premiação evento halloween aqui
+// Premia��o evento halloween aqui
 int rsPutItem_TreasureBox(rsPLAYINFO* lpPlayInfo, DWORD Code)
 {
 	TRANS_ITEMINFO	TransItemInfo;

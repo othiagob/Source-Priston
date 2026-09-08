@@ -1,0 +1,33 @@
+---
+description: Identidade visual das ferramentas desktop (Server.exe e futuras)
+globs: SrcServer/src/Server/HUD/**
+alwaysApply: false
+---
+
+# Ferramentas desktop (não é janela de jogador)
+
+Janelas ImGui **dentro do client** (`SrcGame`) seguem `15-imgui-windows.mdc`.
+Ferramentas Win32 (`Server.exe` e o que vier no mesmo papel) **não** usam
+cromado de ouro, PNG de título 400×64, nem `AdminChrome` / `ImGuiWindowChrome`.
+
+Referência: `SrcServer/src/Server/HUD/ToolTheme.h`.
+
+## Visual
+
+- Tema **claro suave**: fundo `#F4F1EC`, superfície branca, borda 1 px `#D8D4CC`.
+- Acento **azul** `#3A6EA8` (hover um pouco mais escuro). Sem gradiente.
+- Texto quase preto; secundário cinza. Vermelho só em ação destrutiva.
+- Status: verde online, âmbar manutenção — chapados.
+
+## Layout
+
+- Janela nativa redimensionável (mínimo ~900×560). ImGui preenche o cliente.
+- Header de texto + sidebar + conteúdo que refluui (1/2/4 cards).
+- X nativo **minimiza** o `Server.exe`; sair/desligar só com confirmação.
+
+## Arquivos
+
+Edição relativa ao **diretório de trabalho do exe** (`Server\Config\...`).
+INI clássico via `WriteIni*` / `CFILE::Ini`. `Devices.ini` é diretiva
+`*CHAVE`, não INI — só reescrever chaves conhecidas.
+SQL.ini e porta de Connect.ini exigem **reinício** para valer no socket/ODBC.

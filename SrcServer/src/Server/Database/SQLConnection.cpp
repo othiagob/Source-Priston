@@ -60,6 +60,16 @@ void CreateSQLConnection(EDatabaseID eDatabaseID, SQLInstanceRead instance)
 
 	auto pcSQL = std::make_shared<SQLConnection>();
 
+	const char* pszDatabaseName = "?";
+	for (auto& v : sDatabaseData)
+	{
+		if (v.eDatabaseID == eDatabaseID)
+		{
+			pszDatabaseName = v.pszDatabaseName;
+			break;
+		}
+	}
+
 	if (pcSQL->Init(eDatabaseID, instance))
 	{
 
@@ -68,9 +78,9 @@ void CreateSQLConnection(EDatabaseID eDatabaseID, SQLInstanceRead instance)
 	}
 	else
 	{
-		cout << "Falha ao conectar-se ao banco de dados! Log: SQL.txt" << endl;
+		cout << "Falha ao conectar-se ao banco de dados: " << pszDatabaseName << "! Log: SQL.txt" << endl;
 
-		Utils_Log(LOG_SERVER, "Falha ao conectar-se ao banco de dados! Log: SQL.txt");
+		Utils_Log(LOG_SERVER, "Falha ao conectar-se ao banco de dados: %s", pszDatabaseName);
 
 		Sleep(1500);
 		exit(0);
@@ -91,8 +101,15 @@ DatabaseStructureData* SQLConnection::GetDatabaseData(EDatabaseID eDatabaseID)
 
 bool SQLConnection::Init(EDatabaseID eDatabaseID, SQLInstanceRead instance)
 {
+	DatabaseStructureData* pDatabaseData = GetDatabaseData(eDatabaseID);
+	if (!pDatabaseData || !pDatabaseData->pszDatabaseName)
+	{
+		Utils_Log(LOG_SQL, "SQLDATA: Unknown database id.");
+		return false;
+	}
+
 	// Copy database name to class
-	strcpy_s(szDatabaseName, GetDatabaseData(eDatabaseID)->pszDatabaseName);
+	strcpy_s(szDatabaseName, pDatabaseData->pszDatabaseName);
 	eID = eDatabaseID;
 
 	cout << "Conectando-se ao Banco de Dados: " << szDatabaseName << endl;
@@ -135,14 +152,19 @@ bool SQLConnection::Init(EDatabaseID eDatabaseID, SQLInstanceRead instance)
 	memcpy(strconn, szStringConnectionSQL, sizeof(szStringConnectionSQL));
 
 	SQLCHAR retconstring[1024] = { 0 };
-	// Connect to driver
-	SQLDriverConnectA(hConnection, NULL, strconn, SQL_NTS, retconstring, 1024, NULL, SQL_DRIVER_NOPROMPT);
+	SQLRETURN rcConnect = SQLDriverConnectA(hConnection, NULL, strconn, SQL_NTS, retconstring, 1024, NULL, SQL_DRIVER_NOPROMPT);
+	if (rcConnect != SQL_SUCCESS && rcConnect != SQL_SUCCESS_WITH_INFO)
+	{
+		show_errorSQL(SQL_HANDLE_DBC, hConnection);
+		Utils_Log(LOG_SQL, "SQLDriverConnect failed for database %s", szDatabaseName);
+		return false;
+	}
 
 	// Alloc statement of connection
 	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_STMT, hConnection, &hStatement))
 	{
-		show_errorSQL(SQL_HANDLE_DBC, hStatement);
-		Utils_Log(LOG_SQL, "SQLAllocHandle failed. Error 4");
+		show_errorSQL(SQL_HANDLE_DBC, hConnection);
+		Utils_Log(LOG_SQL, "SQLAllocHandle failed. Error 4 (database %s)", szDatabaseName);
 		return false;
 	}
 
@@ -337,6 +359,86 @@ BOOL SQLConnection::Close()
 	return TRUE;
 }
 
+// PainelDB is required at boot (GM bans write to dbo.Banneds). If it was
+// dropped as "useless", recreate an empty copy via master so the server
+// can start. Same Host/User/Password as SQL.ini — needs CREATE DATABASE.
+static bool EnsurePainelDatabase(SQLInstanceRead instance)
+{
+	SQLHANDLE hEnv = SQL_NULL_HANDLE;
+	SQLHANDLE hConnection = SQL_NULL_HANDLE;
+	SQLHANDLE hStatement = SQL_NULL_HANDLE;
+
+	cout << "Verificando banco PainelDB..." << endl;
+
+	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv))
+		return false;
+
+	SQLSetEnvAttr(hEnv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, 0);
+
+	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_DBC, hEnv, &hConnection))
+	{
+		SQLFreeHandle(SQL_HANDLE_ENV, hEnv);
+		return false;
+	}
+
+	char szStringConnectionSQL[512];
+	memset(szStringConnectionSQL, 0, sizeof(szStringConnectionSQL));
+	STRINGFORMAT(szStringConnectionSQL, "Persist Security Info=False; Integrated Security=False; Driver=%s; Server=%s; Database=%s; Uid=%s; Pwd=%s;",
+		"{SQL Server}", instance.szHost, "master", instance.szUser, instance.szPassword);
+
+	SQLCHAR retconstring[1024] = { 0 };
+	SQLRETURN rcConnect = SQLDriverConnectA(hConnection, NULL, (SQLCHAR*)szStringConnectionSQL, SQL_NTS, retconstring, 1024, NULL, SQL_DRIVER_NOPROMPT);
+	if (rcConnect != SQL_SUCCESS && rcConnect != SQL_SUCCESS_WITH_INFO)
+	{
+		cout << "Nao foi possivel conectar em master para criar PainelDB." << endl;
+		SQLFreeHandle(SQL_HANDLE_DBC, hConnection);
+		SQLFreeHandle(SQL_HANDLE_ENV, hEnv);
+		return false;
+	}
+
+	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_STMT, hConnection, &hStatement))
+	{
+		SQLDisconnect(hConnection);
+		SQLFreeHandle(SQL_HANDLE_DBC, hConnection);
+		SQLFreeHandle(SQL_HANDLE_ENV, hEnv);
+		return false;
+	}
+
+	SQLCHAR szCreateDb[] = "IF DB_ID(N'PainelDB') IS NULL CREATE DATABASE PainelDB;";
+	SQLRETURN rcExec = SQLExecDirectA(hStatement, szCreateDb, SQL_NTS);
+	if (rcExec != SQL_SUCCESS && rcExec != SQL_SUCCESS_WITH_INFO)
+	{
+		SQLCHAR sqlstate[64] = { 0 };
+		SQLCHAR message[1024] = { 0 };
+		if (SQL_SUCCESS == SQLGetDiagRecA(SQL_HANDLE_STMT, hStatement, 1, sqlstate, NULL, message, 1024, NULL))
+			cout << "Falha ao criar PainelDB: " << message << endl;
+		else
+			cout << "Falha ao criar PainelDB (o login precisa poder CREATE DATABASE)." << endl;
+	}
+	else
+	{
+		cout << "PainelDB existe ou foi criado." << endl;
+	}
+
+	SQLFreeStmt(hStatement, SQL_CLOSE);
+
+	SQLCHAR szCreateTable[] =
+		"IF OBJECT_ID(N'PainelDB.dbo.Banneds', N'U') IS NULL "
+		"CREATE TABLE PainelDB.dbo.Banneds ("
+		"Account VARCHAR(50) NOT NULL, Character VARCHAR(50) NULL, Date DATETIME NULL, "
+		"Reason VARCHAR(255) NULL, Operator VARCHAR(50) NULL, Unlock VARCHAR(50) NULL);";
+	SQLExecDirectA(hStatement, szCreateTable, SQL_NTS);
+	SQLFreeStmt(hStatement, SQL_CLOSE);
+
+	SQLFreeHandle(SQL_HANDLE_STMT, hStatement);
+	SQLDisconnect(hConnection);
+	SQLFreeHandle(SQL_HANDLE_DBC, hConnection);
+	SQLFreeHandle(SQL_HANDLE_ENV, hEnv);
+
+	Sleep(300);
+	return true;
+}
+
 void openDatabase(SQLInstanceRead instance)
 {
 	CreateSQLConnection(DATABASEID_UserDB, instance);
@@ -350,6 +452,7 @@ void openDatabase(SQLInstanceRead instance)
 	CreateSQLConnection(DATABASEID_Quest, instance);
 	CreateSQLConnection(DATABASEID_GameServer, instance);
 	CreateSQLConnection(DATABASEID_ITEMLogDB, instance);
+	EnsurePainelDatabase(instance);
 	CreateSQLConnection(DATABASEID_PainelDB, instance);
 }
 

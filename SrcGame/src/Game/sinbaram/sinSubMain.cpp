@@ -1,8 +1,8 @@
 /*----------------------------------------------------------------------------*
-*	파일명 :  sinSubMain.cpp
-*	하는일 :  각종 함수들을 관리한다
-*	작성일 :  최종업데이트 12월
-*	적성자 :  박상열
+*	????? :  sinSubMain.cpp
+*	????? :  ???? ??????? ???????
+*	????? :  ??????????? 12??
+*	?????? :  ???
 *-----------------------------------------------------------------------------*/
 #include "Engine/Mouse/Mouse.h"
 #include "sinLinkHeader.h"
@@ -11,7 +11,7 @@
 #include "..\\tjboy\\clanmenu\\Help.h"
 #include "../HUD/RankingWindow.h"
 #include "../HUD/MixWindow.h"\
-#include "..\\FullZoomMap.h" //오영석
+#include "..\\FullZoomMap.h" //??????
 #include "../Shop/NewShop.h"
 #include "../Shop/NewShopTime.h"
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP TEST MEMORY
@@ -25,15 +25,15 @@
 extern BOOL bSettings;
 
 /*----------------------------------------------------------------------------*
-*								전역변수
+*								????????
 *-----------------------------------------------------------------------------*/
-HFONT sinFont = 0;   //폰트 
-HFONT sinMessageFont = 0;   //메세지 폰트 
-HFONT sinBoldFont = 0;   //메세지 폰트 
+HFONT sinFont = 0;   //??? 
+HFONT sinMessageFont = 0;   //????? ??? 
+HFONT sinBoldFont = 0;   //????? ??? 
 
 
-int sinTestFlag;     //테스트 플랙 
-int sinSecretFlag = 0;  //암호 플랙 
+int sinTestFlag;     //???? ?÷? 
+int sinSecretFlag = 0;  //??? ?÷? 
 
 
 int sinMouseButton[2] = { 0,0 };
@@ -55,10 +55,10 @@ HCURSOR MatCursorTalk;
 HCURSOR hCursor[8] = {};
 int CursorClass = 1;
 
-int sinMoveKindInter[MAX_SIN_KIND_INTER] = { 0,0,0,0,0,0,0,0,0,0,0,0,0, 0 }; //각종 폼이 움직이는 값 // 석지용 - 믹스쳐 리셋 추가로 값을 하나더 추가
+int sinMoveKindInter[MAX_SIN_KIND_INTER] = { 0,0,0,0,0,0,0,0,0,0,0,0,0, 0 }; //???? ???? ??????? ?? // ?????? - ????? ???? ????? ???? ????? ???
 
-int sinSec = 0;         //초를 구한다 
-int sinMainCounter = 0; //메인루프를 돌때 카운트해준다 
+int sinSec = 0;         //??? ????? 
+int sinMainCounter = 0; //???η????? ???? ????????? 
 
 float DeCreaSTM = 0;
 float InCreaSTM = 0;
@@ -66,7 +66,7 @@ float InCreaLIFE = 0;
 float InCreaMANA = 0;
 
 
-char szTestBuff2[64]; //이미지 로드시 이미지가 없는 것을 확인해준다 
+char szTestBuff2[64]; //????? ?ε?? ??????? ???? ???? ???????? 
 POINT TestImageSize = { 0,0 };
 
 int Accuracy_Table[][2] = {
@@ -75,17 +75,17 @@ int Accuracy_Table[][2] = {
 };
 
 
-int ItemIndex1[3] = { 0,0,0 };	//전직을 위한 날치기 인덱스 저장 
+int ItemIndex1[3] = { 0,0,0 };	//?????? ???? ????? ?ε??? ???? 
 int ItemIndex2[3] = { 0,0,0 };
 
-int ChangeJobButonCheck2 = 0; //버튼다운을 한번 거너뛰는 플랙(이것두 역시 땡빵이다 씨바!!)
+int ChangeJobButonCheck2 = 0; //???????? ??? ????? ?÷?(???? ???? ??????? ????!!)
 int ItemImageNotExitFlag = 0;
 int DownNum = 0;
 /*----------------------------------------------------------------------------*
-*							사운드  파일 경로
+*							????  ???? ???
 *-----------------------------------------------------------------------------*/
 char* sinSoundWav[] = {
-	"Image\\SinImage\\Sound\\interface-on.wav",		//0 (인터페이스 First Start 사운드 )
+	"Image\\SinImage\\Sound\\interface-on.wav",		//0 (????????? First Start ???? )
 	"Image\\SinImage\\Sound\\Axes.wav",				//1	(Axe)
 	"Image\\SinImage\\Sound\\Claws.wav",			//2 (Claws)
 	"Image\\SinImage\\Sound\\Hammer.wav",			//3 (Hammer)
@@ -94,7 +94,7 @@ char* sinSoundWav[] = {
 	"Image\\SinImage\\Sound\\Shooters.wav",			//6 (Shooters)
 	"Image\\SinImage\\Sound\\Swords.wav",			//7 (Swords)
 	"Image\\SinImage\\Sound\\Throwing.wav",			//8 (Throwing)
-	"Image\\SinImage\\Sound\\Armor.wav",			//9 (로브)
+	"Image\\SinImage\\Sound\\Armor.wav",			//9 (?κ?)
 	"Image\\SinImage\\Sound\\Boots.wav",			//10 (Boots)
 	"Image\\SinImage\\Sound\\Gloves.wav",			//11 (Gloves)
 	"Image\\SinImage\\Sound\\Shields.wav",			//12 (Shields)
@@ -105,47 +105,47 @@ char* sinSoundWav[] = {
 	"Image\\SinImage\\Sound\\Potion.wav",			//17 (Potion)
 	"Image\\SinImage\\Sound\\Coin.wav",				//18 (Coin)
 	"Image\\SinImage\\Sound\\Magicial_weapon.wav",	//19 (Magicial_weapon)
-	"Image\\SinImage\\Sound\\drink1.wav",			//20 (물약먹는 사운드)
-	"Image\\SinImage\\Sound\\interface.wav",		//21 (인터페이스 사운드 *처음시작을 제외하고 나오는 사운드)
-	"Image\\SinImage\\Sound\\repair.wav",			//22 (수리시 사운드)
-	"Image\\SinImage\\Sound\\sheltom-failure.wav",  //23 (믹스쳐, 에이징 실패시 사운드)
-	"Image\\SinImage\\Sound\\Armor-w.wav",          //24 (갑옷)
-	"Image\\SinImage\\Sound\\drink2.wav",           //25 (기력약 사운드)
+	"Image\\SinImage\\Sound\\drink1.wav",			//20 (?????? ????)
+	"Image\\SinImage\\Sound\\interface.wav",		//21 (????????? ???? *????????? ??????? ?????? ????)
+	"Image\\SinImage\\Sound\\repair.wav",			//22 (?????? ????)
+	"Image\\SinImage\\Sound\\sheltom-failure.wav",  //23 (?????, ????¡ ???н? ????)
+	"Image\\SinImage\\Sound\\Armor-w.wav",          //24 (????)
+	"Image\\SinImage\\Sound\\drink2.wav",           //25 (??¾? ????)
 	0
 };
 
 /*----------------------------------------------------------------------------*
-*					    서브메인 초기화
+*					    ??????? ????
 *-----------------------------------------------------------------------------*/
 void InitSub()
 {
 
-	sinCreatFont(); //폰트생성 	
+	sinCreatFont(); //??????? 	
 }
 /*----------------------------------------------------------------------------*
-*						서브메인 메인
+*						??????? ????
 *-----------------------------------------------------------------------------*/
 void MainSub()
 {
-	sinProc(SINKEYDOWN);		//키입력이 있을때 	
+	sinProc(SINKEYDOWN);		//?????? ?????? 	
 	sinSec++;
-	sinMainCounter++; //메인의 카운터 
+	sinMainCounter++; //?????? ????? 
 
-	if (sinSec >= 70) { // 1초마다 한번씩 실행 
-		sinRegen();      //스테미나재생 (현재는 스테미나만 재생한다 )
-		sinUseStamina(); //스테미나를 사용한다 
+	if (sinSec >= 70) { // 1????? ????? ???? 
+		sinRegen();      //????????? (????? ???????? ?????? )
+		sinUseStamina(); //???????? ?????? 
 		sinSec = 0;
 
 	}
-	if ((sinMainCounter & 3) == 0) //70의 1/4일때 실행 
+	if ((sinMainCounter & 3) == 0) //70?? 1/4??? ???? 
 		sinSetRegen();
 
 	if ((sinMainCounter % 70) == 0)
 		AgingRing();
 
-	////////////////////////////////////미니맵때문에 이곳으로뺐다
-	CSKILL->CheckSkillMastery(); //마스터리를 체크한다 
-	CheckContinueSkill(); //지속적으로 쓰는 스킬을 체크해서 시간이 지나면 없애준다 
+	////////////////////////////////////????????? ??????λ???
+	CSKILL->CheckSkillMastery(); //????????? ????? 
+	CheckContinueSkill(); //?????????? ???? ????? ????? ?ð??? ?????? ??????? 
 
 
 }
@@ -289,51 +289,51 @@ int sinSetShopItem(sITEMINFO* pItem, int ItemCount, int ItemKind)
 	}
 
 
-	sITEM sinTempItem;  //아이템에 관련된 사항을 잠시 넣어두는 Temp
+	sITEM sinTempItem;  //??????? ????? ?????? ??? ???δ? Temp
 	sinShopKind = ItemKind;
 
-	if (sinShopKind == 2) { //방어구가 먼저들어온다(초기화)
-		sinShopKind = 1;   //Tab 포지션 보정 
+	if (sinShopKind == 2) { //????? ???????´?(????)
+		sinShopKind = 1;   //Tab ?????? ???? 
 
 	}
 	RecvCountFlag++;
 
 	if (RecvCountFlag == 1)
-		memset(&cShop.ShopItem, 0, sizeof(sITEM) * 60); //아이템 정보 초기화 
+		memset(&cShop.ShopItem, 0, sizeof(sITEM) * 60); //?????? ???? ???? 
 	else
 		RecvCountFlag = 0;
-	if (sinShopKind == 3)RecvCountFlag = 0; //땜빵 
+	if (sinShopKind == 3)RecvCountFlag = 0; //???? 
 
 
 	for (i = 0; i < ItemCount; i++) {
 		if (LoadItemImage(&pItem[i], &sinTempItem)) {
-			if (ItemKind == 2) //방어구 이면 
+			if (ItemKind == 2) //??? ??? 
 				memcpy(&cShop.ShopItem[i + 30], &sinTempItem, sizeof(sITEM));
-			else //방어구가 아니면 
+			else //????? ???? 
 				memcpy(&cShop.ShopItem[i], &sinTempItem, sizeof(sITEM));
 
 		}
 
 	}
-	TalkNpcState = 1; //상점에 있을 경우에 ..
+	TalkNpcState = 1; //?????? ???? ??쿡 ..
 	cShop.CopyShopItemToShow(0);
-	cInterFace.CheckAllBox(SIN_SHOP);  //상점과 인벤토리를 열어준다 
-	ShopArrowPosi = 0; //상점 화살표 초기화 
+	cInterFace.CheckAllBox(SIN_SHOP);  //?????? ?κ????? ??????? 
+	ShopArrowPosi = 0; //???? ???? ???? 
 	return TRUE;
 }
 
 /*----------------------------------------------------------------------------*
-*			    마우스 or 인벤토리로 아이템을 셋팅한다
+*			    ???콺 or ?κ????? ???????? ???????
 *-----------------------------------------------------------------------------*/
 int sinSetQuestItem(sITEMINFO* sItemInfo)
 {
 
-	sinSetSpecialItemCode(sItemInfo); //스페셜아이템을 구분한다 
+	sinSetSpecialItemCode(sItemInfo); //???????????? ??????? 
 
 	int sArrowPosi = 0, i = 0;
-	sITEM sinTempItem;  //아이템에 관련된 사항을 잠시 넣어두는 Temp
+	sITEM sinTempItem;  //??????? ????? ?????? ??? ???δ? Temp
 
-	//if(cInvenTory.SearchItemCode((sinQT1|sin01)))return FALSE; //1개씩 밖에 가질수없다
+	//if(cInvenTory.SearchItemCode((sinQT1|sin01)))return FALSE; //1???? ??? ??????????
 	//if(cInvenTory.SearchItemCode((sinQT1|sin02)))return FALSE;
 	//if(cInvenTory.SearchItemCode((sinQT1|sin03)))return FALSE;
 
@@ -344,10 +344,10 @@ int sinSetQuestItem(sITEMINFO* sItemInfo)
 		}
 	}
 
-	//////////각 퀘스트에 맞지않는 아이템은 셋팅할수없다
+	//////////?? ??????? ??????? ???????? ???????????
 
 	if (sinQuest_ChangeJob.CODE == SIN_QUEST_CODE_CHANGEJOB) {
-		if (cInvenTory.SearchItemCode(sItemInfo->CODE))return FALSE; //같은 코드의 아이템이 있으면 리턴한다
+		if (cInvenTory.SearchItemCode(sItemInfo->CODE))return FALSE; //???? ????? ???????? ?????? ???????
 		if (sItemInfo->CODE == (sinQT1 | sin04))return FALSE;
 		if (sItemInfo->CODE == (sinQT1 | sin05))return FALSE;
 		if (sItemInfo->CODE == (sinQT1 | sin06))return FALSE;
@@ -365,7 +365,7 @@ int sinSetQuestItem(sITEMINFO* sItemInfo)
 
 	}
 
-	//퀘스트를 끝내고 전업아이템이 들어올경우 리턴한다
+	//??????? ?????? ???????????? ???ð?? ???????
 	if (sinChar->ChangeJob >= 1) {
 		if ((sItemInfo->CODE == (sinQT1 | sin01)) || (sItemInfo->CODE == (sinQT1 | sin02)) || (sItemInfo->CODE == (sinQT1 | sin03)) ||
 			(sItemInfo->CODE == (sinQT1 | sin04)) || (sItemInfo->CODE == (sinQT1 | sin05))) {
@@ -398,17 +398,17 @@ int sinSetQuestItem(sITEMINFO* sItemInfo)
 
 	//if(sItemInfo->CODE
 
-	//퀘스트 무기를 받은후에는 뱀프를 받을수없다
+	//????? ???? ?????Ŀ??? ?????? ??????????
 	if (sItemInfo->CODE == (sinQT1 | sin06) && sinQuest_ChangeJob3.State >= 3) {
 		return FALSE;
 	}
 
-	//퀘스트를 끝내고 전업아이템이 들어올경우 리턴한다
+	//??????? ?????? ???????????? ???ð?? ???????
 	if (sinChar->ChangeJob >= 2 && sItemInfo->CODE == (sinQT1 | sin06)) {
 		return FALSE;
 	}
 
-	///////코드를 셋팅한 다
+	///////??? ?????? ??
 	switch (sItemInfo->CODE & sinITEM_MASK2) {
 	case sinQT1:
 		sItemInfo->ItemKindCode = ITEM_KIND_QUEST;
@@ -421,17 +421,17 @@ int sinSetQuestItem(sITEMINFO* sItemInfo)
 
 
 	if (LoadItemImage(sItemInfo, &sinTempItem)) {
-		if (sinTempItem.sItemInfo.PotionCount <= 0)     //포션카운트를 보정한다
+		if (sinTempItem.sItemInfo.PotionCount <= 0)     //?????????? ???????
 			sinTempItem.sItemInfo.PotionCount = 1;
 
-		if (!cInvenTory.AutoSetInvenItem(&sinTempItem, 1)) { //퀘스트아이템은 무게에 상관없이 셋팅할수있다
+		if (!cInvenTory.AutoSetInvenItem(&sinTempItem, 1)) { //????????????? ????? ??????? ??????????
 			if (ArrowState[0] == 0)sArrowPosi = 2;
 			else sArrowPosi = 1;
 			sinButtonFlag = sArrowPosi;
-			SelectInvenItemIndex = 0; //에테르 코어남발을 막기위해 초기화
-			cInvenTory.ChangeABItem(sArrowPosi); // 2보다 작을때 인벤 박스 
+			SelectInvenItemIndex = 0; //????? ??????? ???????? ????
+			cInvenTory.ChangeABItem(sArrowPosi); // 2???? ?????? ?κ? ??? 
 			if (!cInvenTory.AutoSetInvenItem(&sinTempItem, 1)) {
-				//if(sinThrowItemToFeild(&sinTempItem)){          //아이템을 버린다 
+				//if(sinThrowItemToFeild(&sinTempItem)){          //???????? ?????? 
 				sinTempItem.Flag = 0;
 				return FALSE;
 
@@ -443,9 +443,9 @@ int sinSetQuestItem(sITEMINFO* sItemInfo)
 }
 
 /*----------------------------------------------------------------------------*
-*			    마우스 or 인벤토리로 아이템을 셋팅한다
+*			    ???콺 or ?κ????? ???????? ???????
 *-----------------------------------------------------------------------------*/
-//물약 복사 방지 플랙
+//???? ???? ???? ?÷?
 int CheckPotionDelayFlag = 0;
 int sinSetInvenItem(sITEMINFO* sItemInfo)
 {
@@ -573,13 +573,13 @@ int sinSetInvenItem(sITEMINFO* sItemInfo)
 }
 
 
-//퀘스트 인벤토리에 셋팅될아이템
+//????? ?κ????? ??????????
 DWORD sinSpecialCODE[] = { (sinQT1 | sin01),(sinQT1 | sin02),(sinQT1 | sin03),(sinQT1 | sin04),(sinQT1 | sin05),(sinQT1 | sin06),
 						(sinMA1 | sin01),(sinMA2 | sin01),(sinMA2 | sin02),(sinQW1 | sin01),(sinQW1 | sin02),(sinQW1 | sin03),
 						(sinQW1 | sin04),(sinQW1 | sin05),(sinQT1 | sin07),(sinQT1 | sin08),
 						(sinQT1 | sin09),(sinQT1 | sin10),(sinQT1 | sin11),(sinQT1 | sin12),(sinQT1 | sin13),
 						(sinQT1 | sin14),(sinQT1 | sin15),(sinQT1 | sin16),(sinQW1 | sin06),0 };
-//로스트 아일랜드 익스트림윙 성근추가 (sinQW1|sin06)
+//?ν?? ??????? ???????? ??????? (sinQW1|sin06)
 int sinSetSpecialItemCode(sITEMINFO* pItemInfo)
 {
 	int Count = 0;
@@ -594,45 +594,44 @@ int sinSetSpecialItemCode(sITEMINFO* pItemInfo)
 		}
 		else break;
 	}
-	cInvenTory.ChangeSpecialItem(2); //퀘스트아이템을 정리한다
+	cInvenTory.ChangeSpecialItem(2); //????????????? ???????
 	return TRUE;
 }
 
 
-//아이템의 이미지를 로드한다 
+//???????? ??????? ?ε???? 
 int LoadItemImage(sITEMINFO* sItemInfo, sITEM* TempItem)
 {
 	char szFilePath[256];
-	szTestBuff2[0] = 0; //버퍼초기화 
+	szTestBuff2[0] = 0; //???????? 
 	for (int j = 0; j < MAX_ITEM; j++) {
 		if (sItemInfo->CODE == sItem[j].CODE) {
 			wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
-			memcpy(TempItem, &sItem[j], sizeof(sITEM));  //구조체에 정의된 정보를 저장한다 
+			memcpy(TempItem, &sItem[j], sizeof(sITEM));  //??????? ????? ?????? ??????? 
 
-			//복주 머니 관련
+			//???? ??? ????
 			if ((sItemInfo->CODE & sinITEM_MASK2) == sinPZ1 || (sItemInfo->CODE & sinITEM_MASK2) == sinPZ2) {
 				if (sItemInfo->PotionCount <= 1) {
 					for (int k = 0; k < MAX_ITEM; k++) {
 						if ((sinPZ1 | sin00) == sItem[k].CODE) {
 							wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[k].ItemFilePath, sItem[k].LastCategory);
-							memcpy(TempItem, &sItem[k], sizeof(sITEM));  //구조체에 정의된 정보를 저장한다 
-							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //이미지를 먼저읽어준다
+							memcpy(TempItem, &sItem[k], sizeof(sITEM));  //??????? ????? ?????? ??????? 
+							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //??????? ?????о????
 						}
 					}
 				}
 			}
 
-			memcpy(&TempItem->sItemInfo, sItemInfo, sizeof(sITEMINFO)); //일단 템프에 저장한다 
-			if (!sItem[j].lpTempItem) //이미지가 없으면 로드한다
-				sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
-			TempItem->lpItem = sItem[j].lpTempItem; //템프에 있던 이미지 포인터를 넣어준다 
-			TestImageSize.x = TempItem->w;  //이미지 사이즈를 본다 
+			memcpy(&TempItem->sItemInfo, sItemInfo, sizeof(sITEMINFO)); //??? ?????? ??????? 
+			if (!sItem[j].lpTempItem) //??????? ?????? ?ε????
+				sItem[j].lpTempItem = LoadItemBmpWithFallback(sItem[j].ItemFilePath, sItem[j].LastCategory, sItem[j].Class);
+			TempItem->lpItem = sItem[j].lpTempItem; //?????? ??? ????? ??????? ?????? 
+			TestImageSize.x = TempItem->w;  //????? ?????? ???? 
 			TestImageSize.y = TempItem->h;
 			if (!TempItem->lpItem) {
 				lstrcpy(szTestBuff2, sItem[j].LastCategory);
-				ItemImageNotExitFlag = 1;
-				cMessageBox.ShowMessage(MESSAGE_NOTEXIT_ITEMIMAGE);
-				//	return FALSE;	//파일을 로드하지 못했으면 리턴한다 
+				ItemImageNotExitFlag = 0;
+				//	return FALSE;	//?????? ?ε????? ???????? ??????? 
 			}
 
 			TempItem->Flag = 1;
@@ -645,7 +644,7 @@ int LoadItemImage(sITEMINFO* sItemInfo, sITEM* TempItem)
 }
 
 /*----------------------------------------------------------------------------*
-*				         키버튼  및 마우스 함수
+*				         ????  ?? ???콺 ???
 *-----------------------------------------------------------------------------*/
 void sinLButtonUp()
 {
@@ -660,7 +659,7 @@ void sinLButtonDown()
 
 }
 /*----------------------------------------------------------------------------*
-*					키입력과 마우스 입력을 한번으로 제한한다
+*					???°? ???콺 ????? ??????? ???????
 *-----------------------------------------------------------------------------*/
 int sinGetMouseButton(int num)
 {
@@ -681,7 +680,7 @@ void sinMouseMain()
 	}
 }
 /*----------------------------------------------------------------------------*
-*					키보드 입력을 한번만 체크하게한다
+*					????? ????? ????? ????????
 *-----------------------------------------------------------------------------*/
 int sinGetKeyClick(int num)
 {
@@ -730,19 +729,19 @@ public:
 	int	OpenFlag;
 };
 
-int FirstMove[MAX_SIN_KIND_INTER] = { 0,0,0,0,0,0,0,0,0,0,0,0,0 }; // 석지용 - 믹스쳐 리셋 추가로 값을 하나더 추가
+int FirstMove[MAX_SIN_KIND_INTER] = { 0,0,0,0,0,0,0,0,0,0,0,0,0 }; // ?????? - ????? ???? ????? ???? ????? ???
 
 void ShowInterFace()
 {
 	int cnt = 0;
-	int StopMove[MAX_SIN_KIND_INTER] = { 0,0,0,0,0,0,0,0,0,0,0,0,0 }; // 석지용 - 믹스쳐 리셋 추가로 값을 하나더 추가
+	int StopMove[MAX_SIN_KIND_INTER] = { 0,0,0,0,0,0,0,0,0,0,0,0,0 }; // ?????? - ????? ???? ????? ???? ????? ???
 
 	while (1) {
 		if (szKindInter[cnt] == 0)break;
 		if (((sinFlag*)szKindInter[cnt])->OpenFlag > 0) {
 			if (!FirstMove[cnt]) {
 				if (cnt == SIN_SHOP || cnt == SIN_TRADE || cnt == SIN_WAREHOUSE || cnt == SIN_CRAFTITEM || cnt == SIN_AGING || cnt == SIN_MYSHOP ||
-					cnt == SIN_CHARSHOP || cnt == SIN_SMELTING || cnt == SIN_MANUFACTURE || cnt == SIN_MIXTURE_RESET || cnt == SIN_CARAVANA) { // 석지용 - 믹스쳐 리셋 추가
+					cnt == SIN_CHARSHOP || cnt == SIN_SMELTING || cnt == SIN_MANUFACTURE || cnt == SIN_MIXTURE_RESET || cnt == SIN_CARAVANA) { // ?????? - ????? ???? ???
 					sinMoveKindInter[cnt] += 184 + 128;
 					FirstMove[cnt] = 1;
 
@@ -754,10 +753,10 @@ void ShowInterFace()
 			}
 			else {
 				if (cnt == SIN_SHOP || cnt == SIN_TRADE || cnt == SIN_WAREHOUSE || cnt == SIN_CRAFTITEM || cnt == SIN_AGING || cnt == SIN_MYSHOP ||
-					cnt == SIN_CHARSHOP || cnt == SIN_SMELTING || cnt == SIN_MANUFACTURE || cnt == SIN_MIXTURE_RESET || cnt == SIN_CARAVANA) { // 석지용 - 믹스쳐 리셋 추가
+					cnt == SIN_CHARSHOP || cnt == SIN_SMELTING || cnt == SIN_MANUFACTURE || cnt == SIN_MIXTURE_RESET || cnt == SIN_CARAVANA) { // ?????? - ????? ???? ???
 					if (sinMoveKindInter[cnt] >= 256 + 128) {
 						sinMoveKindInter[cnt] = 256 + 128;
-						StopMove[cnt] = 1;  //Stop플랙 값 셋팅 
+						StopMove[cnt] = 1;  //Stop?÷? ?? ???? 
 
 					}
 					if (!StopMove[cnt]) {
@@ -770,7 +769,7 @@ void ShowInterFace()
 				else {
 					if (sinMoveKindInter[cnt] >= 256) {
 						sinMoveKindInter[cnt] = 256;
-						StopMove[cnt] = 1;  //Stop플랙 값 셋팅 
+						StopMove[cnt] = 1;  //Stop?÷? ?? ???? 
 
 					}
 					if (!StopMove[cnt]) {
@@ -784,11 +783,11 @@ void ShowInterFace()
 			}
 		}
 		else {
-			if (cnt == 1) { //인벤토리일경우 (잠시 막아둔다)
-/*				CrashItemIndex[0] = 0; //인벤토리가 닫힐때 초기화해준다
+			if (cnt == 1) { //?κ??????? (??? ????д?)
+/*				CrashItemIndex[0] = 0; //?κ????? ?????? ?????????
 				CrashItemIndex[1] = 0;
-				AutoSetItemIndex = 0;       //양손무기를 셋팅할경우 자동으로 셋팅될 아이템의 인덱스
-				SelectInvenItemIndex=0;		//선택될 아이템의 인덱스
+				AutoSetItemIndex = 0;       //?????? ???????? ??????? ????? ???????? ?ε???
+				SelectInvenItemIndex=0;		//????? ???????? ?ε???
 */
 				SelectPotionIndex = 0;
 
@@ -799,7 +798,7 @@ void ShowInterFace()
 			}
 			else {
 				sinMoveKindInter[cnt] = 0;
-				FirstMove[cnt] = 0; //시작 플랙을 초기화 한다 
+				FirstMove[cnt] = 0; //???? ?÷??? ???? ??? 
 
 			}
 
@@ -808,7 +807,7 @@ void ShowInterFace()
 	}
 }
 
-//폰트 생성 
+//??? ???? 
 int sinCreatFont()
 {
 	sinFont = CreateFontA(16, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, NULL, NULL, ANTIALIASED_QUALITY, FF_DONTCARE, "Arial");;
@@ -818,7 +817,7 @@ int sinCreatFont()
 	return TRUE;
 }
 
-//텍스트가 놓을 위치를 보정한다
+//?????? ???? ????? ???????
 int CheckEditSize(int x, int lx, char* String)
 {
 	int len = 0;
@@ -835,17 +834,17 @@ int CheckEditSize(int x, int lx, char* String)
 }
 
 /*----------------------------------------------------------------------------*
-*					모션이 끝난다음에 포션을 사용한다
+*					????? ?????????? ?????? ??????
 *-----------------------------------------------------------------------------*/
 #define SIN_POTION_LIFE			1
 #define SIN_POTION_MANA			2
 #define SIN_POTION_STAMINA		3
 #define SIN_POTION_SONGPYEUN	4
 
-int sinUsePotion() //모션이 끝난다음에 포션을 사용한다 
+int sinUsePotion() //????? ?????????? ?????? ?????? 
 {
 
-	CheckCharForm();//인증 
+	CheckCharForm();//???? 
 
 	int PotionKind = 0;
 	int ResultPotion = 0;
@@ -853,42 +852,42 @@ int sinUsePotion() //모션이 끝난다음에 포션을 사용한다
 
 	if (pUsePotion == 0) return FALSE;
 	if (!pUsePotion->Flag)return FALSE;
-	if (MouseItem.Flag) {//마우스에 집고있는 아이템과 사용될 아이템이 같으면 리턴한다 (왜 그런거쥐 -_-; 험험 기억이안난다 먼가이유가있을테니 냅둔다)
+	if (MouseItem.Flag) {//???콺?? ??????? ??????? ???? ???????? ?????? ??????? (?? ??????? -_-; ???? ????????? ???????????????? ???д?)
 		if (MouseItem.sItemInfo.ItemHeader.Head == pUsePotion->sItemInfo.ItemHeader.Head)
 			return FALSE;
 
 	}
 
-	if ((pUsePotion->CODE & sinITEM_MASK2) == sinPL1) { //라이프일경우 
+	if ((pUsePotion->CODE & sinITEM_MASK2) == sinPL1) { //?????????? 
 		TempRandPotion = pUsePotion->sItemInfo.Life[1] - pUsePotion->sItemInfo.Life[0];
 
 		auto currentHP = sinGetLife();
 
 		ResultPotion = pUsePotion->sItemInfo.Life[0] + (rand() % TempRandPotion);
-		sinSetLife((sinGetLife() + ResultPotion));	//라이프 셋팅 
+		sinSetLife((sinGetLife() + ResultPotion));	//?????? ???? 
 		cSHOW_DMG::getInstance()->AddDef(lpCurPlayer->dwObjectSerial, Type::HP, sinGetLife() - currentHP);
 		PotionKind = SIN_POTION_LIFE;
 	}
-	if ((pUsePotion->CODE & sinITEM_MASK2) == sinPM1) { //마나일경우 
+	if ((pUsePotion->CODE & sinITEM_MASK2) == sinPM1) { //???????? 
 		TempRandPotion = pUsePotion->sItemInfo.Mana[1] - pUsePotion->sItemInfo.Mana[0];
 
 		auto currentMP = sinGetMana();
 
 		ResultPotion = pUsePotion->sItemInfo.Mana[0] + (rand() % TempRandPotion);
-		sinSetMana((sinGetMana() + ResultPotion));	//라이프 셋팅 
+		sinSetMana((sinGetMana() + ResultPotion));	//?????? ???? 
 
 		cSHOW_DMG::getInstance()->AddDef(lpCurPlayer->dwObjectSerial, Type::MP, sinGetMana() - currentMP);
 
 		PotionKind = SIN_POTION_MANA;
 	}
-	if ((pUsePotion->CODE & sinITEM_MASK2) == sinPS1) { //스테미나 포션일경우 
+	if ((pUsePotion->CODE & sinITEM_MASK2) == sinPS1) { //?????? ???????? 
 		TempRandPotion = pUsePotion->sItemInfo.Stamina[1] - pUsePotion->sItemInfo.Stamina[0];
 
 		auto currentSTM = sinGetStamina();
 
 		ResultPotion = pUsePotion->sItemInfo.Stamina[0] + (rand() % TempRandPotion);
 
-		sinSetStamina((sinGetStamina() + ResultPotion));	//라이프 셋팅 
+		sinSetStamina((sinGetStamina() + ResultPotion));	//?????? ???? 
 
 		cSHOW_DMG::getInstance()->AddDef(lpCurPlayer->dwObjectSerial, Type::STM, sinGetStamina() - currentSTM);
 
@@ -897,66 +896,66 @@ int sinUsePotion() //모션이 끝난다음에 포션을 사용한다
 	if ((pUsePotion->CODE & sinITEM_MASK2) == sinSP1)
 	{
 		if ((pUsePotion->CODE & sinITEM_MASK3) == sin01 || (pUsePotion->CODE & sinITEM_MASK3) == sin02 ||
-			(pUsePotion->CODE & sinITEM_MASK3) == sin03 || (pUsePotion->CODE & sinITEM_MASK3) == sin15 || // 박재원 - 수박 아이템 추가
-			(pUsePotion->CODE & sinITEM_MASK3) == sin35 ||  // 장별 - 발렌타인 초콜릿 아이템 추가
-			(pUsePotion->CODE & sinITEM_MASK3) == sin36 || (pUsePotion->CODE & sinITEM_MASK3) == sin42) // 장별 - 캔디데이즈 // 장별 - 수박
+			(pUsePotion->CODE & sinITEM_MASK3) == sin03 || (pUsePotion->CODE & sinITEM_MASK3) == sin15 || // ????? - ???? ?????? ???
+			(pUsePotion->CODE & sinITEM_MASK3) == sin35 ||  // ?? - ?????? ????? ?????? ???
+			(pUsePotion->CODE & sinITEM_MASK3) == sin36 || (pUsePotion->CODE & sinITEM_MASK3) == sin42) // ?? - ??????? // ?? - ????
 		{
-			pUsePotion->sItemInfo.PotionCount = 0;			//송편 포션 카운트 0
+			pUsePotion->sItemInfo.PotionCount = 0;			//???? ???? ???? 0
 			if (cInvenTory.EatSongPyeun(pUsePotion)) {
 				PotionKind = SIN_POTION_SONGPYEUN;
 			}
 			else
 				PotionKind = 5;
 		}
-		// 선물상자
+		// ????????
 		if ((pUsePotion->CODE & sinITEM_MASK3) == sin05 || (pUsePotion->CODE & sinITEM_MASK3) == sin06 || (pUsePotion->CODE & sinITEM_MASK3) == sin07 ||
 			(pUsePotion->CODE & sinITEM_MASK3) == sin08 || (pUsePotion->CODE & sinITEM_MASK3) == sin09 || (pUsePotion->CODE & sinITEM_MASK3) == sin10)
 		{
-			PotionKind = 6;		// pluto 선물상자
+			PotionKind = 6;		// pluto ????????
 		}
 
-		// 박재원 - 캡슐 아이템(호랑이 캡슐 사용)
+		// ????? - ĸ?? ??????(????? ĸ?? ???)
 		if ((pUsePotion->CODE & sinITEM_MASK3) == sin34)
 		{
-			PotionKind = 7;		// 박재원 - 호랑이 캡슐 아이템을 사용할때 야호 모션을 한다. 
+			PotionKind = 7;		// ????? - ????? ĸ?? ???????? ?????? ??? ????? ???. 
 		}
 
 	}
 	if (PotionKind) {
-		if (pUsePotion->sItemInfo.PotionCount >= 2) { //포션의 수를 줄인다 
+		if (pUsePotion->sItemInfo.PotionCount >= 2) { //?????? ???? ???δ? 
 			pUsePotion->sItemInfo.PotionCount--;
 			/*
 			if(( pUsePotion->sItemInfo.CODE & sinITEM_MASK3 ) == sin03 ||
 				( pUsePotion->sItemInfo.CODE & sinITEM_MASK3 ) == sin04 ){
-				sinPlaySound(SIN_SOUND_EAT_POTION2); //물약 먹는 소리
+				sinPlaySound(SIN_SOUND_EAT_POTION2); //???? ??? ???
 			}
 			else
 			*/
-			sinPlaySound(SIN_SOUND_EAT_POTION); //물약 먹는 소리 
+			sinPlaySound(SIN_SOUND_EAT_POTION); //???? ??? ??? 
 
 		}
 		else {
 			pUsePotion->Flag = 0;
-			sInven[pUsePotion->ItemPosition - 1].ItemIndex = 0; //사용되지 않는다 
+			sInven[pUsePotion->ItemPosition - 1].ItemIndex = 0; //?????? ??´? 
 			if (PotionKind != 5) {
 				/*
 					if(( pUsePotion->sItemInfo.CODE & sinITEM_MASK3 ) == sin03 ||
 						( pUsePotion->sItemInfo.CODE & sinITEM_MASK3 ) == sin04 ){
-						sinPlaySound(SIN_SOUND_EAT_POTION2); //물약 먹는 소리
+						sinPlaySound(SIN_SOUND_EAT_POTION2); //???? ??? ???
 					}
 					else
 				*/
 
-				sinPlaySound(SIN_SOUND_EAT_POTION); //물약 먹는 소리 
+				sinPlaySound(SIN_SOUND_EAT_POTION); //???? ??? ??? 
 			}
 
 		}
 
-		pUsePotion = 0; //포인터 초기화 		
-		ReformCharForm();//재인증 
-		cInvenTory.CheckWeight(); //무게를 체크한다 
-		cInvenTory.ReFormPotionNum();	//포션 갯수를 체크한다 
-		cInvenTory.ReFormInvenItem();   //인벤토리 아이템 인증
+		pUsePotion = 0; //?????? ???? 		
+		ReformCharForm();//?????? 
+		cInvenTory.CheckWeight(); //????? ????? 
+		cInvenTory.ReFormPotionNum();	//???? ?????? ????? 
+		cInvenTory.ReFormInvenItem();   //?κ??? ?????? ????
 		return PotionKind;
 	}
 
@@ -964,7 +963,7 @@ int sinUsePotion() //모션이 끝난다음에 포션을 사용한다
 
 }
 
-//신바람 재생 
+//???? ??? 
 void sinRegen()
 {
 
@@ -977,7 +976,7 @@ void sinRegen()
 	float	fHealth = 0;
 	float	fSpirit = 0;
 
-	//스테미나 재생 
+	//?????? ??? 
 	if (lpCurPlayer->MotionInfo->State == CHRMOTION_STATE_STAND) {
 		switch (sinChar->StaminaFunction) {
 		case 1:
@@ -989,7 +988,7 @@ void sinRegen()
 		case 3:
 			InCreaSTM = (float)(2.9 + sinChar->Level / 7 + sinChar->Stamina_Regen);
 			break;
-		default: //혹시나 해서 하나 넣어둔다 
+		default: //???? ??? ??? ???д? 
 			InCreaSTM = (float)(3.8 + sinChar->Level / 7 + sinChar->Stamina_Regen);
 			break;
 		}
@@ -1020,9 +1019,9 @@ void sinRegen()
 
 
 	if (lpCurPlayer->MotionInfo->State != CHRMOTION_STATE_DEAD) {
-		//라이프 재생  
+		//?????? ???  
 		InCreaLIFE = (float)(((fLevel + (fStrength / 2) + fHealth) / 180 + sinChar->Life_Regen) / 1.5);
-		//마나 재생 
+		//???? ??? 
 		InCreaMANA = (fLevel + (fSpirit * 1.2f) + (fHealth / 2)) / 115 + sinChar->Mana_Regen;
 	}
 
@@ -1046,13 +1045,13 @@ float fTempMANA = 0;
 float fTempSTM_Incre = 0;
 float fTempSTM_Decre = 0;
 
-//스테미나를 셋팅한다 
+//???????? ??????? 
 void sinSetRegen()
 {
 
-	CheckCharForm();//인증 
+	CheckCharForm();//???? 
 
-	//스테미나 감소 
+	//?????? ???? 
 	if (DeCreaSTM) {
 		fTempSTM_Decre += DeCreaSTM / (70 / 4);
 		if (fTempSTM_Decre >= 1) {
@@ -1061,7 +1060,7 @@ void sinSetRegen()
 		}
 
 	}
-	//스테미나 증가 
+	//?????? ???? 
 	if (InCreaSTM) {
 		fTempSTM_Incre += InCreaSTM / (70 / 4);
 		if (fTempSTM_Incre >= 1) {
@@ -1077,7 +1076,7 @@ void sinSetRegen()
 
 	}
 
-	//라이프 증가 
+	//?????? ???? 
 	if (InCreaLIFE) {
 		fTempLIFE += InCreaLIFE / (70 / 4);
 		if (fTempLIFE >= 1) {
@@ -1093,7 +1092,7 @@ void sinSetRegen()
 
 	}
 
-	//마나 증가 
+	//???? ???? 
 	if (InCreaMANA) {
 		fTempMANA += InCreaMANA / (70 / 4);
 		if (fTempMANA >= 1) {
@@ -1108,11 +1107,11 @@ void sinSetRegen()
 		}
 
 	}
-	ReformCharForm();//재인증 
+	ReformCharForm();//?????? 
 
 }
 /*----------------------------------------------------------------------------*
-*				 (각종 공식을 적용후 값을 리턴한다 )
+*				 (???? ?????? ?????? ???? ??????? )
 *-----------------------------------------------------------------------------*/
 int sinGetAC(int AC)
 {
@@ -1128,15 +1127,15 @@ int sinGetAC(int AC)
 }
 
 int cnt = 0;
-int AC_R = 0;    //계산으로 나온 값 
-int RealAC = 0;    //테이블에서 나온 실제 수치 
+int AC_R = 0;    //??????? ???? ?? 
+int RealAC = 0;    //????????? ???? ???? ??? 
 int Result = 0;
 float fDesLV = 0;
 float fMyLV = 0;
 float fWeifht[2] = { 0,0 };
 
 
-//명중률을 리턴한다 (정확하다) (무게의 요인이있으니 의심하지마세요)
+//??????? ??????? (??????) (?????? ???????????? ?????????????)
 int sinGetAccuracy(int desLV, int desDefense)
 {
 	cnt = 0;
@@ -1174,7 +1173,7 @@ int sinGetAccuracy(int desLV, int desDefense)
 	return Result;
 }
 
-//몬스터 명중률  
+//???? ?????  
 int sinGetMonsterAccuracy(int MonsterLV, int MonsterAttack_Rating)
 {
 	cnt = 0;
@@ -1200,7 +1199,7 @@ int sinGetMonsterAccuracy(int MonsterLV, int MonsterAttack_Rating)
 	return Result;
 }
 
-//몬스터 VS 몬스터 명중률
+//???? VS ???? ?????
 int sinGetPVPAccuracy(int MyLevel, int MyAttack_Rating, int DesLevel, int DesDefense)
 {
 	cnt = 0;
@@ -1234,7 +1233,7 @@ int sinGetPVPAccuracy(int MyLevel, int MyAttack_Rating, int DesLevel, int DesDef
 	return Result;
 }
 
-//실제 크리티컬 
+//???? ?????? 
 int sinGetCritical(int desLV)
 {
 
@@ -1261,7 +1260,7 @@ int sinGetBlockRating(int desLV)
 }
 
 #define SIN_MONSTER_UNDEAD		1
-//흡수율을 리턴한다 
+//???????? ??????? 
 int sinGetAbsorb(int Type)
 {
 
@@ -1278,7 +1277,7 @@ int sinGetAbsorb(int Type)
 }
 
 
-void sinReload() //그래픽 데이타들을 다시로드한다 
+void sinReload() //????? ????????? ??÷ε???? 
 {
 	cCharStatus.Release(); ///////Release
 	cInterFace.Release();
@@ -1300,7 +1299,7 @@ void sinReload() //그래픽 데이타들을 다시로드한다
 	cTrade.Load();
 	cInvenTory.InvenItemLoad();
 
-	//공성전 테스트
+	//?????? ????
 	chaSiege.Release();
 
 }
@@ -1317,12 +1316,12 @@ int StopCharMotion(int x, int y)
 		//if(x > 240 && x < 240+44 && y > 380 && y < SkillInfoBoxPosi.y+380+44){				
 		if (x > 240 && x < 240 + 44 && y > 380 && y < 380 + 44) {
 			if (CheckNowQuestState(SIN_QUEST_CODE_CHANGEJOB)) {
-				if (!chaQuest.haQuestCheck())return FALSE; //현재 초보 퀘스트 가 진행중이면
+				if (!chaQuest.haQuestCheck())return FALSE; //???? ??? ????? ?? ?????????
 
 				sinChangeJobButtonShow = 0;
-				SkillMasterFlag = 0; //메세지 박스를 없애준다 
+				SkillMasterFlag = 0; //????? ????? ??????? 
 				HelpBoxKindIndex = SIN_CHANGEJOB_MESSAGE;
-				//요기서 퀘스트 박스를 띄워주면된다  
+				//??? ????? ????? ????????  
 				cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), QuestFilePath[0]);
 				ChangeJobButonCheck2 = 1;
 				return TRUE;
@@ -1331,24 +1330,24 @@ int StopCharMotion(int x, int y)
 	}
 
 	char ch = 0;
-	/* 모라이온 2차전직 */
+	/* ?????? 2?????? */
 	if (SkillMasterFlag && sinChangeJobButtonShow2) {
 		//if(x > 240 && x < 240+44 && y > 380 && y < SkillInfoBoxPosi.y+380+44){				
 		if (x > 240 && x < 240 + 44 && y > 380 && y < 380 + 44) {
 			if (CheckNowQuestState(SIN_QUEST_CODE_CHANGEJOB2_NPC_M) || CheckNowQuestState(SIN_QUEST_CODE_CHANGEJOB2_NPC_D)) {
-				if (!chaQuest.haQuestCheck())return FALSE; //현재 초보 퀘스트 가 진행중이면	
+				if (!chaQuest.haQuestCheck())return FALSE; //???? ??? ????? ?? ?????????	
 
 				sinChangeJobButtonShow2 = 0;
-				SkillMasterFlag = 0; //메세지 박스를 없애준다 
+				SkillMasterFlag = 0; //????? ????? ??????? 
 				//HelpBoxKindIndex = SIN_CHANGEJOB_MESSAGE;
 				int len = lstrlen(sinChar->szName);
 				for (int cnt = 0; cnt < len; cnt++)
 					ch += sinChar->szName[cnt];
-				if ((ch & 2) == 0) sinQuest_ChangeJob2.Kind = 1; //벌꿀 퀘스트
-				else sinQuest_ChangeJob2.Kind = 2; //발모제 퀘스트 
+				if ((ch & 2) == 0) sinQuest_ChangeJob2.Kind = 1; //???? ?????
+				else sinQuest_ChangeJob2.Kind = 2; //????? ????? 
 
-				//sinQuest_ChangeJob2.Kind = GetRandomPos(1,2); //전업퀘스트를 A,B로 셋팅한다
-				//요기서 퀘스트 박스를 띄워주면된다  
+				//sinQuest_ChangeJob2.Kind = GetRandomPos(1,2); //??????????? A,B?? ???????
+				//??? ????? ????? ????????  
 				cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), QuestFilePath[sinQuest_ChangeJob2.Kind + 9]);
 				ChangeJobButonCheck2 = 1;
 				return TRUE;
@@ -1356,54 +1355,54 @@ int StopCharMotion(int x, int y)
 		}
 	}
 
-	/* 템스크론 , 모라이온 3차전직 */
+	/* ?????? , ?????? 3?????? */
 	if (SkillMasterFlag && sinChangeJobButtonShow3) {
 		//if(x > 240 && x < 240+44 && y > 380 && y < SkillInfoBoxPosi.y+380+44){				
 		if (x > 240 && x < 240 + 44 && y > 380 && y < 380 + 44) {
 			if (CheckNowQuestState(SIN_QUEST_CODE_CHANGEJOB3)) {
 				sinChangeJobButtonShow3 = 0;
-				SkillMasterFlag = 0; //메세지 박스를 없애준다 
+				SkillMasterFlag = 0; //????? ????? ??????? 
 				cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), QuestFilePath3[0]);
-				ChangeJobButonCheck2 = 1; //버튼머시기때문에 이렇게 해준다 이유는 묻지마라!
+				ChangeJobButonCheck2 = 1; //??????????? ????? ????? ?????? ????????!
 			}
 		}
 	}
 
 
-	/* 템스크론 , 모라이온 4차전직 */
+	/* ?????? , ?????? 4?????? */
 	if (SkillMasterFlag && sinChangeJobButtonShow4 != 0) {
 		//if(x > 240 && x < 240+44 && y > 380 && y < SkillInfoBoxPosi.y+380+44){				
 		if (x > 240 && x < 240 + 44 && y > 380 && y < 380 + 44) {
 			if (CheckNowQuestState(SIN_QUEST_CODE_CHANGEJOB4)) {
 				sinChangeJobButtonShow4 = 0;
-				SkillMasterFlag = 0; //메세지 박스를 없애준다 
+				SkillMasterFlag = 0; //????? ????? ??????? 
 				cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), QuestFilePath4[0]);
-				ChangeJobButonCheck2 = 1; //버튼머시기때문에 이렇게 해준다 이유는 묻지마라!
+				ChangeJobButonCheck2 = 1; //??????????? ????? ????? ?????? ????????!
 			}
 		}
 	}
 
 	for (int i = 0; i < SIN_MAX_HELP_NUMBER; i++) {
 		if (sSinHelp[i].KindFlag) {
-			return TRUE; //도움말 떠있으면 알아서 멈춰라 
+			return TRUE; //???? ???????? ???? ????? 
 
 		}
 	}
-	//마우스에 아이템이 있거나 트레이드 중이거나 창고가 떠있거나하면 움직임을 멈춘다 
+	//???콺?? ???????? ???? ?????? ?????? ????? ????????? ???????? ????? 
 	if (SkillNpcFlag || sinMessageBoxShowFlag || MouseItem.Flag || cWareHouse.OpenFlag || cTrade.OpenFlag || cCraftItem.OpenFlag || cAging.OpenFlag || cMyShop.OpenFlag ||
-		cCharShop.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag) // 석지용 - 믹스쳐 리셋 창 추가
-		return TRUE; //마우스 아이템이 있을경우에는 리턴한다 
+		cCharShop.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag) // ?????? - ????? ???? ? ???
+		return TRUE; //???콺 ???????? ??????쿡?? ??????? 
 
 	if (cCharStatus.OpenFlag || cInvenTory.OpenFlag || CSKILL->OpenFlag)
-		if (y > 425)return TRUE; //창에 들어가면 리턴한다 
-	if (cShop.OpenFlag) //상점 
+		if (y > 425)return TRUE; //??? ????? ??????? 
+	if (cShop.OpenFlag) //???? 
 		if (x > 0 && x < 384 && y > 40 && y < 370 - 40)
 			return TRUE;
-	if (cWareHouse.OpenFlag) //창고 
+	if (cWareHouse.OpenFlag) //??? 
 		if (x > 0 && x < 384 && y > 40 && y < 370 - 40)
 			return TRUE;
 
-	if (Caravana::GetInstance()->OpenFlag) //창고 
+	if (Caravana::GetInstance()->OpenFlag) //??? 
 		if (x > 0 && x < 384 && y > 40 && y < 370 - 40)
 			return TRUE;
 
@@ -1485,17 +1484,17 @@ void sinTestKey()
 	//TRANS_SOD_RESULT Test;
 	int CountTemp = 0;
 	//	sQUEST_CHANGEJOB3 TempJob3;
-		//테스트용 으로 
+		//?????? ???? 
 
 	if (smConfig.DebugMode) {
-		if (sinGetKeyClick('Y')) {		//에이징 테스트
+		if (sinGetKeyClick('Y')) {		//????¡ ????
 
 			//cAging.OpenFlag = 1;
 			//haElementaryQuestLog | = 
 
 			//cSinHelp.SendResearch();
 			//cHelp_Menu.haGuidHelpLevel_1(sinDA1|sin01);
-			//테스트 키!!
+			//???? ?!!
 			//CancelContinueSkill(CLANSKILL_ABSORB);
 			//chaSiege.ShowPickUserKillPoint(900,50,10);
 			//TestSiegeTemp[0]++;
@@ -1509,7 +1508,7 @@ void sinTestKey()
 			//sinSetQuestTimer(&TempJob3);
 			//sinCheckLevelQuest90_2(1);
 			//sinShowTeleportMap();
-			//sinCheckLevelQuest80_2(1); //데론 1 미뉴렌2
+			//sinCheckLevelQuest80_2(1); //???? 1 ?????2
 			//sinSkill.pRightSkill
 			//ReStartFlag = 1;
 			//cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST,QuestMessageBoxPosi2.x,QuestMessageBoxPosi2.y,QuestMessageBoxSize2.x,QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0,15,128,125),QuestFilePath[9]);  
@@ -1549,11 +1548,11 @@ void sinTestKey()
 			//sinWingItemQuestServer( &sWingItem_Send, &lpCurPlayer->smCharInfo );
 			//cMyShop.OpenFlag ^= 1;
 			//sinChar->ChangeJob++;
-			//SaveGameData(); //전업후 저장한다
+			//SaveGameData(); //?????? ???????
 			//ChangeJobFace();
 
-			//cMessageBox.ShowMessage3(MESSAGE_CHANGE_JOB,"메롱");
-			//SaveGameData(); //전업후 저장한다
+			//cMessageBox.ShowMessage3(MESSAGE_CHANGE_JOB,"???");
+			//SaveGameData(); //?????? ???????
 			//CSKILL->SetT_Of_Valhalla(1);
 			//CheckChangeJob_QuestItem();
 			//sLost_Item.Flag ^=1;
@@ -1568,13 +1567,13 @@ void sinTestKey()
 			//sStarShop.Flag ^=1;
 
 			//sinPlusMoney(1000000000);
-			//ReformCharForm(); //재인증 
-			//SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+			//ReformCharForm(); //?????? 
+			//SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
 			//cAging.OpenFlag ^=1;
 			//sStarShop.Flag ^=1;
-			//강제 전업
-			//sinChar->ChangeJob++; //전업을 한다 
+			//???? ????
+			//sinChar->ChangeJob++; //?????? ??? 
 			//CSKILL->SearchUseSkill();
 
 			//sinQuest_ChangeJob.BackUpCode = SIN_QUEST_CODE_CHANGEJOB;
@@ -1584,7 +1583,7 @@ void sinTestKey()
 			//cInvenTory.sinWingQuestNpc();
 			//cInvenTory.sinWingQuestNpc();
 			//cSinHelp.ShowSodRanking(&Test,1); 
-			//cMessageBox.ShowMessage3(MESSAGE_POSTBOX,"신바람 블레이드");
+			//cMessageBox.ShowMessage3(MESSAGE_POSTBOX,"???? ???????");
 			//cInvenTory.CheckInvenEmpty(sinDA1|sin15);
 			//sinPosBoxNpc();
 			//MouseItem.sItemInfo.PotionCount++;
@@ -1607,38 +1606,38 @@ void sinTestKey()
 			///sinQuest_ChangeJob2.State = 3;
 			//sinJobList = GetJobDataCode(sinChar->JOB_CODE , sinChar->ChangeJob+1); 
 			//cCharStatus.InitCharStatus();
-			//cCharStatus.InitCharStatus(); //캐릭터 스텟 초기화 잠시 대기 
+			//cCharStatus.InitCharStatus(); //ĳ???? ???? ???? ??? ??? 
 			//cAging.OpenFlag ^=1;
 			//cCraftItem.OpenFlag ^=1;
 
 //			if(cTrade.OpenFlag)cTrade.OpenFlag = 0;
 //			else cTrade.OpenFlag = 1;
 
-			//sinChar->ChangeJob++; //전업을 한다 
+			//sinChar->ChangeJob++; //?????? ??? 
 			//CSKILL->SearchUseSkill();
 			//cMessageBox.ShowMessage3(MESSAGE_EVENT_SMASHTV,""); 
 			//sinShowEventSmashingTV();
-			//cMessageBox.ShowMessageEvent("에비츄는 햄스터에요~~~~");
+			//cMessageBox.ShowMessageEvent("??????? ????????~~~~");
 			//CSKILL->InitSkillPoint();
 			//cAging.OpenFlag = 1;
 			//cMessageBox.ShowMessage3(MESSAGE_INIT_SKILL_POINT,sinSkillPointName);
 			//cInterFace.CheckAllBox(SIN_CRAFTITEM);
-			//목을 넣어준다 
+			//???? ?????? 
 			//lstrcpy(sinChar->szModelName2,"char\\tmABCD\\tmh-b01.inf");
-			//ReformCharForm(); //재인증 
+			//ReformCharForm(); //?????? 
 
 		}
-		if (sinGetKeyClick('I')) {    //에이징 테스트    
+		if (sinGetKeyClick('I')) {    //????¡ ????    
 			sinCheckAgingLevel(SIN_AGING_ATTACK, false);
 			//	sinCheckAgingLevel(SIN_AGING_DEFENSE, false);
 			sinCheckAgingLevel(SIN_AGING_DEFENSE_ARMOR, false);
 			sinCheckAgingLevel(SIN_AGING_DEFENSE_ORB, false);
-			sinCheckAgingLevel(SIN_AGING_DEFENSE_BOOTS, false);   // 박재원 - 에이징 아이템 추가(부츠)
-			sinCheckAgingLevel(SIN_AGING_DEFENSE_GLOVES, false);  // 박재원 - 에이징 아이템 추가(장갑)
-			sinCheckAgingLevel(SIN_AGING_DEFENSE_ARMLETS, false); // 박재원 - 에이징 아이템 추가(암릿)
+			sinCheckAgingLevel(SIN_AGING_DEFENSE_BOOTS, false);   // ????? - ????¡ ?????? ???(????)
+			sinCheckAgingLevel(SIN_AGING_DEFENSE_GLOVES, false);  // ????? - ????¡ ?????? ???(??)
+			sinCheckAgingLevel(SIN_AGING_DEFENSE_ARMLETS, false); // ????? - ????¡ ?????? ???(???)
 			sinCheckAgingLevel(SIN_AGING_CRITICAL, false);
 			sinCheckAgingLevel(SIN_AGING_BLOCK, false);
-			ReformCharForm(); //재인증 
+			ReformCharForm(); //?????? 
 			if (SelectInvenItemIndex) {
 				//OverDay_Item_Delete(&cInvenTory.InvenItem[SelectInvenItemIndex-1]);
 				//cInvenTory.DeleteInvenItemToServer(cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.CODE,
@@ -1656,7 +1655,7 @@ void sinTestKey()
 					cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.ItemKindCode = ITEM_KIND_MAKE_MAIN;
 				*/
 
-				//ReformItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo);  //아이템 인증 받기 
+				//ReformItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo);  //?????? ???? ??? 
 				/*
 				cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.JobItem.Lev_Damage[0] = 1;
 				cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.JobItem.Lev_Damage[1] = 1;
@@ -1668,9 +1667,9 @@ void sinTestKey()
 				/*
 				sCraftItem.CraftItem[0].sItemInfo.Damage[0] = 500;
 				sCraftItem.CraftItem[0].sItemInfo.Damage[1] = 999;
-				ReformItem(&sCraftItem.CraftItem[0].sItemInfo);  //아이템 인증 받기
-				ReformMixItem(&sCraftItem.CraftItem[0].sItemInfo ); //에이징 재인증
-				cCraftItem.ReFormCraftItem();   //인벤토리 아이템 인증
+				ReformItem(&sCraftItem.CraftItem[0].sItemInfo);  //?????? ???? ???
+				ReformMixItem(&sCraftItem.CraftItem[0].sItemInfo ); //????¡ ??????
+				cCraftItem.ReFormCraftItem();   //?κ??? ?????? ????
 				*/
 
 				//cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.PotionCount = 0;
@@ -1684,7 +1683,7 @@ void sinTestKey()
 				/*
 				cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.ItemKindCode =ITEM_KIND_AGING;
 				cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.ItemAgingNum[1] = 1;
-				ReformMixItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo  ); //재인증 (아이템을 인벤토리에 셋팅하기전에 ...)
+				ReformMixItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo  ); //?????? (???????? ?κ????? ??????????? ...)
 				cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.ItemAgingNum[0]++;
 				*/
 
@@ -1696,12 +1695,12 @@ void sinTestKey()
 				cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.Attack_Rating =100;
 				//cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo.Damage[1] =30;
 
-				ReformItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo);  //아이템 인증 받기
+				ReformItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo);  //?????? ???? ???
 				cInvenTory.ReFormInvenItem();
 				*/
-				//	ReformItem(&cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo);  //아이템 인증 받기 
-				//	ReformMixItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo  ); //에이징 재인증 
-				//	cInvenTory.ReFormInvenItem();   //인벤토리 아이템 인증 
+				//	ReformItem(&cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo);  //?????? ???? ??? 
+				//	ReformMixItem( &cInvenTory.InvenItem[SelectInvenItemIndex-1].sItemInfo  ); //????¡ ?????? 
+				//	cInvenTory.ReFormInvenItem();   //?κ??? ?????? ???? 
 
 			}
 
@@ -1712,13 +1711,13 @@ void sinTestKey()
 		/*
 		if(sinGetKeyClick('B')){
 //	#ifdef	_WINMODE_DEBUG
-			CheckCharForm(); //인증
+			CheckCharForm(); //????
 			TempExp = (sinChar->Next_Exp)- (sinChar->Exp^CodeXorExp);
 			TempExp2 = (int)((float)TempExp/10);
 
 			sinChar->Exp = ((sinChar->Exp^CodeXorExp)+(TempExp2))^CodeXorExp;
 			//((sinChar->Exp^CodeXorExp)*2)^CodeXorExp;
-			ReformCharForm(); //재인증
+			ReformCharForm(); //??????
 //	#endif
 		}
 		*/
@@ -1740,29 +1739,29 @@ void sinTestKey()
 			for (int j = 1; j < SIN_MAX_USE_SKILL; j++) {
 				if (sinSkill.UseSkill[j].Flag && sinSkill.UseSkill[j].Point) {
 					sinSkill.UseSkill[j].UseSkillCount += 100;
-					CSKILL->ReformSkillMasteryForm(0, j); //데이타를 갱신한다
+					CSKILL->ReformSkillMasteryForm(0, j); //??????? ???????
 
 				}
 
 			}
-			CSKILL->ReFormCharSkillInfo(); //스킬정보를 갱신한다 (해킹방지)
-			ReformCharForm();//재인증 
+			CSKILL->ReFormCharSkillInfo(); //????????? ??????? (???????)
+			ReformCharForm();//?????? 
 
 		}
 		if (sinGetKeyClick('L')) {
 			//sinChar->Exp +=10000000;
 
-			//CheckCharForm(); //인증 
+			//CheckCharForm(); //???? 
 			//sinChar->Money = 600000;
-			//ReformCharForm(); //재인증 
-			//SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+			//ReformCharForm(); //?????? 
+			//SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
 		}
 
 		if (sinGetKeyClick('H')) {
 			//			sinChar->ChangeJob++;
-			//			ChangeJobFace(); //면상을 바꾼다 (유치하게..)
-			//			CSKILL->SearchUseSkill(); //사용될 스킬을 찾는다 
+			//			ChangeJobFace(); //????? ???? (??????..)
+			//			CSKILL->SearchUseSkill(); //???? ????? ??´? 
 
 		}
 		if (sinGetKeyClick('H')) {
@@ -1782,7 +1781,7 @@ void sinTestKey()
 }
 
 
-//트레이드 요구가 들어오면 값을 셋팅한다 
+//?????? ???? ?????? ???? ??????? 
 int sinRequestTrade(DWORD CODE, char* CharName)
 {
 	if (cTrade.OpenFlag)
@@ -1797,12 +1796,12 @@ int sinRequestTrade(DWORD CODE, char* CharName)
 
 DWORD dwCurrentTime = 0;
 
-//스킬을 배우고 전업을 한다 
+//????? ???? ?????? ??? 
 int sinSkillMaster(int ChangeJob)
 {
 
 	int i = 0, j = 0;
-	//퀘스트 관련사항일경우 리턴시킨다
+	//????? ??????????? ????????
 	for (i = 0; i < SIN_MAX_HELP_NUMBER; i++) {
 		if (sSinHelp[i].KindFlag)return FALSE;
 	}
@@ -1811,15 +1810,15 @@ int sinSkillMaster(int ChangeJob)
 	int ChangeJobItemCnt = 0;
 
 
-	if (ChangeJob) { //전업관련 플렉이 들어와야 처리한다 
+	if (ChangeJob) { //???????? ?÷??? ????? ?????? 
 		for (i = 0; i < 3; i++) {
 			ItemIndex1[i] = 0;
 			ItemIndex2[i] = 0;
 		}
 		if (sinQuest_ChangeJob.CODE == SIN_QUEST_CODE_CHANGEJOB) {
 			SkillNpcFlag = 0;
-			if (sinQuest_ChangeJob.State == SIN_QUEST_PROGRESS) { //퀘스트 진행중일경우..
-				if (sinChar->ChangeJob == 0) { //2차 전직에만 해당됨 
+			if (sinQuest_ChangeJob.State == SIN_QUEST_PROGRESS) { //????? ??????????..
+				if (sinChar->ChangeJob == 0) { //2?? ???????? ???? 
 					for (i = 0; i < 100; i++) {
 						if (cInvenTory.InvenItem[i].Flag) {
 							if (cInvenTory.InvenItem[i].CODE == (sinQT1 | sin01))ItemIndex1[0] = i + 1;
@@ -1836,21 +1835,21 @@ int sinSkillMaster(int ChangeJob)
 				}
 			}
 		}
-		//2차 전직 코드 (템스크론)
-		if (ItemIndex1[0] && ItemIndex1[1] && ItemIndex1[2]) { //왕날치기 땜빵   
+		//2?? ???? ??? (??????)
+		if (ItemIndex1[0] && ItemIndex1[1] && ItemIndex1[2]) { //?????? ????   
 			SkillNpcFlag = 0;
 			cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), QuestFilePath[1]);
 			CSKILL->OpenFlag = 1;
-			cInterFace.CheckAllBox(SIN_SKILL); //창을 하나만 띄운다 
+			cInterFace.CheckAllBox(SIN_SKILL); //??? ????? ???? 
 
 
 			//sinJobList = GetJobDataCode(sinChar->JOB_CODE , sinChar->ChangeJob+1);
 			//cMessageBox.ShowMessage3(MESSAGE_CHANGE_JOB,sinJobList->szName2);
 		}
-		//2차 전직 코드 (모라이온)
+		//2?? ???? ??? (??????)
 		else if ((FindLastQuestCode(SIN_QUEST_CODE_CHANGEJOB2_NPC_M) || FindLastQuestCode(SIN_QUEST_CODE_CHANGEJOB2_NPC_D)) && sinChar->ChangeJob < 1) {
 			cSinHelp.sinShowHelp(SIN_HELP_KIND_QUEST, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), QuestFilePath[9]);
-			cInterFace.CheckAllBox(SIN_SKILL); //창을 하나만 띄운다 
+			cInterFace.CheckAllBox(SIN_SKILL); //??? ????? ???? 
 			sinQuest_ChangeJob2.State = 0;
 			SkillNpcFlag = 0;
 		}
@@ -1859,43 +1858,43 @@ int sinSkillMaster(int ChangeJob)
 			sinCheckChangeJobQuest4();
 		}
 		else {
-			//여기서 3차 스킬 SkillNpcFlag = 0;
+			//???? 3?? ??? SkillNpcFlag = 0;
 			if (!sinNpcChangeJob3())
 			{
-				SkillMasterFlag = 1; //스킬
+				SkillMasterFlag = 1; //???
 			}
 		}
 	}
 	else {
-		SkillMasterFlag = 1; //스킬
+		SkillMasterFlag = 1; //???
 	}
 	CSKILL->OpenFlag = 1;
-	cInterFace.CheckAllBox(SIN_SKILL); //창을 하나만 띄운다 
+	cInterFace.CheckAllBox(SIN_SKILL); //??? ????? ???? 
 
-	//////////////// 요기는 3차전직 
+	//////////////// ???? 3?????? 
 	/*
 	if(sinChar->ChangeJob == 1 && FindLastQuestCode(SIN_QUEST_CODE_CHANGEJOB3)
 	*/
 
-	if (sinQuest_ChangeJob.State)//여기서두 초기화해준다 
+	if (sinQuest_ChangeJob.State)//?????? ????????? 
 		sinChangeJobButtonShow = 0;
-	if (sinQuest_ChangeJob2.State) {//여기서두 초기화해준다
+	if (sinQuest_ChangeJob2.State) {//?????? ?????????
 		sinChangeJobButtonShow2 = 0;
 	}
-	if (sinQuest_ChangeJob3.State) {//여기서두 초기화해준다
+	if (sinQuest_ChangeJob3.State) {//?????? ?????????
 		sinChangeJobButtonShow3 = 0;
 	}
-	if (sinQuest_ChangeJob4.State) {//여기서두 초기화해준다
+	if (sinQuest_ChangeJob4.State) {//?????? ?????????
 		sinChangeJobButtonShow4 = 0;
 	}
 
 
-	//퀘스트를 마치면 초기화해준다
+	//??????? ????? ?????????
 	if ((FindLastQuestCode(SIN_QUEST_CODE_CHANGEJOB2_NPC_M) || FindLastQuestCode(SIN_QUEST_CODE_CHANGEJOB2_NPC_D)) && sinChar->ChangeJob < 1) {
 		sinChangeJobButtonShow2 = 0;
 	}
 
-	//퀘스트와 전업진행시 문제가 생기므로 이곳에서도 처리해준다
+	//??????? ????????? ?????? ?????? ????????? ????????
 	switch (sinChar->ChangeJob) {
 	case 0:
 		ChangeJobSkillPlus = 5;
@@ -1950,18 +1949,18 @@ int sinSkillMaster(int ChangeJob)
 	return TRUE;
 }
 
-//스킬 배우기를 마친다 
+//??? ???? ????? 
 int sinSkillMasterClose()
 {
 	/*
 	if(ChangeJobButtonclick){
-		cInterFace.CheckAllBox(SIN_SKILL); //스킬창을 띄워준다
+		cInterFace.CheckAllBox(SIN_SKILL); //?????? ??????
 
 	}
 	else{
 	*/
-	SkillMasterFlag = 0;	//스킬을 할당할수있는 값을 초기화한다 
-	CSKILL->OpenFlag = 0;	//스킬 창을 닫아준다 
+	SkillMasterFlag = 0;	//????? ????????? ???? ??????? 
+	CSKILL->OpenFlag = 0;	//??? ??? ?????? 
 	dwCurrentTime = dwPlayTime + 5000;
 	//}
 	return TRUE;
@@ -1992,7 +1991,7 @@ int ShowParty()
 	switch (InterfaceParty.PartyPosState) {
 	case PARTY_NONE:
 		InterfaceParty.PartyPosState = PARTY_START;
-		//퀘스트 창이 열리면 보드를 닫아준다.
+		//????? ??? ?????? ???? ??????.
 		haSiegeBoardTempFlag = 1;
 		break;
 	case PARTY_PROCESS:
@@ -2008,7 +2007,7 @@ int ShowParty()
 	return TRUE;
 }
 
-//퀘스트 창을 보여준다 
+//????? ??? ??????? 
 int ShowQuest()
 {
 	int ls;
@@ -2033,7 +2032,7 @@ int ShowQuest()
 	switch (InterfaceParty.PartyPosState) {
 	case PARTY_NONE:
 		InterfaceParty.PartyPosState = PARTY_START;
-		//퀘스트 창이 열리면 보드를 닫아준다.
+		//????? ??? ?????? ???? ??????.
 		haSiegeBoardTempFlag = 1;
 		break;
 	case PARTY_PROCESS:
@@ -2049,106 +2048,106 @@ int ShowQuest()
 	return TRUE;
 }
 
-///////////////////////////////// 라이프 , 마나 , 스테미나 관련 코드화 
+///////////////////////////////// ?????? , ???? , ?????? ???? ???? 
 
-//라이프를 읽어온다 
+//???????? ?о?´? 
 short sinGetLife()
 {
 
 	return (sinChar->Life[0]) ^ CodeXorLife;
 }
 
-//마나를 얻어온다 
+//?????? ???´? 
 short sinGetMana()
 {
 
 	return sinChar->Mana[0];
 }
 
-//스테미나를 얻어온다 
+//???????? ???´? 
 short sinGetStamina()
 {
 
 	return sinChar->Stamina[0];
 }
 
-//라이프를 셋팅한다				//kyle xtrapHeap
+//???????? ???????				//kyle xtrapHeap
 void sinSetLife(short Life)
 {
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func11_Protect(&(sinChar->Life), sizeof(sinChar->Life));	//보호영역 무결성 체크
+	XTrap_CE1_Func11_Protect(&(sinChar->Life), sizeof(sinChar->Life));	//??????? ???? ??
 #endif
 
-	//CheckCharForm(); //인증 
+	//CheckCharForm(); //???? 
 	sinChar->Life[0] = Life;
 	if (sinChar->Life[0] < 0) sinChar->Life[0] = 0;
 	if (sinChar->Life[0] >= sinChar->Life[1])sinChar->Life[0] = sinChar->Life[1];
 	sinChar->Life[0] ^= CodeXorLife;
-	ReformCharForm(); //재인증 
+	ReformCharForm(); //?????? 
 
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func12_Protect(&(sinChar->Life), sizeof(sinChar->Life));	//보호영역 보호
-	XTrap_CE1_Func13_Free(&(sinChar->Life), sizeof(sinChar->Life));		//보호영역 해제
+	XTrap_CE1_Func12_Protect(&(sinChar->Life), sizeof(sinChar->Life));	//??????? ???
+	XTrap_CE1_Func13_Free(&(sinChar->Life), sizeof(sinChar->Life));		//??????? ????
 #endif
 
 }
 
-//마나를 셋팅한다 
+//?????? ??????? 
 void sinSetMana(short Mana)
 {
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func11_Protect(&(sinChar->Mana), sizeof(sinChar->Mana));	//보호영역 무결성 체크
+	XTrap_CE1_Func11_Protect(&(sinChar->Mana), sizeof(sinChar->Mana));	//??????? ???? ??
 #endif
 
-	//CheckCharForm(); //인증 
+	//CheckCharForm(); //???? 
 	sinChar->Mana[0] = Mana;
 	if (sinChar->Mana[0] < 0) sinChar->Mana[0] = 0;
 	if (sinChar->Mana[0] >= sinChar->Mana[1])sinChar->Mana[0] = sinChar->Mana[1];
-	ReformCharForm(); //재인증 
+	ReformCharForm(); //?????? 
 
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func12_Protect(&(sinChar->Mana), sizeof(sinChar->Mana));	//보호영역 보호
-	XTrap_CE1_Func13_Free(&(sinChar->Mana), sizeof(sinChar->Mana));		//보호영역 해제
+	XTrap_CE1_Func12_Protect(&(sinChar->Mana), sizeof(sinChar->Mana));	//??????? ???
+	XTrap_CE1_Func13_Free(&(sinChar->Mana), sizeof(sinChar->Mana));		//??????? ????
 #endif
 }
 
-//스테미나를 셋팅한다 
+//???????? ??????? 
 void sinSetStamina(short Stamina)
 {
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func11_Protect(&(sinChar->Stamina), sizeof(sinChar->Stamina));	//보호영역 무결성 체크
+	XTrap_CE1_Func11_Protect(&(sinChar->Stamina), sizeof(sinChar->Stamina));	//??????? ???? ??
 #endif
 
-	//CheckCharForm(); //인증 
+	//CheckCharForm(); //???? 
 	sinChar->Stamina[0] = Stamina;
 	if (sinChar->Stamina[0] < 0) sinChar->Stamina[0] = 0;
 	if (sinChar->Stamina[0] >= sinChar->Stamina[1])sinChar->Stamina[0] = sinChar->Stamina[1];
-	ReformCharForm(); //재인증 
+	ReformCharForm(); //?????? 
 
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func12_Protect(&(sinChar->Stamina), sizeof(sinChar->Stamina));	//보호영역 보호
-	XTrap_CE1_Func13_Free(&(sinChar->Stamina), sizeof(sinChar->Stamina));		//보호영역 해제
+	XTrap_CE1_Func12_Protect(&(sinChar->Stamina), sizeof(sinChar->Stamina));	//??????? ???
+	XTrap_CE1_Func13_Free(&(sinChar->Stamina), sizeof(sinChar->Stamina));		//??????? ????
 #endif
 
 }
 
-//	short   ItemAgingNum[2];	//0은 에이징+몇 1은 에이징이 되고있나 아닌가?
-//	short   ItemAgingCount[2];	//0아이템 숙련 카운트 1숙련치 최대 
+//	short   ItemAgingNum[2];	//0?? ????¡+?? 1?? ????¡?? ?????? ?????
+//	short   ItemAgingCount[2];	//0?????? ???? ???? 1????? ??? 
 
-//////에이징 레벨을 체크한후 올려준다(에이징수치)
+//////????¡ ?????? ?????? ?÷????(????¡???)
 /*
-char *AgingMsgDamageMax = "최대공격력";
-char *AgingMsgDamageMin = "최소공격력";
-char *AgingMsgAttack_Rate = "명중력";
-char *AgingMsgDur = "내구력";
-char *AgingMsgCritical = "크리티컬";
-char *AgingMsgShooting_Range = "사정거리";
-char *AgingMsgMana = "기력";
-char *AgingMsgBlock = "블럭율";
-char *AgingMsgAbsorb = "흡수율";
-char *AgingMsgDefense = "방어율";
+char *AgingMsgDamageMax = "???????";
+char *AgingMsgDamageMin = "???????";
+char *AgingMsgAttack_Rate = "?????";
+char *AgingMsgDur = "??????";
+char *AgingMsgCritical = "??????";
+char *AgingMsgShooting_Range = "???????";
+char *AgingMsgMana = "???";
+char *AgingMsgBlock = "??????";
+char *AgingMsgAbsorb = "??????";
+char *AgingMsgDefense = "?????";
 */
-//내구력
+//??????
 int sinSetDurabilityAging(sITEMINFO* pItem)
 {
 	int Temp = 0;
@@ -2156,30 +2155,30 @@ int sinSetDurabilityAging(sITEMINFO* pItem)
 	Temp += 1;
 	pItem->Durability[1] -= Temp;
 	if (pItem->Durability[1] < 0) pItem->Durability[1] = 0;
-	if (pItem->Durability[1] < pItem->Durability[0]) pItem->Durability[0] = pItem->Durability[1]; //현제 내구력 보정 
+	if (pItem->Durability[1] < pItem->Durability[0]) pItem->Durability[0] = pItem->Durability[1]; //???? ?????? ???? 
 
 	return TRUE;
 }
-//공격력
+//?????
 int sinSetDamageAging(sITEMINFO* pItem)
 {
 	pItem->Damage[0]++;
 	pItem->Damage[1]++;
 
-	if (pItem->ItemAgingNum[0] >= 9) { //10차부터는 데미지 +2
+	if (pItem->ItemAgingNum[0] >= 9) { //10??????? ?????? +2
 		pItem->Damage[0]++;
 		pItem->Damage[1]++;
 	}
 
-	// 박재원 - 에이징 설정 변경(무기류 레벨별 공격력 추가)
-	if (pItem->ItemAgingNum[0] >= 19) { //20차부터는 데미지 +3
+	// ????? - ????¡ ???? ????(????? ?????? ????? ???)
+	if (pItem->ItemAgingNum[0] >= 19) { //20??????? ?????? +3
 		pItem->Damage[0]++;
 		pItem->Damage[1]++;
 	}
 
 	return TRUE;
 }
-//방어력
+//????
 int sinSetDefenseAging(sITEMINFO* pItem, int Percent)
 {
 	float Temp = 0;
@@ -2188,29 +2187,29 @@ int sinSetDefenseAging(sITEMINFO* pItem, int Percent)
 	return TRUE;
 }
 
-//명중력
+//?????
 int sinSetAttackRateAging(sITEMINFO* pItem, int AddNum)
 {
 	pItem->Attack_Rating += AddNum;
 	return TRUE;
 }
-//흡수율
+//??????
 int sinSetAbsorbAging(sITEMINFO* pItem, float Percent)
 {
 	pItem->fAbsorb += Percent;
 
-	if (pItem->ItemAgingNum[0] >= 9) { //10차부터는 2배
+	if (pItem->ItemAgingNum[0] >= 9) { //10??????? 2??
 		pItem->fAbsorb += Percent;
 	}
 
-	// 박재원 - 에이징 설정 변경(무기류 레벨별 공격력 추가)
-	if (pItem->ItemAgingNum[0] >= 19) { //20차부터는 3배
+	// ????? - ????¡ ???? ????(????? ?????? ????? ???)
+	if (pItem->ItemAgingNum[0] >= 19) { //20??????? 3??
 		pItem->fAbsorb += Percent;
 	}
 	return TRUE;
 }
 
-//크리티컬
+//??????
 int sinSetCriticalAging(sITEMINFO* pItem)
 {
 	if (pItem->ItemAgingNum[0] && (pItem->ItemAgingNum[0] % 2) == 1) {
@@ -2220,7 +2219,7 @@ int sinSetCriticalAging(sITEMINFO* pItem)
 	return TRUE;
 }
 
-//블럭율
+//??????
 int sinSetBlockRateAging(sITEMINFO* pItem)
 {
 	if (pItem->ItemAgingNum[0] && (pItem->ItemAgingNum[0] % 2) == 1) {
@@ -2235,162 +2234,162 @@ int sinSetAgingItemIncreState(sITEMINFO* pItem)
 	float TempDefense[2] = { 0,0 };
 
 
-	//에이징 초기화
+	//????¡ ????
 	switch (pItem->CODE & sinITEM_MASK2) {
-	case sinWA1: //도끼 
-		//공격력 
+	case sinWA1: //???? 
+		//????? 
 		sinSetDamageAging(pItem);
-		//명중력
+		//?????
 		sinSetAttackRateAging(pItem, 10);
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 
 		break;
-	case sinWC1: //클러
-		//공격력 
+	case sinWC1: //???
+		//????? 
 		sinSetDamageAging(pItem);
-		//명중력
+		//?????
 		sinSetAttackRateAging(pItem, 5);
-		//크리티컬  
+		//??????  
 		sinSetCriticalAging(pItem);
 
 		break;
 
-	case sinWH1: //해머 
-		//공격력 
+	case sinWH1: //??? 
+		//????? 
 		sinSetDamageAging(pItem);
 
-		//명중력
+		//?????
 		sinSetAttackRateAging(pItem, 10);
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 
 		break;
-	case sinWM1: //메지컬 스테프 
-		//공격력 
+	case sinWM1: //?????? ?????? 
+		//????? 
 		sinSetDamageAging(pItem);
 
-		//명중력
+		//?????
 		sinSetAttackRateAging(pItem, 10);
 
-		//기력  
+		//???  
 		pItem->fIncrease_Mana += 10;
 
 		break;
-	case sinWP1: //창 
-		//공격력 
+	case sinWP1: //? 
+		//????? 
 		sinSetDamageAging(pItem);
 
-		//명중력
+		//?????
 		sinSetAttackRateAging(pItem, 5);
 
-		//크리티컬  
+		//??????  
 		sinSetCriticalAging(pItem);
 
 		break;
-	case sinWS1: //활 
-		//공격력 
+	case sinWS1: //? 
+		//????? 
 		sinSetDamageAging(pItem);
 
-		//크리티컬  
+		//??????  
 		sinSetCriticalAging(pItem);
 
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 		break;
 
-	case sinWS2: //칼  
-		//공격력 
+	case sinWS2: //?  
+		//????? 
 		sinSetDamageAging(pItem);
 
-		//명중력
+		//?????
 		sinSetAttackRateAging(pItem, 5);
 
-		//크리티컬  
+		//??????  
 		sinSetCriticalAging(pItem);
 
 		break;
 
-	case sinWT1: //자벨린 
-		//공격력 
+	case sinWT1: //????? 
+		//????? 
 		sinSetDamageAging(pItem);
 
-		//크리티컬  
+		//??????  
 		sinSetCriticalAging(pItem);
 
-		//내구력
+		//??????
 		//sinSetDurabilityAging(pItem); 
 		break;
 
-	case sinDS1: //방패 
-		//블럭율 
+	case sinDS1: //???? 
+		//?????? 
 		sinSetBlockRateAging(pItem);
-		//흡수율
+		//??????
 		sinSetAbsorbAging(pItem, 0.2f);
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 		break;
 
-	case sinOM1: //매지컬 감자 
-		//방어력 
+	case sinOM1: //?????? ???? 
+		//???? 
 		sinSetDefenseAging(pItem, 10);
 
-		//흡수율
+		//??????
 		sinSetAbsorbAging(pItem, 0.5f);
 
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 
 		break;
-	case sinDA1: case sinDA2://갑옷 
-		//방어력 
+	case sinDA1: case sinDA2://???? 
+		//???? 
 		sinSetDefenseAging(pItem, 5);
 
-		//흡수율
+		//??????
 		sinSetAbsorbAging(pItem, 0.5f);
 
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 
 		break;
-	case sinDB1: // 박재원 - 에이징 아이템 추가(부츠)
-		//방어력 
+	case sinDB1: // ????? - ????¡ ?????? ???(????)
+		//???? 
 		sinSetDefenseAging(pItem, 10);
-		//흡수율
+		//??????
 		sinSetAbsorbAging(pItem, 0.5f);
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 		break;
-	case sinDG1: // 박재원 - 에이징 아이템 추가(장갑)
-		//방어력 
+	case sinDG1: // ????? - ????¡ ?????? ???(??)
+		//???? 
 		sinSetDefenseAging(pItem, 10);
-		//흡수율
+		//??????
 		sinSetAbsorbAging(pItem, 0.5f);
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 		break;
-	case sinOA2: // 박재원 - 에이징 아이템 추가(암릿)
-		//방어력 
+	case sinOA2: // ????? - ????¡ ?????? ???(???)
+		//???? 
 		sinSetDefenseAging(pItem, 10);
-		//명중력
+		//?????
 		sinSetAttackRateAging(pItem, 5);
-		//내구력
+		//??????
 		sinSetDurabilityAging(pItem);
 		break;
 	}
 
 
 
-	pItem->ItemAgingNum[0]++;	//아이템의 레벨을 올려준다 
+	pItem->ItemAgingNum[0]++;	//???????? ?????? ?÷???? 
 
-	pItem->ItemAgingNum[1] = 0; //초기화 
+	pItem->ItemAgingNum[1] = 0; //???? 
 	pItem->ItemAgingCount[0] = 0;
 	pItem->ItemAgingCount[1] = 0;
 
 
-	if (pItem->Level == 100 || pItem->Level == 102 || pItem->Level == 105 ||	// pluto 102레벨 아템 레벨 고정 할려고 // 장별 - 105렙 아이템 고정
-		cAging.AginStoneKind == 3 || cAging.AginStoneKind == 4 || // 박재원 - 엘더 코퍼 오어, 슈퍼 에이징 스톤 사용시에는 에이징 차수가 상승해도 아이템 레벨이 올라가지 않는다.
-		cAging.AginStoneKind == 5) // 장별 - 슈퍼 에이징 스톤 1.5
+	if (pItem->Level == 100 || pItem->Level == 102 || pItem->Level == 105 ||	// pluto 102???? ???? ???? ???? ????? // ?? - 105?? ?????? ????
+		cAging.AginStoneKind == 3 || cAging.AginStoneKind == 4 || // ????? - ???? ???? ????, ???? ????¡ ???? ??????? ????¡ ?????? ?????? ?????? ?????? ????? ??´?.
+		cAging.AginStoneKind == 5) // ?? - ???? ????¡ ???? 1.5
 	{
 		pItem->Level += 0;
 	}
@@ -2402,11 +2401,11 @@ int sinSetAgingItemIncreState(sITEMINFO* pItem)
 		}
 	}
 
-	ReformItem(pItem);  //아이템 인증 받기 
+	ReformItem(pItem);  //?????? ???? ??? 
 	return TRUE;
 }
 
-//내구력을 내린다
+//???????? ??????
 int sinDownDurabilityAging(sITEMINFO* pItem)
 {
 	int Temp = 0;
@@ -2414,12 +2413,12 @@ int sinDownDurabilityAging(sITEMINFO* pItem)
 	Temp += 1;
 	pItem->Durability[1] += Temp * DownNum;
 	if (pItem->Durability[1] < 0) pItem->Durability[1] = 0;
-	if (pItem->Durability[1] < pItem->Durability[0]) pItem->Durability[0] = pItem->Durability[1]; //현제 내구력 보정 
+	if (pItem->Durability[1] < pItem->Durability[0]) pItem->Durability[0] = pItem->Durability[1]; //???? ?????? ???? 
 
 	return TRUE;
 }
 
-// 에이징 공격력
+// ????¡ ?????
 int sinDownDamageAging(sITEMINFO* pItem, int Level)
 {
 	/*
@@ -2465,7 +2464,7 @@ int sinDownDamageAging(sITEMINFO* pItem, int Level)
 
 	return TRUE;
 }
-//방어력
+//????
 int sinDownDefenseAging(sITEMINFO* pItem, int Percent)
 {
 
@@ -2479,7 +2478,7 @@ int sinDownDefenseAging(sITEMINFO* pItem, int Percent)
 	return TRUE;
 }
 
-//명중력
+//?????
 int sinDownAttackRateAging(sITEMINFO* pItem, int AddNum)
 {
 
@@ -2487,13 +2486,13 @@ int sinDownAttackRateAging(sITEMINFO* pItem, int AddNum)
 	return TRUE;
 
 }
-//흡수율
+//??????
 int sinDownAbsorbAging(sITEMINFO* pItem, float Percent, int Level)
 {
 
 	pItem->fAbsorb -= Percent * (float)DownNum;
 
-	int Temp = Level - 9; //레벨 10이상은 증가한 값만큼을 더빼준다
+	int Temp = Level - 9; //???? 10????? ?????? ??????? ???????
 	if (Temp > 0) {
 		if (Temp == 1) {
 			pItem->fAbsorb -= Percent;
@@ -2508,10 +2507,10 @@ int sinDownAbsorbAging(sITEMINFO* pItem, float Percent, int Level)
 
 }
 
-//크리티컬
+//??????
 int sinDownCriticalAging(sITEMINFO* pItem)
 {
-	pItem->Critical_Hit -= 1; //일단 하나내려주고
+	pItem->Critical_Hit -= 1; //??? ??????????
 	if (DownNum > 2) {
 		if (pItem->ItemAgingNum[0] && (pItem->ItemAgingNum[0] % 2) == 1) {
 			pItem->Critical_Hit -= 1;
@@ -2521,10 +2520,10 @@ int sinDownCriticalAging(sITEMINFO* pItem)
 
 }
 
-//블럭율
+//??????
 int sinDownBlockRateAging(sITEMINFO* pItem)
 {
-	pItem->fBlock_Rating -= 1; //일단 하나내려주고
+	pItem->fBlock_Rating -= 1; //??? ??????????
 	if (DownNum > 2) {
 		if (pItem->ItemAgingNum[0] && (pItem->ItemAgingNum[0] % 2) == 1) {
 			pItem->fBlock_Rating -= 1;
@@ -2535,7 +2534,7 @@ int sinDownBlockRateAging(sITEMINFO* pItem)
 
 }
 
-//에이징 레벨초기화
+//????¡ ????????
 int sinAgingItemInit(sITEMINFO* pItem, int Down)
 {
 
@@ -2544,177 +2543,177 @@ int sinAgingItemInit(sITEMINFO* pItem, int Down)
 	int AgingLevelTemp = 0;
 	AgingLevelTemp = pItem->ItemAgingNum[0];
 
-	pItem->ItemAgingNum[0] -= DownNum;	//먼저 레벨을 내려준다 (크리티컬 계산문제)
+	pItem->ItemAgingNum[0] -= DownNum;	//???? ?????? ??????? (?????? ??깮??)
 /*
 	if((pItem->CODE & sinITEM_MASK2) == sinMA1){
 	}
 	else{
 
 */
-//에이징 레벨다운 --
+//????¡ ??????? --
 	switch (pItem->CODE & sinITEM_MASK2) {
-	case sinWA1: //도끼 
-		//공격력 
+	case sinWA1: //???? 
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
-		//명중력
+		//?????
 		sinDownAttackRateAging(pItem, 10);
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 
 		break;
-	case sinWC1: //클러
-		//공격력 
+	case sinWC1: //???
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
-		//명중력
+		//?????
 		sinDownAttackRateAging(pItem, 5);
-		//크리티컬  
+		//??????  
 		sinDownCriticalAging(pItem);
 
 		break;
 
-	case sinWH1: //해머 
-		//공격력 
+	case sinWH1: //??? 
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
 
-		//명중력
+		//?????
 		sinDownAttackRateAging(pItem, 10);
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 
 		break;
-	case sinWM1: //메지컬 스테프 
-		//공격력 
+	case sinWM1: //?????? ?????? 
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
 
-		//명중력
+		//?????
 		sinDownAttackRateAging(pItem, 10);
 
-		//기력  
+		//???  
 		pItem->fIncrease_Mana -= 10 * DownNum;
 
 		break;
-	case sinWP1: //창 
-		//공격력 
+	case sinWP1: //? 
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
 
-		//명중력
+		//?????
 		sinDownAttackRateAging(pItem, 5);
 
-		//크리티컬  
+		//??????  
 		sinDownCriticalAging(pItem);
 
 		break;
-	case sinWS1: //활 
-		//공격력 
+	case sinWS1: //? 
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
 
-		//크리티컬  
+		//??????  
 		sinDownCriticalAging(pItem);
 
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 		break;
 
-	case sinWS2: //칼  
-		//공격력 
+	case sinWS2: //?  
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
 
-		//명중력
+		//?????
 		sinDownAttackRateAging(pItem, 5);
 
-		//크리티컬  
+		//??????  
 		sinDownCriticalAging(pItem);
 
 		break;
 
-	case sinWT1: //자벨린 
-		//공격력 
+	case sinWT1: //????? 
+		//????? 
 		sinDownDamageAging(pItem, AgingLevelTemp);
 
-		//크리티컬  
+		//??????  
 		sinDownCriticalAging(pItem);
 
-		//내구력
+		//??????
 		//sinSetDurabilityAging(pItem); 
 		break;
 
-	case sinDS1: //방패 
-		//블럭율 
+	case sinDS1: //???? 
+		//?????? 
 		sinDownBlockRateAging(pItem);
-		//흡수율
+		//??????
 		sinDownAbsorbAging(pItem, 0.2f, AgingLevelTemp);
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 		break;
 
-	case sinOM1: //매지컬 감자 
-		//방어력 
+	case sinOM1: //?????? ???? 
+		//???? 
 		sinDownDefenseAging(pItem, 10);
 
-		//흡수율
+		//??????
 		sinDownAbsorbAging(pItem, 0.5f, AgingLevelTemp);
 
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 
 		break;
-	case sinDA1: case sinDA2://갑옷 
-		//방어력 
+	case sinDA1: case sinDA2://???? 
+		//???? 
 		sinDownDefenseAging(pItem, 5);
 
-		//흡수율
+		//??????
 		sinDownAbsorbAging(pItem, 0.5f, AgingLevelTemp);
 
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 
 		break;
-	case sinDB1: // 박재원 - 에이징 아이템 추가(부츠)
-		//방어력 
+	case sinDB1: // ????? - ????¡ ?????? ???(????)
+		//???? 
 		sinDownDefenseAging(pItem, 10);
-		//흡수율
+		//??????
 		sinDownAbsorbAging(pItem, 0.5f, AgingLevelTemp);
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 		break;
-	case sinDG1: // 박재원 - 에이징 아이템 추가(장갑)
-		//방어력 
+	case sinDG1: // ????? - ????¡ ?????? ???(??)
+		//???? 
 		sinDownDefenseAging(pItem, 10);
-		//흡수율
+		//??????
 		sinDownAbsorbAging(pItem, 0.5f, AgingLevelTemp);
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 		break;
-	case sinOA2: // 박재원 - 에이징 아이템 추가(암릿)
-		//방어력 
+	case sinOA2: // ????? - ????¡ ?????? ???(???)
+		//???? 
 		sinDownDefenseAging(pItem, 10);
-		//명중력
+		//?????
 		sinDownAttackRateAging(pItem, 5);
-		//내구력
+		//??????
 		sinDownDurabilityAging(pItem);
 		break;
 	}
 
-	pItem->ItemAgingNum[1] = 0; //초기화 
+	pItem->ItemAgingNum[1] = 0; //???? 
 	pItem->ItemAgingCount[0] = 0;
 	pItem->ItemAgingCount[1] = 0;
 
-	// pluto 에이징
+	// pluto ????¡
 	if (pItem->Level >= 100) {
 		pItem->Level -= 0;
 	}
 	else
 
-		pItem->Level -= 1; //레벨을 빼주고
+		pItem->Level -= 1; //?????? ?????
 	if (DownNum > 2) {
 		if ((pItem->ItemAgingNum[0] % 2) == 1) {
-			pItem->Level -= 1; //에이징레벨이 홀수일경우 레벨을 더 내려준다 
+			pItem->Level -= 1; //????¡?????? ??????? ?????? ?? ??????? 
 		}
 	}
 
 
-	ReformItem(pItem);  //아이템 인증 받기 
-//	ReformMixItem( pItem ); //에이징 재인증 
+	ReformItem(pItem);  //?????? ???? ??? 
+//	ReformMixItem( pItem ); //????¡ ?????? 
 	return TRUE;
 }
 
@@ -2736,13 +2735,13 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 		break;
 		/*
 		case  SIN_AGING_DEFENSE:
-			//////////// 오브 , 비즈  (두번 체크를 해야하기때문에 이렇게해놓는다)
+			//////////// ???? , ????  (?ι? ???? ?????????? ?????????´?)
 			if(cInvenTory.InvenItem[sInven[1].ItemIndex-1].Flag ||
 				cInvenTory.InvenItem[sInven[1].ItemIndex-1].sItemInfo.ItemAgingNum[1]){
 					if((cInvenTory.InvenItem[sInven[1].ItemIndex-1].CODE &sinITEM_MASK2) == sinOM1){
 						pItem = &cInvenTory.InvenItem[sInven[1].ItemIndex-1];
 						if( pItem && pItem->sItemInfo.ItemKindCode == ITEM_KIND_AGING) {
-							///////////호출될때마다 올려준다
+							///////////????????? ?÷????
 							if(smConfig.DebugMode){
 								pItem->sItemInfo.ItemAgingCount[0] +=200;
 							}
@@ -2750,7 +2749,7 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 								pItem->sItemInfo.ItemAgingCount[0]++;
 							}
 							if(pItem->sItemInfo.ItemAgingCount[1] &&  pItem->sItemInfo.ItemAgingCount[0] >= pItem->sItemInfo.ItemAgingCount[1] ){
-								//서버로 아이템을 보낸다
+								//?????? ???????? ??????
 								SendAgingUpgradeItemToServer(&pItem->sItemInfo);
 							}
 						}
@@ -2758,7 +2757,7 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 					}
 				}
 
-			// 갑옷 , 로브
+			// ???? , ?κ?
 			if(cInvenTory.InvenItem[sInven[2].ItemIndex-1].Flag ||
 				cInvenTory.InvenItem[sInven[2].ItemIndex-1].sItemInfo.ItemAgingNum[1]){
 				if((cInvenTory.InvenItem[sInven[2].ItemIndex-1].CODE &sinITEM_MASK2) == sinDA1 ||
@@ -2792,9 +2791,9 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 
 		break;
 
-		// 박재원 - 에이징 마스터 아이템
-	case SIN_AGING_DEFENSE_ARMOR: // 갑옷, 로브
-		// 갑옷 , 로브 	
+		// ????? - ????¡ ?????? ??????
+	case SIN_AGING_DEFENSE_ARMOR: // ????, ?κ?
+		// ???? , ?κ? 	
 		if (cInvenTory.InvenItem[sInven[2].ItemIndex - 1].Flag ||
 			cInvenTory.InvenItem[sInven[2].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) {
 			if ((cInvenTory.InvenItem[sInven[2].ItemIndex - 1].CODE & sinITEM_MASK2) == sinDA1 ||
@@ -2804,8 +2803,8 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 		}
 		break;
 
-		// 박재원 - 에이징 마스터 아이템
-	case SIN_AGING_DEFENSE_ORB: // 오브 비즈
+		// ????? - ????¡ ?????? ??????
+	case SIN_AGING_DEFENSE_ORB: // ???? ????
 		if (cInvenTory.InvenItem[sInven[1].ItemIndex - 1].Flag ||
 			cInvenTory.InvenItem[sInven[1].ItemIndex - 1].sItemInfo.ItemAgingNum[1]) {
 			if ((cInvenTory.InvenItem[sInven[1].ItemIndex - 1].CODE & sinITEM_MASK2) == sinOM1) {
@@ -2814,8 +2813,8 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 		}
 		break;
 
-		// 박재원 - 에이징 아이템 추가(부츠)
-	case SIN_AGING_DEFENSE_BOOTS: // 부츠
+		// ????? - ????¡ ?????? ???(????)
+	case SIN_AGING_DEFENSE_BOOTS: // ????
 		if (!cInvenTory.InvenItem[sInven[9].ItemIndex - 1].Flag ||
 			!cInvenTory.InvenItem[sInven[9].ItemIndex - 1].sItemInfo.ItemAgingNum[1])return FALSE;
 
@@ -2823,8 +2822,8 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 			pItem = &cInvenTory.InvenItem[sInven[9].ItemIndex - 1];
 		break;
 
-		// 박재원 - 에이징 아이템 추가(장갑)
-	case SIN_AGING_DEFENSE_GLOVES: // 장갑
+		// ????? - ????¡ ?????? ???(??)
+	case SIN_AGING_DEFENSE_GLOVES: // ??
 		if (!cInvenTory.InvenItem[sInven[8].ItemIndex - 1].Flag ||
 			!cInvenTory.InvenItem[sInven[8].ItemIndex - 1].sItemInfo.ItemAgingNum[1])return FALSE;
 
@@ -2832,8 +2831,8 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 			pItem = &cInvenTory.InvenItem[sInven[8].ItemIndex - 1];
 		break;
 
-		// 박재원 - 에이징 아이템 추가(암릿)
-	case SIN_AGING_DEFENSE_ARMLETS: // 암릿
+		// ????? - ????¡ ?????? ???(???)
+	case SIN_AGING_DEFENSE_ARMLETS: // ???
 		if (!cInvenTory.InvenItem[sInven[7].ItemIndex - 1].Flag ||
 			!cInvenTory.InvenItem[sInven[7].ItemIndex - 1].sItemInfo.ItemAgingNum[1])return FALSE;
 
@@ -2844,7 +2843,7 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 
 	if (!pItem || pItem->sItemInfo.ItemKindCode != ITEM_KIND_AGING)return FALSE;
 
-	///////////호출될때마다 올려준다  
+	///////////????????? ?÷????  
 	if (smConfig.DebugMode)
 	{
 		if (bBillingUse == false)
@@ -2869,7 +2868,7 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 	}
 
 	if (pItem->sItemInfo.ItemAgingCount[1] && pItem->sItemInfo.ItemAgingCount[0] >= pItem->sItemInfo.ItemAgingCount[1]) {
-		//서버로 아이템을 보낸다 
+		//?????? ???????? ?????? 
 		SendAgingUpgradeItemToServer(&pItem->sItemInfo);
 	}
 
@@ -2877,22 +2876,22 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 
 	/*
 
-	//에이징 아이템이 아니거나 에이징이 꽉찬 아이템은 리턴한다
+	//????¡ ???????? ????? ????¡?? ???? ???????? ???????
 	if(pItem->sItemInfo.ItemKindCode != ITEM_KIND_AGING ||
 		(pItem->sItemInfo.ItemAgingCount[0] >= pItem->sItemInfo.ItemAgingCount[1]) )
 		return FALSE;
 
 
-	//////////////초 노가다 작업
-	if(!CheckItemForm(&pItem->sItemInfo)){ //아이템 인증받기
-		SendSetHackUser(12); //해킹을 하려고했던 씨바!! 유저를 고발 TRUE 접속 종료
+	//////////////?? ?밡?? ???
+	if(!CheckItemForm(&pItem->sItemInfo)){ //?????? ???????
+		SendSetHackUser(12); //????? ???????? ????!! ?????? ???? TRUE ???? ????
 		return FALSE;
 
 	}
 
-	//에이징 아이템 인증확인
+	//????¡ ?????? ???????
 	if(!CheckMixItem( &pItem->sItemInfo )){
-		SendSetHackUser(52); //해킹을 하려고했던 못된 유저를 고발 TRUE 접속 종료
+		SendSetHackUser(52); //????? ???????? ???? ?????? ???? TRUE ???? ????
 		return FALSE;
 	}
 	*/
@@ -2900,7 +2899,7 @@ int sinCheckAgingLevel(int Kind, bool bBillingUse)
 	return TRUE;
 }
 
-//능력치가 향상된 아이템을 받는다 
+//?????? ???? ???????? ??´? 
 int sinRecvAgingIncreStateItem(sITEMINFO* pItem)
 {
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
@@ -2908,9 +2907,9 @@ int sinRecvAgingIncreStateItem(sITEMINFO* pItem)
 			cInvenTory.InvenItem[i].sItemInfo.BackUpKey == pItem->BackUpKey &&
 			cInvenTory.InvenItem[i].sItemInfo.CODE == pItem->CODE) {
 			memcpy(&cInvenTory.InvenItem[i].sItemInfo, pItem, sizeof(sITEMINFO));
-			cInvenTory.ReFormInvenItem();   //인벤토리 아이템 인증 
+			cInvenTory.ReFormInvenItem();   //?κ??? ?????? ???? 
 			cInvenTory.CheckRequireItemToSet(&cInvenTory.InvenItem[i]);
-			cInvenTory.SetItemToChar(); //능력치 재조정
+			cInvenTory.SetItemToChar(); //???? ??????
 			break;
 
 		}
@@ -2919,7 +2918,7 @@ int sinRecvAgingIncreStateItem(sITEMINFO* pItem)
 	return TRUE;
 }
 
-//에이징 아이템에 대한 해킹을 막는다 
+//????¡ ??????? ???? ????? ???´? 
 int sinCheckAgingItemHack(sITEM* pItem)
 {
 	if (pItem->sItemInfo.ItemKindCode == ITEM_KIND_CRAFT) {
@@ -2929,15 +2928,15 @@ int sinCheckAgingItemHack(sITEM* pItem)
 	return TRUE;
 }
 
-///////////////해킹방지를 위해 돈을 한곳에서 관리한다 
+///////////////????????? ???? ???? ??????? ??????? 
 int sinMinusMoney(int Money, int Kind, bool bGoldBar)
 {
-	//공성전 세율의 영향받는다.
+	//?????? ?????? ?????´?.
 	if (Kind && !bGoldBar)
 	{
 		//--------------------------------------------------------------------------//
 #ifdef HASIEGE_MODE
-	//공성전 세율적용 마이너스 머니 적용
+	//?????? ???????? ?????? ??? ????
 
 		sinChar->Money -= Money + ((Money * cSinSiege.GetTaxRate()) / 100);
 		SetTotalSubMoney(Money + (Money * cSinSiege.GetTaxRate()) / 100);
@@ -2952,9 +2951,9 @@ int sinMinusMoney(int Money, int Kind, bool bGoldBar)
 		SetTotalSubMoney(Money);
 	}
 
-	ReformCharForm();//재인증 
+	ReformCharForm();//?????? 
 
-	SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+	SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
 	return TRUE;
 	}
@@ -2963,20 +2962,20 @@ int sinPlusMoney(int Money)
 {
 	sinChar->Money += Money;
 
-	ReformCharForm();//재인증 
+	ReformCharForm();//?????? 
 	SetTotalAddMoney(Money);
-	SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+	SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
 	return TRUE;
 }
 
-///////////////해킹방지를 위해 돈을 한곳에서 관리한다 (창고만 따로 관리 )
+///////////////????????? ???? ???? ??????? ??????? (????? ???? ???? )
 int sinMinusMoney2(int Money)
 {
 	sinChar->Money -= Money;
 
-	ReformCharForm();//재인증 
-	SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+	ReformCharForm();//?????? 
+	SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
 	return TRUE;
 }
@@ -2985,13 +2984,13 @@ int sinPlusMoney2(int Money)
 {
 	sinChar->Money += Money;
 
-	ReformCharForm();//재인증 
-	SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+	ReformCharForm();//?????? 
+	SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
 	return TRUE;
 }
 
-//원소속성을 구한다 
+//???????? ????? 
 int sinGetElement(smCHAR_INFO* pCharInfo)
 {
 	/*
@@ -3028,8 +3027,8 @@ char* PresentArmorName[5][9] = {
 
 int PresentPercentIndex[5] = { 5900,2250,1450,250,150 };
 
-///퍼즐 선물 대축제 ioi
-//무기
+///???? ???? ?????? ioi
+//????
 
 #ifdef _LANGUAGE_VEITNAM
 char* PresentWeaponName2[7][9] = {
@@ -3055,7 +3054,7 @@ char* PresentArmorName2[7][9] = {
 int PresentPercentIndex2[7] = { 4000,3000,1800,800,250,100,50 };
 
 #else
-// 박재원 - 일본 퍼즐 이벤트(퍼즐 아이템 보상 리스트 및 확률)
+// ????? - ??? ???? ????(???? ?????? ???? ????? ?? ???)
 char* PresentWeaponName2[8][9] = {
 	{"bi123",0,0,0,0,0,0,0,0 }, // 2500
 	{"pm104",0,0,0,0,0,0,0,0 }, // 2500
@@ -3067,7 +3066,7 @@ char* PresentWeaponName2[8][9] = {
 	{"os109",0,0,0,0,0,0,0,0 }, // 10
 };
 
-//방어구
+//???
 char* PresentArmorName2[8][9] = {
 	{"bi123",0,0,0,0,0,0,0,0 }, // 2500
 	{"pm104",0,0,0,0,0,0,0,0 }, // 2500
@@ -3083,7 +3082,7 @@ char* PresentArmorName2[8][9] = {
 int PresentPercentIndex2[8] = { 2500,2500,1590,1500,700,700,500,10 };
 #endif
 
-//일곱가지 크리스탈 이벤트 (해외 )
+//??????? ?????? ???? (??? )
 #ifdef _LANGUAGE_VEITNAM
 
 char* PresentWeaponName3[5][9] = {
@@ -3131,7 +3130,7 @@ int PresentPercentIndex3[5] = { 6500,2500,600,300,100 };
 */
 
 /*
-//박재원 - 수박 이벤트 보상 아이템
+//????? - ???? ???? ???? ??????
 char  *PresentWeaponName3[12][9] ={
 	{"pm104",0,0,0,0,0,0,0,0 },		//1
 	{"bi123",0,0,0,0,0,0,0,0 },		//2
@@ -3166,7 +3165,7 @@ int PresentPercentIndex3[12] = {3000,2000,1700,1600,650,650,50,50,100,100,50,50}
 */
 
 /*
-//박재원 - 호박 이벤트 보상 아이템
+//????? - ??? ???? ???? ??????
 char  *PresentWeaponName3[9][9] ={
 	{"pm104",0,0,0,0,0,0,0,0 },		//1
 	{"bi123",0,0,0,0,0,0,0,0 },		//2
@@ -3192,7 +3191,7 @@ char  *PresentArmorName3[9][9] ={
 };
 */
 
-//장별 - 발렌타인 이벤트 보상 아이템 
+//?? - ?????? ???? ???? ?????? 
 char* PresentChocoWeaponName3[17][9] = {
 	{"sp115",0,0,0,0,0,0,0,0 },		//1
 	{"pm104",0,0,0,0,0,0,0,0 },		//2
@@ -3236,7 +3235,7 @@ char* PresentChocoArmorName3[17][9] = {
 int PresentChocoPercentIndex3[17] = { 1000,1000,100,200,1200,1200,489,10,600,600,600,600,400,900,900,200,1 };
 
 
-// 장별 - 캔디데이즈 보상 아이템
+// ?? - ??????? ???? ??????
 char* PresentCandyWeaponName3[17][9] = {
 	{"sp115",0,0,0,0,0,0,0,0 },		//1
 	{"pm104",0,0,0,0,0,0,0,0 },		//2
@@ -3282,7 +3281,7 @@ char* PresentCandyArmorName3[17][9] = {
 int PresentCandyPercentIndex3[17] = { 1000,1000,100,200,1200,1200,489,10,600,600,600,600,400,900,900,200,1 };
 
 
-// 장별 - 매지컬그린 에메랄드 보상 아이템
+// ?? - ???????? ??????? ???? ??????
 char* PresentMagicalGreenEmeraldWeaponName3[18][9] = {
 	{"pm104",0,0,0,0,0,0,0,0 },	//1
 	{"bi119",0,0,0,0,0,0,0,0 },		//2
@@ -3330,7 +3329,7 @@ char* PresentMagicalGreenEmeraldArmorName3[18][9] = {
 int PresentMagicalGreenEmeraldPercentIndex3[18] = { 1400,300,400,200,100,1,300,200,1,1,1,100,1500,1500,1500,1200,800, 496 };
 
 
-// 장별 - 매지컬그린 비취 보상 아이템
+// ?? - ???????? ???? ???? ??????
 char* PresentMagicalGreenJadeWeaponName3[15][9] = {
 	{"pm103",0,0,0,0,0,0,0,0 },	//1
 	{"Gp109",0,0,0,0,0,0,0,0 },	//2
@@ -3372,7 +3371,7 @@ char* PresentMagicalGreedJadeArmorName3[15][9] = {
 int PresentMagicalGreedJadePercentIndex3[15] = { 1500,1500,200,1500,1500,1000,300,200,500,500,500,500,100,100,100 };
 
 
-// 장별 - 카라의 눈물 보상 아이템
+// ?? - ????? ???? ???? ??????
 char* PresentTearOfKaraWeaponName3[18][9] = {
 	{"pm104",0,0,0,0,0,0,0,0 },		//1
 	{"bi119",0,0,0,0,0,0,0,0 },		//2
@@ -3419,17 +3418,17 @@ char* PresentTearOfKaraArmorName3[18][9] = {
 
 int PresentTearOfKaraPercentIndex3[18] = { 1400,300,400,200,100,1,300,200,1,1,1,100,1500,1500,1500,1200,800,496 };
 
-// 장별 - 조사원을 찾아라 나인아뮬렛 배포
+// ?? - ??????? ???? ???ξ??? ????
 char* PresentFindinvestigatorNineWeaponName3[1][9] = { "gf107",0,0,0,0,0,0,0,0 };
 char* PresentFindinvestigatorNineArmorName3[1][9] = { "gf107",0,0,0,0,0,0,0,0 };
 int PresentFindinvestigatorNinePercentIndex3[1] = { 10000 };
 
-// 장별 - 조사원을 찾아라 테일아뮬렛 배포
+// ?? - ??????? ???? ??????? ????
 char* PresentFindinvestigatorNineTaleWeaponName3[1][9] = { "gf108",0,0,0,0,0,0,0,0 };
 char* PresentFindinvestigatorNineTaleArmorName3[1][9] = { "gf108",0,0,0,0,0,0,0,0 };
 int PresentFindinvestigatorNineTalePercentIndex3[1] = { 10000 };
 
-// 장별 - 조사원을 찾아라 에토 보상 아이템
+// ?? - ??????? ???? ???? ???? ??????
 char* PresentFindinvestigatorWeaponName3[12][9] = {
 	{"bi109",0,0,0,0,0,0,0,0 },		//1
 	{"pm104",0,0,0,0,0,0,0,0 },		//2
@@ -3465,7 +3464,7 @@ char* PresentFindinvestigatorArmorName3[12][9] = {
 int PresentFindinvestigatorPercentIndex3[12] = { 1500,1500,1300,1000,1500,1000,1500,300,200,100,50,50 };
 
 
-//박재원 - 밤하늘의 소원 이벤트 (별조각 모아오기)
+//????? - ??????? ??? ???? (?????? ??????)
 char* PresentWeaponName3[9][9] = {
 	{"pm104",0,0,0,0,0,0,0,0 },		//1
 	{"sp115",0,0,0,0,0,0,0,0 },		//2
@@ -3493,7 +3492,7 @@ char* PresentArmorName3[9][9] = {
 int PresentPercentIndex3[9] = { 2000,2000,1300,1200,1000,1000,1000,499,1 };
 
 
-// 박재원 - 알파벳 조합 이벤트
+// ????? - ????? ???? ????
 char* PresentWeaponName5[11][9] = {
 	{"pm104",0,0,0,0,0,0,0,0},													//1
 	{"bi108",0,0,0,0,0,0,0,0},													//2
@@ -3530,16 +3529,16 @@ int PresentPercentIndex5[11] = { 1450,1300,2600,1198,1000,1000,300,100,50,1000,2
 
 
 
-DWORD sinForceOrbCode[] = { (sinFO1 | sin01),(sinFO1 | sin02),(sinFO1 | sin03),(sinFO1 | sin04),(sinFO1 | sin05),(sinFO1 | sin06),(sinFO1 | sin07),(sinFO1 | sin08),(sinFO1 | sin09),(sinFO1 | sin10),(sinFO1 | sin11),(sinFO1 | sin12),(sinFO1 | sin13),(sinFO1 | sin14),(sinFO1 | sin15) }; // 박재원 - 벨룸, 오르도 포스 추가
+DWORD sinForceOrbCode[] = { (sinFO1 | sin01),(sinFO1 | sin02),(sinFO1 | sin03),(sinFO1 | sin04),(sinFO1 | sin05),(sinFO1 | sin06),(sinFO1 | sin07),(sinFO1 | sin08),(sinFO1 | sin09),(sinFO1 | sin10),(sinFO1 | sin11),(sinFO1 | sin12),(sinFO1 | sin13),(sinFO1 | sin14),(sinFO1 | sin15) }; // ????? - ????, ?????? ???? ???
 
-// 박재원 - 매직 포스 추가
+// ????? - ???? ???? ???
 DWORD sinMagincForceOrbCode[] = { (sinFO1 | sin21),(sinFO1 | sin22),(sinFO1 | sin23),(sinFO1 | sin24),(sinFO1 | sin25),(sinFO1 | sin26),(sinFO1 | sin27),(sinFO1 | sin28),(sinFO1 | sin29),(sinFO1 | sin30),(sinFO1 | sin31),(sinFO1 | sin32),(sinFO1 | sin33),(sinFO1 | sin34) };
-// 박재원 - 빌링 매직 포스 추가
+// ????? - ???? ???? ???? ???
 DWORD sinBillingMagicForceOrbCode[] = { (sinFO1 | sin35),(sinFO1 | sin36),(sinFO1 | sin37) };
 
 DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_Info)
 {
-	//3차 전업퀘스트
+	//3?? ?????????
 	int i = 0, j = 0, k = 0;
 	int CodeCount = 0;
 	int ItemCount = 0;
@@ -3560,7 +3559,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 	int CristalCount = 0;
 	int CristalFlag = 0;
-	//일곱가지 크리스탈을 다시체크한다.
+	//??????? ???????? ????????.
 	for (i = 0; i < 7; i++) {
 		for (j = 0; j < 12; j++) {
 			if (pWingItem->SheltomCode[i] == CristalEventCODE[j]) {
@@ -3571,7 +3570,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 	int WatermelonCount = 0;
 	int WatermelonFlag = 0;
-	//박재원 - 수박 모아오기(7개의 수박을 다시체크한다.)
+	//????? - ???? ??????(7???? ?????? ????????.)
 	for (int n = 0; n < 7; n++)
 	{
 		if (pWingItem->SheltomCode[n] == WatermelonEventCODE)
@@ -3582,7 +3581,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 	int ValentineCount = 0;
 	int ValentineFlag = 0;
-	//장별 - 발렌타인 초콜릿 모아오기(7개의 초콜릿을 다시체크한다.)
+	//?? - ?????? ????? ??????(7???? ??????? ????????.)
 	for (int n = 0; n < 7; n++)
 	{
 		if (pWingItem->SheltomCode[n] == ValentineEventCODE)
@@ -3594,7 +3593,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 	int CandydaysCount = 0;
 	int CandydaysFlag = 0;
-	// 장별 - 캔디데이즈 (7개의 캔디 다시체크한다.)
+	// ?? - ??????? (7???? ??? ????????.)
 	for (int n = 0; n < 7; n++)
 	{
 		if (pWingItem->SheltomCode[n] == CandydaysEventCODE)
@@ -3608,7 +3607,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	int MagicalGreenEmeraldFlag = 0;
 	int MagicalGreenJadeCount = 0;
 	int MagicalGreenJadeFlag = 0;
-	// 장별 - 매지컬그린 (7개의 에메랄드 다시체크한다.)
+	// ?? - ???????? (7???? ??????? ????????.)
 	for (int a = 0; a < 7; a++)
 	{
 		if (pWingItem->SheltomCode[a] == MagicalGreenEventCODE[1])
@@ -3617,7 +3616,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	// 장별 - 매지컬그린 (7개의 비취 다시체크한다.)
+	// ?? - ???????? (7???? ???? ????????.)
 	for (int b = 0; b < 7; b++)
 	{
 		if (pWingItem->SheltomCode[b] == MagicalGreenEventCODE[0])
@@ -3628,7 +3627,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 	int TearOfKaraCount = 0;
 	int TearOfKaraFlag = 0;
-	// 장별 - 카라의 눈물 (7개의 눈물 다시체크한다.)
+	// ?? - ????? ???? (7???? ???? ????????.)
 	for (int n = 0; n < 7; n++)
 	{
 		if (pWingItem->SheltomCode[n] == TeatOfKaraEventCODE)
@@ -3638,7 +3637,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	}
 
 
-	// 장별 - 조사원을 찾아라
+	// ?? - ??????? ????
 	int FindinvestigatorNineCount = 0;
 	int FindinvestigatorNineFlag = 0;
 	int FindinvestigatorTaleCount = 0;
@@ -3661,7 +3660,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	}
 
 
-	// 박재원 - 알파벳 조합 이벤트
+	// ????? - ????? ???? ????
 	int PristonAlphabetCount = 0;
 	int PristonAlphabetFlag = 0;
 	for (int c = 0; c < 7; c++)
@@ -3675,11 +3674,11 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	//바벨아이템 
+	//????????? 
 	if (pWingItem->SheltomCode[0] == (sinGF1 | sin02)) {
 		RandomTemp = GetRandomPos(0, 100);
 		ItemIndex = 5;
-		pPresentWeaponName = PresentWeaponName; //포인터 연결
+		pPresentWeaponName = PresentWeaponName; //?????? ????
 		pPresentArmorName = PresentArmorName;
 		pPresentPercentIndex = PresentPercentIndex;
 		PotionNum = 30;
@@ -3691,7 +3690,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 		}
 	}
-	// 구미호아이템
+	// ???????????
 	else if (pWingItem->SheltomCode[0] == (sinGF1 | sin03) && pWingItem->SheltomCode[1] == (sinGF1 | sin04)) {
 		RandomTemp = GetRandomPos(0, 100);
 		ItemIndex = 6;
@@ -3708,7 +3707,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	// 빛나는 가루
+	// ?????? ????
 	else if (pWingItem->SheltomCode[0] == (sinGF1 | sin05)) { //&&  pWingItem->SheltomCode[1] == (sinGF1 | sin04)){
 		RandomTemp = GetRandomPos(0, 100);
 		ItemIndex = 6;
@@ -3724,13 +3723,13 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 		}
 	}
-	//일곱가지 크리스탈의 보은 아이템 주기
+	//??????? ???????? ???? ?????? ???
 	else if (CristalCount == 7) {
 		CristalFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
 		ItemIndex = 5;
-		//임시로
-		pPresentWeaponName = PresentWeaponName3; //포인터 연결
+		//??÷?
+		pPresentWeaponName = PresentWeaponName3; //?????? ????
 		pPresentArmorName = PresentArmorName3;
 		pPresentPercentIndex = PresentPercentIndex3;
 		PotionNum = 40;
@@ -3741,17 +3740,17 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 			ItemCountPuzzle = 16;
 		}
 	}
-	//박재원 - 수박 모아오기
+	//????? - ???? ??????
 	else if (WatermelonCount == 7)
 	{
 		WatermelonFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
-		ItemIndex = 9; // 박재원 - 수박 이벤트 12가지 중 한가지 아이템을 보상한다. // 호박 이벤트 9가지 중 한가지를 보상한다. // 밤하늘의 소원 이벤트 9가지중 한가지를 보상한다.
-		//임시로
-		pPresentWeaponName = PresentWeaponName3; //포인터 연결
+		ItemIndex = 9; // ????? - ???? ???? 12???? ?? ????? ???????? ???????. // ??? ???? 9???? ?? ??????? ???????. // ??????? ??? ???? 9?????? ??????? ???????.
+		//??÷?
+		pPresentWeaponName = PresentWeaponName3; //?????? ????
 		pPresentArmorName = PresentArmorName3;
 		pPresentPercentIndex = PresentPercentIndex3;
-		PotionNum = 5; // 박재원 - 수박 이벤트 보상 아이템이 물약일 경우 물약 개수를 셋팅한다. //박재원 - 밤하늘의 소원 이벤트(물약 보상 5개)
+		PotionNum = 5; // ????? - ???? ???? ???? ???????? ?????? ??? ???? ?????? ???????. //????? - ??????? ??? ????(???? ???? 5??)
 		if (RandomTemp < 50) {
 			ItemCountPuzzle = 8;
 		}
@@ -3760,17 +3759,17 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	//장별 - 발렌타인 초콜릿 모아오기
+	//?? - ?????? ????? ??????
 	else if (ValentineCount == 7)
 	{
 		ValentineFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
-		ItemIndex = 17; // 장별 - 발렌타인 초콜릿 이벤트 17가지 중 한가지 아이템을 보상한다. 
-		//임시로
-		pPresentWeaponName = PresentChocoWeaponName3; //포인터 연결
+		ItemIndex = 17; // ?? - ?????? ????? ???? 17???? ?? ????? ???????? ???????. 
+		//??÷?
+		pPresentWeaponName = PresentChocoWeaponName3; //?????? ????
 		pPresentArmorName = PresentChocoArmorName3;
 		pPresentPercentIndex = PresentChocoPercentIndex3;
-		PotionNum = 5; // 장별 - 발렌타인 이벤트 보상 아이템이 물약일 경우 물약 개수를 셋팅한다.
+		PotionNum = 5; // ?? - ?????? ???? ???? ???????? ?????? ??? ???? ?????? ???????.
 		if (RandomTemp < 50) {
 			ItemCountPuzzle = 8;
 		}
@@ -3778,13 +3777,13 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 			ItemCountPuzzle = 16;
 		}
 	}
-	// 박재원 - 알파벳 조합 이벤트
+	// ????? - ????? ???? ????
 	else if (PristonAlphabetCount == 7) {
 		PristonAlphabetFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
 		ItemIndex = 11;
-		//임시로
-		pPresentWeaponName = PresentWeaponName5; //포인터 연결
+		//??÷?
+		pPresentWeaponName = PresentWeaponName5; //?????? ????
 		pPresentArmorName = PresentArmorName5;
 		pPresentPercentIndex = PresentPercentIndex5;
 		PotionNum = 20;
@@ -3797,17 +3796,17 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	}
 
 
-	// 장별 - 캔디데이즈 캔디 모아오기
+	// ?? - ??????? ??? ??????
 	else if (CandydaysCount == 7)
 	{
 		CandydaysFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
-		ItemIndex = 17; // 장별 - 캔디데이즈 이벤트 17가지 중 한가지 아이템을 보상한다. 
-		//임시로
-		pPresentWeaponName = PresentCandyWeaponName3; //포인터 연결
+		ItemIndex = 17; // ?? - ??????? ???? 17???? ?? ????? ???????? ???????. 
+		//??÷?
+		pPresentWeaponName = PresentCandyWeaponName3; //?????? ????
 		pPresentArmorName = PresentCandyArmorName3;
 		pPresentPercentIndex = PresentCandyPercentIndex3;
-		PotionNum = 5; // 장별 - 캔디데이즈 이벤트 보상 아이템이 물약일 경우 물약 개수를 셋팅한다.
+		PotionNum = 5; // ?? - ??????? ???? ???? ???????? ?????? ??? ???? ?????? ???????.
 		if (RandomTemp < 50) {
 			ItemCountPuzzle = 8;
 		}
@@ -3816,17 +3815,17 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	// 장별 - 매지컬그린 -  비취 모아오기
+	// ?? - ???????? -  ???? ??????
 	else if (MagicalGreenJadeCount == 7)
 	{
 		MagicalGreenJadeFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
-		ItemIndex = 15; // 장별 - 매지컬그린 이벤트 15가지 중 한가지 아이템을 보상한다. 
-		//임시로
-		pPresentWeaponName = PresentMagicalGreenJadeWeaponName3; //포인터 연결
+		ItemIndex = 15; // ?? - ???????? ???? 15???? ?? ????? ???????? ???????. 
+		//??÷?
+		pPresentWeaponName = PresentMagicalGreenJadeWeaponName3; //?????? ????
 		pPresentArmorName = PresentMagicalGreedJadeArmorName3;
 		pPresentPercentIndex = PresentMagicalGreedJadePercentIndex3;
-		PotionNum = 10; // 장별 - 매지컬그린 이벤트 보상 아이템이 물약일 경우 물약 개수를 셋팅한다.
+		PotionNum = 10; // ?? - ???????? ???? ???? ???????? ?????? ??? ???? ?????? ???????.
 		if (RandomTemp < 50) {
 			ItemCountPuzzle = 8;
 		}
@@ -3836,17 +3835,17 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	}
 
 
-	// 장별 - 매지컬그린 -  에메랄드 모아오기
+	// ?? - ???????? -  ??????? ??????
 	else if (MagicalGreenEmeraldCount == 7)
 	{
 		MagicalGreenEmeraldFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
-		ItemIndex = 18; // 장별 - 매지컬그린 이벤트 18가지 중 한가지 아이템을 보상한다. 
-		//임시로
-		pPresentWeaponName = PresentMagicalGreenEmeraldWeaponName3; //포인터 연결
+		ItemIndex = 18; // ?? - ???????? ???? 18???? ?? ????? ???????? ???????. 
+		//??÷?
+		pPresentWeaponName = PresentMagicalGreenEmeraldWeaponName3; //?????? ????
 		pPresentArmorName = PresentMagicalGreenEmeraldArmorName3;
 		pPresentPercentIndex = PresentMagicalGreenEmeraldPercentIndex3;
-		PotionNum = 20; // 장별 - 매지컬그린 이벤트 보상 아이템이 물약일 경우 물약 개수를 셋팅한다.
+		PotionNum = 20; // ?? - ???????? ???? ???? ???????? ?????? ??? ???? ?????? ???????.
 		if (RandomTemp < 50) {
 			ItemCountPuzzle = 8;
 		}
@@ -3855,17 +3854,17 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	// 장별 - 카라의 눈물  눈물 모아오기
+	// ?? - ????? ????  ???? ??????
 	else if (TearOfKaraCount == 7)
 	{
 		TearOfKaraFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
-		ItemIndex = 18; // 카라의 눈물 이벤트 18가지 중 한가지 아이템을 보상한다. 
-		//임시로
-		pPresentWeaponName = PresentTearOfKaraWeaponName3; //포인터 연결
+		ItemIndex = 18; // ????? ???? ???? 18???? ?? ????? ???????? ???????. 
+		//??÷?
+		pPresentWeaponName = PresentTearOfKaraWeaponName3; //?????? ????
 		pPresentArmorName = PresentTearOfKaraArmorName3;
 		pPresentPercentIndex = PresentTearOfKaraPercentIndex3;
-		PotionNum = 10; // 장별 - 캔디데이즈 이벤트 보상 아이템이 물약일 경우 물약 개수를 셋팅한다.
+		PotionNum = 10; // ?? - ??????? ???? ???? ???????? ?????? ??? ???? ?????? ???????.
 		if (RandomTemp < 50) {
 			ItemCountPuzzle = 8;
 		}
@@ -3875,7 +3874,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	}
 
 
-	// 장별 - 조사원을 찾아라( 나인아뮬렛을 소지하고 있지 않을때)
+	// ?? - ??????? ????( ???ξ????? ??????? ???? ??????)
 	else if (FindinvestigatorNineCount == 0 && FindinvestigatorTaleCount == 0 && pWingItem->DesCraftItem.CODE != 1000)
 	{
 		for (i = 0; i < 5; i++)
@@ -3899,9 +3898,9 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 			default:
 				FindinvestigatorNineFlag = 1;
 				RandomTemp = GetRandomPos(0, 100);
-				ItemIndex = 1; // 조사원을 찾아라 나인아뮬렛 배포
-				//임시로
-				pPresentWeaponName = PresentFindinvestigatorNineWeaponName3; //포인터 연결
+				ItemIndex = 1; // ??????? ???? ???ξ??? ????
+				//??÷?
+				pPresentWeaponName = PresentFindinvestigatorNineWeaponName3; //?????? ????
 				pPresentArmorName = PresentFindinvestigatorNineArmorName3;
 				pPresentPercentIndex = PresentFindinvestigatorNinePercentIndex3;
 				PotionNum = 10;
@@ -3925,9 +3924,9 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 					//		{
 								FindinvestigatorNineFlag = 1;
 								RandomTemp = GetRandomPos(0,100);
-								ItemIndex = 1; // 조사원을 찾아라 나인아뮬렛 배포
-								//임시로
-								pPresentWeaponName   = PresentFindinvestigatorNineWeaponName3; //포인터 연결
+								ItemIndex = 1; // ??????? ???? ???ξ??? ????
+								//??÷?
+								pPresentWeaponName   = PresentFindinvestigatorNineWeaponName3; //?????? ????
 								pPresentArmorName    = PresentFindinvestigatorNineArmorName3;
 								pPresentPercentIndex = PresentFindinvestigatorNinePercentIndex3;
 								PotionNum = 10;
@@ -3943,14 +3942,14 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	// 장별 - 조사원을 찾아라( 나인아뮬렛을 소지하고 있을때)
+	// ?? - ??????? ????( ???ξ????? ??????? ??????)
 	else if (FindinvestigatorNineCount == 1)
 	{
 		FindinvestigatorNineFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
-		ItemIndex = 1; // 조사원을 찾아라 테일아뮬렛 배포
-		//임시로
-		pPresentWeaponName = PresentFindinvestigatorNineTaleWeaponName3; //포인터 연결
+		ItemIndex = 1; // ??????? ???? ??????? ????
+		//??÷?
+		pPresentWeaponName = PresentFindinvestigatorNineTaleWeaponName3; //?????? ????
 		pPresentArmorName = PresentFindinvestigatorNineTaleArmorName3;
 		pPresentPercentIndex = PresentFindinvestigatorNineTalePercentIndex3;
 		PotionNum = 10;
@@ -3962,14 +3961,14 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	// 장별 - 조사원을 찾아라( 테일아뮬렛을 소지하고 있을때)
+	// ?? - ??????? ????( ????????? ??????? ??????)
 	else if (FindinvestigatorTaleCount == 1)
 	{
 		FindinvestigatorTaleFlag = 1;
 		RandomTemp = GetRandomPos(0, 100);
 		ItemIndex = 12;
-		//임시로
-		pPresentWeaponName = PresentFindinvestigatorWeaponName3; //포인터 연결
+		//??÷?
+		pPresentWeaponName = PresentFindinvestigatorWeaponName3; //?????? ????
 		pPresentArmorName = PresentFindinvestigatorArmorName3;
 		pPresentPercentIndex = PresentFindinvestigatorPercentIndex3;
 		PotionNum = 10;
@@ -3985,13 +3984,13 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 
 
 	else {
-		ItemIndex = 8; // 박재원 - 일본 퍼즐 이벤트(8가지 아이템 중에 한가지를 지급한다)
+		ItemIndex = 8; // ????? - ??? ???? ????(8???? ?????? ??? ??????? ???????)
 		pPresentWeaponName = PresentWeaponName2;
 		pPresentArmorName = PresentArmorName2;
 		pPresentPercentIndex = PresentPercentIndex2;
 		PotionNum = 10;
 
-		//퍼즐
+		//????
 		for (i = 0; i < 8; i++) {
 			if ((pWingItem->SheltomCode[i] & sinITEM_MASK2) == sinPZ1 ||
 				(pWingItem->SheltomCode[i] & sinITEM_MASK2) == sinPZ2) {
@@ -4012,16 +4011,16 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 
 	}
-	//퍼즐 성공
+	//???? ????
 	if (ItemCountPuzzle == 8 || ItemCountPuzzle == 16) {
-		//요기서 선물줄 아이템을 생성해본다 얼쑤~
+		//??? ?????? ???????? ????????? ??~
 		PresentPercent = GetRandomPos(0, 10000);
 		for (i = 0; i < ItemIndex; i++) {
 			if (PresentPercent >= PresentPercentSum && (pPresentPercentIndex[i] + PresentPercentSum) >= PresentPercent) {
 				PresentItemCount = 0;
-				//무기
+				//????
 				if (ItemCountPuzzle == 8) {
-					for (k = 0; k < 9; k++) { // 박재원 - 일본 퍼즐 이벤트(각 아이템별 확률)
+					for (k = 0; k < 9; k++) { // ????? - ??? ???? ????(?? ??????? ???)
 						if (pPresentWeaponName[i][k]) {
 							PresentItemCount++;
 						}
@@ -4041,10 +4040,10 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 							}
 						}
 						PresentItemIndex--;
-						if (PresentItemIndex < 0)break; //무한루프 방지
+						if (PresentItemIndex < 0)break; //??????? ????
 					}
 				}
-				//갑옷
+				//????
 				PresentItemCount = 0;
 				if (ItemCountPuzzle == 16) {
 					for (k = 0; k < 9; k++) {
@@ -4067,7 +4066,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 							}
 						}
 						PresentItemIndex--;
-						if (PresentItemIndex < 0)break; //무한루프 방지
+						if (PresentItemIndex < 0)break; //??????? ????
 					}
 				}
 			}
@@ -4075,7 +4074,7 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 		}
 	}
 
-	//80_2 Lv퀘스트
+	//80_2 Lv?????
 	for (i = 0; i < 3; i++) {
 		switch (pWingItem->SheltomCode[i]) {
 		case (sinQT1 | sin09):
@@ -4104,48 +4103,48 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	if (ItemCount == 3 && pChar_Info) {
 		pWingItem->Result = TRUE;
 		switch (pChar_Info->JOB_CODE) {
-		case 1:		//파이터
+		case 1:		//??????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWA1 | sin08);
 			break;
-		case 2:		//메카니션
+		case 2:		//??????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWC1 | sin08);
 			break;
-		case 3:		//아쳐
+		case 3:		//????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWS1 | sin10);
 			break;
-		case 4:		//파이크맨
+		case 4:		//???????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWP1 | sin09);
 			break;
-		case 5:		//아탈란타
+		case 5:		//??????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWT1 | sin09);
 			break;
-		case 6:		//나이트
+		case 6:		//?????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWS2 | sin10);
 			break;
-		case 7:		//매지션
+		case 7:		//??????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWM1 | sin09);
 			break;
-		case 8:		//프리스티스
+		case 8:		//?????????
 			pWingItem->DesCraftItem.sItemInfo.CODE = (sinWM1 | sin09);
 			break;
 		}
-		//서버에서 셋팅해준다
+		//???????? ?????????
 		pWingItem->DesCraftItem.sItemInfo.ItemKindCode = ITEM_KIND_QUEST_WEAPON;
-		//SetChangeJob3QuestItem(&pWingItem->DesCraftItem.sItemInfo); //아이템 초기셋팅
+		//SetChangeJob3QuestItem(&pWingItem->DesCraftItem.sItemInfo); //?????? ??????
 		return TRUE;
 
 	}
-	//포스 오브
+	//???? ????
 	if (pWingItem->DesCraftItem.CODE == 1000) {
 		for (i = 0; i < 12; i++) {
-			for (j = 0; j < 16; j++) { // 박재원 - 벨룸, 오르도 포스 추가(12 -> 14))
+			for (j = 0; j < 16; j++) { // ????? - ????, ?????? ???? ???(12 -> 14))
 				if ((pWingItem->SheltomCode[i] & sinITEM_MASK3) == SheltomCode2[j]) {
 					pWingItem->Head[i] = 0;
 					pWingItem->CheckSum[i] = 0;
 					pWingItem->SheltomCode[i] = sinForceOrbCode[j];
 					break;
 				}
-				// 박재원 - 매직 포스 추가
+				// ????? - ???? ???? ???
 				else if ((pWingItem->SheltomCode[i] & sinITEM_MASK3) == MagicSheltomCode[j]) {
 					pWingItem->Head[i] = 0;
 					pWingItem->CheckSum[i] = 0;
@@ -4178,8 +4177,8 @@ DWORD sinWingItemQuestServer(sCRAFTITEM_SERVER* pWingItem, smCHAR_INFO* pChar_In
 	return FALSE;
 }
 
-//서버에 윙아이템을 보낸다
-int SendWingQuestItem() //윙아이템 퀘스트 
+//?????? ?????????? ??????
+int SendWingQuestItem() //???????? ????? 
 {
 	SendWingItemToServer(&sWingItem_Send);
 	return TRUE;
@@ -4192,18 +4191,18 @@ int SendWingEventPRISTONItem()
 	return TRUE;
 }
 
-//서버에서 윙아이템을 받는다
+//???????? ?????????? ??´?
 int RecvWingItem(sCRAFTITEM_SERVER* pWingItem)
 {
 
 	sITEM* pItem = 0;
 	int   Index = 0;
 	int   i = 0;
-	sITEM sinTempItem;  //아이템에 관련된 사항을 잠시 넣어두는 Temp
+	sITEM sinTempItem;  //??????? ????? ?????? ??? ???δ? Temp
 
 	//if(pWingItem->Result != TRUE)return FALSE;
 
-	//퍼즐일경우는 어케하나 -0-
+	//????????? ??????? -0-
 
 	for (i = 0; i < INVENTORY_MAXITEM * 2; i++) {
 		if (i < 100) {
@@ -4215,14 +4214,14 @@ int RecvWingItem(sCRAFTITEM_SERVER* pWingItem)
 			pItem = &cInvenTory.InvenItemTemp[i - 100];
 		}
 
-		//결과가 FALSE일경우에는 윙 아이템도 삭제한다
+		//????? FALSE???쿡?? ?? ??????? ???????
 		if (pWingItem->Result == FALSE) {
 			cInvenTory.DeleteInvenItemToServer(pWingItem->DesCraftItem.sItemInfo.CODE, pWingItem->DesCraftItem.sItemInfo.ItemHeader.Head,
 				pWingItem->DesCraftItem.sItemInfo.ItemHeader.dwChkSum);
 
 		}
 
-		//인증코드가 없는 투핸드 무기는 체크하지않는다 
+		//??????? ???? ????? ????? ????????´? 
 		if (pItem->ItemPosition == 2) {
 			if (pItem->Class == ITEM_CLASS_WEAPON_TWO)
 				continue;
@@ -4232,7 +4231,7 @@ int RecvWingItem(sCRAFTITEM_SERVER* pWingItem)
 			if (pItem->sItemInfo.CODE == pWingItem->SheltomCode[j] &&
 				pItem->sItemInfo.ItemHeader.Head == pWingItem->Head[j] &&
 				pItem->sItemInfo.ItemHeader.dwChkSum == pWingItem->CheckSum[j]) {
-				pItem->Flag = 0; //아이템을 지워준다
+				pItem->Flag = 0; //???????? ???????
 				cInvenTory.ReFormInvenItem();
 				cInvenTory.CheckWeight();
 			}
@@ -4240,39 +4239,39 @@ int RecvWingItem(sCRAFTITEM_SERVER* pWingItem)
 		}
 	}
 
-	//성공하였을경우에 돈을빼고 아이템을 셋팅한다
+	//???????????쿡 ???????? ???????? ???????
 	if (pWingItem->Result == TRUE) {
-		sinMinusMoney(pWingItem->Money);//돈을 뺀다
-		SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+		sinMinusMoney(pWingItem->Money);//???? ????
+		SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
-		//아이템을 인벤토리에 셋팅한다
+		//???????? ?κ????? ???????
 		if (pWingItem->DesCraftItem.sItemInfo.CODE) {
 			if (LoadItemImage(&pWingItem->DesCraftItem.sItemInfo, &sinTempItem)) {
-				//퀘스트 아이템을 받고 레벨을 셋팅
+				//????? ???????? ??? ?????? ????
 				if (sinTempItem.sItemInfo.ItemKindCode == ITEM_KIND_QUEST_WEAPON) {
 					sinQuest_ChangeJob3.StartLevel = sinChar->Level;
 
 				}
-				sinSetSpecialItemCode(&sinTempItem.sItemInfo); //스페셜아이템을 구분한다
-				cInvenTory.AutoSetInvenItem(&sinTempItem, 1 + pWingItem->DocIndex); //인덱스에 1이있을경우 좌표를 고정한다
+				sinSetSpecialItemCode(&sinTempItem.sItemInfo); //???????????? ???????
+				cInvenTory.AutoSetInvenItem(&sinTempItem, 1 + pWingItem->DocIndex); //?ε????? 1????????? ????? ???????
 				cInvenTory.ReFormInvenItem();
 				ResetPotion();
-				cInvenTory.ReFormPotionNum();	//포션 갯수를 체크한다
+				cInvenTory.ReFormPotionNum();	//???? ?????? ?????
 			}
 		}
 	}
 
-	ReformCharForm();//재인증 
+	ReformCharForm();//?????? 
 	cInvenTory.SetItemToChar();
 	cInvenTory.CheckWeight();
 
-	sinbaram_Stop = 0; //이벤트가 정상작동되게한다
+	sinbaram_Stop = 0; //?????? ?????????????
 	cInvenTory.CheckPuzzle();
 
 	return TRUE;
 }
 
-//링을 에이징 한다
+//???? ????¡ ???
 int AgingRing()
 {
 	if (sInven[4].ItemIndex) {
@@ -4422,21 +4421,21 @@ int sinCloseInterFace()
 		memset(MyShopItemIndex, 0, sizeof(int) * 100);
 		MyShopSendButton = 0;
 	}
-	if (cInvenTory.OpenFlag) cInvenTory.OpenFlag = SIN_CLOSE; //인벤토리가 닫혀있으면 열어준다 		 
-	if (cCharShop.OpenFlag) cCharShop.OpenFlag = SIN_CLOSE; //상점이 닫혀있으면 열어준다 		 
+	if (cInvenTory.OpenFlag) cInvenTory.OpenFlag = SIN_CLOSE; //?κ????? ?????????? ??????? 		 
+	if (cCharShop.OpenFlag) cCharShop.OpenFlag = SIN_CLOSE; //?????? ?????????? ??????? 		 
 	if (cCharShop.OpenFlag) {
-		cCharShop.OpenFlag = 0; //상점을 닫는다
-		memset(cCharShop.CharShopItem, 0, sizeof(sITEM) * 30); //아이템을 지워준다
+		cCharShop.OpenFlag = 0; //?????? ??´?
+		memset(cCharShop.CharShopItem, 0, sizeof(sITEM) * 30); //???????? ???????
 	}
-	cInvenTory.ChangeSpecialItem(2); //퀘스트아이템을 정리한다
+	cInvenTory.ChangeSpecialItem(2); //????????????? ???????
 	return TRUE;
 }
 
 int sinCheck_ShowHelpMap()
 {
-	//if(cWareHouse.OpenFlag || MouseItem.Flag ||cShop.OpenFlag || ExitButtonClick ||){ //  pluto 제련 , 제작
+	//if(cWareHouse.OpenFlag || MouseItem.Flag ||cShop.OpenFlag || ExitButtonClick ||){ //  pluto ???? , ????
 	if (SkillNpcFlag || sinMessageBoxShowFlag || MouseItem.Flag || cWareHouse.OpenFlag || cTrade.OpenFlag || cCraftItem.OpenFlag || cAging.OpenFlag || cMyShop.OpenFlag ||
-		cCharShop.OpenFlag || ExitButtonClick || MyShopSendButton || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag || ReStartFlag) {	// pluto 죽었을때 지도 못 열게 하려고 ReStartFlag // 석지용 - 믹스쳐 리셋 창 추가
+		cCharShop.OpenFlag || ExitButtonClick || MyShopSendButton || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag || Caravana::GetInstance()->OpenFlag || ReStartFlag) {	// pluto ??????? ???? ?? ???? ????? ReStartFlag // ?????? - ????? ???? ? ???
 		return FALSE;
 
 	}
@@ -4445,44 +4444,44 @@ int sinCheck_ShowHelpMap()
 	return TRUE;
 }
 
-//포스 아이템을 받는다
+//???? ???????? ??´?
 int sinRecvForceOrb(sITEMINFO* pItemInfo, int Count)
 {
 
 	int i = 0;
-	sinMinusMoney(sCraftItem_Send.Money, 1);//돈을 뺀다
-	SendSaveMoney(); //금액 조작을 못하게하기위해 호출한다 
+	sinMinusMoney(sCraftItem_Send.Money, 1);//???? ????
+	SendSaveMoney(); //??? ?????? ???????????? ?????? 
 
-	SpecialItemShowFlag = 0; //강제로 닫아준다
-	sITEM sinTempItem;  //아이템에 관련된 사항을 잠시 넣어두는 Temp
+	SpecialItemShowFlag = 0; //?????? ??????
+	sITEM sinTempItem;  //??????? ????? ?????? ??? ???δ? Temp
 
-	//하대용수정=================================================================
+	//???????=================================================================
 
 	//===========================================================================
 
 	for (i = 0; i < Count; i++) {
 		if (LoadItemImage(&pItemInfo[i], &sinTempItem)) {
-			if (!cInvenTory.AutoSetInvenItem(&sinTempItem)) {     //셋팅이 되지않으면 
-				if (sinThrowItemToFeild(&sinTempItem)) {          //아이템을 버린다 
+			if (!cInvenTory.AutoSetInvenItem(&sinTempItem)) {     //?????? ?????????? 
+				if (sinThrowItemToFeild(&sinTempItem)) {          //???????? ?????? 
 					sinTempItem.Flag = 0;
 				}
 			}
 			cMessageBox.ShowMessage(MESSAGE_FORCEORB_REFINING);
 		}
 	}
-	memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //아이템을 다 날려버린다 
-	memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //받은 믹스쳐 구조체 초기화  (일단 같이해준다)
-	memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //보낸 믹스쳐 구조체 초기화 
+	memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //???????? ?? ?????????? 
+	memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //???? ????? ????? ????  (??? ?????????)
+	memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //???? ????? ????? ???? 
 
-	cInvenTory.SetItemToChar(); //아이템이 셋팅되면 능력치를 셋팅한다 
+	cInvenTory.SetItemToChar(); //???????? ?????? ?????? ??????? 
 	cInvenTory.ReFormInvenItem();
-	cInvenTory.CheckWeight();   //무게를 셋팅한다 
-	ReformCharForm();//재인증 
-	sinbaram_Stop = 0; //이벤트가 정상작동되게한다
-	MixItemNoCopyFlag = 0; //복사방지 플렉 초기화
-	cCraftItem.OpenFlag = 0; //창을 닫는다 
+	cInvenTory.CheckWeight();   //????? ??????? 
+	ReformCharForm();//?????? 
+	sinbaram_Stop = 0; //?????? ?????????????
+	MixItemNoCopyFlag = 0; //??????? ?÷? ????
+	cCraftItem.OpenFlag = 0; //??? ??´? 
 
-	//Force Orb 초기화
+	//Force Orb ????
 	cCraftItem.ForceFlag = 0;
 	cCraftItem.ForceItemPrice = 0;
 	ForceItemPrice2 = 0;

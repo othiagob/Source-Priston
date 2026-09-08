@@ -1,0 +1,23 @@
+---
+description: Bancos SQL obrigatórios do servidor — não tratar como opcionais
+alwaysApply: true
+---
+
+# Bancos SQL do servidor
+
+O `server.exe` conecta **todos** estes bancos na subida (`SQLConnection.cpp` / `openDatabase`). Nome ausente = `exit(0)`. SQL Server ignora maiúsculas (`userdb` = `UserDB`).
+
+Obrigatórios: `UserDB`, `ServerDB`, `ClanDB`, `SoDDB`, `LogDB`, `EventosDB`, `ShopCoin`, `Quest`, `GameServer`, `ITEMLogDB`, `PainelDB`. `UserDB_VIP` é a **mesma** `UserDB`.
+
+Não remova `PainelDB` da lista para “simplificar”: o GM grava bans em `PainelDB.dbo.Banneds`.
+
+Credenciais: `Server\Config\SQL.ini` (`Host`, `User`, `Password`) — arquivo junto ao executável, não no git.
+
+- Schema novo (tabela/coluna): SQL manual no SSMS + atualizar o vault `02-Arquitetura/Banco-de-Dados.md`. Sem migração formal.
+- Inventar catálogo de `GameServer` no C++ não recupera dados zerados — precisa restore `.bak`.
+- `PainelDB` ausente: o boot tenta criar vazio via `master` (`EnsurePainelDatabase`). Script manual: vault `09-Guias/sql/Create-PainelDB.sql`.
+- Loja de Coins: `ShopCoin.dbo.ShopItems` — colunas reais:
+  `ID`, `CategoryID`, `SubCategoryID`, `ItemCode`, `ItemName`, `Price`,
+  `DiscountPercent`. O C++ ainda chama o campo de memória `Discount`;
+  o SQL é `DiscountPercent`. `ItemCode` é o código do item (`OR129`),
+  não o caminho da imagem.

@@ -38,7 +38,7 @@ struct sFinishPurchase
 
 struct sCompressedDataShop
 {
-	char pCompressedData[6000];
+	char pCompressedData[7800];
 	int compressedSize;
 };
 
@@ -46,6 +46,8 @@ struct NEWSHOP_COMPRESSEDPCKG {
 	int size;
 	int code;
 	sCompressedDataShop CompressedDataPckg;
+	int chunkIndex;
+	int totalChunks;
 };
 
 struct ITEMS_INFOCKG {

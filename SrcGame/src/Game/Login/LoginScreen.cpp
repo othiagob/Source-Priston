@@ -147,8 +147,8 @@ void CLoginScreen::onCheckboxClick(int checkboxID, UIEventArgs e)
 
 void CLoginScreen::SaveRememberLogin()
 {
-	Settings::GetInstance()->bRememberLogin == true ? Settings::GetInstance()->bRememberLogin = false : Settings::GetInstance()->bRememberLogin = true;
-	Settings::GetInstance()->Save(false);
+	Settings::GetInstance()->bRememberLogin = Settings::GetInstance()->bRememberLogin ? 0 : 1;
+	Settings::GetInstance()->SaveRememberLogin();
 }
 
 void CLoginScreen::setVideoModeBackground()

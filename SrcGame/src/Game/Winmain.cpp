@@ -12,6 +12,7 @@
 #include <ZMOUSE.H>
 #include <process.h>
 #include "Utils/common.h"
+#include "imGui/imgui.h"
 #include "imGui/imgui_impl_win32.h"
 #include "smlib3d\\smd3d.h"
 #include "smwsock.h"
@@ -41,16 +42,17 @@
 #endif
 
 #include "HUD\\MixWindow.h"
+#include "HUD\\RankingWindow.h"
 #include "playsub.h"
 #include "cracker.h"
 #include "SkillSub.h"
 #include "Montarias\\CMountHandler.h"
 #include "resource.h"
 
-#include "TextMessage.h"		//¹®ÀÚ ¸Þ¼¼Áö Çì´õ
-#include "srcLang\\jts.h"		//ÀÏº»¾î ÄÚµå Ã½Å©
+#include "TextMessage.h"		//???? ????? ???
+#include "srcLang\\jts.h"		//????? ??? ï¿½?
 
-#include "CurseFilter.h"		//¿å¼³ÇÊÅÍ
+#include "CurseFilter.h"		//??????
 #include "damage.h"
 #include "AreaServer.h"
 
@@ -62,13 +64,13 @@
 #include <string>
 
 //######################################################################################
-//ÀÛ ¼º ÀÚ : ¹ÚÃ¶È£
-#define WM_CALLMEMMAP				WM_USER+3   //¸Þ¸ð¸®¸Ê¿¡ ¸Þ¼¼Áö°¡ ÀÖ´Ù°¡ Åëº¸
+//?? ?? ?? : ??ï¿½?
+#define WM_CALLMEMMAP				WM_USER+3   //?????? ??????? ???? ??
 
 //######################################################################################
 
 //######################################################################################
-//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+//?? ?? ?? : ?? ?? ??
 #include "WinInt\\WinIntThread.h"
 #include "FullZoomMap.h"
 #include "FontImage.h"
@@ -78,13 +80,13 @@
 #include "Engine\\Directx\\DXSelectGlow.h"
 #include "Engine\\Directx\\PostProcess.h"
 
-//char szAppName[]="ÇÁ¸®½ºÅæ Å×ÀÏ";
+//char szAppName[]="???????? ????";
 HWND hwnd;
 HWND hTextWnd;
 HWND hFocusWnd;
 
-extern int sinChatDisplayMode; //{ 0- ¾Æ¹«°Íµµ ¾È±×¸®±â  1-º¸Åë  2-»óÁ¡ }
-extern int sinChatInputMode;   //{ 0- ¾Æ¹«°Íµµ ¾È±×¸®±â  1-º¸Åë  2-»óÁ¡ }
+extern int sinChatDisplayMode; //{ 0- ?????? ??????  1-????  2-???? }
+extern int sinChatInputMode;   //{ 0- ?????? ??????  1-????  2-???? }
 
 extern void Init(HWND hWindow);
 
@@ -95,11 +97,11 @@ int WinSizeX = 640;
 int WinSizeY = 480;
 int	WinColBit = 16;
 
-// Definição da variável TCP_SERVPORT que será lida do game.ini
-int TCP_SERVPORT = 32299; // Valor padrão
+// Defini??o da vari?vel TCP_SERVPORT que ser? lida do game.ini
+int TCP_SERVPORT = 32299; // Valor padr?o
 
 //######################################################################################
-//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+//?? ?? ?? : ?? ?? ??
 float g_fWinSizeRatio_X;
 float g_fWinSizeRatio_Y;
 //######################################################################################
@@ -124,7 +126,7 @@ extern int TJwheel; //ktj
 extern int keydownEnt;
 
 
-//IME °ü¸® ¶óÀÌºê·¯¸® Ãß°¡
+//IME ???? ??????? ???
 #pragma comment( lib, "imm32.lib" )
 
 
@@ -144,7 +146,7 @@ extern "C" BOOL WINAPI DllMain(
 	DWORD fdwReason,     // reason for calling function
 	LPVOID lpvReserved   // reserved
 );
-///////////////////////// IME °ü·Ã //////////////////////////////
+///////////////////////// IME ???? //////////////////////////////
 
 #include "ime.h"
 
@@ -169,7 +171,7 @@ BOOL bShowDrops = FALSE;
 DWORD	dwDebugBack;
 DWORD	dwDebugXor;
 
-///////////////////////// °ÔÀÓ¿¡ ÇÊ¿äÇÑ ¼±¾ðµé ///////////////////
+///////////////////////// ????? ????? ????? ///////////////////
 int MouseX, MouseY;
 int MousemX, MousemY;
 int angX = 0;
@@ -218,20 +220,20 @@ LPDIRECT3DTEXTURE9 lpDDSMenu;
 //ccsSELECT	*lpPlaySelect = 0;
 
 int DisplayDebug = 0;
-int DispInterface = TRUE;			//ÀÎÅÍÆäÀÌ½º ±×¸®±â
-int	DebugPlayer = FALSE;				//µð¹ö±ë Ä«¸Þ¶ó ÇÃ·¹ÀÌ¾î
-int	LastAttackDamage = 0;			//¸¶Áö¸· °ø°Ý µ¥¹ÌÁö
+int DispInterface = TRUE;			//????????? ?????
+int	DebugPlayer = FALSE;				//????? ???? ?ï¿½????
+int	LastAttackDamage = 0;			//?????? ???? ??????
 
-int	HoMsgBoxMode = 0;				//È£µ¿ ¸Þ¼¼Áö ¹Ú½º ÇÁ·¹ÀÓ Ç¥½Ã ºñÇ¥½Ã Åä±Û
+int	HoMsgBoxMode = 0;				//??? ????? ??? ?????? ??? ????? ???
 
-//sinTrade.cpp ¿¡ µðÆÄÀÎ µÇ ÀÖµµ´Ù.
+//sinTrade.cpp ?? ?????? ?? ?????.
 #define TRADEBUTTONMAIN_X		513
 #define TRADEBUTTONMAIN_Y		3
 
-POINT pHoPartyMsgBox = { TRADEBUTTONMAIN_X, TRADEBUTTONMAIN_Y };	//È£µ¿ ÆÄÆ¼½ÅÃ» ¸Þ¼¼Áö ¹Ú½º
+POINT pHoPartyMsgBox = { TRADEBUTTONMAIN_X, TRADEBUTTONMAIN_Y };	//??? ?????ï¿½ ????? ???
 
 
-//¿î¿µÀÚ¿ë IP
+//????? IP
 char* szOperationIP[5] = {
 	"211.61.248.221",
 	"211.108.45.",
@@ -240,7 +242,7 @@ char* szOperationIP[5] = {
 	0
 };
 
-char szExitInfo_URL[128] = { 0, };		//°ÔÀÓ Á¾·á½Ã Ç¥½ÃÇÏ´Â URL °æ·Î
+char szExitInfo_URL[128] = { 0, };		//???? ????? ?????? URL ???
 
 
 #define ANX_NONE	-32768
@@ -283,25 +285,25 @@ BOOL	WaveCameraFlag = FALSE;
 
 
 
-//°ÔÀÓ ÃÊ±âÈ­
+//???? ????
 int GameInit();
-//°ÔÀÓ ´Ý±â
+//???? ???
 int GameClose();
-//°ÔÀÓ ¼±ÅÃ
+//???? ????
 int SetGameMode(int mode);
 
-//Ã¤ÆÃÃ¢ ¹®ÀÚ ¼³Á¤¹× È°¼ºÈ­
+//ï¿½??ï¿½ ???? ?????? ????
 int	SetChatingLine(char* szMessage);
 
 int GameMode = 0;
 
-//±×¸®±â Å©¸®Æ¼ÄÃ ¼½¼Ç
+//????? ?????? ????
 CRITICAL_SECTION	cDrawSection;
 CRITICAL_SECTION					cSection_Main;
 
-//ÇØ¿Ü¿ë ÇÔ¼ö
-int HoInstallFont();	//ÆùÆ® µî·ÏÇÏ±â
-int HoUninstallFont();	//ÆùÆ® »èÁ¦ÇÏ±â
+//???? ???
+int HoInstallFont();	//??? ??????
+int HoUninstallFont();	//??? ???????
 
 HINSTANCE hinst;
 BOOL WINAPI DllMain(HINSTANCE hinstDLL,  // handle to DLL module
@@ -326,7 +328,7 @@ int DecodeCmdLine(char* lpCmdLine);
 int HaejukReg();
 
 
-//ÆùÆ® »ý¼º
+//??? ????
 HFONT	hFont = 0;
 int SetCreateFont();
 
@@ -334,19 +336,19 @@ int SetCreateFont();
 HIMC hImc;
 HIMC hImcEdit;
 
-extern rsRECORD_DBASE	rsRecorder;					//¼­¹ö¿¡ °ÔÀÓµ¥ÀÌÅ¸ ±â·ÏÀåÄ¡
+extern rsRECORD_DBASE	rsRecorder;					//?????? ???????? ??????
 extern INT WINAPI ServerWinMain(HINSTANCE hInst, HINSTANCE hPreInst, LPSTR lpCmdLine, INT nCmdShow);
 extern int DrawTwoLineMessageTitle(int x, int y, char* message1, char* message2, char* message3, DWORD color1 = RGB(0, 0, 0), DWORD color2 = RGB(0, 0, 0), DWORD color3 = RGB(0, 0, 0), LPDIRECT3DTEXTURE9 clanMark = NULL, BOOL selected = FALSE, int bellaMarkIndex = -1);
 //int AllUserDataSearch();
-char	szCmdLine[128];			//Ä¿¸Çµå¶óÀÎ ¹®ÀÚ¿­
+char	szCmdLine[128];			//??????? ?????
 
 
-//Å¬·ÎÁî º£Å¸ Å×½ºÅÍ ÃÊ±âÈ­
+//????? ??? ????? ????
 extern int	InitCloseBetaUser();
-//¼­¹ö¿¡ ±â·ÏµÈ ÀüÃ¼ µ¥ÀÌÅ¸¸¦ È®ÀÎÇÏ¿© ÀÇ½É°¡´Â À¯Àú¸¦ Ã£´Â´Ù
+//?????? ???? ??ï¿½ ??????? ?????? ?????? ?????? ï¿½?ï¿½?
 extern int	CheckServerRecordData();
 
-//Ä³¸¯ÅÍ Á¤º¸ ÆÄÀÏ¿¡¼­ ÇØµ¶ÇÏ¿© ¼³Á¤ÇÑ´Ù
+//????? ???? ??????? ?????? ???????
 extern int RestoreBackupData(char* szListFile, char* BackupPath);
 
 #ifdef _W_SERVER
@@ -513,7 +515,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, long lParam)
 #include "mini_dump.h"
 #include "Engine/DynamicAnimation/AnimationHandler.h"
 
-// Pega as configurações
+// Pega as configura??es
 int ConfigUseDynamicLights = 0;
 int ConfigUseDynamicShadows = 0;
 
@@ -680,20 +682,20 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPreInst, LPSTR lpCmdLine, INT nCm
 		printf("DEBUG: ServerIP lido: '%s'\n", ServerIP);
 		printf("DEBUG: ServerPort lido: %d\n", ServerPort);
 
-		// Copia o IP para a estrutura smConfig se não estiver vazio
+		// Copia o IP para a estrutura smConfig se n?o estiver vazio
 		if (strlen(ServerIP) > 0)
 		{
 			lstrcpy(smConfig.szServerIP, ServerIP);
-			// ATUALIZAÇÃO: Também define o DataServerIP com o mesmo valor
+			// ATUALIZA??O: Tamb?m define o DataServerIP com o mesmo valor
 			lstrcpy(smConfig.szDataServerIP, ServerIP);
 		}
 
-		// Define a porta se for válida (maior que 0)
+		// Define a porta se for v?lida (maior que 0)
 		if (ServerPort > 0)
 			smConfig.dwServerPort = ServerPort;
 
 		// Define o TCP_SERVPORT com o valor lido do game.ini
-		TCP_SERVPORT = ServerPort > 0 ? ServerPort : 32299; // Valor padrão se não for lido
+		TCP_SERVPORT = ServerPort > 0 ? ServerPort : 32299; // Valor padr?o se n?o for lido
 
 		// Debug: Mostrar valores finais
 		printf("DEBUG: smConfig.szServerIP: '%s'\n", smConfig.szServerIP);
@@ -701,6 +703,8 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPreInst, LPSTR lpCmdLine, INT nCm
 		printf("DEBUG: smConfig.dwServerPort: %d\n", smConfig.dwServerPort);
 		printf("DEBUG: TCP_SERVPORT: %d\n", TCP_SERVPORT);
 	}
+
+	Settings::GetInstance()->Load();
 
 	InitDirectSound();
 
@@ -941,20 +945,20 @@ int SetIME_Mode(BOOL mode)
 		/*
 
 		DWORD	conv , sent;
-		//ÀÏº»ÆÇ
+		//?????
 		ImmGetConversionStatus( hImc , &conv , &sent );
 		ImmSetConversionStatus( hImc , IME_CMODE_NATIVE|IME_CMODE_FULLSHAPE,sent );
 
 		ImmGetConversionStatus( hImcEdit , &conv , &sent );
 		ImmSetConversionStatus( hImcEdit , IME_CMODE_NATIVE|IME_CMODE_FULLSHAPE,sent );
 		*/
-		//ÀÏº»ÆÇ
+		//?????
 		ImmSetConversionStatus(hImc, IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE, IME_SMODE_PHRASEPREDICT);
 		ImmSetConversionStatus(hImcEdit, IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE, IME_SMODE_PHRASEPREDICT);
 
 
 #else
-		//ÇÑ±¹ÆÇ
+		//?????
 		ImmSetConversionStatus(hImc, IME_CMODE_NATIVE, IME_CMODE_NATIVE);
 		ImmSetConversionStatus(hImcEdit, IME_CMODE_NATIVE, IME_CMODE_NATIVE);
 #endif
@@ -988,7 +992,7 @@ int CheckCode_2Byte(char* Str)
 
 #ifdef _LANGUAGE_JAPANESE
 
-	//ÀÏº»ÄÚµå È®ÀÎ
+	//?????? ???
 
 	if (CheckJTS_ptr(Str, 0) == 2)
 	{
@@ -1004,7 +1008,7 @@ int CheckCode_2Byte(char* Str)
 	if ( ch>=0xE0 && ch<=0xEF ) return 2;
 	*/
 #else
-	//ÇÑ±¹ Áß±¹ ÄÚµå
+	//??? ??? ???
 	if (Str[0] < 0)
 	{
 		return 2;
@@ -1045,7 +1049,7 @@ LRESULT CALLBACK EditWndProc01(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 BOOL bSettings;
 
-//////////////////////// [ ÀÏº»¾î IME Ã³¸® ÇÁ·Î½ÃÀú ] ///////////////////////////////
+//////////////////////// [ ????? IME ï¿½?? ??????? ] ///////////////////////////////
 #ifdef	_LANGUAGE_JAPANESE
 
 char g_bufEdit[256];
@@ -1118,7 +1122,7 @@ int WndProc_Japanese(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 				lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
 				lf.lfQuality = DEFAULT_QUALITY;
 				lf.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
-				strcpy(lf.lfFaceName, _T("‚l‚r ‚oƒSƒVƒbƒN"));
+				strcpy(lf.lfFaceName, _T("?l?r ?o?S?V?b?N"));
 				ImmSetCompositionFont(imc, &lf);
 				ImmReleaseContext(hWnd, imc);
 				setFont = TRUE;
@@ -1499,15 +1503,22 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == VK_F10)
 		{
-			if (Settings::GetInstance()->IsOpen())
-				Settings::GetInstance()->Close();
-			else
-				Settings::GetInstance()->Open();
+			if (GameMode == 2)
+			{
+				if (Settings::GetInstance()->IsOpen())
+					Settings::GetInstance()->Close();
+				else
+					Settings::GetInstance()->Open();
+			}
 		}
 
 		if (wParam == VK_ESCAPE && VRKeyBuff[wParam] == 0)
 		{
-			if (VRKeyBuff[VK_SHIFT])
+			if (Settings::GetInstance()->IsOpen())
+			{
+				Settings::GetInstance()->Close();
+			}
+			else if (VRKeyBuff[VK_SHIFT])
 				QuitGame();
 			else
 			{
@@ -1724,6 +1735,27 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		if (GetForegroundWindow() != hWnd)
 			return 0;
 
+		if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse)
+			return 0;
+
+		if (Settings::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
+		if (QuestWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
+		if (NewShop::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
+		if (NewShopTime::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
+		if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
+		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
 		if (MOUSEHANDLER->OnMouseClickHandler(messg))
 			return 0;
 
@@ -1833,6 +1865,27 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		if (MOUSEHANDLER->OnMouseScrollHandler(GET_WHEEL_DELTA_WPARAM(wParam)))
 			return 0;
 
+		if (Settings::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (QuestWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (NewShop::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (NewShopTime::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse)
+			break;
+
 		if (!NewShop::GetInstance()->openFlag && !NewShopTime::GetInstance()->openFlag && !MixWindow::GetInstance()->openFlag && !Roleta::GetInstance()->openFlag && !Roleta::GetInstance()->openRoleta)
 		{
 			if (hFocusWnd)
@@ -1923,12 +1976,12 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 		if ((dwTimerCount & 3) == 0)
 		{
-			dwGameWorldTime++;			//°ÔÀÓÀÇ ¿ùµå½Ã°£
+			dwGameWorldTime++;			//?????? ????ï¿½?
 
 			dwGameHour = dwGameWorldTime + dwGameTimeOffset;
 			dwGameHour = dwGameHour / 60;
-			dwGameHour = dwGameHour - (((int)(dwGameHour / 24)) * 24);			//°ÔÀÓ³»ºÎ¿¡¼­ÀÇ ½Ã
-			dwGameMin = dwGameWorldTime - (((int)(dwGameWorldTime / 60)) * 60);		//°ÔÀÓ³»ºÎ¿¡¼­ÀÇ ºÐ			
+			dwGameHour = dwGameHour - (((int)(dwGameHour / 24)) * 24);			//???????????? ??
+			dwGameMin = dwGameWorldTime - (((int)(dwGameWorldTime / 60)) * 60);		//???????????? ??			
 
 			if (EventoArena::GetInstance()->timeArena == TRUE) {
 				extern int arenaTimer;
@@ -2351,7 +2404,7 @@ void PlayMain()
 		}
 	}
 
-	// CORREÇÃO DA APROXIMAÇÃO DA CAMERA EM DUNGEONS
+	// CORRE??O DA APROXIMA??O DA CAMERA EM DUNGEONS
 
 	/*if (PlayFloor > 0)
 	{
@@ -3230,25 +3283,25 @@ int GameInit()
 	if (smConfig.DebugMode)
 		SendAdminMode(TRUE);
 
-	npSetUserID(UserAccount);		//°ÔÀÓ°¡µå¿¡ ID Åëº¸
+	npSetUserID(UserAccount);		//??????? ID ??
 
 	dwPlayTime = GetCurrentTime();
 	dwMemError = dwMemError ^ dwPlayTime;
-	Check_nProtect();					//nProtect È®ÀÎ
+	Check_nProtect();					//nProtect ???
 
-	// ¸ÞÆ®¸®¾ó ÃÊ±âÈ­
+	// ??????? ????
 	InitMaterial();
-	smRender.SetMaterialGroup(smMaterialGroup);			//±âº» ¸ÞÆ®¸®¾ó ±×·ì
+	smRender.SetMaterialGroup(smMaterialGroup);			//?? ??????? ???
 
 	//ZeroMemory( &lpCurPlayer->smCharInfo , sizeof( smCHAR_INFO ) );
 	ReformCharForm();
 
-	InitEffect();			//È£ ÀÌÆåÆ® ÃÊ±âÈ­
+	InitEffect();			//? ????? ????
 
-	InitMotionBlur();		//¸ð¼Ç ºÎ·Á ÃÊ±âÈ­
-	InitBackGround();		//¹è°æ ÃÊ±âÈ­
+	InitMotionBlur();		//??? ??? ????
+	InitBackGround();		//??? ????
 
-	Check_CodeSafe((DWORD)CloseD3d);	//ÄÚµå º¸È£ ½ÇÇà
+	Check_CodeSafe((DWORD)CloseD3d);	//??? ??? ????
 
 	InitStage();
 	InitPat3D();
@@ -3258,16 +3311,16 @@ int GameInit()
 #endif
 
 	//######################################################################################
-	//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+	//?? ?? ?? : ?? ?? ??
 	CreateItem2PassTexture();
 	//######################################################################################
 
 	CheckCharForm();
 
-	//¸Þ¸ð¸® Ã½Å© ÃÊ±âÈ­
+	//??? ï¿½? ????
 	//InitKeepMemFunc();
 
-	//¸Þ¸ð¸® ÀüÃ¼ Ã½Å©
+	//??? ??ï¿½ ï¿½?
 	//CheckKeepMemFull();
 
 
@@ -3279,7 +3332,7 @@ int GameInit()
 #endif
 
 	//######################################################################################
-	//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+	//?? ?? ?? : ?? ?? ??
 	g_fWinSizeRatio_X = float(WinSizeX) / 800.f;
 	g_fWinSizeRatio_Y = float(WinSizeY) / 600.f;
 
@@ -3297,7 +3350,7 @@ int GameInit()
 
 	InitMessageBox();
 
-	//·»´õ¸µ ±âº» °ª
+	//?????? ?? ??
 	smRender.SMMULT_PERSPECTIVE_HEIGHT = RENDCLIP_DEFAULT_MULT_PERSPECTIVE_HEIGHT;
 	MidX = WinSizeX / 2;
 	MidY = WinSizeY / 2;
@@ -3309,15 +3362,15 @@ int GameInit()
 		viewdistZ = ((WinSizeY / 3) * 4);
 
 	//######################################################################################
-	//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+	//?? ?? ?? : ?? ?? ??
 	g_IsReadTextures = 1;
 	//######################################################################################
 
 	ReadTextures();
 
-	CheckOftenMeshTextureSwap();	//ÀÚÁÖ¾µ ¸Þ½Ã ÅØ½ºÃÄ ½º¿ÒÃ½Å©
+	CheckOftenMeshTextureSwap();	//????? ??? ????? ????ï¿½?
 
-	//À½¾Ç ¿¬ÁÖ
+	//???? ????
 	if (smConfig.BGM_Mode)
 	{
 		if (StageField[0])
@@ -3330,28 +3383,28 @@ int GameInit()
 	}
 	CharPlaySound(lpCurPlayer);
 	StartEffect(lpCurPlayer->pX, lpCurPlayer->pY, lpCurPlayer->pZ, EFFECT_GAME_START1);
-	RestartPlayCount = 700;		//10ÃÊ µ¿¾È ¹«Àû
+	RestartPlayCount = 700;		//10?? ???? ????
 
 
 	hFocusWnd = 0;
 	szLastWhisperName[0] = 0;
 	LastWhisperLen = 0;
 	InterfaceParty.chat_WhisperPartyPlayer_close();
-	chatlistSPEAKERflagChg(0);		//Å¬·£ Ã¤ÆÃ Á¾·á
-	SendMessage(hTextWnd, EM_SETLIMITTEXT, 78, 0);			//Ã¤ÆÃ 80±ÛÀÚ Á¦ÇÑ
+	chatlistSPEAKERflagChg(0);		//??? ï¿½?? ????
+	SendMessage(hTextWnd, EM_SETLIMITTEXT, 78, 0);			//ï¿½?? 80???? ????
 
 	MouseButton[0] = 0;
 	MouseButton[1] = 0;
 	MouseButton[2] = 0;
 
-	//ÁÖÀÎ°ø Ä³¸¯ÅÍ Æ÷ÀÎÅÍ º¯°æ		//kyle xtrapHeap
+	//????? ????? ?????? ????		//kyle xtrapHeap
 
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func11_Protect(&sinChar, sizeof(sinChar));	//º¸È£¿µ¿ª ¹«°á¼º Ã¼Å©
+	XTrap_CE1_Func11_Protect(&sinChar, sizeof(sinChar));	//??????? ???? ï¿½?
 #endif
 
 #ifdef _XIGNCODE_CLIENT
-	// ¹ÚÀç¿ø - XignCode
+	// ????? - XignCode
 	Xigncode_Client_Start();
 #endif
 
@@ -3370,40 +3423,40 @@ int GameInit()
 	}
 
 #ifdef _XTRAP_GUARD_4_CLIENT //HEAP MEMORY TEST
-	XTrap_CE1_Func12_Protect(&sinChar, sizeof(sinChar));	//º¸È£¿µ¿ª º¸È£
-	XTrap_CE1_Func13_Free(&sinChar, sizeof(sinChar));		//º¸È£¿µ¿ª ÇØÁ¦
+	XTrap_CE1_Func12_Protect(&sinChar, sizeof(sinChar));	//??????? ???
+	XTrap_CE1_Func13_Free(&sinChar, sizeof(sinChar));		//??????? ????
 #endif
 
-	SetIME_Mode(0);		//IME ¸ðµå ÀüÈ¯
+	SetIME_Mode(0);		//IME ??? ???
 
-	//½ºÅ³º¸È£°ª ÀüºÎ ÃÊ±âÈ­
+	//???????? ???? ????
 	ReformSkillInfo();
 
 
 	HoMsgBoxMode = 1;
-	SetMessageFrameSelect(HoMsgBoxMode);		//È£¸Þ¼¼ÁöÃ¢ ÇÁ·¹ÀÓ ¸ðµå
+	SetMessageFrameSelect(HoMsgBoxMode);		//??????ï¿½ ?????? ???
 
 	//######################################################################################
-	//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+	//?? ?? ?? : ?? ?? ??
 	CreateWinIntThread();
 	//######################################################################################
 
 	return TRUE;
 }
 
-//°ÔÀÓ ´Ý±â
+//???? ???
 int GameClose()
 {
 
 #ifdef _XIGNCODE_CLIENT
-	//¹ÚÀç¿ø - XignCode
+	//????? - XignCode
 	ZCWAVE_Cleanup();
 	ZCWAVE_SysExit();
 #endif
 
 	if (lpDDSMenu) lpDDSMenu->Release();
 
-	//¸Þ¸ð¸® Ã½Å© Á¾·á
+	//??? ï¿½? ????
 	//CloseKeepMem();
 
 	ClosePat3D();
@@ -3416,7 +3469,7 @@ int GameClose()
 	CloseMaterial();
 
 	//######################################################################################
-	//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+	//?? ?? ?? : ?? ?? ??
 	DestroyWinIntThread();
 	//######################################################################################
 
@@ -3514,7 +3567,7 @@ char strBuff2[256];
 
 int RestoreFlag = 0;
 
-char* szRestore = "Áö±Ý ±×¸² µ¥ÀÌÅ¸¸¦ ¾ÆÁÖ ¿­½ÉÈ÷ ·ÎµåÇÏ±¸ ÀÖ½À´Ï´Ù. ÂÉ±Ý¸¸ ±â´Ù¸®¼¼¿ä !";
+char* szRestore = "???? ??? ??????? ???? ?????? ?????? ??????. ???? ???????? !";
 
 int NumPoly;
 int Disp_tx, Disp_ty;
@@ -3617,7 +3670,7 @@ void VirtualDrawGameState(void)
 				{
 					if ((dwBattleQuitTime + 5000) > dwPlayTime)
 						/*DrawMessage(MidX - 40, MidY, mgCloseBattle, 36, BOX_ONE);*/
-						TitleBox::GetInstance()->SetText("Você não pode sair durante a batalha!", 3);
+						TitleBox::GetInstance()->SetText("Voc? n?o pode sair durante a batalha!", 3);
 					else
 						dwBattleQuitTime = 0;
 				}
@@ -3774,7 +3827,7 @@ int DrawGameState()
 	else
 		lpItem = lpSelItem;
 
-	// Mostra itens no chão segurando o A aqui
+	// Mostra itens no ch?o segurando o A aqui
 	if (VRKeyBuff['A'] || bShowDrops)
 	{
 		for (cnt = 0; cnt < DISP_ITEM_MAX; cnt++)
@@ -3796,7 +3849,7 @@ int DrawGameState()
 		}
 	}
 
-	// Mouse em cima do item no chão
+	// Mouse em cima do item no ch?o
 	if (lpSelItem && !lpCharSelPlayer && !lpCharMsTrace)
 	{
 		Disp_tx = MsSelPos.x;
@@ -3961,7 +4014,7 @@ int DrawGameState()
 				STRINGCOPY(Classe, "Lord Viking");
 				break;
 			case 2:
-				//STRINGCOPY(Classe, "Chefe Mecânico");
+				//STRINGCOPY(Classe, "Chefe Mec?nico");
 				STRINGCOPY(Classe, "Lord Metal");
 				break;
 			case 3:
@@ -4092,7 +4145,7 @@ int DrawGameState()
 						GAMECOREHANDLE->pcMessageBalloon->GetTextMessage()->SetHighlightTextColor(dwColor);
 						GAMECOREHANDLE->pcMessageBalloon->SetColor(-1);
 
-						// Ícone em cima da box (a fazer)
+						// ?cone em cima da box (a fazer)
 						//GAMECOREHANDLE->pcMessageBalloon->SetNotifyQuestIconID(QUESTGAMEHANDLER->GetNpcQuestStatus(pc->sCharacterData.iNPCId));
 					}
 					else
@@ -4130,9 +4183,9 @@ int DrawGameState()
 					}
 				}
 			}
-			else if (pc->RendPoint.z < GetViewCam()) // Distância de visão
+			else if (pc->RendPoint.z < GetViewCam()) // Dist?ncia de vis?o
 			{
-				// Verifica se o player é da mesma equipe na arena
+				// Verifica se o player ? da mesma equipe na arena
 				if (StageField[UNITDATA->OnStageField]->FieldCode == FIELD_ARENA && EventoArena::GetInstance()->stageArena == 2)
 				{
 					if (pc->nEquipeArena != UNITDATA->nEquipeArena)
@@ -4657,7 +4710,7 @@ int DrawGameState()
 				{
 					if ((dwBattleQuitTime + 5000) > dwPlayTime)
 						/*DrawMessage(MidX - 40, MidY, mgCloseBattle, 36, BOX_ONE);*/
-						TitleBox::GetInstance()->SetText("Você não pode sair durante a batalha!", 3);
+						TitleBox::GetInstance()->SetText("Voc? n?o pode sair durante a batalha!", 3);
 					else
 						dwBattleQuitTime = 0;
 				}
@@ -4971,7 +5024,7 @@ char* CompCmdStr(char* strCmdLine, char* strword)
 	return NULL;
 };
 
-//ÄÚ¸àµå ¶óÀÎ ºÐ¼® ¼³Á¤
+//???? ???? ??? ????
 int DecodeCmdLine(char* lpCmdLine)
 {
 	char* lpChar;
@@ -5084,7 +5137,7 @@ DWORD GameWindowMessage(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			}
 
 			//######################################################################################
-			//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+			//?? ?? ?? : ?? ?? ??
 			if (smRender.m_GameFieldView && !VRKeyBuff[wParam])
 			{
 				if (wParam == VK_ADD)
@@ -5143,7 +5196,7 @@ DWORD GameWindowMessage(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 						SkipNextField = 2;
 					}
 
-					//¾Èº¸ÀÌ´Â º® Ç¥½Ã ºñÇ¥½Ã
+					//?????? ?? ??? ?????
 					if (wParam == VK_F7 && VRKeyBuff[VK_F7] == 0)
 					{
 						if (smRender.dwMatDispMask)
@@ -5160,7 +5213,7 @@ DWORD GameWindowMessage(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 					if (wParam == VK_F8 && VRKeyBuff[wParam] == 0)
 					{
-						//Å¬·£ Á¤º¸ Ç¥½Ã
+						//??? ???? ???
 						if (ktj_imsiDRAWinfo) ktj_imsiDRAWinfo = 0;
 						else ktj_imsiDRAWinfo = 1;
 					}
@@ -5178,15 +5231,15 @@ DWORD GameWindowMessage(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 				{
 					if (wParam == VK_INSERT && VRKeyBuff[wParam] == 0 && VRKeyBuff[VK_CONTROL])
 					{
-						//½ÃÀÛ ÁöÁ¡ Ãß°¡
+						//???? ???? ???
 						SendAdd_Npc(lpCurPlayer, 0);
 					}
 					if (wParam == VK_DELETE && VRKeyBuff[wParam] == 0 && VRKeyBuff[VK_CONTROL])
 					{
-						//½ÃÀÛ ÁöÁ¡ Ãß°¡
+						//???? ???? ???
 						if (lpCharSelPlayer)
 						{
-							//NPC Ä³¸¯ÅÍ Á¦°Å
+							//NPC ????? ????
 							SendDelete_Npc(lpCharSelPlayer);
 						}
 					}
@@ -5195,13 +5248,13 @@ DWORD GameWindowMessage(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 				{
 					if (wParam == VK_INSERT && VRKeyBuff[wParam] == 0 && VRKeyBuff[VK_CONTROL])
 					{
-						//½ÃÀÛ ÁöÁ¡ Ãß°¡
+						//???? ???? ???
 						SendAddStartPoint(lpCurPlayer->pX, lpCurPlayer->pZ);
 					}
 
 					if (wParam == VK_DELETE && VRKeyBuff[wParam] == 0 && VRKeyBuff[VK_CONTROL])
 					{
-						//½ÃÀÛ ÁöÁ¡ Ãß°¡
+						//???? ???? ???
 						if (lpSelItem)
 						{
 							SendDeleteStartPoint(lpSelItem->pX, lpSelItem->pZ);
@@ -5220,13 +5273,13 @@ DWORD GameWindowMessage(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 
 
-//Äù½ºÆ® ¸Þ¼¼Áö º¸µå ¼³Á¤ ÇÏ´Â°÷
+//????? ????? ???? ???? ??ï¿½?
 #include "sinbaram\\HaQuestBoard.h"
 
 
 
 
-//Äù½ºÆ® ½ÃÀÛ
+//????? ????
 int	StartQuest_Code(DWORD wCode)
 {
 	SetQuestBoard();
@@ -5234,29 +5287,29 @@ int	StartQuest_Code(DWORD wCode)
 
 	if (InterfaceParty.PartyPosState == PARTY_NONE)
 	{
-		//Äù½ºÆ® Ã¢À» º¸¿©ÁØ´Ù 
+		//????? ï¿½?? ??????? 
 		ShowQuest();
-		InterfaceParty.quest_Sel_Progress();	//Äù½ºÆ®ÁøÇà¹öÆ°´©¸¥°É·Î ¼ÂÆÃÇÔ.
+		InterfaceParty.quest_Sel_Progress();	//?????????????????? ??????.
 	}
 
 	return TRUE;
 }
 
-//Äù½ºÆ® ¿Ï·á
+//????? ???
 int EndQuest_Code(DWORD wCode)
 {
-	//Á¾·áµÈ Äù½ºÆ® ±â·Ï Ãß°¡
+	//????? ????? ??? ???
 	Record_LastQuest((WORD)wCode);
 	SetQuestBoard();
 
 	return TRUE;
 }
 
-//ÇØ¿Ü¿ë ÇÔ¼ö
+//???? ???
 int HoInstallFont()
 {
 
-	//ÆùÆ®¸¦ µî·ÏÇÑ´Ù
+	//????? ??????
 #ifdef	_LANGUAGE_ENGLISH		//C7
 	AddFontResource("ptz.ttf");
 #endif

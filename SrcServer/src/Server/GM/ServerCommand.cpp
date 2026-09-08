@@ -18,6 +18,7 @@ extern int	rsRegist_ItemSecCode(rsPLAYINFO* lpPlayInfo, TRANS_ITEMINFO* lpTransI
 extern int	rsRecordAdminCommand(rsPLAYINFO* lpPlayInfo, char* szChatCommand, int Level);
 extern smCHAR* OpenMonsterFromName(char* szName, int x, int y, int z, rsPLAYINFO* lpPlayInfo = 0);
 extern INT64 GetExpFromLevel(int iLevel);
+extern INT64 GetExp64(smCHAR_INFO* smCharInfo);
 
 
 extern float Multiplicador[151];
@@ -360,6 +361,49 @@ void CServerCommand::OnGameMasterAdminCommand(rsPLAYINFO* pcUser, char* pszBuff)
 		}
 		else
 			SERVERCHAT->SendChat(pcUser, CHATCOLOR_Error, "> Uso: /giveexp <xp>");
+	}
+
+	// Seta o level do personagem do GM logado (somente GM nivel 4+)
+	else if (ChatCommand("/level", pszBuff))
+	{
+		if (pcUser->AdminMode < 4)
+		{
+			SERVERCHAT->SendChat(pcUser, CHATCOLOR_Error, "> Comando exclusivo para GM Level 4.");
+		}
+		else if (GetParameterString(pszBuff, 1, szCommandParam1))
+		{
+			int iTargetLevel = atoi(szCommandParam1);
+
+			if (iTargetLevel < 1 || iTargetLevel > g_LevelFinal)
+			{
+				SERVERCHAT->SendChatEx(pcUser, CHATCOLOR_Error, "> Level invalido. Use 1 a %d.", g_LevelFinal);
+			}
+			else if (pcUser->smCharInfo.Level >= iTargetLevel)
+			{
+				SERVERCHAT->SendChatEx(pcUser, CHATCOLOR_Error, "> Seu level atual (%d) ja e >= %d.", pcUser->smCharInfo.Level, iTargetLevel);
+			}
+			else
+			{
+				INT64 iTargetExp = GetExpFromLevel(iTargetLevel);
+				INT64 iCurrentExp = GetExp64(&pcUser->smCharInfo);
+				INT64 iAddExp = iTargetExp - iCurrentExp;
+
+				if (iAddExp > 0)
+				{
+					UTILS->AddExpToPlayer(pcUser, iAddExp);
+					pcUser->LastExp += iAddExp;
+					pcUser->dwGameServerExp[0] += iAddExp;
+
+					SERVERCHAT->SendChatEx(pcUser, CHATCOLOR_Blue, "> Level definido para %d.", iTargetLevel);
+				}
+				else
+				{
+					SERVERCHAT->SendChat(pcUser, CHATCOLOR_Error, "> Nao foi possivel calcular a XP necessaria.");
+				}
+			}
+		}
+		else
+			SERVERCHAT->SendChat(pcUser, CHATCOLOR_Error, "> Uso: /level <nivel>");
 	}
 
 	// Desliga o servidor

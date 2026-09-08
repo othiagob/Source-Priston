@@ -1,0 +1,285 @@
+---
+description: Padrão obrigatório ao criar ou remodelar janela ImGui de jogador
+globs: SrcGame/src/Game/Quest/**,SrcGame/src/Game/HUD/**,SrcGame/src/Game/Shop/**,SrcGame/src/Game/Chat/**,SrcGame/src/Game/Settings.cpp,SrcGame/src/Game/Settings.h
+alwaysApply: false
+---
+
+# Janelas ImGui de jogador
+
+**Postura:** criar, abrir ou remodelar layout de janela de jogador =
+seguir este arquivo. Não é sugestão. Não desenhe um visual “só desta
+tela” e não volte ao ImGui cru / `StyleColorArmageddon()`.
+
+Referência de **layout** (lista + detalhe, overlay): `SrcGame/src/Game/Quest/QuestWindow.cpp`.
+Referência de **cromado adotado** (borda, títulos de seção, abas, X):
+`SrcGame/src/Game/Settings.cpp`.
+
+O HUD clássico de pedra/BMP (`sinbaram/`, inventário, HP) **não** usa
+isto até o usuário pedir para migrar aquela tela.
+
+Não chame `StyleColorArmageddon()` nestas janelas — isso muda o tema
+**global** do ImGui e suja o resto do client.
+
+Novos detalhes só entram nesta regra quando o usuário pedir para adotar
+algo que já ficou polido no jogo. Não invente cromado paralelo.
+
+---
+
+## Cromado (toda janela grande)
+
+Pinte no `ImDrawList` da própria janela. `WindowBg` fica transparente;
+o fundo real é o retângulo do chrome.
+
+- Fundo: `IM_COL32(10, 12, 16, 248)`.
+- Janela grande: `WindowRounding` nativo **0**. O rounding grande
+  do ImGui não aparece bem no DirectX. O contorno desenhado usa
+  rounding **~3.5** (o mesmo do mockup: cantos levemente suaves).
+- Contorno: **bezel de duas camadas** no `ImDrawList`, colado no
+  retângulo da janela (`DrawPlayerWindowChrome` em
+  `HUD/ImGuiWindowChrome.h`). Traço externo ~1.9, hairline interno
+  ~1.0 a ~3 px para dentro. Sem PNG 9-slice, sem losango, sem barra
+  grossa, sem terceira sombra. Popup usa o mesmo bezel.
+- Divisórias internas: **uma** linha dourada fina (header; lista|
+  detalhe via `DrawPlayerColumnSplit`). Children de lista/detalhe
+  **sem** `ChildBorder` — a moldura da janela é o único quadro.
+- Overlay compacto: traço simples (não o bezel duplo).
+- Faixa do título (header ~50 px): `IM_COL32(20, 24, 32, 255)`.
+- Linha dourada sob o header: `IM_COL32(200, 170, 90, 220)`, ~1.5.
+- `WindowBorderSize` nativo = 0 (a borda é desenhada à mão).
+- Arredondamento **só** em controles pequenos, e sempre suave (~2–3):
+  botões, child, abas, plaquinha de seção. Nunca 8–10.
+
+Estilo só nesta janela: `PushStyleColor` / `PushStyleVar` no começo,
+`Pop` no fim, **contagem igual**. Sem tema global.
+
+Paleta de texto/controles:
+
+- Texto: branco. Secundário: cinza `0.62, 0.62, 0.68`.
+- Destaque: dourado `200, 170, 90` (bright `230, 200, 110`).
+- Botão: fundo `0.12, 0.13, 0.16`; hover dourado escuro; borda dourada.
+- Progresso em andamento: `PlotHistogram` dourado.
+
+Status (quando a tela tiver estados parecidos com quest):
+
+- Disponível: âmbar `210, 160, 70`
+- Em andamento: ciano `80, 190, 230`
+- Entregar / destaque de ação: dourado `200, 170, 90`
+- Concluído / barra cheia: verde `110, 180, 120` (barra `0.28, 0.68, 0.36`)
+
+Não pinte o nome inteiro de vermelho. Vermelho é botão destrutivo ou
+item fora da regra (ex.: fora do nível), não o título da lista.
+
+---
+
+## Título da janela
+
+- Centralizado na faixa do header (~50 px).
+- Preferir **imagem PNG**: texto dourado recortado, fundo transparente.
+- **Ícone + nome** na mesma placa de ouro (adotado nas janelas grandes):
+  relevo metálico à esquerda, mesmo metal/bisel das letras, vão de
+  cerca de uma letra, depois o título. O grupo inteiro fica
+  centralizado. Ícone = silhueta simples na altura das maiúsculas
+  (pergaminho = Desafios, engrenagem = Configurações, moedas = Loja
+  de Coins, ampulheta = Loja de Tempo, taça = Ranking, gema = Lista de Mix). Não é ícone
+  colorido separado nem cromado da janela.
+- **Canvas padrão de arte: 400×64 px** (adotado da Loja de Coins).
+  Usar esta dimensão em Desafios, Configurações, Loja e **toda janela
+  ImGui nova** daqui pra frente. Um arquivo só; o código reduz com
+  proporção (`FitImageSize`) para a faixa (~210–320×32–40 na janela
+  grande, ~150×18 no overlay). Não precisa de um PNG menor só para o overlay.
+- Sempre recortar o desenho **dentro** dos 400×64. Canvas enorme
+  (ex.: 1274×832) com fundo vazio vira um selo ilegível — a escala
+  usa a imagem **inteira**.
+- Pasta no cliente: `game/images/<tela>/<nome>.png`
+  (Loja: `game/images/shop/loja-de-coins.png`;
+  Loja de Tempo: `game/images/shop/loja-de-tempo.png`;
+  Desafios: `game/images/quest/desafios.png`;
+  Configurações: `game/images/settings/configuracoes.png`;
+  Ranking: `game/images/ranking/ranking.png`;
+  Lista de Mix: `game/images/mix/lista-de-mix.png`).
+  Se o arquivo faltar, cair no texto dourado (ex.: `DESAFIOS`).
+- Carregar com `D3DXCreateTextureFromFileExA` → `D3DFMT_A8R8G8B8`.
+- Fechar: **retângulo** (~28×22), cantos levemente arredondados
+  (`rounding` ~3). Fundo escuro, borda dourada fina, X geométrico
+  (duas linhas no centro — não `AddText("X")` nem `SmallButton`).
+  Hover: fundo um pouco mais claro e borda `kGoldBright`.
+  Posição: canto direito da faixa do header, alinhado na vertical.
+  Ver `DrawHeaderClose` em `Settings.cpp` e `DrawHeaderIcon` em
+  `QuestWindow.cpp`. Janela: `NoTitleBar`.
+- PNG do título: caber **dentro** da faixa, acima da linha do header.
+- Fundo da janela continua o retângulo escuro. Não voltar a pergaminho
+  de fundo nem a uma moldura PNG do tamanho da tela inteira.
+
+---
+
+## Botões de header (fechar / minimizar)
+
+Padrão único para Desafios, Configurações e overlays:
+
+- Caixa **retangular** (~28×22), não círculo e não `SmallButton`.
+- Cantos **levemente** arredondados (`rounding` ~3). Nunca 8–10.
+- Fundo quase preto `18,20,24`; hover `56,46,22`.
+- Borda dourada fina (~1.2). Hover usa `kGoldBright`.
+- Ícone **geométrico** (linhas), centralizado. X = duas diagonais;
+  minimizar = traço horizontal; restaurar = cruz +.
+- Não desenhar o glifo da fonte (`"X"`, `"x"`, `"-"`): a métrica da
+  fonte desloca o símbolo.
+
+---
+
+## Títulos de seção
+
+Adotado em Configurações e Desafios. Copiar `Settings::DrawSectionHeader`
+(Desafios: `OBJETIVOS` / `RECOMPENSAS`).
+
+- Texto **MAIÚSCULO**, centralizado.
+- Plaquinha escura com borda dourada e rounding **~3**, em cima de uma
+  linha dourada fraca que atravessa a largura útil.
+- Cor do texto: dourado bright `230, 200, 110`.
+- Não deixar o título solto à esquerda em sentence-case.
+
+---
+
+## Abas
+
+- `TabRounding` **~3** (cantos de cima suaves, sem “bolha”).
+- Aba inativa: fundo escuro. Aba ativa: fundo um pouco mais claro
+  (já existe no estilo).
+- Aba **ativa** ganha um adorno: traço dourado em U (cima + lados,
+  sem fechar embaixo), no mesmo arco da aba. Ver
+  `DrawActiveTabOrnament` em `Settings.cpp`. Não bordar as inativas.
+
+---
+
+## Layout
+
+- Janela grande: **centralizada**, `NoMove` + `NoResize` salvo pedido
+  contrário. Tamanho típico de referência: 720×520.
+- Lista à esquerda + detalhe à direita (`BeginChild` **sem** borda).
+  Os dois children ocupam a altura até o fundo (sem faixa de rodapé
+  vazia). Entre eles, a linha dourada de `DrawPlayerColumnSplit`.
+- Seções: usar o título de seção acima, não texto solto.
+- Ação (Aceitar / Concluir) no **fim do painel de detalhe**, não numa
+  faixa que encolhe a lista. Em Desafios, **Mostrar/Ocultar** e
+  **Cancelar** ficam na linha do nome da quest (direita).
+- Abas: uma função parametrizada. Não copiar o mesmo painel 3 vezes.
+- Badges: retângulo com borda da cor do status, preenchimento bem escuro.
+- Caixa de dica / hint: tamanho do texto + padding, não um child alto
+  vazio. Texto **centralizado** (horizontal e vertical) dentro da
+  plaquinha; a caixa não estica até a borda direita.
+
+---
+
+## Popup de confirmação
+
+Mesmo cromado da janela (`DrawWindowChrome`), **sem** adornos extras.
+O destaque é o fundo da tela (`ModalWindowDimBg` ~**0.80**), não uma
+moldura diferente.
+
+- Mesmo bezel fino da janela principal (cantos ~3.5 no desenho).
+- Botão seguro (`VOLTAR`): dourado.
+- Botão destrutivo (`CONFIRMAR`): vermelho escuro, texto claro.
+- Não usar `cMessageBox` / `ConfirmationBox` legado nestas telas.
+
+---
+
+## Overlay / taskbar (HUD compacto)
+
+Quando a tela tiver um painel flutuante (progresso, atalho):
+
+- Compacto, arrastável, minimizável. Cantos **retos** (rounding 0).
+- Linha dourada do cabeçalho um pouco mais grossa (~2.6) que na janela
+  grande.
+- Ícones − / + / x: **o mesmo botão de header das janelas grandes**
+  (retângulo ~28×22, rounding ~3, borda dourada, ícone geométrico).
+  Não usar quadrado 20 px sem rounding nem `SmallButton`.
+- Título: PNG no mesmo recorte do título da janela, ou texto dourado.
+  Overlay: caber em ~150×18 (menor que a janela grande).
+- Arrastar: `NoMove` + hitbox no header. Guardar X/Y e aplicar com
+  `SetNextWindowPos` **antes** do `Begin`. Não chamar `SetWindowPos`
+  no meio do frame — o cromado e o PNG saem de sincronia e o título
+  parece escorregar dentro da janela.
+- Várias quests: cada uma num **card** (fundo um pouco mais claro,
+  borda dourada bem fraca, rounding ~3, folga ~6 px entre cards).
+  Não empilhar só com `Dummy` curto.
+- Barra de progresso: mesmo com 0%, desenhar o trilho escuro e um
+  **adorno fino dourado** com rounding ~3. O `ProgressBar` nativo
+  some no fundo preto quando está vazio. Ver `DrawQuestProgressBar`.
+- Clique na overlay **não** move o personagem: `WantCaptureMouse` +
+  retângulo da janela (`IsBlockingMouse` ou equivalente) em
+  `GameCore::OnMouseClick` e `WM_LBUTTONDOWN` no `WinMain`.
+- Scroll do mouse em cima da janela **não** mexe a câmera: o mesmo
+  `IsBlockingMouse` / `WantCaptureMouse` em `GameCore::OnMouseScroll`
+  e em `WM_MOUSEWHEEL` no `WinMain`.
+- Objetivo completo: **verde** (nome + texto + barra `n/n`). Sem check
+  junto com "OK" — um sinal só.
+- Visibilidade **por quest**: a overlay só lista desafios com
+  `IsShownOnOverlay`. Ocultar uma não fecha a taskbar das outras.
+
+---
+
+## Acentos e texto (UTF-8 vs ANSI)
+
+ImGui quer UTF-8. O HUD antigo (`DrawTextA`, minimapa, inventário) quer
+Windows-1252 (`CP_ACP`). São dois mundos. “Corrigir acento” num lugar
+errado quebra o outro (ex.: minimapa `IlusÃµes`).
+
+- Literais **só desta janela**: macros UTF-8 no próprio `.cpp`
+  (`U8_A` = `"\xC3\xA1"`, `U8_AN` = `"\xC3\xA3"`, etc.). Não dependem
+  do encoding do arquivo e não exigem salvar o `.cpp` como UTF-8.
+- Nome que vem do servidor/SQL (`ItemName`, `questName`): copiar o
+  `ToUtf8()` local (`CP_ACP` → wide → UTF-8) de `QuestWindow` /
+  `NewShop` / `Settings`. **Não** criar um conversor global nem
+  alterar `STRCLASS.CPP` / `atlconv.h`.
+- `MapasWU8`, `WChar_to_UTF82` e `getUTF8size2` vivem em
+  `QuestWindow.cpp` porque o MiniMap e a loja ainda dão `extern` nisso.
+  **Não remover. Não converter `MapasWU8` para UTF-8.** Esse array
+  fica em ANSI (`A8_ON` = `"\xF5"`).
+- **Não edite** `SrcGame/src/Game/imGui/` (nem `StyleColorArmageddon`,
+  fontes, `imgui.cpp`) para “consertar” acento ou tema. Mexer na
+  biblioteca pinta/quebra telas que não são desta janela.
+- Não alterar `Shared/smPacket.h` só por visual.
+
+---
+
+## Checklist de janela ImGui nova
+
+1. Cromado local (`Push`/`Pop` com contagem igual). Sem
+   `StyleColorArmageddon()`.
+2. Título PNG **400×64**, fundo transparente, em
+   `game/images/<tela>/<nome>.png` no cliente (`C:\Cliente Full`).
+   Sem arquivo: texto dourado de fallback.
+3. Fechar = retângulo geométrico (`DrawHeaderClose` / `DrawHeaderIcon`).
+4. Acentos: `U8_*` ou `ToUtf8()`. Não mexer em ImGui, `MapasWU8` nem
+   helpers de encoding do client legado.
+5. Mouse/scroll em cima da janela não mexem personagem/câmera:
+   `IsBlockingMouse` / `WantCaptureMouse` no `GameCore` e `WinMain`
+   (já existe o padrão da overlay de Desafios).
+6. Pacote: reutilizar `smTRANSCODE_*` / códigos já usados na tela
+   (loja: `0x252030`–`0x252032`, `0x252040`–`0x252042`). Socket
+   `smSOCKBUFF_SIZE` = 8192 — lista grande vai em **chunks** (loja:
+   `NewShopItems_ReceiveItems`). Client e server `NewShop.h` iguais.
+7. Ícone de item **não vem do SQL**. O client lê
+   `image\sinImage\Items\<pasta>\itCODIGO.bmp` no cliente full.
+   Sem BMP = `NO IMAGE` e o inventário trava o clique. Completar com
+   cópia genérica da mesma família. **Não** mudar `ItemCode` /
+   `LastCategory` só para achar imagem (`CreateItemPerf` usa o código).
+
+---
+
+## Desafios (exemplo já no jogo)
+
+Copiar o cromado/layout acima. Específico desta tela (não obrigatório
+nas outras, salvo pedir):
+
+- Q abre/fecha a janela grande (`openFlag`), não o overlay.
+- Overlay: `openOverlay` via **Mostrar** no detalhe da quest (por quest,
+  não um botão global). **Ocultar** tira só aquela quest da taskbar.
+  O X da overlay fecha o painel inteiro; as escolhas por quest
+  continuam até o logout.
+- Clique no nome da quest na taskbar → `FocusQuest`.
+- Aba **Diárias** e **Repetitivas** (e Únicas, se tiver faixa): lista
+  **Disponíveis** vs **Fora do nível**, com status vermelho e `Nv. min-max`
+  na linha. Não deixar "Disponível" na lista quando o detalhe diz
+  que está fora da faixa.
+- Recap: vault `10-Processos/2026-09-06 - Recap Desafios ImGui.md`.

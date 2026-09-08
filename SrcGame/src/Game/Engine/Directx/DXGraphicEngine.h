@@ -137,6 +137,7 @@ public:
 
 	// Scene
 	BOOL Reset(const int& screenWidth, const int& screenHeight);
+	void SetVSync(bool enabled) { vSync = enabled; }
 	UINT GetVertexSize(DWORD dwVertexTypeDesc);
 	void OnResetDevice_();
 	void OnLostDevice_();

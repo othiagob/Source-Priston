@@ -1,1763 +1,420 @@
 #include "sinbaram\\sinlinkheader.h"
 #include "HoBaram\\HoLinkHeader.h"
+#include "imGui/imgui.h"
+#include <d3dx9tex.h>
+#include <math.h>
+#include "HUD/ImGuiWindowChrome.h"
 
-int tab;
-bool TextureBox = false, ViewBox = false, ZoomBox = false;
+#define U8_A  "\xC3\xA1"
+#define U8_E  "\xC3\xA9"
+#define U8_I  "\xC3\xAD"
+#define U8_O  "\xC3\xB3"
+#define U8_U  "\xC3\xBA"
+#define U8_AN "\xC3\xA3"
+#define U8_ON "\xC3\xB5"
+#define U8_C  "\xC3\xA7"
+#define U8_A_UP  "\xC3\x81"
+#define U8_E_UP  "\xC3\x89"
+#define U8_U_UP  "\xC3\x9A"
+#define U8_AN_UP "\xC3\x83"
+#define U8_C_UP  "\xC3\x87"
+#define U8_AC_UP "\xC3\x82"
+
+extern int smScreenWidth;
+extern int smScreenHeight;
+extern int CameraSight;
+extern int CameraInvRot;
+extern int ConfigUseDynamicLights;
+extern int ConfigUseDynamicShadows;
+extern BOOL bShowFPS;
+extern int GameMode;
+extern int WinSizeX;
+extern int WinSizeY;
+extern int MidX;
+extern int MidY;
+extern float g_fWinSizeRatio_X;
+extern float g_fWinSizeRatio_Y;
+extern int viewdistZ;
+extern HWND hwnd;
+extern void StopBGM();
+extern void SetVolumeBGM(DWORD dwVol);
+extern int LastMusicVolume;
+
+static const ImU32 kGold = IM_COL32(200, 170, 90, 220);
+static const ImU32 kGoldBright = IM_COL32(230, 200, 110, 255);
+static const ImU32 kGoldDim = IM_COL32(200, 170, 90, 90);
+static const ImU32 kGoldFill = IM_COL32(20, 24, 32, 255);
+static const char* kTitleImagePath = "game\\images\\settings\\configuracoes.png";
+static const float kMainHeaderH = 50.0f;
+static const float kHeaderBtnW = 28.0f;
+static const float kHeaderBtnH = 22.0f;
+static const float kHeaderBtnRound = 3.0f;
+static const float kWindowW = 720.0f;
+static const float kWindowH = 520.0f;
+static const float kComboW = 158.0f;
+static const float kTooltipDelay = 1.0f;
+static const char* kIniPath = ".\\game.ini";
+
+struct ResolutionOption
+{
+	int id;
+	int ratio;
+	int w;
+	int h;
+	const char* label;
+};
+
+static const ResolutionOption kResolutions[] =
+{
+	{ 0,  0,  800,  600, "800 x 600" },
+	{ 1,  0, 1024,  768, "1024 x 768" },
+	{ 2,  0, 1280,  960, "1280 x 960" },
+	{ 3,  0, 1400, 1050, "1400 x 1050" },
+	{ 4,  1, 1280, 1024, "1280 x 1024" },
+	{ 5,  2, 1280,  720, "1280 x 720" },
+	{ 6,  2, 1366,  768, "1366 x 768" },
+	{ 7,  2, 1600,  900, "1600 x 900" },
+	{ 8,  2, 1920, 1080, "1920 x 1080" },
+	{ 9,  3, 1280,  800, "1280 x 800" },
+	{ 10, 3, 1440,  900, "1440 x 900" },
+	{ 11, 3, 1680, 1050, "1680 x 1050" },
+	{ 12, 3, 1920, 1200, "1920 x 1200" },
+};
+static const int kResolutionCount = (int)(sizeof(kResolutions) / sizeof(kResolutions[0]));
+static const char* kRatioNames[] = { "4:3", "5:4", "16:9", "16:10" };
+
+static ImVec2 FitImageSize(int srcW, int srcH, float maxW, float maxH)
+{
+	if (srcW <= 0 || srcH <= 0 || maxW <= 0.0f || maxH <= 0.0f)
+		return ImVec2(0.0f, 0.0f);
+	const float scale = ((float)srcW / maxW > (float)srcH / maxH)
+		? (maxW / (float)srcW)
+		: (maxH / (float)srcH);
+	return ImVec2((float)srcW * scale, (float)srcH * scale);
+}
+
+static bool LoadPngTexture(const char* path, void** outTex, int* outW, int* outH)
+{
+	if (!GRAPHICDEVICE || !path || !outTex)
+		return false;
+
+	LPDIRECT3DTEXTURE9 tex = nullptr;
+	D3DXIMAGE_INFO info = {};
+	const HRESULT hr = D3DXCreateTextureFromFileExA(
+		GRAPHICDEVICE, path,
+		D3DX_DEFAULT, D3DX_DEFAULT,
+		1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
+		D3DX_FILTER_LINEAR, D3DX_FILTER_NONE,
+		0, &info, nullptr, &tex);
+
+	if (FAILED(hr) || !tex)
+		return false;
+
+	*outTex = tex;
+	if (outW) *outW = (int)info.Width;
+	if (outH) *outH = (int)info.Height;
+	return true;
+}
+
+static void CenterTextUnformatted(const char* text)
+{
+	const ImVec2 ts = ImGui::CalcTextSize(text);
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ts.x) * 0.5f);
+	ImGui::TextUnformatted(text);
+}
+
+static ImVec2 s_tipPos = ImVec2(-9999.0f, -9999.0f);
+static float s_tipStart = 0.0f;
+static bool s_tipHover = false;
+
+static void ResetOptionHelpFrame()
+{
+	if (!s_tipHover)
+		s_tipPos = ImVec2(-9999.0f, -9999.0f);
+	s_tipHover = false;
+}
+
+static void OptionHelp(const char* desc)
+{
+	if (!desc || !desc[0])
+		return;
+	if (!ImGui::IsItemHovered())
+		return;
+
+	s_tipHover = true;
+	const ImVec2 pos = ImGui::GetItemRectMin();
+	const float now = (float)ImGui::GetTime();
+	if (fabsf(pos.x - s_tipPos.x) > 0.5f || fabsf(pos.y - s_tipPos.y) > 0.5f)
+	{
+		s_tipPos = pos;
+		s_tipStart = now;
+	}
+
+	if ((now - s_tipStart) < kTooltipDelay)
+		return;
+
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.07f, 0.08f, 0.10f, 0.97f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.90f));
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.96f, 0.94f, 0.88f, 1.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 8.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.6f);
+	ImGui::BeginTooltip();
+	ImGui::PushTextWrapPos(280.0f);
+	ImGui::TextUnformatted(desc);
+	ImGui::PopTextWrapPos();
+	ImGui::EndTooltip();
+	ImGui::PopStyleVar(3);
+	ImGui::PopStyleColor(3);
+}
+
+static bool CheckFlag(const char* label, int* value, const char* tip = nullptr)
+{
+	bool v = (*value != 0);
+	const bool changed = ImGui::Checkbox(label, &v);
+	if (changed)
+		*value = v ? 1 : 0;
+	OptionHelp(tip);
+	return changed;
+}
+
+static bool LabeledBeginCombo(const char* id, const char* label, const char* preview, const char* tip)
+{
+	ImGui::AlignTextToFramePadding();
+	ImGui::TextUnformatted(label);
+	ImGui::SameLine(0.0f, 8.0f);
+	ImGui::SetNextItemWidth(kComboW);
+	const bool open = ImGui::BeginCombo(id, preview);
+	OptionHelp(tip);
+	return open;
+}
+
+static void DrawHintBox(const char* text)
+{
+	if (!text || !text[0])
+		return;
+
+	const float padX = 12.0f;
+	const float padY = 8.0f;
+	float wrapW = ImGui::GetContentRegionAvail().x - padX * 2.0f;
+	if (wrapW > 248.0f)
+		wrapW = 248.0f;
+	if (wrapW < 80.0f)
+		wrapW = 80.0f;
+
+	ImFont* font = ImGui::GetFont();
+	const float fontSize = ImGui::GetFontSize();
+	const float scale = fontSize / font->FontSize;
+	const float lineH = ImGui::GetTextLineHeight();
+	const char* textEnd = text + strlen(text);
+
+	const char* lineBeg[6];
+	const char* lineEnd[6];
+	float lineW[6];
+	int nLines = 0;
+	float maxLineW = 0.0f;
+	const char* s = text;
+	while (s < textEnd && nLines < 6)
+	{
+		while (s < textEnd && (*s == ' ' || *s == '\n'))
+			s++;
+		if (s >= textEnd)
+			break;
+
+		const char* wrap = font->CalcWordWrapPositionA(scale, s, textEnd, wrapW);
+		if (wrap <= s)
+			wrap = s + 1;
+
+		lineBeg[nLines] = s;
+		lineEnd[nLines] = wrap;
+		lineW[nLines] = font->CalcTextSizeA(fontSize, 9999.0f, 0.0f, s, wrap).x;
+		if (lineW[nLines] > maxLineW)
+			maxLineW = lineW[nLines];
+		nLines++;
+		s = wrap;
+	}
+	if (nLines <= 0)
+		return;
+
+	const float boxW = maxLineW + padX * 2.0f;
+	const float boxH = (float)nLines * lineH + padY * 2.0f;
+
+	const ImVec2 prevMin = ImGui::GetItemRectMin();
+	const ImVec2 prevMax = ImGui::GetItemRectMax();
+	const float prevH = prevMax.y - prevMin.y;
+	ImVec2 p = ImGui::GetCursorScreenPos();
+	if (prevH > boxH + 1.0f)
+		p.y += (prevH - boxH) * 0.5f;
+
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+	draw->AddRectFilled(p, ImVec2(p.x + boxW, p.y + boxH), IM_COL32(24, 22, 14, 248), 3.0f);
+	draw->AddRect(p, ImVec2(p.x + boxW, p.y + boxH), kGold, 3.0f, 0, 1.4f);
+
+	const ImU32 col = IM_COL32(230, 209, 133, 255);
+	float y = p.y + padY;
+	for (int i = 0; i < nLines; i++)
+	{
+		const float x = p.x + (boxW - lineW[i]) * 0.5f;
+		draw->AddText(ImVec2(x, y), col, lineBeg[i], lineEnd[i]);
+		y += lineH;
+	}
+
+	ImGui::Dummy(ImVec2(boxW, (prevH > boxH) ? prevH : boxH));
+}
+
+static void DrawActiveTabOrnament()
+{
+	const ImVec2 a = ImGui::GetItemRectMin();
+	const ImVec2 b = ImGui::GetItemRectMax();
+	const float width = b.x - a.x;
+	if (width <= 2.0f)
+		return;
+
+	const float cap = width * 0.5f - 1.0f;
+	float rounding = 3.0f;
+	if (rounding > cap)
+		rounding = cap;
+	if (rounding < 0.0f)
+		rounding = 0.0f;
+	const float y1 = a.y + 1.0f;
+	const float y2 = b.y - 1.0f;
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+	draw->PathLineTo(ImVec2(a.x + 0.5f, y2));
+	draw->PathArcToFast(ImVec2(a.x + rounding + 0.5f, y1 + rounding + 0.5f), rounding, 6, 9);
+	draw->PathArcToFast(ImVec2(b.x - rounding - 0.5f, y1 + rounding + 0.5f), rounding, 9, 12);
+	draw->PathLineTo(ImVec2(b.x - 0.5f, y2));
+	draw->PathStroke(kGold, false, 1.5f);
+}
+
+static bool DrawHeaderClose()
+{
+	const ImVec2 win = ImGui::GetWindowSize();
+	ImGui::SetCursorPos(ImVec2(win.x - kHeaderBtnW - 12.0f, (kMainHeaderH - kHeaderBtnH) * 0.5f));
+	ImGui::InvisibleButton("##SettingsClose", ImVec2(kHeaderBtnW, kHeaderBtnH));
+	const bool hovered = ImGui::IsItemHovered();
+	const bool clicked = ImGui::IsItemClicked();
+	const ImVec2 p = ImGui::GetItemRectMin();
+	const ImVec2 b1(p.x + kHeaderBtnW, p.y + kHeaderBtnH);
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+	draw->AddRectFilled(p, b1, hovered ? IM_COL32(56, 46, 22, 255) : IM_COL32(18, 20, 24, 255), kHeaderBtnRound);
+	draw->AddRect(p, b1, hovered ? kGoldBright : kGold, kHeaderBtnRound, 0, 1.2f);
+	const ImVec2 c((p.x + b1.x) * 0.5f, (p.y + b1.y) * 0.5f);
+	const float arm = 4.8f;
+	const ImU32 xCol = IM_COL32(236, 220, 160, 255);
+	draw->AddLine(ImVec2(c.x - arm, c.y - arm), ImVec2(c.x + arm, c.y + arm), xCol, 1.7f);
+	draw->AddLine(ImVec2(c.x + arm, c.y - arm), ImVec2(c.x - arm, c.y + arm), xCol, 1.7f);
+	return clicked;
+}
+
+static const ResolutionOption* FindResolution(int id)
+{
+	for (int i = 0; i < kResolutionCount; i++)
+	{
+		if (kResolutions[i].id == id)
+			return &kResolutions[i];
+	}
+	return &kResolutions[1];
+}
+
+static int FindResolutionId(int w, int h)
+{
+	for (int i = 0; i < kResolutionCount; i++)
+	{
+		if (kResolutions[i].w == w && kResolutions[i].h == h)
+			return kResolutions[i].id;
+	}
+	return 1;
+}
+
+static int ClampInt(int v, int lo, int hi)
+{
+	if (v < lo) return lo;
+	if (v > hi) return hi;
+	return v;
+}
+
+static BOOL ReadBoolOrOn(IniFiles& ini, const char* section, const char* key)
+{
+	return ini.ReadBool(section, key) || ini.ReadOnOff(section, key);
+}
 
 bool Settings::MouseAction(int x, int y, int w, int h)
 {
 	if (pRealCursorPos.x > x && pRealCursorPos.x < x + w && pRealCursorPos.y > y && pRealCursorPos.y < y + h)
 		return TRUE;
-
 	return FALSE;
 }
 
 void Settings::Init()
 {
-	cImages[1] = CreateTextureMaterial("game\\images\\settings\\window.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[15] = CreateTextureMaterial("game\\images\\settings\\checkbox.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[16] = CreateTextureMaterial("game\\images\\settings\\checkbox_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[18] = CreateTextureMaterial("game\\images\\settings\\combo_box.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[20] = CreateTextureMaterial("game\\images\\settings\\save_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[22] = CreateTextureMaterial("game\\images\\settings\\reset_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[24] = CreateTextureMaterial("game\\images\\settings\\exit_hover.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[26] = CreateTextureMaterial("game\\images\\settings\\video_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[28] = CreateTextureMaterial("game\\images\\settings\\audio_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[30] = CreateTextureMaterial("game\\images\\settings\\general_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[31] = CreateTextureMaterial("game\\images\\settings\\combo_box_on.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[32] = CreateTextureMaterial("game\\images\\settings\\combo_box_down1.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[33] = CreateTextureMaterial("game\\images\\settings\\combo_box_down2.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[34] = CreateTextureMaterial("game\\images\\settings\\combo_box_down3.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[35] = CreateTextureMaterial("game\\images\\settings\\combo_box_down_select_bottom.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[36] = CreateTextureMaterial("game\\images\\settings\\combo_box_down_select.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[38] = CreateTextureMaterial("game\\images\\settings\\volumebar.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	cImages[39] = CreateTextureMaterial("game\\images\\settings\\selector.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	ReadTextures();
 }
 
-void Settings::Open()
+void Settings::CopyEditFromCommitted()
 {
-	cOpen = true;
+	bWindowed = cWindowed;
+	bAutoAdjust = cAutoAdjust;
+	bBorderless = cBorderless;
+	bRatio = cRatio;
+	bResolution = cResolution;
+	bTexture = cTexture;
+	bBPP = cBPP;
+	bEffects = cEffects;
+	bLights = cLights;
+	bShadows = cShadows;
+	vSync = cvSync;
+	vBlockUI = cvBlockUI;
+	bMusic = cMusic;
+	bMVol = cMVol;
+	bSound = cSound;
+	bAmbient = cAmbient;
+	bSVol = cSVol;
+	bCamView = cCamView;
+	bCamRange = cCamRange;
+	bCamShake = cCamShake;
+	bCamInv = cCamInv;
+	bFilter = cFilter;
+	bFilterSpec = cFilterSpec;
+	bHP = cHP;
+	bMP = cMP;
+	bSP = cSP;
+	bGold = cGold;
+	bAmulets = cAmulets;
+	bRings = cRings;
+	bSheltoms = cSheltoms;
+	bForce = cForce;
+	bPremiums = cPremiums;
+	bCrystal = cCrystal;
+	bDefItem = cDefItem;
+	bOffItem = cOffItem;
+	bElse = cElse;
+	bMS = cMS;
+	bFS = cFS;
+	bPS = cPS;
+	bAS = cAS;
+	bKS = cKS;
+	bATS = cATS;
+	bPRS = cPRS;
+	bMGS = cMGS;
+	bNaked = cNaked;
+	bRememberLogin = cRememberLogin;
+	bHidePlayerNames = cHidePlayerNames;
+	bShowLife = cShowLife;
+	bShowNotice = cShowNotice;
+	bShowFPS = cShowFPS;
+	bWeather = cWeather;
+	bShowDamage = cShowDamage;
 }
 
-void Settings::Close()
-{
-	cOpen = false;
-}
-
-void Settings::Draw()
-{
-	if (cOpen)
-	{
-		int WinX = (smScreenWidth / 2) - 280, WinY = ((smScreenHeight - 600) / 2) + 50;
-
-		dsDrawTexImage(cImages[1], WinX, WinY, 559, 438, 255);
-
-		if (Tab == 0 || MouseAction(WinX + 42, WinY + 49, 122, 30))
-			dsDrawTexImage(cImages[26], WinX + 42, WinY + 49, 122, 30, 255);
-
-		if (Tab == 1 || MouseAction(WinX + 163, WinY + 49, 122, 30))
-			dsDrawTexImage(cImages[28], WinX + 163, WinY + 49, 122, 30, 255);
-
-		if (Tab == 2 || MouseAction(WinX + 284, WinY + 49, 122, 30))
-			dsDrawTexImage(cImages[30], WinX + 284, WinY + 49, 122, 30, 255);
-
-		if (MouseAction(WinX + 298, WinY + 386, 111, 45))
-			dsDrawTexImage(cImages[22], WinX + 298, WinY + 386, 94, 24, 255);
-
-		if (MouseAction(WinX + 395, WinY + 386, 111, 45))
-			dsDrawTexImage(cImages[20], WinX + 395, WinY + 386, 94, 24, 255);
-
-		if (MouseAction(WinX + 513, WinY + 7, 33, 48))
-			dsDrawTexImage(cImages[24], WinX + 513, WinY + 7, 33, 48, 255);
-
-		if (Tab == 0)
-		{
-
-			dsTextLineOut(WinX + 50, WinY + 85, "Vídeo", 5);
-			dsTextLineOut(WinX + 50, WinY + 134, "Ratio", 7);
-			dsTextLineOut(WinX + 155, WinY + 134, "Resolução", 12);
-
-			if (!bWindowed)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 107, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 107, 20, 20, 255);
-
-			dsTextLineOut(WinX + 75, WinY + 110, "Tela Cheia", 11);
-
-			if (bWindowed)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 107, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 107, 20, 20, 255);
-
-			dsTextLineOut(WinX + 180, WinY + 110, "Md. Janela", 11);
-
-			if (bAutoAdjust)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 107, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 107, 20, 20, 255);
-
-			dsTextLineOut(WinX + 285, WinY + 110, "A. Ajuste", 12);
-
-
-			if (bRatio == 0)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 156, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 156, 20, 20, 255);
-
-			dsTextLineOut(WinX + 75, WinY + 159, "4:3", 4);
-
-			if (bRatio == 1)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 176, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 176, 20, 20, 255);
-
-			dsTextLineOut(WinX + 75, WinY + 179, "5:4", 4);
-
-			if (bRatio == 2)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 196, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 196, 20, 20, 255);
-
-			dsTextLineOut(WinX + 75, WinY + 199, "16:9 (wd)", 18);
-
-			if (bRatio == 3)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 216, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 216, 20, 20, 255);
-
-			dsTextLineOut(WinX + 75, WinY + 219, "16:10 (wd)", 19);
-
-			dsTextLineOut(WinX + 390, WinY + 110, "Mover HUD", 17);
-			
-			if (bRatio == 0)
-			{
-				if (bResolution == 0)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 156, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 156, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 159, "800x600", 8);
-
-				if (bResolution == 1)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 176, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 176, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 179, "1024x768", 9);
-
-				if (bResolution == 2)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 196, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 196, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 199, "1280x960", 9);
-
-				if (bResolution == 3)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 216, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 216, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 219, "1400x1050", 10);
-			}
-			else if (bRatio == 1)
-			{
-				if (bResolution == 4)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 156, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 156, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 159, "1280x1024", 10);
-			}
-			else if (bRatio == 2)
-			{
-				if (bResolution == 5)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 156, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 156, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 159, "1280x720", 9);
-
-				if (bResolution == 6)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 176, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 176, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 179, "1366x768", 9);
-
-				if (bResolution == 7)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 196, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 196, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 199, "1600x900", 9);
-
-				if (bResolution == 8)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 216, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 216, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 219, "1920x1080", 10);
-			}
-			else if (bRatio == 3)
-			{
-
-				if (bResolution == 9)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 156, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 156, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 159, "1280x800", 9);
-
-				if (bResolution == 10)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 176, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 176, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 179, "1440x900", 9);
-
-				if (bResolution == 11)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 196, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 196, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 199, "1680x1050", 9);
-
-				if (bResolution == 12)
-					dsDrawTexImage(cImages[16], WinX + 155, WinY + 216, 20, 20, 255);
-				else
-					dsDrawTexImage(cImages[15], WinX + 155, WinY + 216, 20, 20, 255);
-
-				dsTextLineOut(WinX + 180, WinY + 219, "1920x1200", 10);
-			}
-
-			dsTextLineOut(WinX + 50, WinY + 241, "Textura", 17);
-			dsTextLineOut(WinX + 260, WinY + 134, "Bit Depth", 11);
-
-			if (bBPP == 32)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 156, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 156, 20, 20, 255);
-
-			dsTextLineOut(WinX + 285, WinY + 159, "32 bit", 7);
-
-			if (bBPP == 16)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 176, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 176, 20, 20, 255);
-
-			dsTextLineOut(WinX + 285, WinY + 179, "16 bit", 7);
-
-			dsTextLineOut(WinX + 155, WinY + 241, "Efeitos", 7);
-
-			dsTextLineOut(WinX + 155, WinY + 312, "Dano", 7);
-
-			dsTextLineOut(WinX + 365, WinY + 134, "Luzes Dinâmicas", 16);
-
-			dsTextLineOut(WinX + 365, WinY + 241, "Vsync", 21);
-
-			dsTextLineOut(WinX + 260, WinY + 241, "Sombras D.", 17);
-
-			if (smConfig.showDamage)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 334, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 334, 20, 20, 255);
-
-			dsTextLineOut(WinX + 180, WinY + 337, "Desativar", strlen("Desativar"));
-
-			if (!smConfig.showDamage)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 356, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 356, 20, 20, 255);
-
-			dsTextLineOut(WinX + 180, WinY + 359, "Ativar", strlen("Ativar"));
-
-			if (bEffects)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 263, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 263, 20, 20, 255);
-
-			dsTextLineOut(WinX + 180, WinY + 266, "Ativar", strlen("Ativar"));
-
-			if (!bEffects)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 285, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 285, 20, 20, 255);
-
-			dsTextLineOut(WinX + 180, WinY + 288, "Desativar", strlen("Desativar"));
-
-			if (bLights)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 156, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 156, 20, 20, 255);
-
-			dsTextLineOut(WinX + 390, WinY + 159, "Ativar", strlen("Ativar"));
-
-			if (!bLights)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 176, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 176, 20, 20, 255);
-
-			dsTextLineOut(WinX + 390, WinY + 179, "Desativar", strlen("Desativar"));
-
-			if (bShadows)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 263, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 263, 20, 20, 255);
-
-			dsTextLineOut(WinX + 285, WinY + 266, "Ativar", strlen("Ativar"));
-
-			if (!bShadows)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 285, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 285, 20, 20, 255);
-
-			dsTextLineOut(WinX + 285, WinY + 288, "Desativar", strlen("Desativar"));
-
-			if(vSync)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 263, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 263, 20, 20, 255);
-
-			dsTextLineOut(WinX + 390, WinY + 266, "Ativar", strlen("Ativar"));
-
-			if (!vSync)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 285, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 285, 20, 20, 255);
-
-			dsTextLineOut(WinX + 390, WinY + 288, "Desativar", strlen("Desativar"));
-			
-			if(vBlockUI)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 107, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 107, 20, 20, 255);
-
-			if (TextureBox)
-			{
-				HoDrawTexImage(cImages[32], float(WinX + 50), float(WinY + 263), 86.f, 26.f, 0.f, 0.f, 86., 26.f, 255);
-				HoDrawTexImage(cImages[33], float(WinX + 50), float(WinY + 287), 86.f, 24.f, 0.f, 0.f, 86., 24.f, 255);
-				HoDrawTexImage(cImages[33], float(WinX + 50), float(WinY + 311), 86.f, 24.f, 0.f, 0.f, 86., 24.f, 255);
-				HoDrawTexImage(cImages[33], float(WinX + 50), float(WinY + 335), 86.f, 24.f, 0.f, 0.f, 86., 24.f, 255);
-				HoDrawTexImage(cImages[34], float(WinX + 50), float(WinY + 359), 86.f, 25.f, 0.f, 0.f, 86., 25.f, 255);
-
-				if (MouseAction(WinX + 50, WinY + 287, 86, 26))
-					HoDrawTexImage(cImages[36], float(WinX + 50), float(WinY + 287), 86.f, 24.f, 0.f, 0.f, 86., 24.f, 255);
-				if (MouseAction(WinX + 50, WinY + 313, 86, 24))
-					HoDrawTexImage(cImages[36], float(WinX + 50), float(WinY + 313), 86.f, 24.f, 0.f, 0.f, 86., 24.f, 255);
-				if (MouseAction(WinX + 50, WinY + 337, 86, 24))
-					HoDrawTexImage(cImages[36], float(WinX + 50), float(WinY + 337), 86.f, 24.f, 0.f, 0.f, 86., 24.f, 255);
-				if (MouseAction(WinX + 50, WinY + 361, 86, 25))
-					HoDrawTexImage(cImages[35], float(WinX + 50), float(WinY + 361), 86.f, 25.f, 0.f, 0.f, 86., 25.f, 255);
-
-				dsTextLineOut(WinX + 78, WinY + 290, "Alto", 4);
-				dsTextLineOut(WinX + 73, WinY + 315, "Médio", 5);
-				dsTextLineOut(WinX + 75, WinY + 340, "Baixo", 5);
-				dsTextLineOut(WinX + 71, WinY + 364, "Baixo +", 11);
-			}
-			else
-			{
-
-				if (MouseAction(WinX + 50, WinY + 263, 86, 26))
-					HoDrawTexImage(cImages[31], float(WinX + 50), float(WinY + 263), 86.f, 26.f, 0.f, 0.f, 86.f, 26.f, 255);
-				else
-					HoDrawTexImage(cImages[18], float(WinX + 50), float(WinY + 263), 86.f, 26.f, 0.f, 0.f, 86.f, 26.f, 255);
-
-			}
-
-			if (bTexture == 0)
-				dsTextLineOut(WinX + 70, WinY + 268, "Alto", 4);
-			else if (bTexture == 1)
-				dsTextLineOut(WinX + 65, WinY + 268, "Médio", 5);
-			else if (bTexture == 2)
-				dsTextLineOut(WinX + 65, WinY + 268, "Baixo", 5);
-			else if (bTexture == 3)
-				dsTextLineOut(WinX + 62, WinY + 268, "Baixo +", 11);
-
-
-		}
-		else if (Tab == 1)
-		{
-
-			if (bMusic)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 107, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 107, 20, 20, 255);
-
-			dsTextLineOut(WinX + 75, WinY + 110, "Volume Principal", 16);
-			dsTextLineOut(WinX + 50, WinY + 85, "Musica", 21);
-
-			HoDrawTexImage(cImages[38], float(WinX + 50), float(WinY + 140), 187.f, 34.f, 0.f, 0.f, 187.f, 34.f, 255);
-
-			if (bMVol == 0)
-				HoDrawTexImage(cImages[39], float(WinX + 48), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 1)
-				HoDrawTexImage(cImages[39], float(WinX + 69), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 2)
-				HoDrawTexImage(cImages[39], float(WinX + 90), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 3)
-				HoDrawTexImage(cImages[39], float(WinX + 111), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 4)
-				HoDrawTexImage(cImages[39], float(WinX + 132), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 5)
-				HoDrawTexImage(cImages[39], float(WinX + 153), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 6)
-				HoDrawTexImage(cImages[39], float(WinX + 174), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 7)
-				HoDrawTexImage(cImages[39], float(WinX + 195), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bMVol == 8)
-				HoDrawTexImage(cImages[39], float(WinX + 216), float(WinY + 137), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-
-			if (GetAsyncKeyState(VK_LBUTTON) != 0)
-			{
-				if (MouseAction(WinX + 48, WinY + 137, 21, 52))
-					bMVol = 0;
-				if (MouseAction(WinX + 69, WinY + 137, 21, 52))
-					bMVol = 1;
-				if (MouseAction(WinX + 90, WinY + 137, 21, 52))
-					bMVol = 2;
-				if (MouseAction(WinX + 111, WinY + 137, 21, 52))
-					bMVol = 3;
-				if (MouseAction(WinX + 132, WinY + 137, 21, 52))
-					bMVol = 4;
-				if (MouseAction(WinX + 153, WinY + 137, 21, 52))
-					bMVol = 5;
-				if (MouseAction(WinX + 174, WinY + 137, 21, 52))
-					bMVol = 6;
-				if (MouseAction(WinX + 195, WinY + 137, 21, 52))
-					bMVol = 7;
-				if (MouseAction(WinX + 216, WinY + 137, 21, 52))
-					bMVol = 8;
-			}
-
-
-			if (bSound)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 217, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 217, 20, 20, 255);
-
-			if (bAmbient)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 217, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 217, 20, 20, 255);
-
-			dsTextLineOut(WinX + 75, WinY + 220, "Som Principal", 13);
-			dsTextLineOut(WinX + 180, WinY + 220, "Sons de Ambiente", 16);
-			dsTextLineOut(WinX + 50, WinY + 195, "Volume", 6);
-
-			HoDrawTexImage(cImages[38], float(WinX + 50), float(WinY + 247), 187.f, 34.f, 0.f, 0.f, 187.f, 34.f, 255);
-
-
-			if (bSVol == 0)
-				HoDrawTexImage(cImages[39], float(WinX + 48), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 1)
-				HoDrawTexImage(cImages[39], float(WinX + 69), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 2)
-				HoDrawTexImage(cImages[39], float(WinX + 90), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 3)
-				HoDrawTexImage(cImages[39], float(WinX + 111), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 4)
-				HoDrawTexImage(cImages[39], float(WinX + 132), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 5)
-				HoDrawTexImage(cImages[39], float(WinX + 153), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 6)
-				HoDrawTexImage(cImages[39], float(WinX + 174), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 7)
-				HoDrawTexImage(cImages[39], float(WinX + 195), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-			else if (bSVol == 8)
-				HoDrawTexImage(cImages[39], float(WinX + 216), float(WinY + 244), 23.f, 52.f, 0.f, 0.f, 23.f, 52.f, 255);
-
-			if (GetAsyncKeyState(VK_LBUTTON) != 0)
-			{
-				if (MouseAction(WinX + 48, WinY + 244, 21, 52))
-					bSVol = 0;
-				if (MouseAction(WinX + 69, WinY + 244, 21, 52))
-					bSVol = 1;
-				if (MouseAction(WinX + 90, WinY + 244, 21, 52))
-					bSVol = 2;
-				if (MouseAction(WinX + 111, WinY + 244, 21, 52))
-					bSVol = 3;
-				if (MouseAction(WinX + 132, WinY + 244, 21, 52))
-					bSVol = 4;
-				if (MouseAction(WinX + 153, WinY + 244, 21, 52))
-					bSVol = 5;
-				if (MouseAction(WinX + 174, WinY + 244, 21, 52))
-					bSVol = 6;
-				if (MouseAction(WinX + 195, WinY + 244, 21, 52))
-					bSVol = 7;
-				if (MouseAction(WinX + 216, WinY + 244, 21, 52))
-					bSVol = 8;
-			}
-		}
-		else if (Tab == 2)
-		{
-			dsTextLineOut(WinX + 50, WinY + 85, "Visão", 28);
-			dsTextLineOut(WinX + 260, WinY + 85, "Zoom", 27);
-			dsTextLineOut(WinX + 155, WinY + 85, "Câmera A.", 14);
-			dsTextLineOut(WinX + 365, WinY + 85, "Câmera I. e Add.", 17);
-			dsTextLineOut(WinX + 390, WinY + 154, "Ocultar Nome", 27);
-			dsTextLineOut(WinX + 390, WinY + 176, "Exibir HP", 27);
-			dsTextLineOut(WinX + 390, WinY + 198, "Exibir Alerta", 27);
-
-			if (bHidePlayerNames)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 151, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 151, 20, 20, 255);
-
-			if (bShowLife)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 173, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 173, 20, 20, 255);
-
-			if (bShowNotice)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 195, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 195, 20, 20, 255);
-
-			if (bCamShake)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 107, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 107, 20, 20, 255);
-
-			dsTextLineOut(WinX + 180, WinY + 110, "Ativar", strlen("Ativar"));
-
-			if (!bCamShake)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 129, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 129, 20, 20, 255);
-
-			dsTextLineOut(WinX + 180, WinY + 132, "Desativar", strlen("Desativar"));
-
-
-
-			if (bCamInv)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 107, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 107, 20, 20, 255);
-
-			dsTextLineOut(WinX + 390, WinY + 110, "Ativar", strlen("Ativar"));
-
-			if (!bCamInv)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 129, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 129, 20, 20, 255);
-
-			dsTextLineOut(WinX + 390, WinY + 132, "Desativar", strlen("Desativar"));
-
-
-			if (bFilter)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 315, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 315, 20, 20, 255);
-
-			if (bFilterSpec)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 295, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 295, 20, 20, 255);
-
-			dsTextLineOut(WinX + 50, WinY + 213, "Filtros Gerais", 15);
-			dsTextLineOut(WinX + 180, WinY + 318, "Habilitar F.", 15);
-			/*dsTextLineOut(WinX + 365, WinY + 213, "Filtros de Spec", 20);*/
-			dsTextLineOut(WinX + 390, WinY + 298, "Habilitar F. de Spec", 20);
-			
-			if (bHP)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 235, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 235, 20, 20, 255);
-
-			if (bMP)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 255, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 255, 20, 20, 255);
-
-			if (bSP)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 275, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 275, 20, 20, 255);
-
-			if (bGold)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 295, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 295, 20, 20, 255);
-
-			if (bAmulets)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 315, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 315, 20, 20, 255);
-
-			if (bRings)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 335, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 335, 20, 20, 255);
-
-			if (bSheltoms)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 355, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 355, 20, 20, 255);
-
-			if (bForce)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 375, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 375, 20, 20, 255);
-
-			if (bPremiums)
-				dsDrawTexImage(cImages[16], WinX + 50, WinY + 395, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 50, WinY + 395, 20, 20, 255);
-
-			if (bCrystal)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 235, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 235, 20, 20, 255);
-
-			if (bDefItem)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 255, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 255, 20, 20, 255);
-
-			if (bOffItem)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 275, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 275, 20, 20, 255);
-
-			if (bElse)
-				dsDrawTexImage(cImages[16], WinX + 155, WinY + 295, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 155, WinY + 295, 20, 20, 255);
-
-
-			dsTextLineOut(WinX + 75, WinY + 238, "Poção de HP", 11);
-			dsTextLineOut(WinX + 75, WinY + 258, "Poção de MP", 11);
-			dsTextLineOut(WinX + 75, WinY + 278, "Poção de SP", 11);
-			dsTextLineOut(WinX + 75, WinY + 298, "Ouro", 5);
-			dsTextLineOut(WinX + 75, WinY + 318, "Amuletos", 8);
-			dsTextLineOut(WinX + 75, WinY + 338, "Anéis", 6);
-			dsTextLineOut(WinX + 75, WinY + 358, "Sheltons", 9);
-			dsTextLineOut(WinX + 75, WinY + 378, "Force Orbs", 11);
-			dsTextLineOut(WinX + 75, WinY + 398, "Premiums", 9);
-			dsTextLineOut(WinX + 180, WinY + 238, "Cristais", 17);
-
-			dsTextLineOut(WinX + 180, WinY + 258, "I. de Defesa", 14);
-			dsTextLineOut(WinX + 180, WinY + 278, "I. de Ataque", 14);
-			dsTextLineOut(WinX + 180, WinY + 298, "Restante", 16);
-
-
-			if (bMS)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 235, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 235, 20, 20, 255);
-
-			if (bFS)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 255, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 255, 20, 20, 255);
-
-			if (bPS)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 275, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 275, 20, 20, 255);
-
-			if (bAS)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 295, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 295, 20, 20, 255);
-
-			if (bKS)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 315, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 315, 20, 20, 255);
-
-			if (bATS)
-				dsDrawTexImage(cImages[16], WinX + 260, WinY + 335, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 260, WinY + 335, 20, 20, 255);
-
-			if (bPRS)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 235, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 235, 20, 20, 255);
-
-			if (bMGS)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 255, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 255, 20, 20, 255);
-
-			if (bNaked)
-				dsDrawTexImage(cImages[16], WinX + 365, WinY + 275, 20, 20, 255);
-			else
-				dsDrawTexImage(cImages[15], WinX + 365, WinY + 275, 20, 20, 255);
-
-			dsTextLineOut(WinX + 285, WinY + 238, "Mecânico", strlen("Mecânico"));
-			dsTextLineOut(WinX + 285, WinY + 258, "Lutador", strlen("Lutador"));
-			dsTextLineOut(WinX + 285, WinY + 278, "Pikeman", strlen("Pikeman"));
-			dsTextLineOut(WinX + 285, WinY + 298, "Arqueira", strlen("Arqueira"));
-			dsTextLineOut(WinX + 285, WinY + 318, "Cavaleiro", strlen("Cavaleiro"));
-			dsTextLineOut(WinX + 285, WinY + 338, "Atalanta", strlen("Atalanta"));
-			dsTextLineOut(WinX + 390, WinY + 238, "Sacerdotisa", strlen("Sacerdotisa"));
-			dsTextLineOut(WinX + 390, WinY + 258, "Mago", strlen("Mago"));
-			dsTextLineOut(WinX + 390, WinY + 278, "Sem Classe", strlen("Sem Classe"));
-			
-			if (ViewBox)//
-			{
-				HoDrawTexImage(cImages[32], WinX + 50, WinY + 107, 86.f, 26.f, 0, 0, 86.f, 26.f, 255);
-				HoDrawTexImage(cImages[33], WinX + 50, WinY + 133, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-				HoDrawTexImage(cImages[33], WinX + 50, WinY + 157, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-				HoDrawTexImage(cImages[34], WinX + 50, WinY + 181, 86.f, 25.f, 0, 0, 86.f, 25.f, 255);
-
-				if (MouseAction(WinX + 50, WinY + 133, 86, 24))
-					HoDrawTexImage(cImages[36], WinX + 50, WinY + 133, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-
-				if (MouseAction(WinX + 50, WinY + 157, 86, 24))
-					HoDrawTexImage(cImages[36], WinX + 50, WinY + 157, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-
-				if (MouseAction(WinX + 50, WinY + 181, 86, 25))
-					HoDrawTexImage(cImages[35], WinX + 50, WinY + 181, 86.f, 25.f, 0, 0, 86.f, 25.f, 255);
-
-				dsTextLineOut(WinX + 76, WinY + 136, "Perto", 6);
-				dsTextLineOut(WinX + 78, WinY + 160, "Longe", 4);
-				dsTextLineOut(WinX + 73, WinY + 184, "Máximo", 5);
-			}
-			else
-			{
-				if (MouseAction(WinX + 50, WinY + 107, 86, 26))
-					HoDrawTexImage(cImages[31], WinX + 50, WinY + 107, 86.f, 26.f, 0, 0, 86.f, 26.f, 255);
-				else
-					HoDrawTexImage(cImages[18], WinX + 50, WinY + 107, 86.f, 26.f, 0, 0, 86.f, 26.f, 255);
-			}
-
-
-			if (bCamView == 0)
-				dsTextLineOut(WinX + 69, WinY + 112, "Perto", 6);
-			else if (bCamView == 1)
-				dsTextLineOut(WinX + 66, WinY + 112, "Longe", 4);
-			else if (bCamView == 2)
-				dsTextLineOut(WinX + 63, WinY + 112, "Máximo", 5);
-
-
-
-			if (ZoomBox)
-			{
-				HoDrawTexImage(cImages[32], WinX + 260, WinY + 107, 86.f, 26.f, 0, 0, 86.f, 26.f, 255);
-				HoDrawTexImage(cImages[33], WinX + 260, WinY + 133, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-				HoDrawTexImage(cImages[33], WinX + 260, WinY + 157, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-				HoDrawTexImage(cImages[33], WinX + 260, WinY + 181, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-				HoDrawTexImage(cImages[34], WinX + 260, WinY + 205, 86.f, 25.f, 0, 0, 86.f, 25.f, 255);
-
-				if (MouseAction(WinX + 260, WinY + 133, 86, 24))
-					HoDrawTexImage(cImages[36], WinX + 260, WinY + 133, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-
-				if (MouseAction(WinX + 260, WinY + 157, 86, 24))
-					HoDrawTexImage(cImages[36], WinX + 260, WinY + 157, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-
-				if (MouseAction(WinX + 260, WinY + 181, 86, 24))
-					HoDrawTexImage(cImages[36], WinX + 260, WinY + 181, 86.f, 24.f, 0, 0, 86.f, 24.f, 255);
-				//363
-				if (MouseAction(WinX + 260, WinY + 205, 86, 25))
-					HoDrawTexImage(cImages[35], WinX + 260, WinY + 205, 86.f, 25.f, 0, 0, 86.f, 25.f, 255);
-
-				dsTextLineOut(WinX + 289, WinY + 136, "Perto", 6);
-				dsTextLineOut(WinX + 282, WinY + 160, "Regular", 8);
-				dsTextLineOut(WinX + 287, WinY + 184, "Longe", 4);
-				dsTextLineOut(WinX + 284, WinY + 208, "Máximo", 10);
-			}
-			else
-			{
-
-				if (MouseAction(WinX + 260, WinY + 107, 86, 26))
-					HoDrawTexImage(cImages[31], WinX + 260, WinY + 107, 86.f, 26.f, 0, 0, 86.f, 26.f, 255);
-				else
-					HoDrawTexImage(cImages[18], WinX + 260, WinY + 107, 86.f, 26.f, 0, 0, 86.f, 26.f, 255);
-
-			}
-
-
-			if (bCamRange == 0)
-				dsTextLineOut(WinX + 276, WinY + 112, "Perto", 6);
-			else if (bCamRange == 1)
-				dsTextLineOut(WinX + 273, WinY + 112, "Regular", 8);
-			else if (bCamRange == 2)
-				dsTextLineOut(WinX + 276, WinY + 112, "Longe", 4);
-			else if (bCamRange == 3)
-				dsTextLineOut(WinX + 272, WinY + 112, "Máximo", 10);
-		}
-	}
-}
-
-void Settings::Button()
-{
-	if (cOpen)
-	{
-		int WinX = (smScreenWidth / 2) - 280, WinY = ((smScreenHeight - 600) / 2) + 50;
-
-		if (MouseAction(WinX + 43, WinY + 49, 122, 30))
-			Tab = 0;
-
-		if (MouseAction(WinX + 164, WinY + 49, 122, 30))
-			Tab = 1;
-
-		if (MouseAction(WinX + 285, WinY + 49, 122, 30))
-			Tab = 2;
-
-		if (Tab == 0)
-		{
-			if (MouseAction(WinX + 50, WinY + 107, 15, 15))
-				bWindowed = false;
-
-			if (MouseAction(WinX + 155, WinY + 107, 15, 15))
-				bWindowed = true;
-
-			if (MouseAction(WinX + 260, WinY + 107, 15, 15))
-			{
-				if (!bAutoAdjust)
-					bAutoAdjust = true;
-				else
-					bAutoAdjust = false;
-			}
-
-			if (MouseAction(WinX + 50, WinY + 156, 15, 15))
-				bRatio = 0;
-			if (MouseAction(WinX + 50, WinY + 176, 15, 15))
-				bRatio = 1;
-			if (MouseAction(WinX + 50, WinY + 196, 15, 15))
-				bRatio = 2;
-			if (MouseAction(WinX + 50, WinY + 216, 15, 15))
-				bRatio = 3;
-
-			if (bRatio == 0)
-			{
-				if (MouseAction(WinX + 155, WinY + 156, 15, 15))
-					bResolution = 0;
-				if (MouseAction(WinX + 155, WinY + 176, 15, 15))
-					bResolution = 1;
-				if (MouseAction(WinX + 155, WinY + 196, 15, 15))
-					bResolution = 2;
-				if (MouseAction(WinX + 155, WinY + 216, 15, 15))
-					bResolution = 3;
-			}
-			else if (bRatio == 1)
-			{
-				if (MouseAction(WinX + 155, WinY + 156, 15, 15))
-					bResolution = 4;
-			}
-			else if (bRatio == 2)
-			{
-				if (MouseAction(WinX + 155, WinY + 156, 15, 15))
-					bResolution = 5;
-				if (MouseAction(WinX + 155, WinY + 176, 15, 15))
-					bResolution = 6;
-				if (MouseAction(WinX + 155, WinY + 196, 15, 15))
-					bResolution = 7;
-				if (MouseAction(WinX + 155, WinY + 216, 15, 15))
-					bResolution = 8;
-			}
-			else if (bRatio == 3)
-			{
-				if (MouseAction(WinX + 155, WinY + 156, 15, 15))
-					bResolution = 9;
-				if (MouseAction(WinX + 155, WinY + 176, 15, 15))
-					bResolution = 10;
-				if (MouseAction(WinX + 155, WinY + 196, 15, 15))
-					bResolution = 11;
-				if (MouseAction(WinX + 155, WinY + 216, 15, 15))
-					bResolution = 12;
-			}
-
-			if (MouseAction(WinX + 260, WinY + 156, 15, 15))
-				bBPP = 32;
-			if (MouseAction(WinX + 260, WinY + 176, 15, 15))
-				bBPP = 16;
-
-			if (MouseAction(WinX + 155, WinY + 334, 15, 15))
-				smConfig.showDamage = true;
-			if (MouseAction(WinX + 155, WinY + 356, 15, 15))
-				smConfig.showDamage = false;
-
-			if (MouseAction(WinX + 155, WinY + 263, 15, 15))
-				bEffects = true;
-			if (MouseAction(WinX + 155, WinY + 285, 15, 15))
-				bEffects = false;
-
-			if (MouseAction(WinX + 365, WinY + 156, 15, 15))
-				bLights = true;
-			if (MouseAction(WinX + 365, WinY + 176, 15, 15))
-				bLights = false;
-
-			if (MouseAction(WinX + 260, WinY + 263, 15, 15))
-				bShadows = true;
-			if (MouseAction(WinX + 260, WinY + 285, 15, 15))
-				bShadows = false;
-
-			if (MouseAction(WinX + 365, WinY + 263, 15, 15))
-				vSync = true;
-			if (MouseAction(WinX + 365, WinY + 285, 15, 15))
-				vSync = false;
-
-			if (MouseAction(WinX + 365, WinY + 107, 15, 15))
-			{
-				vBlockUI == true ? vBlockUI = false : vBlockUI = true;
-			}
-
-			if (TextureBox)
-			{
-				TextureBox = false;
-				if (MouseAction(WinX + 50, WinY + 289, 86, 24))
-					bTexture = 0;
-				if (MouseAction(WinX + 50, WinY + 313, 86, 24))
-					bTexture = 1;
-				if (MouseAction(WinX + 50, WinY + 337, 86, 24))
-					bTexture = 2;
-				if (MouseAction(WinX + 50, WinY + 361, 87, 26))
-					bTexture = 3;
-			}
-			else
-				if (MouseAction(WinX + 50, WinY + 263, 86, 26))
-					TextureBox = true;
-
-		}
-		else if (Tab == 1)
-		{
-			if (MouseAction(WinX + 50, WinY + 107, 15, 15))
-			{
-				if (!bMusic)
-					bMusic = true;
-				else
-					bMusic = false;
-			}
-
-			if (MouseAction(WinX + 50, WinY + 217, 15, 15))
-			{
-				if (!bSound)
-					bSound = true;
-				else
-					bSound = false;
-			}
-
-			if (MouseAction(WinX + 155, WinY + 217, 15, 15))
-			{
-				if (!bAmbient)
-					bAmbient = true;
-				else
-					bAmbient = false;
-			}
-
-		}
-		else if (Tab == 2)
-		{
-			if (ViewBox)
-			{
-				ViewBox = false;
-				if (MouseAction(WinX + 50, WinY + 133, 86, 24))
-					bCamView = 0;
-				if (MouseAction(WinX + 50, WinY + 157, 86, 24))
-					bCamView = 1;
-				if (MouseAction(WinX + 50, WinY + 181, 86, 25))
-					bCamView = 2;
-			}
-			else if (MouseAction(WinX + 50, WinY + 107, 86, 26))
-				ViewBox = true;
-
-			if (ZoomBox)
-			{
-				ZoomBox = false;
-				if (MouseAction(WinX + 260, WinY + 133, 86, 24))
-					bCamRange = 0;
-				if (MouseAction(WinX + 260, WinY + 157, 86, 24))
-					bCamRange = 1;
-				if (MouseAction(WinX + 260, WinY + 181, 86, 24))
-					bCamRange = 2;
-				if (MouseAction(WinX + 260, WinY + 205, 86, 25))
-					bCamRange = 3;
-			}
-			else if (MouseAction(WinX + 260, WinY + 107, 86, 26))
-				ZoomBox = true;
-
-			if (MouseAction(WinX + 365, WinY + 152, 15, 15))
-				bHidePlayerNames == true ? bHidePlayerNames = false : bHidePlayerNames = true;
-			if (MouseAction(WinX + 365, WinY + 174, 15, 15))
-				bShowLife == true ? bShowLife = false : bShowLife = true;
-			if (MouseAction(WinX + 365, WinY + 196, 15, 15))
-				bShowNotice == true ? bShowNotice = false : bShowNotice = true;
-			if (MouseAction(WinX + 155, WinY + 107, 15, 15))
-				bCamShake = true;
-			if (MouseAction(WinX + 155, WinY + 129, 15, 15))
-				bCamShake = false;
-			if (MouseAction(WinX + 365, WinY + 107, 15, 15))
-				bCamInv = true;
-			if (MouseAction(WinX + 365, WinY + 129, 15, 15))
-				bCamInv = false;
-
-			if (MouseAction(WinX + 155, WinY + 315, 15, 15))
-				if (!bFilter)
-					bFilter = true;
-				else
-					bFilter = false;
-
-			if (MouseAction(WinX + 50, WinY + 235, 15, 15))
-				if (!bHP)
-					bHP = true;
-				else
-					bHP = false;
-
-			if (MouseAction(WinX + 50, WinY + 255, 15, 15))
-				if (!bMP)
-					bMP = true;
-				else
-					bMP = false;
-
-			if (MouseAction(WinX + 50, WinY + 275, 15, 15))
-				if (!bSP)
-					bSP = true;
-				else
-					bSP = false;
-
-			if (MouseAction(WinX + 50, WinY + 295, 15, 15))
-				if (!bGold)
-					bGold = true;
-				else
-					bGold = false;
-
-			if (MouseAction(WinX + 50, WinY + 315, 15, 15))
-				if (!bAmulets)
-					bAmulets = true;
-				else
-					bAmulets = false;
-
-
-			if (MouseAction(WinX + 50, WinY + 335, 15, 15))
-				if (!bRings)
-					bRings = true;
-				else
-					bRings = false;
-
-			if (MouseAction(WinX + 50, WinY + 355, 15, 15))
-				if (!bSheltoms)
-					bSheltoms = true;
-				else
-					bSheltoms = false;
-
-			if (MouseAction(WinX + 50, WinY + 375, 15, 15))
-				if (!bForce)
-					bForce = true;
-				else
-					bForce = false;
-
-			if (MouseAction(WinX + 50, WinY + 395, 15, 15))
-				if (!bPremiums)
-					bPremiums = true;
-				else
-					bPremiums = false;
-
-			if (MouseAction(WinX + 155, WinY + 235, 15, 15))
-				if (!bCrystal)
-					bCrystal = true;
-				else
-					bCrystal = false;
-
-			if (MouseAction(WinX + 155, WinY + 255, 15, 15))
-				if (!bDefItem)
-					bDefItem = true;
-				else
-					bDefItem = false;
-
-			if (MouseAction(WinX + 155, WinY + 275, 15, 15))
-				if (!bOffItem)
-					bOffItem = true;
-				else
-					bOffItem = false;
-
-			if (MouseAction(WinX + 155, WinY + 295, 15, 15))
-				if (!bElse)
-					bElse = true;
-				else
-					bElse = false;
-
-			if (MouseAction(WinX + 365, WinY + 295, 15, 15))
-				if (!bFilterSpec)
-					bFilterSpec = true;
-				else
-					bFilterSpec = false;
-
-			if (MouseAction(WinX + 260, WinY + 235, 15, 15))
-				if (!bMS)
-					bMS = true;
-				else
-					bMS = false;
-
-			if (MouseAction(WinX + 260, WinY + 255, 15, 15))
-				if (!bFS)
-					bFS = true;
-				else
-					bFS = false;
-
-
-			if (MouseAction(WinX + 260, WinY + 275, 15, 15))
-				if (!bPS)
-					bPS = true;
-				else
-					bPS = false;
-
-			if (MouseAction(WinX + 260, WinY + 295, 15, 15))
-				if (!bAS)
-					bAS = true;
-				else
-					bAS = false;
-
-			if (MouseAction(WinX + 260, WinY + 315, 15, 15))
-				if (!bKS)
-					bKS = true;
-				else
-					bKS = false;
-
-			if (MouseAction(WinX + 260, WinY + 335, 15, 15))
-				if (!bATS)
-					bATS = true;
-				else
-					bATS = false;
-
-			if (MouseAction(WinX + 365, WinY + 235, 15, 15))
-				if (!bPRS)
-					bPRS = true;
-				else
-					bPRS = false;
-
-			if (MouseAction(WinX + 365, WinY + 255, 15, 15))
-				if (!bMGS)
-					bMGS = true;
-				else
-					bMGS = false;
-
-			if (MouseAction(WinX + 365, WinY + 275, 15, 15))
-				if (!bNaked)
-					bNaked = true;
-				else
-					bNaked = false;
-		}
-
-		if (MouseAction(WinX + 298, WinY + 386, 94, 24))
-			Reset();
-		if (MouseAction(WinX + 395, WinY + 386, 94, 24))
-			Save();
-		if (MouseAction(WinX + 513, WinY + 7, 33, 48))
-			Close();
-	}
-}
-
-void Settings::Load()
-{
-	IniFiles ini(".\\game.ini");
-
-	if (ini.ReadBool("Screen", "Windowed"))
-	{
-		smConfig.WinMode = true;
-		bWindowed = true;
-		cWindowed = true;
-	}
-	else
-	{
-		smConfig.WinMode = false;
-		bWindowed = false;
-		cWindowed = false;
-	}
-
-	if (ini.ReadBool("Screen", "AutoAdjust"))
-	{
-		bAutoAdjust = true;
-		cAutoAdjust = true;
-	}
-	else
-	{
-		bAutoAdjust = false;
-		cAutoAdjust = false;
-	}
-
-	if (lstrcmp(ini.ReadString("Screen", "Ratio"), "4:3") == 0)
-	{
-		bRatio = 0;
-		cRatio = 0;
-	}
-
-	if (lstrcmp(ini.ReadString("Screen", "Ratio"), "5:4") == 0)
-	{
-		bRatio = 1;
-		cRatio = 1;
-	}
-
-	if (lstrcmp(ini.ReadString("Screen", "Ratio"), "16:9") == 0)
-	{
-		bRatio = 2;
-		cRatio = 2;
-	}
-
-	if (lstrcmp(ini.ReadString("Screen", "Ratio"), "16:10") == 0)
-	{
-		bRatio = 3;
-		cRatio = 3;
-	}
-
-	smConfig.ScreenSize.x = ini.ReadInt("Screen", "Width");
-	smConfig.ScreenSize.y = ini.ReadInt("Screen", "Height");
-
-	if (bRatio == 0)
-	{
-		if (smConfig.ScreenSize.x == 800 && smConfig.ScreenSize.x == 600)
-		{
-			bResolution = 0;
-			cResolution = 0;
-		}
-		else
-			if (smConfig.ScreenSize.x == 1024 && smConfig.ScreenSize.x == 768)
-			{
-				bResolution = 1;
-				cResolution = 1;
-			}
-			else
-				if (smConfig.ScreenSize.x == 1280 && smConfig.ScreenSize.x == 960)
-				{
-					bResolution = 2;
-					cResolution = 2;
-				}
-				else
-					if (smConfig.ScreenSize.x == 1400 && smConfig.ScreenSize.x == 1050)
-					{
-						bResolution = 3;
-						cResolution = 3;
-					}
-	}
-	else if (bRatio == 1)
-	{
-		if (smConfig.ScreenSize.x == 1280 && smConfig.ScreenSize.x == 1024)
-		{
-			bResolution = 4;
-			cResolution = 4;
-		}
-	}
-	else if (bRatio == 2)
-	{
-		if (smConfig.ScreenSize.x == 1280 && smConfig.ScreenSize.x == 720)
-		{
-			bResolution = 5;
-			cResolution = 5;
-		}
-		else
-			if (smConfig.ScreenSize.x == 1366 && smConfig.ScreenSize.x == 768)
-			{
-				bResolution = 6;
-				cResolution = 6;
-			}
-			else
-				if (smConfig.ScreenSize.x == 1600 && smConfig.ScreenSize.x == 900)
-				{
-					bResolution = 7;
-					cResolution = 7;
-				}
-				else
-					if (smConfig.ScreenSize.x == 1920 && smConfig.ScreenSize.x == 1080)
-					{
-						bResolution = 8;
-						cResolution = 8;
-					}
-	}
-	else if (bRatio == 3)
-	{
-		if (smConfig.ScreenSize.x == 1280 && smConfig.ScreenSize.x == 800)
-		{
-			bResolution = 9;
-			cResolution = 9;
-		}
-		else
-			if (smConfig.ScreenSize.x == 1440 && smConfig.ScreenSize.x == 900)
-			{
-				bResolution = 10;
-				cResolution = 10;
-			}
-			else
-				if (smConfig.ScreenSize.x == 1680 && smConfig.ScreenSize.x == 1050)
-				{
-					bResolution = 11;
-					cResolution = 11;
-				}
-				else
-					if (smConfig.ScreenSize.x == 1920 && smConfig.ScreenSize.x == 1200)
-					{
-						bResolution = 12;
-						cResolution = 12;
-					}
-	}
-
-	bTexture = ini.ReadInt("Graphics", "TextureQuality");
-	cTexture = bTexture;
-	smConfig.TextureQuality = bTexture;
-	bBPP = ini.ReadInt("Graphics", "BitDepth");
-	cBPP = bBPP;
-	smConfig.ScreenColorBit = bBPP;
-	if (ini.ReadBool("Graphics", "Damage"))
-	{
-		smConfig.showDamage = true;
-		smConfig.showDamage = true;
-	}
-	else
-	{
-		smConfig.showDamage = false;
-		smConfig.showDamage = false;
-	}
-
-	if (ini.ReadBool("Graphics", "Effects"))
-	{
-		bEffects = true;
-		cEffects = true;
-	}
-	else
-	{
-		bEffects = false;
-		cEffects = false;
-	}
-
-	if (ini.ReadBool("Graphics", "DynamicLights"))
-	{
-		bLights = true;
-		cLights = true;
-	}
-	else
-	{
-		bLights = false;
-		cLights = false;
-	}
-
-
-	if (ini.ReadBool("Graphics", "DynamicShadows"))
-	{
-		bShadows = true;
-		cShadows = true;
-	}
-	else
-	{
-		bShadows = false;
-		cShadows = false;
-	}
-
-	if (ini.ReadBool("Graphics", "VSync"))
-	{
-		vSync = true;
-		cvSync = true;
-	}
-	else
-	{
-		vSync = false;
-		cvSync = false;
-	}
-
-	if (ini.ReadBool("Graphics", "BlockUI"))
-	{
-		vBlockUI = true;
-		cvBlockUI = true;
-	}
-	else
-	{
-		vBlockUI = false;
-		cvBlockUI = false;
-	}
-
-	if (ini.ReadBool("Audio", "Music"))
-	{
-		bMusic = true;
-		cMusic = true;
-	}
-	else
-	{
-		bMusic = false;
-		cMusic = false;
-	}
-
-
-	if (ini.ReadBool("Audio", "Sound"))
-	{
-		bSound = true;
-		cSound = true;
-	}
-	else
-	{
-		bSound = false;
-		cSound = false;
-	}
-
-
-	if (ini.ReadBool("Audio", "Ambient"))
-	{
-		bAmbient = true;
-		cAmbient = true;
-	}
-	else
-	{
-		bAmbient = false;
-		cAmbient = false;
-	}
-
-	if (ini.ReadBool("Camera", "FarCameraSight"))
-	{
-		bCamShake = true;
-		cCamShake = true;
-		CameraSight = true;
-	}
-	else
-	{
-		bCamShake = false;
-		cCamShake = false;
-		CameraSight = false;
-	}
-
-	if (ini.ReadBool("Camera", "InvertedCamera"))
-	{
-		bCamInv = true;
-		cCamInv = true;
-		CameraInvRot = true;
-	}
-	else
-	{
-		bCamInv = false;
-		cCamInv = false;
-		CameraInvRot = false;
-	}
-
-
-	if (ini.ReadBool("LootFilter", "HP"))
-	{
-		bHP = true;
-		cHP = true;
-	}
-	else
-	{
-		bHP = false;
-		cHP = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "MP"))
-	{
-		bMP = true;
-		cMP = true;
-	}
-	else
-	{
-		bMP = false;
-		cMP = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "SP"))
-	{
-		bSP = true;
-		cSP = true;
-	}
-	else
-	{
-		bSP = false;
-		cSP = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "Gold"))
-	{
-		bGold = true;
-		cGold = true;
-	}
-	else
-	{
-		bGold = false;
-		cGold = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "Amulets"))
-	{
-		bAmulets = true;
-		cAmulets = true;
-	}
-	else
-	{
-		bAmulets = false;
-		cAmulets = false;
-	}
-
-
-	if (ini.ReadBool("LootFilter", "Rings"))
-	{
-		bRings = true;
-		cRings = true;
-	}
-	else
-	{
-		bRings = false;
-		cRings = false;
-	}
-
-
-	if (ini.ReadBool("LootFilter", "Sheltoms"))
-	{
-		bSheltoms = true;
-		cSheltoms = true;
-	}
-	else
-	{
-		bSheltoms = false;
-		cSheltoms = false;
-	}
-
-
-	if (ini.ReadBool("LootFilter", "Force"))
-	{
-		bForce = true;
-		cForce = true;
-	}
-	else
-	{
-		bForce = false;
-		cForce = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "Premiums"))
-	{
-		bPremiums = true;
-		cPremiums = true;
-	}
-	else
-	{
-		bPremiums = false;
-		cPremiums = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "Crystal"))
-	{
-		bCrystal = true;
-		cCrystal = true;
-	}
-	else
-	{
-		bCrystal = false;
-		cCrystal = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "DefItem"))
-	{
-		bDefItem = true;
-		cDefItem = true;
-	}
-	else
-	{
-		bDefItem = false;
-		cDefItem = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "Else"))
-	{
-		bOffItem = true;
-		cOffItem = true;
-	}
-	else
-	{
-		bOffItem = false;
-		cOffItem = false;
-	}
-
-	if (ini.ReadBool("LootFilter", "Else"))
-	{
-		bElse = true;
-		cElse = true;
-	}
-	else
-	{
-		bElse = false;
-		cElse = false;
-	}
-	
-	if (ini.ReadBool("LootFilter", "Enabled"))
-	{
-		bFilter = true;
-		cFilter = true;
-	}
-	else
-	{
-		bFilter = false;
-		cFilter = false;
-	}
-
-
-
-	if (ini.ReadBool("LootSpecFilter", "MS"))
-	{
-		bMS = true;
-		cMS = true;
-	}
-	else
-	{
-		bMS = false;
-		cMS = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "FS"))
-	{
-		bFS = true;
-		cFS = true;
-	}
-	else
-	{
-		bFS = false;
-		cFS = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "PS"))
-	{
-		bPS = true;
-		cPS = true;
-	}
-	else
-	{
-		bPS = false;
-		cPS = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "AS"))
-	{
-		bAS = true;
-		cAS = true;
-	}
-	else
-	{
-		bAS = false;
-		cAS = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "KS"))
-	{
-		bKS = true;
-		cKS = true;
-	}
-	else
-	{
-		bKS = false;
-		cKS = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "ATS"))
-	{
-		bATS = true;
-		cATS = true;
-	}
-	else
-	{
-		bATS = false;
-		cATS = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "PRS"))
-	{
-		bPRS = true;
-		cPRS = true;
-	}
-	else
-	{
-		bPRS = false;
-		cPRS = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "MGS"))
-	{
-		bMGS = true;
-		cMGS = true;
-	}
-	else
-	{
-		bMGS = false;
-		cMGS = false;
-	}
-
-
-	if (ini.ReadBool("LootSpecFilter", "Naked"))
-	{
-		bNaked = true;
-		cNaked = true;
-	}
-	else
-	{
-		bNaked = false;
-		cNaked = false;
-	}
-
-	if (ini.ReadBool("LootSpecFilter", "Enabled"))
-	{
-		bFilterSpec = false;//true;
-		cFilterSpec = false; //true;
-	}
-	else
-	{
-		bFilterSpec = false;
-		cFilterSpec = false;
-	}
-
-	if (ini.ReadBool("Game", "RememberAccount"))
-	{
-		bRememberLogin = true;
-	}
-	else
-	{
-		bRememberLogin = false;
-	}
-
-	if (ini.ReadBool("Game", "ShowNames"))
-	{
-		bHidePlayerNames = true;
-	}
-	else
-	{
-		bHidePlayerNames = false;
-	}
-
-	if (ini.ReadBool("Game", "ShowLife"))
-	{
-		bShowLife = true;
-	}
-	else
-	{
-		bShowLife = false;
-	}
-
-	if (ini.ReadBool("Game", "ShowAlert"))
-	{
-		bShowNotice = true;
-	}
-	else
-	{
-		bShowNotice = false;
-	}	
-
-	bMVol = ini.ReadInt("Audio", "MusicVolume");
-	cMVol = bMVol;
-	bSVol = ini.ReadInt("Audio", "SoundVolume");
-	cSVol = bSVol;
-	bCamView = ini.ReadInt("Camera", "View");
-	cCamView = bCamView;
-	bCamRange = ini.ReadInt("Camera", "Range");
-	cCamRange = bCamRange;
-
-	extern int ConfigUseDynamicLights;
-	extern int ConfigUseDynamicShadows;
-
-	ConfigUseDynamicLights = bLights;
-	ConfigUseDynamicShadows = bShadows;
-
-	// Usa o valor já lido do game.ini em vez de valor fixo
-	if (smConfig.szServerIP[0])
-		lstrcpy(smConfig.szDataServerIP, smConfig.szServerIP);
-	else
-		lstrcpy(smConfig.szDataServerIP, "127.0.0.1"); // Fallback
-
-}
-
-void Settings::Save(bool resize)
+void Settings::CopyCommittedFromEdit()
 {
 	cWindowed = bWindowed;
 	cAutoAdjust = bAutoAdjust;
+	cBorderless = 0;
 	cRatio = bRatio;
 	cResolution = bResolution;
 	cTexture = bTexture;
-	cBPP = bBPP;
+	cBPP = 32;
 	cEffects = bEffects;
-	smConfig.showDamage = smConfig.showDamage;
 	cLights = bLights;
 	cShadows = bShadows;
 	cvSync = vSync;
@@ -1795,18 +452,858 @@ void Settings::Save(bool resize)
 	cPRS = bPRS;
 	cMGS = bMGS;
 	cNaked = bNaked;
+	cRememberLogin = bRememberLogin;
+	cHidePlayerNames = bHidePlayerNames;
+	cShowLife = bShowLife;
+	cShowNotice = bShowNotice;
+	cShowFPS = bShowFPS;
+	cWeather = bWeather;
+	cShowDamage = bShowDamage;
+	smConfig.showDamage = cShowDamage != 0;
+}
 
-	IniFiles ini(".\\game.ini");
+void Settings::Open()
+{
+	if (!cOpen)
+		CopyEditFromCommitted();
+	cOpen = true;
+	m_confirmReset = false;
+}
+
+void Settings::Close()
+{
+	CopyEditFromCommitted();
+	ApplyRuntime(false);
+	cOpen = false;
+	m_confirmReset = false;
+}
+
+bool Settings::IsBlockingMouse(int x, int y) const
+{
+	if (!cOpen)
+		return false;
+	if (m_confirmReset)
+		return true;
+	return x >= m_winX && x <= (m_winX + m_winW)
+		&& y >= m_winY && y <= (m_winY + m_winH);
+}
+
+void Settings::EnsureTitleTexture()
+{
+	if (m_titleTried)
+		return;
+	m_titleTried = true;
+	LoadPngTexture(kTitleImagePath, &m_titleTex, &m_titleW, &m_titleH);
+}
+
+void Settings::PushWindowStyle()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 12.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 7.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.6f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 12.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 3.0f);
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.06f, 0.07f, 0.09f, 0.92f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.50f));
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_TextDisabled, ImVec4(0.62f, 0.62f, 0.68f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.12f, 0.13f, 0.16f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.32f, 0.26f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.45f, 0.36f, 0.14f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.22f, 0.18f, 0.10f, 0.85f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.30f, 0.24f, 0.12f, 0.95f));
+	ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.36f, 0.28f, 0.14f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Tab, ImVec4(0.10f, 0.11f, 0.14f, 0.90f));
+	ImGui::PushStyleColor(ImGuiCol_TabHovered, ImVec4(0.30f, 0.24f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_TabActive, ImVec4(0.24f, 0.20f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.78f, 0.67f, 0.35f, 0.35f));
+	ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.78f, 0.62f, 0.28f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.05f, 0.06f, 0.08f, 0.95f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.08f, 0.09f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.08f, 0.09f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrab, ImVec4(0.55f, 0.46f, 0.24f, 0.80f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabHovered, ImVec4(0.78f, 0.67f, 0.35f, 0.90f));
+	ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabActive, ImVec4(0.90f, 0.78f, 0.40f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.90f, 0.78f, 0.40f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.78f, 0.67f, 0.35f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.90f, 0.78f, 0.40f, 1.0f));
+}
+
+void Settings::PopWindowStyle()
+{
+	ImGui::PopStyleColor(25);
+	ImGui::PopStyleVar(10);
+}
+
+void Settings::DrawWindowChrome(float headerH)
+{
+	DrawPlayerWindowChrome(ImGui::GetWindowDrawList(), headerH, kGold, kGoldFill);
+}
+
+void Settings::DrawTitleHeader()
+{
+	EnsureTitleTexture();
+
+	const ImVec2 p0 = ImGui::GetWindowPos();
+	const ImVec2 size = ImGui::GetWindowSize();
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+
+	if (m_titleTex && m_titleW > 0 && m_titleH > 0)
+	{
+		const float headerTop = p0.y + 6.0f;
+		const float headerBot = p0.y + kMainHeaderH - 4.0f;
+		const float areaH = headerBot - headerTop;
+		const ImVec2 sz = FitImageSize(m_titleW, m_titleH, 300.0f, areaH);
+		const float x = p0.x + (size.x - sz.x) * 0.5f;
+		const float y = headerTop + (areaH - sz.y) * 0.5f;
+		draw->AddImage((ImTextureID)m_titleTex, ImVec2(x, y), ImVec2(x + sz.x, y + sz.y));
+	}
+	else
+	{
+		const char* title = "CONFIGURA" U8_C U8_ON "ES";
+		const ImVec2 ts = ImGui::CalcTextSize(title);
+		draw->AddText(ImVec2(p0.x + (size.x - ts.x) * 0.5f, p0.y + 18.0f), kGoldBright, title);
+	}
+
+	if (DrawHeaderClose())
+		Close();
+}
+
+void Settings::DrawSectionHeader(const char* title)
+{
+	ImGui::Spacing();
+	const ImVec2 ts = ImGui::CalcTextSize(title);
+	const float avail = ImGui::GetContentRegionAvail().x;
+	const float padX = 16.0f;
+	const float padY = 4.0f;
+	const float boxW = ts.x + padX * 2.0f;
+	const float boxH = ts.y + padY * 2.0f;
+	const ImVec2 origin = ImGui::GetCursorScreenPos();
+	const float boxX = origin.x + (avail - boxW) * 0.5f;
+	const float midY = origin.y + boxH * 0.5f;
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+
+	draw->AddLine(ImVec2(origin.x + 8.0f, midY), ImVec2(origin.x + avail - 8.0f, midY), kGoldDim, 1.2f);
+	draw->AddRectFilled(ImVec2(boxX, origin.y), ImVec2(boxX + boxW, origin.y + boxH), IM_COL32(18, 20, 26, 255), 3.0f);
+	draw->AddRect(ImVec2(boxX, origin.y), ImVec2(boxX + boxW, origin.y + boxH), kGold, 3.0f, 0, 1.4f);
+	draw->AddText(ImVec2(boxX + padX, origin.y + padY), kGoldBright, title);
+	ImGui::Dummy(ImVec2(avail, boxH + 6.0f));
+}
+
+void Settings::DrawVideoTab()
+{
+	DrawSectionHeader("TELA");
+
+	ImGui::BeginGroup();
+	if (ImGui::RadioButton("Tela cheia", bWindowed == 0))
+		bWindowed = 0;
+	OptionHelp("O jogo ocupa o monitor inteiro. Salvar aplica na hora.");
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Janela", bWindowed != 0))
+		bWindowed = 1;
+	OptionHelp("O jogo fica numa janela. Voc" U8_E " pode maximizar sem perder o tamanho ao salvar outras op" U8_C U8_ON "es.");
+	CheckFlag("Ajuste autom" U8_A "tico ao maximizar", &bAutoAdjust,
+		"Quando voc" U8_E " maximiza a janela, o jogo acompanha o tamanho do monitor.");
+	ImGui::EndGroup();
+
+	ImGui::SameLine(0.0f, 16.0f);
+	DrawHintBox("Passe o mouse sobre uma op" U8_C U8_AN "o e espere 1 segundo para ver o que ela faz.");
+
+	DrawSectionHeader("RESOLU" U8_C_UP U8_AN_UP "O");
+
+	ImGui::BeginGroup();
+	if (LabeledBeginCombo("##SettingsRatio", "Propor" U8_C U8_AN "o", kRatioNames[ClampInt(bRatio, 0, 3)],
+		"Mostra s" U8_O " os tamanhos daquela propor" U8_C U8_AN "o (4:3, 16:9...)."))
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			const bool selected = (bRatio == i);
+			if (ImGui::Selectable(kRatioNames[i], selected))
+			{
+				bRatio = i;
+				const ResolutionOption* cur = FindResolution(bResolution);
+				if (cur->ratio != bRatio)
+				{
+					for (int r = 0; r < kResolutionCount; r++)
+					{
+						if (kResolutions[r].ratio == bRatio)
+						{
+							bResolution = kResolutions[r].id;
+							break;
+						}
+					}
+				}
+			}
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+	ImGui::EndGroup();
+
+	ImGui::SameLine(0.0f, 28.0f);
+
+	ImGui::BeginGroup();
+	const ResolutionOption* selectedRes = FindResolution(bResolution);
+	if (LabeledBeginCombo("##SettingsSize", "Tamanho", selectedRes->label,
+		"Tamanho da janela ao restaurar. Maximizar n" U8_AN "o altera este valor."))
+	{
+		for (int i = 0; i < kResolutionCount; i++)
+		{
+			if (kResolutions[i].ratio != bRatio)
+				continue;
+			const bool selected = (bResolution == kResolutions[i].id);
+			if (ImGui::Selectable(kResolutions[i].label, selected))
+				bResolution = kResolutions[i].id;
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+	ImGui::EndGroup();
+	ImGui::NewLine();
+
+	DrawSectionHeader("GR" U8_A_UP "FICOS");
+
+	const char* texNames[] = { "Alto", "M" U8_E "dio", "Baixo", "Baixo +" };
+	const int tex = ClampInt(bTexture, 0, 3);
+	if (LabeledBeginCombo("##SettingsTex", "Textura", texNames[tex],
+		"Qualidade das texturas. Valores baixos deixam o jogo mais leve."))
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			const bool selected = (bTexture == i);
+			if (ImGui::Selectable(texNames[i], selected))
+				bTexture = i;
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::Spacing();
+	ImGui::Columns(2, "##gfxcols", false);
+	CheckFlag("VSync", &vSync, "Sincroniza com o monitor. Reduz o tearing e pode limitar o FPS.");
+	CheckFlag("Luzes din" U8_AN "micas", &bLights, "Luzes extras no cen" U8_A "rio. Pode reduzir o FPS.");
+	ImGui::NextColumn();
+	CheckFlag("Sombras din" U8_AN "micas", &bShadows, "Sombras extras. Pode reduzir o FPS.");
+	CheckFlag("Mostrar n" U8_U "meros de dano", &bShowDamage, "Mostra os n" U8_U "meros de dano durante o combate.");
+	ImGui::Columns(1);
+}
+
+void Settings::DrawAudioTab()
+{
+	DrawSectionHeader("M" U8_U_UP "SICA");
+	CheckFlag("M" U8_U "sica ligada", &bMusic, "Liga ou desliga a trilha do mapa. Vale na hora ao salvar.");
+	int mvol = ClampInt(bMVol, 0, 8);
+	ImGui::SetNextItemWidth(220.0f);
+	if (ImGui::SliderInt("Volume da m" U8_U "sica", &mvol, 0, 8))
+		bMVol = mvol;
+	OptionHelp("Volume da trilha. Entra no pr" U8_O "ximo tema do mapa.");
+
+	DrawSectionHeader("EFEITOS SONOROS");
+	CheckFlag("Som ligado", &bSound, "Liga ou desliga os efeitos (golpe, drop, UI).");
+	CheckFlag("Sons de ambiente", &bAmbient, "Sons de fundo do mapa (vento, cidade, etc.).");
+	int svol = ClampInt(bSVol, 0, 8);
+	ImGui::SetNextItemWidth(220.0f);
+	if (ImGui::SliderInt("Volume dos efeitos", &svol, 0, 8))
+		bSVol = svol;
+	OptionHelp("Volume dos efeitos sonoros.");
+}
+
+void Settings::DrawCameraTab()
+{
+	DrawSectionHeader("C" U8_AC_UP "MERA");
+
+	const char* viewNames[] = { "Perto", "Longe", "M" U8_A "ximo" };
+	const int view = ClampInt(bCamView, 0, 2);
+	if (LabeledBeginCombo("##SettingsCamView", "Vis" U8_AN "o", viewNames[view],
+		"Dist" U8_AN "ncia padr" U8_AN "o da c" U8_AN "mera em rela" U8_C U8_AN "o ao personagem."))
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			const bool selected = (bCamView == i);
+			if (ImGui::Selectable(viewNames[i], selected))
+				bCamView = i;
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::SameLine(0.0f, 28.0f);
+
+	const char* zoomNames[] = { "Perto", "Regular", "Longe", "M" U8_A "ximo" };
+	const int zoom = ClampInt(bCamRange, 0, 3);
+	if (LabeledBeginCombo("##SettingsCamZoom", "Zoom", zoomNames[zoom],
+		"At" U8_E " onde voc" U8_E " pode afastar a c" U8_AN "mera com a roda do mouse."))
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			const bool selected = (bCamRange == i);
+			if (ImGui::Selectable(zoomNames[i], selected))
+				bCamRange = i;
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+	ImGui::NewLine();
+
+	CheckFlag("Vis" U8_AN "o longa (n" U8_E "voa distante)", &bCamShake,
+		"Empurra o corte da n" U8_E "voa para longe. N" U8_AN "o atravessa paredes.");
+	CheckFlag("Inverter c" U8_AN "mera", &bCamInv,
+		"Inverte o movimento horizontal da c" U8_AN "mera.");
+}
+
+void Settings::DrawInterfaceTab()
+{
+	DrawSectionHeader("TELA");
+	if (CheckFlag("Mostrar FPS", &bShowFPS, "Mostra os quadros por segundo no canto da tela."))
+		::bShowFPS = bShowFPS ? TRUE : FALSE;
+	CheckFlag("Ocultar nomes de jogadores", &bHidePlayerNames,
+		"Esconde os nomes de outros jogadores. O seu continua vis" U8_I "vel.");
+	CheckFlag("Barra de HP sobre o personagem", &bShowLife,
+		"Mostra uma barra de vida acima do personagem.");
+	if (CheckFlag("Mostrar alertas no chat", &bShowNotice,
+		"Liga os avisos do servidor na janela de chat."))
+	{
+		if (GAMECOREHANDLE && GAMECOREHANDLE->IsInit() && CHATBOX)
+			CHATBOX->ToggleNotice(bShowNotice ? TRUE : FALSE);
+	}
+	CheckFlag("Permitir mover janelas do HUD", &vBlockUI,
+		"Permite arrastar janelas antigas do HUD (invent" U8_A "rio, skills...).");
+
+	DrawSectionHeader("CONTA");
+	CheckFlag("Lembrar conta no login", &bRememberLogin,
+		"Guarda o login na tela inicial. N" U8_AN "o grava a senha.");
+
+	DrawCameraTab();
+}
+
+void Settings::DrawFilterTab()
+{
+	DrawSectionHeader("FILTRO DE LOOT");
+	CheckFlag("Ativar filtro (esconde no ch" U8_AN "o)", &bFilter,
+		"Esconde no ch" U8_AN "o os itens desmarcados. S" U8_O " na sua tela: o servidor continua dropando.");
+
+	if (ImGui::Button("Marcar itens"))
+	{
+		bHP = bMP = bSP = bGold = bAmulets = bRings = bSheltoms = 1;
+		bForce = bPremiums = bCrystal = bDefItem = bOffItem = bElse = 1;
+	}
+	OptionHelp("Marca todos os tipos de item do filtro.");
+	ImGui::SameLine();
+	if (ImGui::Button("Limpar itens"))
+	{
+		bHP = bMP = bSP = bGold = bAmulets = bRings = bSheltoms = 0;
+		bForce = bPremiums = bCrystal = bDefItem = bOffItem = bElse = 0;
+	}
+	OptionHelp("Desmarca todos os tipos de item do filtro.");
+
+	const char* lootTip = "Item marcado continua vis" U8_I "vel no ch" U8_AN "o. Desmarcado some s" U8_O " para voc" U8_E ".";
+	ImGui::Columns(2, "##lootcols", false);
+	CheckFlag("Po" U8_C U8_AN "o de HP", &bHP, lootTip);
+	CheckFlag("Po" U8_C U8_AN "o de MP", &bMP, lootTip);
+	CheckFlag("Po" U8_C U8_AN "o de SP", &bSP, lootTip);
+	CheckFlag("Ouro", &bGold, lootTip);
+	CheckFlag("Amuletos", &bAmulets, lootTip);
+	CheckFlag("An" U8_E "is", &bRings, lootTip);
+	ImGui::NextColumn();
+	CheckFlag("Sheltoms", &bSheltoms, lootTip);
+	CheckFlag("Force Orbs", &bForce, lootTip);
+	CheckFlag("Premiums", &bPremiums, lootTip);
+	CheckFlag("Cristais", &bCrystal, lootTip);
+	CheckFlag("Itens de defesa", &bDefItem, lootTip);
+	CheckFlag("Itens de ataque", &bOffItem, lootTip);
+	CheckFlag("Restante", &bElse, lootTip);
+	ImGui::Columns(1);
+
+	DrawSectionHeader("FILTRO POR CLASSE");
+	CheckFlag("S" U8_O " mostrar da classe marcada", &bFilterSpec,
+		"Quando ligado, esconde loot que n" U8_AN "o serve para as classes marcadas.");
+	if (ImGui::Button("Marcar classes"))
+		bMS = bFS = bPS = bAS = bKS = bATS = bPRS = bMGS = bNaked = 1;
+	OptionHelp("Marca todas as classes.");
+	ImGui::SameLine();
+	if (ImGui::Button("Limpar classes"))
+		bMS = bFS = bPS = bAS = bKS = bATS = bPRS = bMGS = bNaked = 0;
+	OptionHelp("Desmarca todas as classes.");
+
+	const char* classTip = "Classe marcada continua vendo o loot dela no ch" U8_AN "o.";
+	ImGui::Columns(2, "##classcols", false);
+	CheckFlag("Lutador", &bFS, classTip);
+	CheckFlag("Mec" U8_AN "nico", &bMS, classTip);
+	CheckFlag("Arqueira", &bAS, classTip);
+	CheckFlag("Pikeman", &bPS, classTip);
+	CheckFlag("Atalanta", &bATS, classTip);
+	ImGui::NextColumn();
+	CheckFlag("Cavaleiro", &bKS, classTip);
+	CheckFlag("Mago", &bMGS, classTip);
+	CheckFlag("Sacerdotisa", &bPRS, classTip);
+	CheckFlag("Sem classe", &bNaked, classTip);
+	ImGui::Columns(1);
+
+	ImGui::Spacing();
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.62f, 0.62f, 0.68f, 1.0f));
+	ImGui::TextWrapped("S" U8_O " esconde o item na sua tela. O servidor continua dropando normalmente.");
+	ImGui::PopStyleColor();
+}
+
+void Settings::DrawFooter()
+{
+	const float btnW = 128.0f;
+	const float gap = 12.0f;
+	const float total = btnW * 3.0f + gap * 2.0f;
+	ImGui::SetCursorPosX((ImGui::GetWindowSize().x - total) * 0.5f);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f, 6.0f));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.28f, 0.10f, 0.10f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.42f, 0.14f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.50f, 0.16f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.42f, 0.34f, 0.95f));
+	if (ImGui::Button("Restaurar", ImVec2(btnW, 30.0f)))
+		m_confirmReset = true;
+	ImGui::PopStyleColor(4);
+
+	ImGui::SameLine(0.0f, gap);
+	if (ImGui::Button("Cancelar", ImVec2(btnW, 30.0f)))
+		Close();
+
+	ImGui::SameLine(0.0f, gap);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.15f, 0.12f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.26f, 0.14f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.38f, 0.32f, 0.16f, 1.0f));
+	if (ImGui::Button("Salvar", ImVec2(btnW, 30.0f)))
+		Save(true);
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar();
+}
+
+void Settings::DrawResetConfirm()
+{
+	if (!m_confirmReset)
+		return;
+
+	ImGui::OpenPopup("##SettingsResetConfirm");
+	ImGui::SetNextWindowSize(ImVec2(332.0f, 176.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2((float)smScreenWidth * 0.5f, (float)smScreenHeight * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 10.0f));
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.0f, 0.0f, 0.0f, 0.80f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.80f));
+
+	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::BeginPopupModal("##SettingsResetConfirm", nullptr, flags))
+	{
+		DrawWindowChrome(34.0f);
+
+		ImGui::SetCursorPosY(11.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.84f, 0.48f, 1.0f));
+		CenterTextUnformatted("Restaurar padr" U8_AN "o?");
+		ImGui::PopStyleColor();
+
+		ImGui::SetCursorPosY(56.0f);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 0.70f, 0.66f, 1.0f));
+		CenterTextUnformatted("Os campos voltam ao padr" U8_AN "o. Salve depois para gravar.");
+		ImGui::PopStyleColor();
+
+		const float btnW = 128.0f;
+		const float gap = 14.0f;
+		ImGui::SetCursorPos(ImVec2((332.0f - (btnW * 2.0f + gap)) * 0.5f, 128.0f));
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.16f, 0.15f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.26f, 0.14f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.38f, 0.32f, 0.16f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.74f, 0.40f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.94f, 0.88f, 0.62f, 1.0f));
+		if (ImGui::Button("VOLTAR", ImVec2(btnW, 30.0f)))
+		{
+			m_confirmReset = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+
+		ImGui::SameLine(0.0f, gap);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.28f, 0.10f, 0.10f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.42f, 0.14f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.50f, 0.16f, 0.12f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.86f, 0.42f, 0.34f, 0.95f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.86f, 0.82f, 1.0f));
+		if (ImGui::Button("CONFIRMAR", ImVec2(btnW, 30.0f)))
+		{
+			FillEditDefaults();
+			m_confirmReset = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::PopStyleColor(5);
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar(2);
+}
+
+void Settings::Draw()
+{
+	if (!cOpen)
+		return;
+	if (!ImGui::GetCurrentContext())
+		return;
+
+	ResetOptionHelpFrame();
+
+	ImGui::SetNextWindowSize(ImVec2(kWindowW, kWindowH), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(((float)smScreenWidth - kWindowW) * 0.5f, ((float)smScreenHeight - kWindowH) * 0.5f));
+
+	PushWindowStyle();
+
+	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse;
+
+	bool open = true;
+	ImGui::Begin("##SettingsWindow", &open, flags);
+	{
+		const ImVec2 pos = ImGui::GetWindowPos();
+		const ImVec2 size = ImGui::GetWindowSize();
+		m_winX = pos.x;
+		m_winY = pos.y;
+		m_winW = size.x;
+		m_winH = size.y;
+
+		DrawWindowChrome(kMainHeaderH);
+		DrawTitleHeader();
+
+		SetPlayerWindowBodyCursor(kMainHeaderH);
+
+		if (ImGui::BeginTabBar("##SettingsTabs", ImGuiTabBarFlags_None))
+		{
+			const float childH = -56.0f;
+			if (ImGui::BeginTabItem("V" U8_I "deo"))
+			{
+				DrawActiveTabOrnament();
+				m_activeTab = 0;
+				ImGui::BeginChild("##SettingsVideo", ImVec2(0.0f, childH), false);
+				DrawVideoTab();
+				ImGui::EndChild();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("A" U8_U "dio"))
+			{
+				DrawActiveTabOrnament();
+				m_activeTab = 1;
+				ImGui::BeginChild("##SettingsAudio", ImVec2(0.0f, childH), false);
+				DrawAudioTab();
+				ImGui::EndChild();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Interface"))
+			{
+				DrawActiveTabOrnament();
+				m_activeTab = 2;
+				ImGui::BeginChild("##SettingsInterface", ImVec2(0.0f, childH), false);
+				DrawInterfaceTab();
+				ImGui::EndChild();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Filtros"))
+			{
+				DrawActiveTabOrnament();
+				m_activeTab = 3;
+				ImGui::BeginChild("##SettingsFilter", ImVec2(0.0f, childH), false);
+				DrawFilterTab();
+				ImGui::EndChild();
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+
+		ImGui::SetCursorPos(ImVec2(kPlayerWindowBodyInset, kWindowH - 48.0f));
+		DrawFooter();
+
+		ImGui::End();
+	}
+
+	if (!open)
+		Close();
+
+	DrawResetConfirm();
+	PopWindowStyle();
+}
+
+void Settings::Button()
+{
+}
+
+void Settings::ResolveResolution()
+{
+	bResolution = FindResolutionId(smConfig.ScreenSize.x, smConfig.ScreenSize.y);
+	cResolution = bResolution;
+	const ResolutionOption* res = FindResolution(bResolution);
+	bRatio = res->ratio;
+	cRatio = bRatio;
+}
+
+void Settings::FillEditDefaults()
+{
+	bWindowed = 1;
+	bAutoAdjust = 1;
+	bBorderless = 0;
+	bRatio = 2;
+	bResolution = 8;
+	bTexture = 0;
+	bBPP = 32;
+	bEffects = 1;
+	bShowDamage = 1;
+	bLights = 0;
+	bShadows = 1;
+	vSync = 1;
+	vBlockUI = 1;
+	bMusic = 1;
+	bMVol = 4;
+	bSound = 1;
+	bAmbient = 1;
+	bSVol = 4;
+	bCamView = 1;
+	bCamRange = 2;
+	bCamShake = 1;
+	bCamInv = 0;
+	bFilter = 0;
+	bFilterSpec = 0;
+	bHP = 1;
+	bMP = 1;
+	bSP = 1;
+	bGold = 1;
+	bAmulets = 1;
+	bRings = 1;
+	bSheltoms = 1;
+	bForce = 1;
+	bPremiums = 1;
+	bCrystal = 1;
+	bDefItem = 1;
+	bOffItem = 1;
+	bElse = 1;
+	bMS = 1;
+	bFS = 1;
+	bPS = 1;
+	bAS = 1;
+	bKS = 1;
+	bATS = 1;
+	bPRS = 1;
+	bMGS = 1;
+	bNaked = 1;
+	bRememberLogin = 1;
+	bHidePlayerNames = 0;
+	bShowLife = 0;
+	bShowNotice = 1;
+	bShowFPS = 0;
+}
+
+void Settings::Load()
+{
+	IniFiles ini(kIniPath);
+
+	cWindowed = ini.ReadBool("Screen", "Windowed") ? 1 : 0;
+	cAutoAdjust = ini.ReadBool("Screen", "AutoAdjust") ? 1 : 0;
+	cBorderless = 0;
+	smConfig.WinMode = cWindowed != 0;
+
+	char ratio[32] = { 0 };
+	ini.ReadStringTo("Screen", "Ratio", ratio, sizeof(ratio), "");
+	cRatio = 2;
+	if (lstrcmpiA(ratio, "4:3") == 0) cRatio = 0;
+	else if (lstrcmpiA(ratio, "5:4") == 0) cRatio = 1;
+	else if (lstrcmpiA(ratio, "16:9") == 0) cRatio = 2;
+	else if (lstrcmpiA(ratio, "16:10") == 0) cRatio = 3;
+
+	int w = ini.ReadInt("Screen", "Width");
+	int h = ini.ReadInt("Screen", "Height");
+	if (w < 640) w = 1024;
+	if (h < 480) h = 768;
+	smConfig.ScreenSize.x = w;
+	smConfig.ScreenSize.y = h;
+
+	char texKey[32] = { 0 };
+	ini.ReadStringTo("Graphics", "TextureQuality", texKey, sizeof(texKey), "");
+	if (texKey[0])
+		cTexture = ClampInt(ini.ReadInt("Graphics", "TextureQuality"), 0, 3);
+	else
+		cTexture = ini.ReadBool("Graphics", "HighTextureQuality") ? 0 : 3;
+	smConfig.TextureQuality = cTexture;
+
+	cBPP = ini.ReadInt("Graphics", "BitDepth");
+	if (cBPP != 16 && cBPP != 32)
+		cBPP = 32;
+	smConfig.ScreenColorBit = cBPP;
+
+	cShowDamage = ini.ReadBool("Graphics", "Damage") ? 1 : 0;
+	smConfig.showDamage = cShowDamage != 0;
+	cEffects = ini.ReadBool("Graphics", "Effects") ? 1 : 0;
+	cLights = ini.ReadBool("Graphics", "DynamicLights") ? 1 : 0;
+	cShadows = ini.ReadBool("Graphics", "DynamicShadows") ? 1 : 0;
+	cvSync = ini.ReadBool("Graphics", "VSync") ? 1 : 0;
+	cvBlockUI = ini.ReadBool("Graphics", "BlockUI") ? 1 : 0;
+
+	char weather[16] = { 0 };
+	ini.ReadStringTo("Graphics", "Weather", weather, sizeof(weather), "True");
+	cWeather = (lstrcmpiA(weather, "True") == 0) ? 1 : 0;
+	smConfig.WeatherSwitch = cWeather;
+
+	char audioFlag[16] = { 0 };
+	ini.ReadStringTo("Audio", "Music", audioFlag, sizeof(audioFlag), "True");
+	cMusic = (lstrcmpiA(audioFlag, "True") == 0) ? 1 : 0;
+	ini.ReadStringTo("Audio", "Sound", audioFlag, sizeof(audioFlag), "True");
+	cSound = (lstrcmpiA(audioFlag, "True") == 0) ? 1 : 0;
+	ini.ReadStringTo("Audio", "Ambient", audioFlag, sizeof(audioFlag), "True");
+	cAmbient = (lstrcmpiA(audioFlag, "True") == 0) ? 1 : 0;
+
+	char volKey[16] = { 0 };
+	ini.ReadStringTo("Audio", "MusicVolume", volKey, sizeof(volKey), "");
+	cMVol = volKey[0] ? ClampInt(ini.ReadInt("Audio", "MusicVolume"), 0, 8) : 7;
+	ini.ReadStringTo("Audio", "SoundVolume", volKey, sizeof(volKey), "");
+	cSVol = volKey[0] ? ClampInt(ini.ReadInt("Audio", "SoundVolume"), 0, 8) : 7;
+	LastMusicVolume = cMVol * 50;
+
+	cCamShake = ReadBoolOrOn(ini, "Camera", "FarCameraSight") ? 1 : 0;
+	cCamInv = ReadBoolOrOn(ini, "Camera", "InvertedCamera") ? 1 : 0;
+	CameraSight = cCamShake;
+	CameraInvRot = cCamInv;
+	smConfig.CameraSight = cCamShake;
+	smConfig.CameraInvRot = cCamInv != 0;
+
+	char camKey[16] = { 0 };
+	ini.ReadStringTo("Camera", "View", camKey, sizeof(camKey), "");
+	cCamView = camKey[0] ? ClampInt(ini.ReadInt("Camera", "View"), 0, 2) : 1;
+	ini.ReadStringTo("Camera", "Range", camKey, sizeof(camKey), "");
+	cCamRange = camKey[0] ? ClampInt(ini.ReadInt("Camera", "Range"), 0, 3) : 2;
+
+	cHP = ini.ReadBool("LootFilter", "HP") ? 1 : 0;
+	cMP = ini.ReadBool("LootFilter", "MP") ? 1 : 0;
+	cSP = ini.ReadBool("LootFilter", "SP") ? 1 : 0;
+	cGold = ini.ReadBool("LootFilter", "Gold") ? 1 : 0;
+	cAmulets = ini.ReadBool("LootFilter", "Amulets") ? 1 : 0;
+	cRings = ini.ReadBool("LootFilter", "Rings") ? 1 : 0;
+	cSheltoms = ini.ReadBool("LootFilter", "Sheltoms") ? 1 : 0;
+	cForce = ini.ReadBool("LootFilter", "Force") ? 1 : 0;
+	cPremiums = ini.ReadBool("LootFilter", "Premiums") ? 1 : 0;
+	cCrystal = ini.ReadBool("LootFilter", "Crystal") ? 1 : 0;
+	cDefItem = ini.ReadBool("LootFilter", "DefItem") ? 1 : 0;
+	cOffItem = ini.ReadBool("LootFilter", "OffItem") ? 1 : 0;
+	cElse = ini.ReadBool("LootFilter", "Else") ? 1 : 0;
+	cFilter = ini.ReadBool("LootFilter", "Enabled") ? 1 : 0;
+
+	cMS = ini.ReadBool("LootSpecFilter", "MS") ? 1 : 0;
+	cFS = ini.ReadBool("LootSpecFilter", "FS") ? 1 : 0;
+	cPS = ini.ReadBool("LootSpecFilter", "PS") ? 1 : 0;
+	cAS = ini.ReadBool("LootSpecFilter", "AS") ? 1 : 0;
+	cKS = ini.ReadBool("LootSpecFilter", "KS") ? 1 : 0;
+	cATS = ini.ReadBool("LootSpecFilter", "ATS") ? 1 : 0;
+	cPRS = ini.ReadBool("LootSpecFilter", "PRS") ? 1 : 0;
+	cMGS = ini.ReadBool("LootSpecFilter", "MGS") ? 1 : 0;
+	cNaked = ini.ReadBool("LootSpecFilter", "Naked") ? 1 : 0;
+	cFilterSpec = ini.ReadBool("LootSpecFilter", "Enabled") ? 1 : 0;
+
+	cRememberLogin = ini.ReadBool("Game", "RememberAccount") ? 1 : 0;
+
+	char hideNames[16] = { 0 };
+	ini.ReadStringTo("Game", "HideNames", hideNames, sizeof(hideNames), "");
+	if (hideNames[0])
+		cHidePlayerNames = ini.ReadBool("Game", "HideNames") ? 1 : 0;
+	else
+		cHidePlayerNames = ini.ReadBool("Game", "ShowNames") ? 1 : 0;
+
+	cShowLife = ini.ReadBool("Game", "ShowLife") ? 1 : 0;
+	cShowNotice = ini.ReadBool("Game", "ShowAlert") ? 1 : 0;
+	cShowFPS = ini.ReadBool("Game", "ShowFPS") ? 1 : 0;
+	::bShowFPS = cShowFPS ? TRUE : FALSE;
+
+	ConfigUseDynamicLights = cLights;
+	ConfigUseDynamicShadows = cShadows;
+	vSync = cvSync;
+
+	CopyEditFromCommitted();
+	ResolveResolution();
+	CopyCommittedFromEdit();
+	CopyEditFromCommitted();
+
+	if (smConfig.szServerIP[0])
+		lstrcpy(smConfig.szDataServerIP, smConfig.szServerIP);
+}
+
+void Settings::ApplyRuntime(bool applyDisplay)
+{
+	cBorderless = 0;
+	bBorderless = 0;
+	smConfig.WinMode = cWindowed != 0;
+	smConfig.TextureQuality = cTexture;
+	smConfig.ScreenColorBit = 32;
+	smConfig.showDamage = cShowDamage != 0;
+	smConfig.WeatherSwitch = cWeather;
+	CameraSight = cCamShake;
+	CameraInvRot = cCamInv;
+	smConfig.CameraSight = cCamShake;
+	smConfig.CameraInvRot = cCamInv != 0;
+	ConfigUseDynamicLights = cLights;
+	ConfigUseDynamicShadows = cShadows;
+	::bShowFPS = cShowFPS ? TRUE : FALSE;
+	bRememberLogin = cRememberLogin;
+	bHidePlayerNames = cHidePlayerNames;
+	bShowLife = cShowLife;
+	bShowNotice = cShowNotice;
+
+	if (applyDisplay)
+	{
+		const ResolutionOption* res = FindResolution(cResolution);
+		smConfig.ScreenSize.x = res->w;
+		smConfig.ScreenSize.y = res->h;
+		GRAPHICENGINE->SetVSync(cvSync != 0);
+		Set(cWindowed, res->w, res->h);
+		if (GRAPHICDEVICE && GameMode == 2)
+			GRAPHICENGINE->Reset(res->w, res->h);
+	}
+
+	if (GAMECOREHANDLE && GAMECOREHANDLE->IsInit() && CHATBOX)
+		CHATBOX->ToggleNotice(cShowNotice ? TRUE : FALSE);
+}
+
+void Settings::Save(bool resize)
+{
+	const int prevWindowed = cWindowed;
+	const int prevResolution = cResolution;
+	const bool wasMaximized = (hwnd && IsZoomed(hwnd)) ? true : false;
+
+	CopyCommittedFromEdit();
+	cBorderless = 0;
+	bBorderless = 0;
+
+	IniFiles ini(kIniPath);
 	ini.WriteBool("Screen", "Windowed", cWindowed);
 	ini.WriteBool("Screen", "AutoAdjust", cAutoAdjust);
-	ini.WriteBool("Audio", "Music", bMusic);
-	ini.WriteBool("Audio", "Sound", bSound);
+	ini.WriteBool("Screen", "Borderless", 0);
+	ini.WriteString("Screen", "Ratio", kRatioNames[ClampInt(cRatio, 0, 3)]);
+
+	ini.WriteBool("Audio", "Music", cMusic);
+	ini.WriteBool("Audio", "Sound", cSound);
+	ini.WriteBool("Audio", "Ambient", cAmbient);
 	ini.WriteBool("Graphics", "Effects", cEffects);
-	ini.WriteBool("Graphics", "Damage", smConfig.showDamage);
+	ini.WriteBool("Graphics", "Damage", cShowDamage);
 	ini.WriteBool("Graphics", "DynamicLights", cLights);
 	ini.WriteBool("Graphics", "DynamicShadows", cShadows);
 	ini.WriteBool("Graphics", "VSync", cvSync);
 	ini.WriteBool("Graphics", "BlockUI", cvBlockUI);
+	ini.WriteBool("Graphics", "Weather", cWeather);
 	ini.WriteBool("Camera", "FarCameraSight", cCamShake);
 	ini.WriteBool("Camera", "InvertedCamera", cCamInv);
 	ini.WriteBool("LootFilter", "Enabled", cFilter);
@@ -1823,7 +1320,6 @@ void Settings::Save(bool resize)
 	ini.WriteBool("LootFilter", "DefItem", cDefItem);
 	ini.WriteBool("LootFilter", "OffItem", cOffItem);
 	ini.WriteBool("LootFilter", "Else", cElse);
-
 	ini.WriteBool("LootSpecFilter", "Enabled", cFilterSpec);
 	ini.WriteBool("LootSpecFilter", "MS", cMS);
 	ini.WriteBool("LootSpecFilter", "FS", cFS);
@@ -1834,111 +1330,53 @@ void Settings::Save(bool resize)
 	ini.WriteBool("LootSpecFilter", "PRS", cPRS);
 	ini.WriteBool("LootSpecFilter", "MGS", cMGS);
 	ini.WriteBool("LootSpecFilter", "Naked", cNaked);
+	ini.WriteBool("Game", "RememberAccount", cRememberLogin);
+	ini.WriteBool("Game", "HideNames", cHidePlayerNames);
+	ini.WriteBool("Game", "ShowNames", cHidePlayerNames);
+	ini.WriteBool("Game", "ShowLife", cShowLife);
+	ini.WriteBool("Game", "ShowAlert", cShowNotice);
+	ini.WriteBool("Game", "ShowFPS", cShowFPS);
 
-	ini.WriteBool("Game", "RememberAccount", bRememberLogin);
-	ini.WriteBool("Game", "ShowNames", bHidePlayerNames);
-	ini.WriteBool("Game", "ShowLife", bShowLife);
-	ini.WriteBool("Game", "ShowAlert", bShowNotice);
-	
 	if (resize)
 	{
-		if (cRatio == 0)
-		{
-			if (cResolution == 0)
-			{
-				smConfig.ScreenSize.x = 800;
-				smConfig.ScreenSize.y = 600;
-			}
-			else if (cResolution == 1)
-			{
-				smConfig.ScreenSize.x = 1024;
-				smConfig.ScreenSize.y = 768;
-			}
-			else if (cResolution == 2)
-			{
-				smConfig.ScreenSize.x = 1280;
-				smConfig.ScreenSize.y = 960;
-			}
-			else if (cResolution == 3)
-			{
-				smConfig.ScreenSize.x = 1400;
-				smConfig.ScreenSize.y = 1050;
-			}
-		}
-		else if (cRatio == 1)
-		{
-			if (cResolution == 4)
-			{
-				smConfig.ScreenSize.x = 1280;
-				smConfig.ScreenSize.y = 1024;
-			}
-		}
-		else if (cRatio == 2)
-		{
-			if (cResolution == 5)
-			{
-				smConfig.ScreenSize.x = 1280;
-				smConfig.ScreenSize.y = 720;
-			}
-			else if (cResolution == 6)
-			{
-				smConfig.ScreenSize.x = 1366;
-				smConfig.ScreenSize.y = 768;
-			}
-			else if (cResolution == 7)
-			{
-				smConfig.ScreenSize.x = 1600;
-				smConfig.ScreenSize.y = 900;
-			}
-			else if (cResolution == 8)
-			{
-				smConfig.ScreenSize.x = 1920;
-				smConfig.ScreenSize.y = 1080;
-			}
-		}
-		else if (cRatio == 3)
-		{
-			if (cResolution == 9)
-			{
-				smConfig.ScreenSize.x = 1280;
-				smConfig.ScreenSize.y = 800;
-			}
-			else if (cResolution == 10)
-			{
-				smConfig.ScreenSize.x = 1440;
-				smConfig.ScreenSize.y = 900;
-			}
-			else if (cResolution == 11)
-			{
-				smConfig.ScreenSize.x = 1680;
-				smConfig.ScreenSize.y = 1050;
-			}
-			else if (cResolution == 12)
-			{
-				smConfig.ScreenSize.x = 1920;
-				smConfig.ScreenSize.y = 1200;
-			}
-		}
-
-		ini.WriteInt("Screen", "Width", smConfig.ScreenSize.x);
-		ini.WriteInt("Screen", "Height", smConfig.ScreenSize.y);
+		const ResolutionOption* res = FindResolution(cResolution);
+		ini.WriteInt("Screen", "Width", res->w);
+		ini.WriteInt("Screen", "Height", res->h);
 		ini.WriteInt("Graphics", "TextureQuality", cTexture);
-		ini.WriteInt("Graphics", "BitDepth", cBPP);
+		ini.WriteInt("Graphics", "BitDepth", 32);
 		ini.WriteInt("Audio", "MusicVolume", cMVol);
 		ini.WriteInt("Audio", "SoundVolume", cSVol);
 		ini.WriteInt("Camera", "View", cCamView);
 		ini.WriteInt("Camera", "Range", cCamRange);
-		Set(cWindowed, smConfig.ScreenSize.x, smConfig.ScreenSize.y);
+	}
 
-		SetVolumeBGM(LastMusicVolume);
+	const bool displayChanged = (cWindowed != prevWindowed) || (cResolution != prevResolution);
+	ApplyRuntime(resize && displayChanged);
 
+	if (resize)
+	{
+		LastMusicVolume = cMVol * 50;
+		SetVolumeBGM((DWORD)LastMusicVolume);
 		if (!cMusic)
 			StopBGM();
 
-		GAMECOREHANDLE->SetCanMove(cvBlockUI);
-		CHUDCONTROLLER->UpdateObjectsSettings();
-	}
+		if (GAMECOREHANDLE && GAMECOREHANDLE->IsInit())
+		{
+			GAMECOREHANDLE->SetCanMove(cvBlockUI);
+			if (CHUDCONTROLLER)
+				CHUDCONTROLLER->UpdateObjectsSettings();
+		}
 
+		if (displayChanged && cWindowed && wasMaximized && hwnd)
+			ShowWindow(hwnd, SW_MAXIMIZE);
+	}
+}
+
+void Settings::SaveRememberLogin()
+{
+	cRememberLogin = bRememberLogin;
+	IniFiles ini(kIniPath);
+	ini.WriteBool("Game", "RememberAccount", cRememberLogin);
 }
 
 bool Settings::setAutoAdjust(int iWidth, int iHeight)
@@ -1950,28 +1388,15 @@ bool Settings::setAutoAdjust(int iWidth, int iHeight)
 
 	smScreenWidth = iWidth;
 	smScreenHeight = iHeight;
-
-	//Atualiza as variáveis.
 	MidX = iWidth / 2;
 	MidY = iHeight / 2;
-	//MidY -= 59;
-
-	//Obtêm o endereço das variáveis.
-	extern float g_fWinSizeRatio_X;
-	extern float g_fWinSizeRatio_Y;
 
 	g_fWinSizeRatio_X = float(iWidth) / 800.f;
-
-	extern int WinSizeX;
-	extern int WinSizeY;
-
+	g_fWinSizeRatio_Y = float(iHeight) / 600.f;
 	WinSizeX = iWidth;
 	WinSizeY = iHeight;
 
-	g_fWinSizeRatio_Y = float(iHeight) / 600.f;
-
 	SetDxProjection((g_PI / 4.4f), iWidth, iHeight, 20.f, 4000.f);
-
 	resizeOpening();
 	resizeLogin();
 	resizeSin();
@@ -1980,76 +1405,50 @@ bool Settings::setAutoAdjust(int iWidth, int iHeight)
 	viewdistZ = (iHeight * 4) / 3;
 	smRender.SMMULT_PERSPECTIVE_HEIGHT = RENDCLIP_DEFAULT_MULT_PERSPECTIVE_HEIGHT;
 
-
 	if (GRAPHICDEVICE)
-	{
-		SetDisplayMode(hwnd, smScreenWidth, smScreenHeight, bBPP);
-	}
+		SetDisplayMode(hwnd, smScreenWidth, smScreenHeight, 32);
 
 	return true;
 }
 
 void Settings::Set(int Windowed, int iWidth, int iHeight)
 {
-	extern int ConfigUseDynamicLights;
-	extern int ConfigUseDynamicShadows;
-
-	ConfigUseDynamicLights = bLights;
-	ConfigUseDynamicShadows = bShadows;
-
-	extern float g_fWinSizeRatio_X;
-	extern float g_fWinSizeRatio_Y;
+	ConfigUseDynamicLights = cLights;
+	ConfigUseDynamicShadows = cShadows;
 
 	WinSizeX = iWidth;
 	WinSizeY = iHeight;
-
 	smScreenWidth = iWidth;
 	smScreenHeight = iHeight;
-
 	smConfig.ScreenSize.x = WinSizeX;
 	smConfig.ScreenSize.y = WinSizeY;
-
 	MidX = WinSizeX / 2;
 	MidY = WinSizeY / 2;
-
 	g_fWinSizeRatio_X = float(WinSizeX) / 800.f;
 	g_fWinSizeRatio_Y = float(WinSizeY) / 600.f;
-
 	viewdistZ = ((WinSizeY / 3) * 4);
-
 	SetDxProjection((g_PI / 4.4f), WinSizeX, WinSizeY, 20.f, 4000.f);
 
 	if (Windowed)
 	{
 		RECT rc = { 0, 0, iWidth, iHeight };
-
 		UINT uWindowStyle = WS_CAPTION | WS_SYSMENU | WS_VISIBLE | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 		AdjustWindowRect(&rc, uWindowStyle, FALSE);
-
 		int w = rc.right - rc.left;
 		int h = rc.bottom - rc.top;
-
 		SetWindowLongA(hwnd, GWL_STYLE, uWindowStyle);
-		SetWindowPos(hwnd,
-			NULL,
+		SetWindowPos(hwnd, NULL,
 			((GetSystemMetrics(SM_CXSCREEN) >> 1) - (w >> 1)),
 			((GetSystemMetrics(SM_CYSCREEN) >> 1) - (h >> 1)),
-			w,
-			h,
-			SWP_NOZORDER);
-
+			w, h, SWP_NOZORDER | SWP_FRAMECHANGED);
 		UpdateWindow(hwnd);
 	}
 	else
 	{
-		SetWindowPos(hwnd,
-			NULL,
-			0,
-			0,
+		SetWindowPos(hwnd, NULL, 0, 0,
 			GetSystemMetrics(SM_CXSCREEN),
 			GetSystemMetrics(SM_CYSCREEN),
 			SWP_DRAWFRAME | SWP_NOZORDER);
-
 		SetWindowLongA(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 	}
 
@@ -2057,65 +1456,13 @@ void Settings::Set(int Windowed, int iWidth, int iHeight)
 	{
 		extern void resizeOpening();
 		extern void resizeLogin();
-
 		resizeOpening();
 		resizeLogin();
-
 		GAMECOREHANDLE->OnResolutionChanged();
 	}
 }
 
 void Settings::Reset()
 {
-	bWindowed = true;
-	bAutoAdjust = true;
-	bRatio = 0;
-	bResolution = 0;
-	bTexture = 0;
-	bBPP = 32;
-	bEffects = true;
-	smConfig.showDamage = false;
-	bLights = false;
-	bShadows = true;
-	vSync = true;
-	vBlockUI = true;
-	bMusic = false;
-	bMVol = 0;
-	bSound = false;
-	bAmbient = false;
-	bSVol = 0;
-	bCamView = 2;
-	bCamRange = 3;
-	bCamShake = true;
-	bCamInv = false;
-	bFilter = true;
-	bFilterSpec = true;
-	bHP = true;
-	bMP = true;
-	bSP = true;
-	bGold = true;
-	bAmulets = true;
-	bRings = true;
-	bSheltoms = true;
-	bForce = true;
-	bPremiums = true;
-	bCrystal = true;
-	bDefItem = true;
-	bOffItem = true;
-	bElse = true;
-	bMS = true;
-	bFS = true;
-	bPS = true;
-	bAS = true;
-	bKS = true;
-	bATS = true;
-	bPRS = true;
-	bMGS = true;
-	bNaked = true;
-	bRememberLogin = true;
-	bHidePlayerNames = false;
-	bShowLife = false;
-	bShowNotice = true;
-
-	GAMECOREHANDLE->OnResolutionChanged();
+	FillEditDefaults();
 }

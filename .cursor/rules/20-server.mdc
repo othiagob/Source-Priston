@@ -20,3 +20,11 @@ alwaysApply: false
   depois da mudança.
 - `GM/` e `CLI/` são ferramentas administrativas — bugs aqui não afetam
   jogadores diretamente, mas podem abrir brecha de abuso se mal validados.
+- Loja de Coins: lê `ShopCoin.dbo.ShopItems`
+  (`DiscountPercent`, não `Discount`). `CreateItemPerf` procura o item
+  pelo `ItemCode` (`LastCategory`, ex.: `OR129`). Não troque o código
+  só porque o BMP do ícone falta — isso é arquivo no client.
+  Lista grande: `NewShopItems_ReceiveItems` (`0x252031`) em chunks
+  (~200 itens); `NewShop.h` do server tem de bater com o do client
+  (`pCompressedData[7800]`, `chunkIndex`, `totalChunks`). Socket
+  `smSOCKBUFF_SIZE` = 8192.
