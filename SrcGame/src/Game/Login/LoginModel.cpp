@@ -34,11 +34,27 @@ void CLoginModel::RenderLoginBG()
 	if (pImageBGLogin == NULL)
 	{
 		srand((UINT)time(NULL));
-		pImageBGLogin = UI::ImageLoader::LoadImage_("game\\images\\login\\bg1.png"); // Imagem estática
+		pImageBGLogin = UI::ImageLoader::LoadImage_("game\\images\\login\\bg1.png"); // Imagem estatica
 	}
 
-	if (pImageBGLogin)
-	{
-		UI::ImageRender::Render(pImageBGLogin, (RESOLUTION_WIDTH >> 1) - (pImageBGLogin->GetWidth() >> 1), (RESOLUTION_HEIGHT >> 1) - (pImageBGLogin->GetHeight() >> 1), pImageBGLogin->GetWidth(), pImageBGLogin->GetHeight(), -1);
-	}
+	if (!pImageBGLogin || !pImageBGLogin->GetTexture())
+		return;
+
+	const int imgW = pImageBGLogin->GetWidth();
+	const int imgH = pImageBGLogin->GetHeight();
+	const int screenW = RESOLUTION_WIDTH;
+	const int screenH = RESOLUTION_HEIGHT;
+	if (imgW <= 0 || imgH <= 0 || screenW <= 0 || screenH <= 0)
+		return;
+
+	// Cover: preenche a tela sem mudar a proporcao da arte (logo nao amassa).
+	const float scaleX = (float)screenW / (float)imgW;
+	const float scaleY = (float)screenH / (float)imgH;
+	const float scale = (scaleX > scaleY) ? scaleX : scaleY;
+	const int drawW = (int)((float)imgW * scale + 0.5f);
+	const int drawH = (int)((float)imgH * scale + 0.5f);
+	const int x = (screenW - drawW) / 2;
+	const int y = (screenH - drawH) / 2;
+
+	UI::ImageRender::Render(pImageBGLogin->GetTexture(), x, y, imgW, imgH, 0, 0, (DWORD)-1, scale, scale, 0.0f);
 }

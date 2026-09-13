@@ -39,6 +39,7 @@ private:
 	float m_overlayY = 0.0f;
 	float m_overlayW = 0.0f;
 	float m_overlayH = 0.0f;
+	bool m_overlayHasPos = false;
 	DWORD m_finishClickTick = 0;
 	int m_finishClickQuestId = 0;
 	static const int kQuestOverlayHideMax = 64;

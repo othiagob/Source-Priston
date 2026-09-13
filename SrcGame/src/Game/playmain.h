@@ -222,6 +222,7 @@ extern int DispEachMode;
 extern int		EachTradeButton;
 extern int		EachTradeButtonMode;
 extern RECT		RectTradeButton;
+extern RECT		EachPlayerViewRect;
 extern smCHAR	chrEachPlayer;
 extern smCHAR	*chrEachMaster;
 

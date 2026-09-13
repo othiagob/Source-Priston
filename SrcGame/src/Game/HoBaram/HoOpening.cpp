@@ -249,24 +249,24 @@ int HoOpening::DebugModeLoadFieldInfo(void)
 
 		p = GetWord(decode, line);
 
-		if (lstrcmp(decode, "*ÇÊµå¸í") == 0)
+		if (lstrcmp(decode, "*????") == 0)
 		{
 			p = GetWord(strBuff, p);
 			LOGINSCREENHANDLER->pcStage = smSTAGE3D_ReadASE(strBuff);
 			if (LOGINSCREENHANDLER->pcStage)
 				LOGINSCREENHANDLER->pcStage->Head = TRUE;
 		}
-		else if (lstrcmp(decode, "*Ä«¸Þ¶ó¸í") == 0)
+		else if (lstrcmp(decode, "*?????") == 0)
 		{
 			p = GetWord(strBuff, p);
 			s_AutoCamera.ReadASE_AutoCamera(strBuff);
 		}
-		else if (lstrcmp(decode, "*Ä«¸Þ¶ó¼Óµµ") == 0)
+		else if (lstrcmp(decode, "*??????") == 0)
 		{
 			p = GetWord(strBuff, p);
 			m_AutoCameraFrameTime = atoi(strBuff);
 		}
-		else if (lstrcmp(decode, "*¿öÇÁÇÁ·¹ÀÓ") == 0)
+		else if (lstrcmp(decode, "*??????????") == 0)
 		{
 			p = GetWord(strBuff, p);
 			int StFrame = atoi(strBuff);
@@ -276,12 +276,12 @@ int HoOpening::DebugModeLoadFieldInfo(void)
 
 			s_AutoCamera.SetWarpFrame(StFrame, EndFrame);
 		}
-		else if (lstrcmp(decode, "*ÁöÇü¹°Ã¼") == 0)
+		else if (lstrcmp(decode, "*???????") == 0)
 		{
 			p = GetWord(strBuff, p);
 			LOGINSCREENHANDLER->pcStage->StageObject->AddObjectFile(strBuff);
 		}
-		else if (lstrcmp(decode, "*ÁöÇü¾Ö´Ï") == 0)
+		else if (lstrcmp(decode, "*???????") == 0)
 		{
 			p = GetWord(strBuff, p);
 			LOGINSCREENHANDLER->pcStage->StageObject->AddObjectFile(strBuff, strBuff);
@@ -358,11 +358,11 @@ int HoOpening::Load()
 	}
 
 
-	iWindowID = CreateTextureMaterial("game\\images\\login\\window.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	iBtnLogin[0] = CreateTextureMaterial("game\\images\\login\\btl.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	iBtnLogin[1] = CreateTextureMaterial("game\\images\\login\\btl_.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	iBtnExit[0] = CreateTextureMaterial("game\\images\\login\\bte.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
-	iBtnExit[1] = CreateTextureMaterial("game\\images\\login\\bte_.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
+	iWindowID = CreateTextureMaterial("game\\images\\login\\window.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
+	iBtnLogin[0] = CreateTextureMaterial("game\\images\\login\\btl.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
+	iBtnLogin[1] = CreateTextureMaterial("game\\images\\login\\btl_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
+	iBtnExit[0] = CreateTextureMaterial("game\\images\\login\\bte.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
+	iBtnExit[1] = CreateTextureMaterial("game\\images\\login\\bte_.png", 0, 0, 0, 0, SMMAT_BLEND_ALPHA);
 
 	BlackBoxImage = CreateTextureMaterial("StartImage\\Login\\BlackBox.tga", 0, TRUE, FALSE, FALSE, SMMAT_BLEND_ALPHA);
 	WhiteBoxImage = CreateTextureMaterial("StartImage\\Login\\WhiteBox.tga", 0, TRUE, FALSE, FALSE, SMMAT_BLEND_ALPHA);
@@ -571,29 +571,29 @@ int HoOpening::Draw()
 
 	if (NextWorkState == STATE_LOGIN_INPUT)
 	{
-		// Janela Única
+		// Janela ?nica
 		dsDrawTexImage(iWindowID, (smConfig.ScreenSize.x >> 1) - (528
 			>> 1), (smConfig.ScreenSize.y >> 1) - (284 >> 1) + 7, 519, 210, LogoBlendValue);
 	}
 
 	if (NextWorkState == STATE_LOGIN_INPUT || CurrentWorkState == STATE_LOGIN_INPUT)
 	{
-		//Login Botão
+		//Login botao (Y+25 / 94x32 = mesma altura da linha CONTA/SENHA)
 		if ((pCursorPos.x > (smConfig.ScreenSize.x >> 1) - (-154 >> 1)) && (pCursorPos.x < (smConfig.ScreenSize.x >> 1) - (-156 >> 1) + 94) &&
-			(pCursorPos.y > (smConfig.ScreenSize.y >> 1) + (13)) && (pCursorPos.y < (smConfig.ScreenSize.y >> 1) + (13 + 48)))
+			(pCursorPos.y > (smConfig.ScreenSize.y >> 1) + (25)) && (pCursorPos.y < (smConfig.ScreenSize.y >> 1) + (25 + 32)))
 		{
 			if (MouseButton[0])
 			{
 				CurrentWorkState = STATE_LOGIN_INPUT;
 				LoginDataServer();
 			}
-			dsDrawTexImage(iBtnLogin[1], (smConfig.ScreenSize.x >> 1) - (-154 >> 1), (smConfig.ScreenSize.y >> 1) + 13, 94, 48, LogoBlendValue);
+				dsDrawTexImage(iBtnLogin[1], (smConfig.ScreenSize.x >> 1) - (-154 >> 1), (smConfig.ScreenSize.y >> 1) + 25, 94, 32, LogoBlendValue);
 		}
 		else
-			dsDrawTexImage(iBtnLogin[0], (smConfig.ScreenSize.x >> 1) - (-154 >> 1), (smConfig.ScreenSize.y >> 1) + 13, 94, 48, LogoBlendValue);
+			dsDrawTexImage(iBtnLogin[0], (smConfig.ScreenSize.x >> 1) - (-154 >> 1), (smConfig.ScreenSize.y >> 1) + 25, 94, 32, LogoBlendValue);
 
 
-		//Sair Botão
+		//Sair Bot?o
 		if (GetClick(smConfig.ScreenSize.x - 97, smConfig.ScreenSize.y - 113, 76, 33))
 		{
 			dsDrawTexImage(iBtnExit[1], smConfig.ScreenSize.x - 97, smConfig.ScreenSize.y - 113, 76, 33, 255);
@@ -626,7 +626,7 @@ int HoOpening::Draw()
 			char localtime[128] = { 0 };
 			strftime(localtime, sizeof(localtime), "Hora Local: %d-%m-%Y %X", now);
 
-			dsTextLineOut(opHdc, (smConfig.ScreenSize.x / 2) - 40, 0, "Versão[0001] -", strlen("Versão[0001] -"));
+			dsTextLineOut(opHdc, (smConfig.ScreenSize.x / 2) - 40, 0, "Vers?o[0001] -", strlen("Vers?o[0001] -"));
 			dsTextLineOut(opHdc, (smConfig.ScreenSize.x / 2) - 90, 20, localtime, strlen(localtime));
 
 			if (GetTickCount() - dwTickCap >= 170)
@@ -636,16 +636,16 @@ int HoOpening::Draw()
 			}
 		}
 
-		//wsprintf( buffer, "Versão do Game: 0001" );
+		//wsprintf( buffer, "Vers?o do Game: 0001" );
 		if (Client_Version < 1000) {
 			float Version = (float)Client_Version / 100;
-			/*sprintf(buffer, "%s%2.2f%s", "Versão: ", Version, "b");*/
+			/*sprintf(buffer, "%s%2.2f%s", "Vers?o: ", Version, "b");*/
 		}
 		else {
 			int v1 = Client_Version / 1000;
 			int v2 = (Client_Version / 10) % 100;
 			int v3 = Client_Version % 10;
-			/*wsprintf(buffer, "%s%d.%d.%d", "Versão: ", v1, v2, v3);*/
+			/*wsprintf(buffer, "%s%d.%d.%d", "Vers?o: ", v1, v2, v3);*/
 		}
 		dsTextLineOut(opHdc, smConfig.ScreenSize.x - 100, smConfig.ScreenSize.y - 45, buffer, strlen(buffer));
 
@@ -665,10 +665,10 @@ int HoOpening::Draw()
 
 			if (StartConnectServerFlag == FALSE && ConnectError == ERROR_NONE)
 			{
-				if (pCursorPos.x > (startLogoX + startAccountAddX + 10) &&
-					pCursorPos.x < (startLogoX + startAccountAddX + 10 + 95) &&
-					pCursorPos.y >(startLogoY + startAccountAddY + 20) &&
-					pCursorPos.y < (startLogoY + startAccountAddY + 23 + 14) &&
+				if (pCursorPos.x > (startLogoX + startAccountAddX - 108) &&
+					pCursorPos.x < (startLogoX + startAccountAddX - 108 + 124) &&
+					pCursorPos.y >(startLogoY + startAccountAddY - 28) &&
+					pCursorPos.y < (startLogoY + startAccountAddY - 28 + 32) &&
 					MouseButton[0])
 				{
 					if (LoginInputState == 1)
@@ -679,10 +679,10 @@ int HoOpening::Draw()
 					}
 				}
 
-				if (pCursorPos.x > (startLogoX + startAccountAddX + 10) &&
-					pCursorPos.x < (startLogoX + startAccountAddX + 10 + 95) &&
-					pCursorPos.y >(startLogoY + startAccountAddY + 70) &&
-					pCursorPos.y < (startLogoY + startAccountAddY + 73 + 14) &&
+				if (pCursorPos.x > (startLogoX + startAccountAddX + 18) &&
+					pCursorPos.x < (startLogoX + startAccountAddX + 18 + 124) &&
+					pCursorPos.y >(startLogoY + startAccountAddY - 28) &&
+					pCursorPos.y < (startLogoY + startAccountAddY - 28 + 32) &&
 					MouseButton[0])
 				{
 					if (LoginInputState == 0)
@@ -721,19 +721,18 @@ int HoOpening::Draw()
 
 			if (hFocusWnd)
 			{
-				if (CaretCount < 16)
+				// Cursor piscando por tempo (~530ms), nao por frame (FPS alto deixava frenetico)
+				const DWORD caretHalfMs = 530;
+				const bool showCaret = ((GetTickCount() / caretHalfMs) % 2) == 0;
+				if (showCaret)
 				{
 					if (End > DISP_LOGIN_LEN) End = DISP_LOGIN_LEN;
 
 					if (LoginInputState == 0)//Account
-						DrawFontText(startLogoX + startAccountAddX - 102 + End * 7 + 1, startLogoY + startAccountAddY + -18, "|", RGB(255, 250, 250), 2);
+						DrawFontText(startLogoX + startAccountAddX - 102 + End * 7 + 1, startLogoY + startAccountAddY - 17, "|", RGB(255, 250, 250), 2);
 					else if (LoginInputState == 1)//Password
-						DrawFontText(startLogoX + startAccountAddX + 24 + End * 6 + 1, startLogoY + startAccountAddY + -18, "|", RGB(255, 250, 250), 2);
+						DrawFontText(startLogoX + startAccountAddX + 24 + End * 6 + 1, startLogoY + startAccountAddY - 17, "|", RGB(255, 250, 250), 2);
 				}
-
-				CaretCount++;
-				if (CaretCount > 32)
-					CaretCount = 0;
 			}
 
 			int sp, len;
@@ -749,7 +748,7 @@ int HoOpening::Draw()
 			if (len > DISP_LOGIN_LEN) len = DISP_LOGIN_LEN;
 
 			for (int count = 0; count < len; count++)
-				DrawFontText(startLogoX + startAccountAddX + 24 + count * 6, startLogoY + startAccountAddY - 14, "*", RGB(255, 250, 250), 2);
+				DrawFontText(startLogoX + startAccountAddX + 24 + count * 6, startLogoY + startAccountAddY - 17, "*", RGB(255, 250, 250), 2);
 
 			if (oldFont)
 				SelectObject(opHdc, oldFont);
@@ -757,71 +756,71 @@ int HoOpening::Draw()
 	}
 
 	if (StartConnectServerFlag && ConnectError == ERROR_NONE)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[0]);//"      ¼­¹ö¿¡ Á¢¼ÓÁß....    ");
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[0]);//"      ?????? ??????....    ");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[0], 3);
 
 	if (ConnectError == ERROR_CONNECT)
 	{
 		StartConnectServerFlag = FALSE;
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[1]);//"      ¼­¹ö Á¢¼Ó ºÒ°¡       ");
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[1]);//"      ???? ???? ???       ");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[1], 3);
 	}
 	else if (ConnectError == ERROR_NO_ACCOUNT)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[2]);//"   °èÁ¤À» ´Ù½Ã ÀÔ·ÂÇÏ¼¼¿ä  ");
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[2]);//"   ?????? ??? ????????  ");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[2], 3);
 	else if (ConnectError == ERROR_NO_PASSWORD)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[3]);//"ºñ¹Ð ¹øÈ£¸¦ ´Ù½Ã ÀÔ·ÂÇÏ¼¼¿ä");
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[3]);//"??? ????? ??? ????????");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[3], 3);
 	else if (ConnectError == ERROR_NO_BETA_TESTER)
-		//DrawMessage(205 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[4]);//"  ÇØ´ç ¾ÆÀÌµð´Â ÇöÀç »ç¿ë±ÇÇÑÀÌ ¾øÀ¸´Ï °í°´¼¾ÅÍ·Î ¹®ÀÇ ¹Ù¶ø´Ï´Ù.  ");
+		//DrawMessage(205 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[4]);//"  ??? ?????? ???? ???????? ?????? ????????? ???? ??????.  ");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[4], 3);
 	else if (ConnectError == ERROR_NO_ACCOUNT_IN)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[5]);//"   ¾ÆÀÌµð°¡ Á¢¼ÓÁßÀÔ´Ï´Ù   ");
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[5]);//"   ????? ??????????   ");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[5], 3);
 	else if (ConnectError == ERROR_NO_VERSION)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[6]);//"  VersionÀÌ ¸ÂÁö ¾Ê½À´Ï´Ù  ");
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[6]);//"  Version?? ???? ??????  ");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[6], 3);
 	else if (ConnectError == ERROR_NO_LIMIT)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[7]);//"   ¼­¹ö¿¡ ÀÎ¿øÀÌ ¸¹½À´Ï´Ù  ");
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[7]);//"   ?????? ?¥ï??? ???????  ");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[7], 3);
 	else if (ConnectError == ERROR_NO_SERVER_CONNECT)
-		//DrawMessage(275 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[8]);//"¼­¹ö¿ÍÀÇ ¿¬°áÀÌ ²÷¾î Á³½À´Ï´Ù");
+		//DrawMessage(275 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[8]);//"???????? ?????? ???? ???????");
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[8], 3);
 	else if (ConnectError == ERROR_NO_USE_DATE_OVER)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[9]);//"  »ç¿ë±â°£ÀÌ Á¾·áµÇ¾ú½À´Ï´Ù "
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[9]);//"  ?????? ??????????? "
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[9], 3);
 	else if (ConnectError == ERROR_NO_USE_TIME_OVER)
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[10]);   //"  »ç¿ë½Ã°£ÀÌ Á¾·áµÇ¾ú½À´Ï´Ù "
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[10]);   //"  ???©£??? ??????????? "
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[10], 3);
-	else if (ConnectError == ERROR_DELETE_ACCOUNT_NOTIFY) //" ¼­¹ö°èÁ¤ »èÁ¦ ¿äÃ»ÁßÀÔ´Ï´Ù "
+	else if (ConnectError == ERROR_DELETE_ACCOUNT_NOTIFY) //" ???????? ???? ????????? "
 		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[11]);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[11], 3);
-	else if (ConnectError == ERROR_SERVER_TRAFFIC_BUSY)   //¼­¹öÆøÁÖ!!! Àá½ÃÈÄ ÀÌ¿ë ¹Ù¶ø´Ï´Ù.
+	else if (ConnectError == ERROR_SERVER_TRAFFIC_BUSY)   //????????!!! ????? ??? ??????.
 		//DrawMessage(275 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[12]);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[12], 3);
-	else if (ConnectError == ERROR_SERVER_WAIT_MOMNENT)   //Àá½ÃÈÄ ÀÌ¿ëÇØ ÁÖ½Ê½Ã¿ä
+	else if (ConnectError == ERROR_SERVER_WAIT_MOMNENT)   //????? ????? ?????
 		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[13]);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[13], 3);
-	else if (ConnectError == ERROR_THIRD_CONNECT)         //ºñ¹Ð¹øÈ£ 3È¸ ÀÌ»ó ¿À·ùÀÔ´Ï´Ù. È¨ÆäÀÌÁö ÂüÁ¶ ¹Ù¶ø´Ï´Ù.
+	else if (ConnectError == ERROR_THIRD_CONNECT)         //??¬Û?? 3? ??? ????????. ??????? ???? ??????.
 		//DrawMessage(285 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[14], 30);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[14], 3);
-	else if (ConnectError == ERROR_HAN_PASSWORD)          //Password¿¡ ÇÑ±Û¹®ÀÚ³ª »ç¿ëÇÒ¼ö ¾ø´Â ¹®ÀÚ°¡ ÀÖ½À´Ï´Ù.
+	else if (ConnectError == ERROR_HAN_PASSWORD)          //Password?? ??????? ?????? ???? ????? ??????.
 		//DrawMessage(285 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[15], 30);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[15], 3);
-	else if (ConnectError == ERROR_12YEARS)				//12¼¼ ÀÌÇÏ ÀÔÀå ºÒ°¡
+	else if (ConnectError == ERROR_12YEARS)				//12?? ???? ???? ???
 		//DrawMessage(285 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[16], 30);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[16], 3);
-	else if (ConnectError == ERROR_HOMEAGREE)			//12¼¼ ÀÌÇÏ ÀÔÀå ºÒ°¡
+	else if (ConnectError == ERROR_HOMEAGREE)			//12?? ???? ???? ???
 		//DrawMessage(285 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[17], 30);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[17], 3);
-	else if (ConnectError == ERROR_UNTIL_LOGINDENIED)								//ÀÏÁ¤±â°£ ·Î±×ÀÎÁ¤Áö
+	else if (ConnectError == ERROR_UNTIL_LOGINDENIED)								//?????? ?¥á???????
 		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[18], 30);	//_LANGUAGE_JAPANESE (-23)
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[18], 3);
-	else if (ConnectError == ERROR_LOGIN_DENIED)		//·Î±×ÀÎÁ¤Áö
+	else if (ConnectError == ERROR_LOGIN_DENIED)		//?¥á???????
 		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, HoTextLoginMessage[19], 30);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[19], 3);
 	else if (ConnectError == ACCOUNT_NOT_ACTIVE)		// Conta desativada
-		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, "Conta não ativada, acesse o painel e confirme seu email!", 30);
+		//DrawMessage(295 + m_AddWidth, 300 + m_AddHeight, "Conta n?o ativada, acesse o painel e confirme seu email!", 30);
 		TitleBox::GetInstance()->SetText(HoTextLoginMessage[20], 3);
 
 	return TRUE;
@@ -833,7 +832,7 @@ DWORD WINAPI HoLoginThreadProc(void* pInfo)
 {
 	HoOpening* lpHoOpening = (HoOpening*)pInfo;
 
-	//¼­¹ö¿ÍÀÇ Á¢¼ÓÀ» ½Ãµµ...
+	//???????? ?????? ???...
 	if (!smWsockDataServer) {
 		ConnectServer_InfoMain();
 
@@ -852,7 +851,7 @@ DWORD WINAPI HoLoginThreadProc(void* pInfo)
 				memcpy(UserAccount, HoCommandInfo.Id, strlen(HoCommandInfo.Id));
 				memcpy(UserPassword, HoCommandInfo.Pass, strlen(HoCommandInfo.Pass));
 			}
-			TransUserCommand(smTRANSCODE_ID_GETUSERINFO, UserAccount, UserPassword); //UserÀÇ Á¤º¸¸¦ ¾Ë¾Æ ¿À±â...
+			TransUserCommand(smTRANSCODE_ID_GETUSERINFO, UserAccount, UserPassword); //User?? ?????? ??? ????...
 		}
 		else {
 			lpHoOpening->ConnectError = ERROR_CONNECT;
@@ -900,7 +899,7 @@ int HoOpening::LoginGameServer(int serverIndex)
 	return TRUE;
 }
 
-//KeyFilter¸¦ ÇÑ´Ù...
+//KeyFilter?? ???...
 int HoOpening::KeyFilter(char* message)
 {
 	if (message == NULL || hFocusWnd == NULL)
@@ -917,7 +916,7 @@ int HoOpening::KeyFilter(char* message)
 	}
 
 	/*
-	//Edit¿¡¼­ Left¸¦ ¾È¸Ô°Ô ÇÑ´Ù.
+	//Edit???? Left?? ???? ???.
 	int leftCaret;
 	SendMessage(hFocusWnd, EM_GETSEL, (WPARAM)&leftCaret, NULL);
 	if(LoginInputState == 0)
@@ -932,10 +931,10 @@ int HoOpening::KeyFilter(char* message)
 	}
 	*/
 
-	//¾È¾²´Â ¹®ÀÚ´Â Ã¼Å©ÇÑ´Ù.(Filter)
+	//????? ????? ?????.(Filter)
 	for (int index = 0; index < (int)strlen(message); index++)
 	{
-		if (message[index] == '\t') //TabÅ°¸¦ ´­·¶À» °æ¿ì.
+		if (message[index] == '\t') //Tab??? ?????? ???.
 		{
 			message[index] = 0;
 			SetWindowText(hFocusWnd, 0);
@@ -967,7 +966,7 @@ int HoOpening::KeyFilter(char* message)
 	return TRUE;
 };
 
-//¼­¼­È÷ ¹à¾ÆÁü...
+//?????? ?????...
 int HoOpening::MainFadeIn()
 {
 	if (FadeNextState == FADE_IN)
@@ -986,7 +985,7 @@ int HoOpening::MainFadeIn()
 	return TRUE;
 }
 
-//¼­¼­È÷ ¾îµÎ¿öÁü...
+//?????? ??¥ï???...
 int HoOpening::MainFadeOut()
 {
 	if (FadeNextState == FADE_OUT)
@@ -1011,7 +1010,7 @@ int HoOpening::MainFadeOut()
 	return TRUE;
 }
 
-//Cinema ÃÊ±âÈ­
+//Cinema ????
 void HoOpening::InitCinemaFadeEffect()
 {
 	CinemaFadeOutFlag = FALSE;
@@ -1019,7 +1018,7 @@ void HoOpening::InitCinemaFadeEffect()
 	CinemaFadeState = STATE_FADE_NONE;
 }
 
-//Cinema ¼­¼­È÷ ¾îµÎ¿öÁü
+//Cinema ?????? ??¥ï???
 void HoOpening::MainCinemaFadeEffect()
 {
 	if (CinemaFadeState == STATE_FADE_IN)
@@ -1041,7 +1040,7 @@ void HoOpening::MainCinemaFadeEffect()
 }
 
 
-//Cinema ¼­¼­È÷ ¾îµÎ¿öÁö´Â°Å ±×¸®±â
+//Cinema ?????? ??¥ï????¡Æ? ?????
 void HoOpening::DrawCinemaFadeEffect()
 {
 	if (CinemaFadeState != STATE_FADE_NONE)
@@ -1083,7 +1082,7 @@ int HoOpening::FastFade()
 
 		if (fastBlendFlag)
 		{
-			if (FadeNextState == FADE_IN) //È¯ÇØÁø´Ù.
+			if (FadeNextState == FADE_IN) //???????.
 			{
 				if ((CurrentWorkState == STATE_OPENING &&
 					NextWorkState == STATE_OPENING) ||
@@ -1105,7 +1104,7 @@ int HoOpening::FastFade()
 					//CinemaFadeOutFlag = TRUE;
 				}
 			}
-			else if (FadeNextState == FADE_OUT)//¾îµÎ¿ö Áø´Ù.
+			else if (FadeNextState == FADE_OUT)//??¥ï? ????.
 			{
 				//				StartLogoLoginFlag = FALSE;	
 				LogoBlendValue = 0;
@@ -1150,7 +1149,7 @@ int HoOpening::MainFade()
 
 void HoOpening::SetFade()
 {
-	//Fade InÀ» ÇØ¾ß ÇÒ°æ¿ì....(¼­¼­Èñ ¹à¾ÆÁü)
+	//Fade In?? ??? ????....(?????? ?????)
 
 	if (FadeCurrentState == FADE_OUT)
 	{
@@ -1158,7 +1157,7 @@ void HoOpening::SetFade()
 		ScreenBlendValue = 254;
 		OpeningBgmVolume = 350;
 	}
-	else//Fade OutÀ» ÇØ¾ß ÇÒ °æ¿ì...(¾îµÎ¿öÁü)
+	else//Fade Out?? ??? ?? ???...(??¥ï???)
 	{
 		FadeNextState = FADE_OUT;
 		ScreenBlendValue = 1;
@@ -1174,7 +1173,7 @@ void HoOpening::Close()
 		LOGINSCREENHANDLER->pcStage = NULL;
 
 		//######################################################################################
-		//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®		
+		//?? ?? ?? : ?? ?? ??		
 		lpCurPlayer->pX = lpCurPlayer->pY = lpCurPlayer->pZ = 0;
 		smGameStage[0] = NULL;
 		smGameStage[1] = NULL;
@@ -1221,8 +1220,8 @@ void HoOpening::Close()
 
 
 //static BOOL HanGameErrorFlag = FALSE;
-//return 1: ÇöÀç LoginÁøÇà½Ã.
-//return 2: Loing ¼º°ø½Ã..
+//return 1: ???? Login?????.
+//return 2: Loing ??????..
 int HoOpening::Main()
 {
 	if (MouseButton[0] == FALSE)
@@ -1231,7 +1230,7 @@ int HoOpening::Main()
 	}
 
 	//######################################################################################
-	//ÀÛ ¼º ÀÚ : ¿À ¿µ ¼®
+	//?? ?? ?? : ?? ?? ??
 	float timeDelta = 1.f / 70.f;
 	g_NewParticleMgr.Main(0.0f, timeDelta);
 
@@ -1273,18 +1272,18 @@ int HoOpening::Main()
 	//######################################################################################
 
 
-	//¿¡·¯ ¸Þ½ÃÁö Ãâ·Â½Ã.. ¾ø¾Ö´Â °æ¿ì...
+	//???? ????? ??¨ö?.. ????? ???...
 	if (ConnectError != ERROR_NONE)
 	{
 		if (ConnectErrorCount >= 160)
 		{
 			MouseDownServerIndex = -1;
 			bool errorEndFlag = false;
-			//¸¶¿ì½º¸¦ Å¬¸¯ ÇßÀ» °æ¿ì.
+			//???²J?? ??? ???? ???.
 			if (MouseButton[0] || MouseDblClick)
 				errorEndFlag = true;
 
-			//Å°º¸µå¸¦ ´­·¶À» °æ¿ì.
+			//????? ?????? ???.
 			for (int index = 0; index < 256; index++)
 			{
 				if (VRKeyBuff[index] == TRUE)
@@ -1293,7 +1292,7 @@ int HoOpening::Main()
 					break;
 				}
 			}
-			//½Ã°£À» ÃÊ°ú ÇßÀ» °æ¿ì.
+			//?©£??? ??? ???? ???.
 			if (ConnectErrorCount >= 250)
 				errorEndFlag = true;
 
@@ -1304,7 +1303,7 @@ int HoOpening::Main()
 				ConnectErrorCount = 0;
 			}
 
-			//ÇÑ°ÔÀÓ ¿¡·¯ Ã³¸®...
+			//????? ???? ???...
 			if (errorEndFlag && HoCommandLineFlag
 				&& CurrentWorkState == STATE_LOGIN_INPUT
 				&& NextWorkState == STATE_LOGIN_INPUT)
@@ -1324,19 +1323,19 @@ int HoOpening::Main()
 
 	MainFade();
 
-	//ÁöÇü
+	//????
 	if (CurrentWorkState == STATE_OPENING && NextWorkState == STATE_OPENING)
 	{
 		if (CinemaFadeState == STATE_FADE_OUT)
 			NextWorkState = STATE_LOGIN_INPUT;
-		//if(CameraFrame > 250*160) //OpeningÀÌ ¾î´À Á¤µµ ÁøÇàÀÌ µÇ¸é ÀÛ¾÷ »óÅÂ º¯°æ.
+		//if(CameraFrame > 250*160) //Opening?? ??? ???? ?????? ??? ??? ???? ????.
 			//NextWorkState = STATE_LOGIN_INPUT;
 	}
 
-	//Opening »óÅÂ¿¡¼­ Login ÀÔ·Â »óÅÂ·Î º¯È­½Ã...
+	//Opening ???¢¯??? Login ??? ???¡¤? ?????...
 	if (CurrentWorkState == STATE_OPENING && NextWorkState == STATE_LOGIN_INPUT)
 	{
-		if (FadeNextState == FADE_IN) //FADE_INÀÌ ´ÙµÆÀ» °æ¿ì¸¸...
+		if (FadeNextState == FADE_IN) //FADE_IN?? ????? ??¯I...
 		{
 			LogoBlendValue += 1;
 			if (LogoBlendValue >= 255)
@@ -1344,13 +1343,13 @@ int HoOpening::Main()
 
 			if (LogoBlendValue >= 255)
 			{
-				//ÇÑ°ÔÀÓ ·Î±ä ¾ÆÀÌµð¸¦ ¼º°øÀûÀ¸·Î ¹Þ¾ÒÀ» °æ¿ì..
+				//????? ?¥á? ????? ?????????? ????? ???..
 				if (HoCommandLineFlag)
 				{
 					CurrentWorkState = STATE_LOGIN_INPUT;
 					LoginDataServer();
 				}
-				else//¾Æ´Ñ °æ¿ì ·Î±ä Ã¢À» º¸¿©ÁØ´Ù.
+				else//??? ??? ?¥á? ??? ???????.
 				{
 					LoginBlendValue += 1;
 					if (LoginBlendValue >= 255)
@@ -1363,7 +1362,7 @@ int HoOpening::Main()
 		}
 	}
 
-	//·Î±ä ÀÔ·ÂÀ» ÇÒ °æ¿ì.
+	//?¥á? ????? ?? ???.
 	if (CurrentWorkState == STATE_LOGIN_INPUT
 		&& NextWorkState == STATE_LOGIN_INPUT
 		&& (LoginBlendValue >= 255)
@@ -1371,7 +1370,7 @@ int HoOpening::Main()
 		&& StartConnectServerFlag == FALSE
 		&& ConnectError == ERROR_NONE)
 	{
-		//Enter¸¦ ´­·¶À» °æ¿ì.
+		//Enter?? ?????? ???.
 		if (FocusWndFlag && hFocusWnd == NULL
 			&& ConnectServerSucessFlag == FALSE
 			&& ConnectError == ERROR_NONE)
@@ -1475,7 +1474,7 @@ int HoOpening::Main()
 		}
 	}
 
-	//Game Server¸¦ ¼±ÅÃÇÏ±â
+	//Game Server?? ???????
 	if (CurrentWorkState == STATE_SERVER_SELECT
 		&& NextWorkState == STATE_SERVER_SELECT)
 	{
@@ -1502,7 +1501,7 @@ int HoOpening::Main()
 			}
 		}
 
-		//DataServer¿ÍÀÇ ¿¬°áÀÌ ²÷¾î Áú°æ¿ì..
+		//DataServer???? ?????? ???? ?????..
 		if (!smWsockDataServer && GameErrorValue == 0)
 		{
 			NextWorkState = STATE_LOGIN_INPUT;
@@ -1511,11 +1510,11 @@ int HoOpening::Main()
 			ConnectError = ERROR_NO_SERVER_CONNECT;
 		}
 
-		//³ª°¡±â ¹öÆ°À» ´©¸¥ °æ¿ì..
+		//?????? ????? ???? ???..
 		if (flag)
 		{
 			PlayWav2(4 - 1);
-			//ÇÑ°ÔÀÓÀÌ ¾Æ´Ï¸é.
+			//??????? ????.
 			if (!HoCommandLineFlag)
 			{
 				FocusWndFlag = FALSE;
@@ -1535,7 +1534,7 @@ int HoOpening::Main()
 		}
 	}
 
-	//¼­¹ö¿¡ ¿¬°áÁßÀÌ¸é....
+	//?????? ?????????....
 	if (StartConnectServerFlag)
 	{
 		if (ConnectError != ERROR_NONE)
@@ -1554,7 +1553,7 @@ int HoOpening::Main()
 				&& NextWorkState == STATE_SERVER_SELECT)
 				DisconnectServer_GameMain();
 
-			if (ServerLoginError->WParam == 0) //¿¬°á ºÒ°¡.
+			if (ServerLoginError->WParam == 0) //???? ???.
 				ConnectError = ERROR_CONNECT;
 			else if (ServerLoginError->WParam == -1)
 				ConnectError = ERROR_NO_ACCOUNT;
@@ -1586,7 +1585,7 @@ int HoOpening::Main()
 				ConnectError = ERROR_UNTIL_LOGINDENIED;
 			else if (ServerLoginError->WParam == -24)
 				ConnectError = ERROR_LOGIN_DENIED;
-			else if (ServerLoginError->WParam == -25) // Conta não ativa
+			else if (ServerLoginError->WParam == -25) // Conta n?o ativa
 				ConnectError = ACCOUNT_NOT_ACTIVE;
 
 
@@ -1596,7 +1595,7 @@ int HoOpening::Main()
 		}
 
 		ServerWaitTimeCount++;
-		if (ServerWaitTimeCount >= 3000)	//¼­¹ö¸¦ ±â´Ù¸®´Â ½Ã°£...
+		if (ServerWaitTimeCount >= 3000)	//?????? ?????? ?©£?...
 		{
 			ServerWaitTimeCount = 0;
 			ConnectError = ERROR_CONNECT;
@@ -1604,7 +1603,7 @@ int HoOpening::Main()
 			ConnectServerSucessFlag = FALSE;
 		}
 
-		//Data¼­¹ö ·Î±×ÀÎ½Ã..
+		//Data???? ?¥á??¥í?..
 		if (CurrentWorkState == STATE_LOGIN_INPUT &&
 			NextWorkState == STATE_LOGIN_INPUT)
 		{
@@ -1625,7 +1624,7 @@ int HoOpening::Main()
 		}
 	}
 
-		//Game¼­¹ö ·Î±×ÀÎ½Ã..
+		//Game???? ?¥á??¥í?..
 		if (CurrentWorkState == STATE_SERVER_SELECT
 			&& NextWorkState == STATE_SERVER_SELECT)
 		{
@@ -1641,7 +1640,7 @@ int HoOpening::Main()
 
 		if (GameErrorValue != 0)
 		{
-			//VersionÀÌ ¸ÂÁö ¾ÊÀ» °æ¿ì...
+			//Version?? ???? ???? ???...
 			if (GameErrorValue == 1)
 			{
 				DisconnectServerFull();
@@ -1650,7 +1649,7 @@ int HoOpening::Main()
 				GameErrorValue = -1;
 			}
 
-			//¼­¹ö ÀÎ¿ø¼ö Á¦ÇÑÀÌ ÀÖÀ» °æ¿ì..
+			//???? ?¥ï??? ?????? ???? ???..
 			if (GameErrorValue == 2)
 			{
 				if (CurrentWorkState == STATE_LOGIN_INPUT
@@ -1677,7 +1676,7 @@ int HoOpening::Main()
 #endif
 
 #ifndef _LANGUAGE_KOREAN			
-			//Login °èÁ¤À» ·¹Áö½ºÆ®¸®¿¡ ÀúÀåÇÑ´Ù..
+			//Login ?????? ??????????? ???????..
 
 #endif
 

@@ -769,8 +769,11 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPreInst, LPSTR lpCmdLine, INT nCm
 	if (InitD3D(hwnd) == NULL)
 		return FALSE;
 
-
-	ShowWindow(hwnd, nCmdShow);
+	// Janela: ocupa o monitor na abertura (D3D acompanha no WM_SIZE). Tela cheia nao muda.
+	if (WindowMode)
+		ShowWindow(hwnd, SW_SHOWMAXIMIZED);
+	else
+		ShowWindow(hwnd, nCmdShow);
 
 	// carrega imgs loading
 	//LoadScreen("Image\\logo.bmp", hInst, hwnd);
@@ -1187,47 +1190,16 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		if (smConfig.WinMode)
 		{
-			if (wParam == SIZE_MAXIMIZED && Settings::GetInstance()->bAutoAdjust)
+			// Maximize e restore atualizam o D3D para o tamanho da cliente.
+			// Sem isso o maximize so estica o backbuffer antigo e o login fica distorcido.
+			if (wParam == SIZE_MAXIMIZED || wParam == SIZE_RESTORED)
 			{
-				WinSizeX = LOWORD(lParam);
-				WinSizeY = HIWORD(lParam);
-
-				smScreenWidth = WinSizeX;
-				smScreenHeight = WinSizeY;
-
-				smConfig.ScreenSize.x = WinSizeX;
-				smConfig.ScreenSize.y = WinSizeY;
-
-				extern void resizeOpening();
-				extern void resizeLogin();
-
-				resizeOpening();
-				resizeLogin();
-
-				MidX = WinSizeX / 2;
-				MidY = WinSizeY / 2;
-
-				g_fWinSizeRatio_X = float(WinSizeX) / 800.f;
-				g_fWinSizeRatio_Y = float(WinSizeY) / 600.f;
-
-				viewdistZ = ((WinSizeY / 3) * 4);
-
-				SetDxProjection((g_PI / 4.4f), WinSizeX, WinSizeY, 20.f, 4000.f);
-
-				smRender.SMSHIFT_PERSPECTIVE_WIDTH = 0;
-				smRender.SMMULT_PERSPECTIVE_HEIGHT = 0;
-
-				SetDisplayMode(hWnd, WinSizeX, WinSizeY, WinColBit);
-
-				if (GRAPHICENGINE && GAMECOREHANDLE && GameMode == 2)
-					GAMECOREHANDLE->OnResolutionChanged();
-			}
-			else
-			{
-				if (wParam == SIZE_RESTORED)
+				const int newW = (int)LOWORD(lParam);
+				const int newH = (int)HIWORD(lParam);
+				if (newW >= 640 && newH >= 480)
 				{
-					WinSizeX = LOWORD(lParam);
-					WinSizeY = HIWORD(lParam);
+					WinSizeX = newW;
+					WinSizeY = newH;
 
 					smScreenWidth = WinSizeX;
 					smScreenHeight = WinSizeY;

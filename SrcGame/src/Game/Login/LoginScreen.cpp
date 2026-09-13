@@ -36,23 +36,14 @@ CLoginScreen::~CLoginScreen()
 
 BOOL CLoginScreen::Init()
 {
-	BOOL bImageBasedLogin = FALSE;
-
 	int iCurrentSelectedWorld = 0;
 	this->currentSelectedWorld = iCurrentSelectedWorld;
 
-	BOOL isImageBasedLogin = FALSE;
-
-	//Video Selector
+	// Static background keeps the login lighter and makes future art changes
+	// independent from the video pipeline.
 	Rectangle2D uiPosition(10, 10, 13, 13);
 
-	this->createCheckbox(uiPosition, checkboxData((int)CHECKBOX_ID::REMEMBER_LOGIN, !isImageBasedLogin, "Lembrar ID", this->loginScreenSelector));
-
-	uiPosition.iY += 20;
-	this->createCheckbox(uiPosition, checkboxData((int)CHECKBOX_ID::IS_IMAGE_BACKGROUND, isImageBasedLogin, "Somente Imagem", this->loginScreenSelector));
-
-	uiPosition.iY += 20;
-	this->createCheckbox(uiPosition, checkboxData((int)CHECKBOX_ID::IS_VIDEO_BACKGROUND, !isImageBasedLogin, "Login Animado", this->loginScreenSelector));
+	this->createCheckbox(uiPosition, checkboxData((int)CHECKBOX_ID::REMEMBER_LOGIN, TRUE, "Lembrar ID", this->loginScreenSelector));
 
 	uiPosition.iY = 5;
 	uiPosition.iX = 165;
@@ -61,8 +52,8 @@ BOOL CLoginScreen::Init()
 
 	this->serverSelector2->GetElement<UI::CheckBox>((int)CHECKBOX_ID::WORLD_ID_WORLD)->SetCheck(TRUE);
 
-	this->currentSelectedLoginRender = isImageBasedLogin ? (int)CHECKBOX_ID::IS_VIDEO_BACKGROUND : (int)CHECKBOX_ID::IS_IMAGE_BACKGROUND;
-	onCheckboxClick(isImageBasedLogin ? (int)CHECKBOX_ID::IS_IMAGE_BACKGROUND : (int)CHECKBOX_ID::IS_VIDEO_BACKGROUND, UIEventArgs{});
+	this->currentSelectedLoginRender = (int)CHECKBOX_ID::IS_IMAGE_BACKGROUND;
+	setImageModeBackground();
 
 	return TRUE;
 }
@@ -174,9 +165,6 @@ void CLoginScreen::setImageModeBackground()
 	DXVIDEORENDERER->Shutdown();
 
 	this->isLoginVideo = FALSE;
-	this->loginScreenSelector->GetElement<UI::CheckBox>((int)CHECKBOX_ID::IS_IMAGE_BACKGROUND)->SetCheck(TRUE);
-	this->loginScreenSelector->GetElement<UI::CheckBox>(this->currentSelectedLoginRender)->SetCheck(FALSE);
-	this->currentSelectedLoginRender = (int)CHECKBOX_ID::IS_IMAGE_BACKGROUND;
 }
 
 void CLoginScreen::setCurrentWorld(int worldID)

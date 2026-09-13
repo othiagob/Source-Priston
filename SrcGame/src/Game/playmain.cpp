@@ -4175,9 +4175,12 @@ smCHAR *chrEachMaster = 0;
 int		EachTradeButton = 0;
 int		EachTradeButtonMode = 0;
 RECT	RectTradeButton;
+RECT	EachPlayerViewRect = { 0, 0, 0, 0 };
 
 POINT3D EachCameraPos;
 int	DispEachMode = 0;
+
+extern Graphics::Camera* camera;
 
 int FindBipPoint(smPAT3D *lpPat, char *szObjNodeName, int frame, int *nX, int *nY, int *nZ);
 // era pra ser aqui
@@ -4279,18 +4282,7 @@ HRESULT WINAPI EndScene_Detour(LPDIRECT3DDEVICE9 Device_Interface)
 
 int DrawEachPlayer(float fx, float fy, int SizeMode)
 {
-	int x, y, z, w, h;
-	int mx, my, he;
-	POINT3D angle;
-	int dist, len;
-	HDC	hdc = NULL;
-	DWORD	dwColor;
-	int		ObjSizeBack;
-	int		ModeFlag;
-	int		ClanX, ClanY, ClanLen;
-	bool isNPC = false;
-
-	if (chrEachMaster && chrEachMaster->ActionPattern == 99) 
+	if (chrEachMaster && chrEachMaster->ActionPattern == 99)
 	{
 		if ((chrEachMaster->dwLastTransTime + DISPLAY_TRANS_TIME_OVER) < dwPlayTime) {
 			CloseEachPlayer();
@@ -4298,26 +4290,167 @@ int DrawEachPlayer(float fx, float fy, int SizeMode)
 		}
 	}
 
-	if (lpCharMsTrace) 
+	// SizeMode 0/1: HUD de alvo virou ImGui. Nao desenha retrato de combate.
+	if (SizeMode != 2)
 	{
-		if (chrEachMaster != lpCharMsTrace) 
+		if (lpCharMsTrace)
 		{
-			EachTradeButton = 0;
-			OpenEachPlayer(lpCharMsTrace);
-			DispEachMode = 0;
+			if (chrEachMaster != lpCharMsTrace)
+			{
+				EachTradeButton = 0;
+				OpenEachPlayer(lpCharMsTrace);
+				DispEachMode = 0;
+			}
 		}
-	}
-	else 
-	{
-		if (lpCharSelPlayer && (chrEachMaster != lpCharSelPlayer) &&
-			(chrEachMaster != &chrPartyPlayer) && !DispEachMode) 
+		else
 		{
-			OpenEachPlayer(lpCharSelPlayer);
-			DispEachMode = 0;
+			if (lpCharSelPlayer && (chrEachMaster != lpCharSelPlayer) &&
+				(chrEachMaster != &chrPartyPlayer) && !DispEachMode)
+			{
+				OpenEachPlayer(lpCharSelPlayer);
+				DispEachMode = 0;
+			}
 		}
+		return FALSE;
 	}
 
-	return FALSE;
+	if (!chrEachPlayer.Flag || !chrEachMaster || !chrEachPlayer.DisplayFlag)
+		return FALSE;
+
+	int viewX, viewY, viewW, viewH;
+	if (EachPlayerViewRect.right > EachPlayerViewRect.left &&
+		EachPlayerViewRect.bottom > EachPlayerViewRect.top)
+	{
+		viewX = EachPlayerViewRect.left;
+		viewY = EachPlayerViewRect.top;
+		viewW = EachPlayerViewRect.right - EachPlayerViewRect.left;
+		viewH = EachPlayerViewRect.bottom - EachPlayerViewRect.top;
+	}
+	else
+	{
+		viewW = (int)((float)WinSizeX * 0.20f);
+		viewH = (int)((float)WinSizeY * 0.32f);
+		viewX = (int)((float)WinSizeX * fx) - viewW / 2;
+		viewY = (int)((float)WinSizeY * fy) - viewH / 2;
+	}
+
+	if (viewX < 0) { viewW += viewX; viewX = 0; }
+	if (viewY < 0) { viewH += viewY; viewY = 0; }
+	if (viewX + viewW > WinSizeX) viewW = WinSizeX - viewX;
+	if (viewY + viewH > WinSizeY) viewH = WinSizeY - viewY;
+	if (viewW < 32 || viewH < 32)
+		return FALSE;
+
+	LPDIRECT3DDEVICE9 device = GRAPHICDEVICE;
+	if (!device)
+		return FALSE;
+
+	D3DVIEWPORT9 oldVp;
+	device->GetViewport(&oldVp);
+
+	D3DVIEWPORT9 vp;
+	ZeroMemory(&vp, sizeof(vp));
+	vp.X = (DWORD)viewX;
+	vp.Y = (DWORD)viewY;
+	vp.Width = (DWORD)viewW;
+	vp.Height = (DWORD)viewH;
+	vp.MinZ = 0.0f;
+	vp.MaxZ = 1.0f;
+	device->SetViewport(&vp);
+
+	Graphics::Viewport oldGfxVp;
+	bool restoreGfxVp = false;
+	if (Graphics::Graphics::GetInstance() && Graphics::Graphics::GetInstance()->GetRenderer())
+	{
+		oldGfxVp = Graphics::Graphics::GetInstance()->GetRenderer()->GetViewport();
+		Graphics::Graphics::GetInstance()->GetRenderer()->SetViewport(
+			Graphics::Viewport((DWORD)viewX, (DWORD)viewY, (DWORD)viewW, (DWORD)viewH));
+		restoreGfxVp = true;
+	}
+
+	device->Clear(0, 0, D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
+
+	DWORD oldZEnable = 0, oldZWrite = 0;
+	device->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
+	device->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWrite);
+	device->SetRenderState(D3DRS_ZENABLE, TRUE);
+	device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+
+	const int oldCamX = smCHAR_CameraX;
+	const int oldCamY = smCHAR_CameraY;
+	const int oldCamZ = smCHAR_CameraZ;
+	const int oldCamAngX = smCHAR_CameraAngX;
+	const int oldCamAngY = smCHAR_CameraAngY;
+	const int oldCamAngZ = smCHAR_CameraAngZ;
+
+	Math::Vector3 oldEye(0.f, 0.f, 0.f);
+	Math::Vector3 oldLook(0.f, 0.f, 0.f);
+	float oldFov = D3DXToRadian(45.0f);
+	float oldAspect = (float)WinSizeX / (float)WinSizeY;
+	float oldNear = 0.1f;
+	float oldFar = 1000.0f;
+	bool restoreCam = false;
+	if (camera)
+	{
+		oldEye = camera->Eye();
+		oldLook = camera->LookAt();
+		oldFov = camera->Fov();
+		oldAspect = camera->AspectRatio();
+		oldNear = camera->NearClip();
+		oldFar = camera->FarClip();
+		restoreCam = true;
+	}
+
+	const int dist = 22 * fONE;
+	const int camX = EachCameraPos.x;
+	const int camY = EachCameraPos.y + (4 * fONE);
+	const int camZ = EachCameraPos.z - dist;
+
+	smCHAR_SetCameraPosi(camX, camY, camZ, 0, 0, 0);
+	smRender.SetCameraPosi(camX, camY, camZ, 0, 0, 0);
+
+	if (camera)
+	{
+		Math::Vector3 eye((float)camX / 256.0f, (float)camY / 256.0f, (float)camZ / 256.0f);
+		Math::Vector3 look((float)EachCameraPos.x / 256.0f, (float)EachCameraPos.y / 256.0f, (float)EachCameraPos.z / 256.0f);
+		camera->SetProjection(oldFov, (float)viewW / (float)viewH, oldNear, oldFar);
+		camera->SetPosition(eye, look);
+		if (Graphics::Graphics::GetInstance() && Graphics::Graphics::GetInstance()->GetRenderer())
+			Graphics::Graphics::GetInstance()->GetRenderer()->ApplyTransformations();
+	}
+
+	const int oldCR = smRender.Color_R;
+	const int oldCG = smRender.Color_G;
+	const int oldCB = smRender.Color_B;
+	smRender.Color_R = 0;
+	smRender.Color_G = 0;
+	smRender.Color_B = 0;
+
+	chrEachPlayer.AttackAnger = 0;
+	chrEachPlayer.Main();
+	chrEachPlayer.Draw(true);
+
+	smRender.Color_R = oldCR;
+	smRender.Color_G = oldCG;
+	smRender.Color_B = oldCB;
+
+	smCHAR_SetCameraPosi(oldCamX, oldCamY, oldCamZ, oldCamAngX, oldCamAngY, oldCamAngZ);
+	smRender.SetCameraPosi(oldCamX, oldCamY, oldCamZ, oldCamAngX, oldCamAngY, oldCamAngZ);
+
+	if (restoreCam && camera)
+	{
+		camera->SetProjection(oldFov, oldAspect, oldNear, oldFar);
+		camera->SetPosition(oldEye, oldLook);
+		if (Graphics::Graphics::GetInstance() && Graphics::Graphics::GetInstance()->GetRenderer())
+			Graphics::Graphics::GetInstance()->GetRenderer()->ApplyTransformations();
+	}
+
+	device->SetRenderState(D3DRS_ZENABLE, oldZEnable);
+	device->SetRenderState(D3DRS_ZWRITEENABLE, oldZWrite);
+	if (restoreGfxVp && Graphics::Graphics::GetInstance() && Graphics::Graphics::GetInstance()->GetRenderer())
+		Graphics::Graphics::GetInstance()->GetRenderer()->SetViewport(oldGfxVp);
+	device->SetViewport(&oldVp);
+	return TRUE;
 }
 
 int FindBipPoint(smPAT3D *lpPat, char *szObjNodeName, int frame, int *nX, int *nY, int *nZ)

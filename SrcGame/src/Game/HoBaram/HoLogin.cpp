@@ -9,9 +9,9 @@
 
 #include "..\\tjboy\\clanmenu\\tjclanDEF.h"
 #include "..\\tjboy\\clanmenu\\tjclan.h"
-#include "..\\CurseFilter.h"		//IsCurse 함수(해외)
+#include "..\\CurseFilter.h"		//IsCurse ???(???)
 
-//#define NOTUSE_MOR		//모라이언을 사용하지않을때는 define을 사용할것.
+//#define NOTUSE_MOR		//???????? ??????????????? define?? ??????.
 
 #include "srcServer\LangTextFile.h" 
 
@@ -44,6 +44,23 @@ static int JobCharacterPos[ 5 ][ 2 ] = {
 	{ 75, -320 }
 };
 
+// Mesmo enquadramento da primeira aba (UserCharacter ~Z -100), nao o walk classico ate o cristal
+static const int FacePreviewPos[ 2 ] = { 0, -100 };
+
+static void HoLogin_StandJobChar( smCHAR* chr, smSTAGE3D* stage, int wx, int wz )
+{
+	if ( !chr )
+		return;
+	const int px = wx * fONE;
+	const int pz = wz * fONE;
+	const int py = stage ? stage->GetHeight( px, pz ) : 0;
+	chr->SetPosi( px, py, pz, 0, ANGLE_180, 0 );
+	chr->MoveFlag = FALSE;
+	chr->MoveMode = FALSE;
+	chr->ActionPattern = 0;
+	chr->ChangeMotion( 10 );
+}
+
 static int CharacterInfoPosi[ 5 ] = { 362, 243, 488, 154, 588 };
 static char *szFileSpark[] = {
 	"cSelect\\001.tga",
@@ -66,7 +83,7 @@ static char *szFileFlame[] = {
 	"cSelect\\flame8.tga"
 };
 
-//Tempscron 4개 직업의 몸통 이름...
+//Tempscron 4?? ?????? ???? ???...
 static char *szTempFighterBodyName[] = {
 	"char\\tmABCD\\b001.ini",
 	"char\\tmABCD\\b002.ini",
@@ -104,7 +121,7 @@ static char *szTempPikeBodyName[] = {
 	"char\\tmABCD\\c007.ini"
 };
 
-//Tempscron 4개 직업별 얼굴...
+//Tempscron 4?? ?????? ??...
 char *szTempFighterFaceName[ 2 ][ 3 ] = {
 	{
 		"char\\tmABCD\\tmh-b01.inf",
@@ -158,8 +175,8 @@ char *szTempPikeFaceName[ 2 ][ 3 ] = {
 };
 
 #ifndef NOTUSE_MOR	//=============================================================
-//ktj : 새로만듦. 모라이언 애니메인션 용임. start 
-//Tempscron 4개 직업의 몸통 이름...
+//ktj : ????????. ?????? ???????? ????. start 
+//Tempscron 4?? ?????? ???? ???...
 
 static char *szMorMechBodyName[] = {
 	"char\\tmABCD\\ma001.ini",
@@ -208,7 +225,7 @@ static char *szMorArcherBodyName[] = {
 
 char *szMorMechFaceName[ 2 ][ 3 ] = {
 	{
-		"char\\tmABCD\\Mmh-A01.inf",	//ktj : 아직 안들어와있음.
+		"char\\tmABCD\\Mmh-A01.inf",	//ktj : ???? ?????????.
 		//"char\\tmABCD\\mmh-a02.inf",
 		//"char\\tmABCD\\mmh-a03.inf"
 		"char\\tmABCD\\Mmh-A02.inf",
@@ -219,15 +236,15 @@ char *szMorMechFaceName[ 2 ][ 3 ] = {
 		//"char\\tmABCD\\mmh-a02a.inf",
 		//"char\\tmABCD\\mmh-a03a.inf"
 
-		"char\\tmABCD\\Mmh-A01.inf",	//ktj : 아직 안들어와있음.
+		"char\\tmABCD\\Mmh-A01.inf",	//ktj : ???? ?????????.
 		"char\\tmABCD\\Mmh-A02.inf",
 		"char\\tmABCD\\Mmh-A03.inf"
 	}
 };
 
-//Tempscron 4개 직업별 얼굴...
+//Tempscron 4?? ?????? ??...
 char *szMorFighterFaceName[ 2 ][ 3 ] = {
-	/*								//ktj : 아직 안들어와있음. 일단 임시
+	/*								//ktj : ???? ?????????. ??? ???
 	{
 	"char\\tmABCD\\mmh-b01.inf",
 	"char\\tmABCD\\mmh-b02.inf",
@@ -322,11 +339,11 @@ int MorNewCharacterInit[ 4 ][ 6 ] =
 	//JobCode, Strentch, Sprit, Talent, Defence, Health
 	{ 6, 26, 13, 17, 19, 24 }, //Knight
 	{ 5, 23, 15, 19, 19, 23 }, //Atalanta
-	{ 8, 15, 28, 21, 15, 20 }, //프리티스
-	{ 7, 16, 29, 19, 14, 21 }  //매지션
+	{ 8, 15, 28, 21, 15, 20 }, //???????
+	{ 7, 16, 29, 19, 14, 21 }  //??????
 };
 
-//ktj : 새로만듦. end 
+//ktj : ????????. end 
 #endif		//=============================================================
 
 
@@ -361,12 +378,12 @@ int TempNewCharacterInit[ 4 ][ 6 ] =
 };
 
 HoNewCharInfo	NewCharInfo;
-//마우스가 캐릭터가 위에 있는지 확인 
+//????J?? ??????? ???? ????? ??? 
 static int GetSelRectChar( smCHAR *lpChar );
 
-//마우스가 Job캐릭터 위에 잇는지 확인
+//????J?? Job?????? ???? ????? ???
 static int GetSelRectJobChar( smCHAR *lpChar );
-static int CameraZPos[ 5 ] = { fONE * 300, fONE * 300 + fONE * 70, fONE * 300 + fONE * 250, fONE * 300 + fONE * 420, fONE * 300 + fONE * 400 };
+static int CameraZPos[ 5 ] = { fONE * 300, fONE * 300 + fONE * 70, fONE * 300 + fONE * 250, fONE * 300, fONE * 300 + fONE * 400 };
 
 HoLogin::HoLogin()
 {
@@ -379,7 +396,9 @@ HoLogin::HoLogin( int sw )
 	SelectCurrentState = CHARACTER_SELECT_STATE;
 	SelectNextState = CHARACTER_SELECT_STATE;
 
-	//사용하는 Character들 Count
+	ZeroMemory( &NickBarRect, sizeof( NickBarRect ) );
+
+	//?????? Character?? Count
 	UserCharacterCount = 0;
 	JobCharacterCount = 0;
 
@@ -398,12 +417,12 @@ HoLogin::HoLogin( int sw )
 
 #ifndef NOTUSE_MOR 
 
-	//ktj : 새로만듦. start
-	MoryonMarkImage = -1;	//MoryonMark Image 번호.
-	MoryonLogoImage = -1;	//MoryonLogo Image 번호.
+	//ktj : ????????. start
+	MoryonMarkImage = -1;	//MoryonMark Image ???.
+	MoryonLogoImage = -1;	//MoryonLogo Image ???.
 	Init_UseMor( sw );
 
-	//ktj : 새로만듦. end
+	//ktj : ????????. end
 
 #endif
 
@@ -428,7 +447,7 @@ void HoLogin::Init_UseMor( int flag )
 	if ( USE_MOR == 0 )
 	{
 
-		//RECT menuPos[2];		//메뉴셋팅.
+		//RECT menuPos[2];		//???????.
 		menuPos[ 0 ].left = 336;//270;//336,
 		menuPos[ 0 ].right = menuPos[ 0 ].left + 128,
 			menuPos[ 0 ].top = 166,
@@ -443,7 +462,7 @@ void HoLogin::Init_UseMor( int flag )
 	else
 	{
 
-		//RECT menuPos[2];		//메뉴셋팅.
+		//RECT menuPos[2];		//???????.
 		menuPos[ 0 ].left = 270;//336,
 		menuPos[ 0 ].right = menuPos[ 0 ].left + 128,
 			menuPos[ 0 ].top = 166,
@@ -453,7 +472,7 @@ void HoLogin::Init_UseMor( int flag )
 		menuPos[ 1 ].right = menuPos[ 1 ].left + 128,
 			menuPos[ 1 ].top = 166,
 			menuPos[ 1 ].bottom = menuPos[ 1 ].top + 128;
-		//ktj : 새로만듦. end
+		//ktj : ????????. end
 	}
 
 }
@@ -531,7 +550,7 @@ int HoLogin::Init()
 	SelectNextState = CHARACTER_SELECT_STATE;
 	SelectSubState = SUB_SELECT_NONE;
 
-	//Stage관련 초기화.
+	//Stage???? ????.
 	TarDist = CameraZPos[ SelectCurrentState ];
 	CaAngle.x = 90;
 	CaAngle.y = 0;
@@ -656,16 +675,16 @@ int HoLogin::Load()
 #ifndef NOTUSE_MOR 
 
 	if ( USE_MOR )
-	{	//기본은 1이며 Init에서 셋팅됨.
+	{	//???? 1??? Init???? ?????.
 
-		//ktj :Moryon 관련 새로만듦. start
+		//ktj :Moryon ???? ????????. start
 		MoryonMarkImage = CreateTextureMaterial( "StartImage\\Login\\CharSelect\\mark_M.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA );
 		MoryonLogoImage = CreateTextureMaterial( "StartImage\\Login\\CharSelect\\T-Morion.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA );
-		//ktj :Moryon 관련  새로만듦. end
+		//ktj :Moryon ????  ????????. end
 	}
 
 #endif
-	//Job Select(직업 선택)
+	//Job Select(???? ????)
 	//	JobSelectImage			= LoadDibSurfaceOffscreen( "StartImage\\Login\\SelectJob.bmp");
 
 	//	TempscronJobLogoImage[0]= CreateTextureMaterial( "StartImage\\Login\\LogoMechanician.tga" , 0, 0, 0,0, SMMAT_BLEND_ALPHA);
@@ -678,16 +697,16 @@ int HoLogin::Load()
 	if ( USE_MOR )
 	{
 
-		//ktj :Moryon 관련  새로만듦. start
+		//ktj :Moryon ????  ????????. start
 		MoryonJobLogoImage[ 0 ] = CreateTextureMaterial( "StartImage\\Login\\Moryon\\LogoNight.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA );
 		MoryonJobLogoImage[ 1 ] = CreateTextureMaterial( "StartImage\\Login\\Moryon\\LogoAt.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA );
 		MoryonJobLogoImage[ 2 ] = CreateTextureMaterial( "StartImage\\Login\\Moryon\\LogoPristess.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA );
 		MoryonJobLogoImage[ 3 ] = CreateTextureMaterial( "StartImage\\Login\\Moryon\\LogoMegi.tga", 0, 0, 0, 0, SMMAT_BLEND_ALPHA );
-		//ktj :Moryon 관련  새로만듦. end
+		//ktj :Moryon ????  ????????. end
 
 	}
 #endif
-	//Face Select(얼굴 선택)
+	//Face Select(?? ????)
 	FaceSelectImage = LoadDibSurfaceOffscreen( "StartImage\\Login\\SelectFace.bmp" );
 
 	//Mech
@@ -929,7 +948,7 @@ int HoLogin::AddJobCharacter( char *chrFile1, char *chrFile2, int index )
 		JobCharacter[ JobCharacterCount ].smCharInfo.wPlayerKilling[ 0 ] = 0;
 
 
-		//Player 결정...
+		//Player ????...
 		SetLoadPattern( &JobCharacter[ JobCharacterCount ], chrFile1, chrFile2, 0, 0 );
 
 		JobCharacter[ JobCharacterCount ].SetPosi( JobCharacterPos[ JobCharacterCount ][ 0 ] * fONE,
@@ -961,7 +980,7 @@ int HoLogin::AddJobCharacter( char *chrFile1, char *chrFile2, int index )
 			JobCharacter[ index ].lpStage = Stage;
 			JobCharacter[ index ].smCharInfo.wPlayerKilling[ 0 ] = 0;
 
-			//Player 결정...
+			//Player ????...
 			SetLoadPattern( &JobCharacter[ index ], chrFile1, chrFile2, 0, 0 );
 			JobCharacter[ index ].SetPosi( JobCharacterPos[ index ][ 0 ] * fONE,
 										   Stage->GetHeight( JobCharacterPos[ index ][ 0 ] * fONE, JobCharacterPos[ index ][ 1 ] * fONE )
@@ -986,9 +1005,9 @@ int HoLogin::AddJobCharacter( char *chrFile1, char *chrFile2, int index )
 	return TRUE;
 }
 
-//선택된 캐릭터를 찾는다.
-//return 1: 마우스가 캐릭터 위에 있는 경우.
-//return 2: 마우스로 캐릭터를 선택한 경우.(MouseDown)
+//????? ??????? ?????.
+//return 1: ????J?? ?????? ???? ??? ???.
+//return 2: ????J?? ??????? ?????? ???.(MouseDown)
 int HoLogin::GetSelectCharacter( smCHAR *lpChar )
 {
 	if ( lpChar == NULL )
@@ -1043,16 +1062,26 @@ int HoLogin::SetChangeJobFace( char *charFile1, char *chrFile2, int jobIndex )
 	PosX = JobCharacter[ jobIndex ].pX;
 	PosZ = JobCharacter[ jobIndex ].pZ;
 	AddJobCharacter( charFile1, chrFile2, jobIndex );
-	JobCharacter[ jobIndex ].SetPosi( PosX, 10, PosZ, 0, ANGLE_180, 0 );
+	if ( SelectCurrentState == FACE_SELECT_STATE || SelectNextState == FACE_SELECT_STATE )
+		HoLogin_StandJobChar( &JobCharacter[ jobIndex ], Stage, FacePreviewPos[ 0 ], FacePreviewPos[ 1 ] );
+	else
+	{
+		const int floorY = Stage ? Stage->GetHeight( PosX, PosZ ) : 0;
+		JobCharacter[ jobIndex ].SetPosi( PosX, floorY, PosZ, 0, ANGLE_180, 0 );
+		JobCharacter[ jobIndex ].MoveFlag = FALSE;
+		JobCharacter[ jobIndex ].MoveMode = FALSE;
+		JobCharacter[ jobIndex ].ActionPattern = 0;
+		JobCharacter[ jobIndex ].ChangeMotion( 10 );
+	}
 	ReadTextures();
 	JobCharacter[ jobIndex ].lpDinaPattern2->Pat->smMaterialGroup->CheckMatreialTextureSwap();
 	return TRUE;
 }
 
-//종료 캐릭터 선택
+//???? ?????? ????
 int HoLogin::Close()
 {
-	//폰트 제거
+	//??? ????
 	if ( Font != NULL )
 		DeleteObject( Font );
 
@@ -1083,11 +1112,11 @@ int HoLogin::Close()
 }
 
 extern smCHAR *chrEachMaster;
-//메인함수 캐릭터 선택
+//??????? ?????? ????
 
 int HoLogin::CameraUpDown()
 {
-	//Camera의 아래, 위 흔들기...
+	//Camera?? ???, ?? ????...
 	static int	cameraUpDown = 0;
 	if ( cameraUpDown < 80 )
 	{
@@ -1133,7 +1162,7 @@ int HoLogin::CameraUpDown()
 	return TRUE;
 }
 
-//ktj : 새로운캐릭을 만드는등의 일을 여기서 한다.
+//ktj : ???????????? ???????? ???? ???? ???.
 int HoLogin::Main()
 {
 	if ( ErrorSelect != ERROR_NONE )
@@ -1166,14 +1195,14 @@ int HoLogin::Main()
 		}
 	}
 
-	//ktj : 오프닝 전용 클랜메뉴. ====================================start
+	//ktj : ?????? ???? ??????. ====================================start
 
 	void ktj_imsi_clanMENU_Main();
 	ktj_imsi_clanMENU_Main();
 
-	//ktj : 오프닝 전용 클랜메뉴. ====================================end/
+	//ktj : ?????? ???? ??????. ====================================end/
 
-	//클랜이름 마크 루프..
+	//?????? ??? ????..
 	int  main_chaC();
 
 	if ( main_chaC() && ClanMarkUpdateSuccessFlag == FALSE )
@@ -1200,13 +1229,13 @@ int HoLogin::Main()
 
 	MainEffect();
 
-	CameraUpDown(); //Camera 아래 위 흔들기
+	CameraUpDown(); //Camera ??? ?? ????
 
 	if ( SelectCurrentState == START_GAME_STATE && FadeCurrentState == FADE_IN )
 	{
 		switch ( SelectSubState )
 		{
-			case SUB_SELECT_CHARACTER_USER:	//기본 캐릭터를 선택한 경우.
+			case SUB_SELECT_CHARACTER_USER:	//?? ??????? ?????? ???.
 			{
 				if ( MouseDownCharacterNum != -1 )
 				{
@@ -1226,7 +1255,7 @@ int HoLogin::Main()
 				break;
 			}
 
-			case SUB_SELECT_CHARACTER_NEW_SERVER: //새로운 캐릭터를 생성한 경우.
+			case SUB_SELECT_CHARACTER_NEW_SERVER: //?????? ??????? ?????? ???.
 			{
 				SelectSubState = SUB_SELECT_NONE;
 				memset( CharacterName1, 0, sizeof( CharacterName1 ) );
@@ -1242,7 +1271,7 @@ int HoLogin::Main()
 
 #ifdef NOTUSE_MOR
 
-				//ktj : 템스크론만 선택할수있는경우.
+				//ktj : ???????? ?????????????.
 				if ( JobBodySelectNum == 0 )//Mech
 				{
 					memcpy( CharacterName1, szTempMechBodyName[ 0 ], sizeof( CharacterName1 ) );
@@ -1264,11 +1293,11 @@ int HoLogin::Main()
 					memcpy( CharacterName2, szTempArcherFaceName[ 0 ][ JobFaceSelectNum ], sizeof( CharacterName2 ) );
 				}
 				NewCharInfo.JobCode = TempNewCharacterInit[ JobBodySelectNum ][ 0 ];
-				NewCharInfo.Strength = TempNewCharacterInit[ JobBodySelectNum ][ 1 ];			//힘 
-				NewCharInfo.Spirit = TempNewCharacterInit[ JobBodySelectNum ][ 2 ];			//정신력 
-				NewCharInfo.Talent = TempNewCharacterInit[ JobBodySelectNum ][ 3 ];			//재능 
-				NewCharInfo.Dexterity = TempNewCharacterInit[ JobBodySelectNum ][ 4 ];		    //민첩성
-				NewCharInfo.Health = TempNewCharacterInit[ JobBodySelectNum ][ 5 ];			//건강.
+				NewCharInfo.Strength = TempNewCharacterInit[ JobBodySelectNum ][ 1 ];			//?? 
+				NewCharInfo.Spirit = TempNewCharacterInit[ JobBodySelectNum ][ 2 ];			//????? 
+				NewCharInfo.Talent = TempNewCharacterInit[ JobBodySelectNum ][ 3 ];			//??? 
+				NewCharInfo.Dexterity = TempNewCharacterInit[ JobBodySelectNum ][ 4 ];		    //??????
+				NewCharInfo.Health = TempNewCharacterInit[ JobBodySelectNum ][ 5 ];			//???.
 
 #endif
 
@@ -1278,7 +1307,7 @@ int HoLogin::Main()
 
 
 #ifndef NOTUSE_MOR	//=============================================================
-				//ktj : 종족추가에 따라 새로 넣음. (각캐릭터의 이름이 써진 2d 그림임)
+				//ktj : ????????? ???? ???? ????. (?????????? ????? ???? 2d ?????)
 				switch ( tribeNum )
 				{
 					case TRIBE_Tempscron:
@@ -1304,15 +1333,15 @@ int HoLogin::Main()
 							memcpy( CharacterName2, szTempArcherFaceName[ 0 ][ JobFaceSelectNum ], sizeof( CharacterName2 ) );
 						}
 						NewCharInfo.JobCode = TempNewCharacterInit[ JobBodySelectNum ][ 0 ];
-						NewCharInfo.Strength = TempNewCharacterInit[ JobBodySelectNum ][ 1 ];			//힘 
-						NewCharInfo.Spirit = TempNewCharacterInit[ JobBodySelectNum ][ 2 ];			//정신력 
-						NewCharInfo.Talent = TempNewCharacterInit[ JobBodySelectNum ][ 3 ];			//재능 
-						NewCharInfo.Dexterity = TempNewCharacterInit[ JobBodySelectNum ][ 4 ];		    //민첩성
-						NewCharInfo.Health = TempNewCharacterInit[ JobBodySelectNum ][ 5 ];			//건강.
+						NewCharInfo.Strength = TempNewCharacterInit[ JobBodySelectNum ][ 1 ];			//?? 
+						NewCharInfo.Spirit = TempNewCharacterInit[ JobBodySelectNum ][ 2 ];			//????? 
+						NewCharInfo.Talent = TempNewCharacterInit[ JobBodySelectNum ][ 3 ];			//??? 
+						NewCharInfo.Dexterity = TempNewCharacterInit[ JobBodySelectNum ][ 4 ];		    //??????
+						NewCharInfo.Health = TempNewCharacterInit[ JobBodySelectNum ][ 5 ];			//???.
 
 						break;
 
-					case TRIBE_Moryon:		//이건 모라이언관련된것으로 나중에 고칠것.
+					case TRIBE_Moryon:		//??? ??????????????? ????? ?????.
 
 
 						if ( JobBodySelectNum == 0 )//Mech
@@ -1336,11 +1365,11 @@ int HoLogin::Main()
 							memcpy( CharacterName2, szMorArcherFaceName[ 0 ][ JobFaceSelectNum ], sizeof( CharacterName2 ) );
 						}
 						NewCharInfo.JobCode = MorNewCharacterInit[ JobBodySelectNum ][ 0 ];
-						NewCharInfo.Strength = MorNewCharacterInit[ JobBodySelectNum ][ 1 ];			//힘 
-						NewCharInfo.Spirit = MorNewCharacterInit[ JobBodySelectNum ][ 2 ];			//정신력 
-						NewCharInfo.Talent = MorNewCharacterInit[ JobBodySelectNum ][ 3 ];			//재능 
-						NewCharInfo.Dexterity = MorNewCharacterInit[ JobBodySelectNum ][ 4 ];		    //민첩성
-						NewCharInfo.Health = MorNewCharacterInit[ JobBodySelectNum ][ 5 ];			//건강.
+						NewCharInfo.Strength = MorNewCharacterInit[ JobBodySelectNum ][ 1 ];			//?? 
+						NewCharInfo.Spirit = MorNewCharacterInit[ JobBodySelectNum ][ 2 ];			//????? 
+						NewCharInfo.Talent = MorNewCharacterInit[ JobBodySelectNum ][ 3 ];			//??? 
+						NewCharInfo.Dexterity = MorNewCharacterInit[ JobBodySelectNum ][ 4 ];		    //??????
+						NewCharInfo.Health = MorNewCharacterInit[ JobBodySelectNum ][ 5 ];			//???.
 
 						break;
 				}
@@ -1360,41 +1389,36 @@ int HoLogin::Main()
 
 	if ( SelectCurrentState != COMPLETE_SELECT_STATE && SelectCurrentState != START_GAME_STATE )
 	{
-		//Stage에 올라 오는 케릭터들 처리...
+		//Stage?? ??? ???? ?????? ???...
 		for ( int index = 0; index < UserCharacterCount; index++ )
 		{
 			if ( UserCharacter[ index ].DisplayFlag )
 				UserCharacter[ index ].Main();
 		}
-		//Stage에 올라 오는 Job 캐릭터들...
+		//Stage?? ??? ???? Job ???????...
 		for ( int index = 0; index < JobCharacterCount; index++ )
 			JobCharacter[ index ].Main();
 	}
 
-	//상태 변화가 완료 됐을 경우.
+	//???? ????? ??? ???? ???.
 	if ( SelectCurrentState == SelectNextState )
 	{
 		if ( SelectCurrentState == RACE_SELECT_STATE )
 		{
-			//종족 Mark Blend
+			//???? Mark Blend
 			if ( RaceMarkBlendCount < 200 )
 				RaceMarkBlendCount += 4;
 		}
 		else if ( SelectCurrentState == JOB_SELECT_STATE )
 		{
 
-			//임시...(캐릭터 제자리로 돌아가기) (이름 입력 상태에서 직업 상태로 왔을 때 딱 한번만 돼야함)
+			//???...(?????? ??????? ???????) (??? ??? ???????? ???? ?????? ???? ?? ?? ????? ?????)
 			if ( CharacterReturnFlag )//CharacterStopFlag)
 			{
 				CharacterStopFlag = FALSE;
 				CharacterReturnFlag = FALSE;
 				for ( int index = 0; index<JobCharacterCount; index++ )
-				{
-					JobCharacter[ index ].SetPosi( JobCharacterPos[ index ][ 0 ] * fONE,
-												   Stage->GetHeight( JobCharacterPos[ index ][ 0 ] * fONE, JobCharacterPos[ index ][ 1 ] * fONE )
-												   , JobCharacterPos[ index ][ 1 ] * fONE, 0, ANGLE_180, 0 );
-					JobCharacter[ index ].ChangeMotion( 10 );
-				}
+					HoLogin_StandJobChar( &JobCharacter[ index ], Stage, JobCharacterPos[ index ][ 0 ], JobCharacterPos[ index ][ 1 ] );
 			}
 
 		}
@@ -1416,7 +1440,7 @@ int HoLogin::Main()
 		}
 	}
 
-	//FadeOut이 완료된 경우..
+	//FadeOut?? ???? ???..
 	if ( FadeCurrentState == FADE_OUT && FadeNextState == FADE_OUT && SelectNextState == RETURN_OPENING_STATE )
 	{
 		if ( smWsockDataServer != NULL )
@@ -1428,13 +1452,13 @@ int HoLogin::Main()
 		return 2;
 	}
 
-	//상태 이동중...
+	//???? ?????...
 	if ( SelectCurrentState != SelectNextState )
 	{
 		if ( SelectCurrentState != COMPLETE_SELECT_STATE && SelectNextState != COMPLETE_SELECT_STATE &&
 			 SelectCurrentState != START_GAME_STATE && SelectNextState != START_GAME_STATE )
 		{
-			//RaceSelect -> JobSelect 로 이동중...
+			//RaceSelect -> JobSelect ?? ?????...
 			if ( ( SelectCurrentState == RACE_SELECT_STATE ) && ( SelectNextState == JOB_SELECT_STATE ) )
 				RaceMarkScaleSize--;
 
@@ -1442,12 +1466,12 @@ int HoLogin::Main()
 			MouseMoveCharacterNum = -1;
 			RaceMarkBlendCount = 0;
 
-			//상태변화에(상태 변화 도중) 따른 카메라의 이동..
+			//?????????(???? ??? ????) ???? ?????? ???..
 			static int step = 1000;
 			if ( SelectNextState >= 0 && SelectNextState < COMPLETE_SELECT_STATE &&
 				 SelectCurrentState >= 0 && SelectCurrentState < COMPLETE_SELECT_STATE )
 			{
-				if ( SelectNextState > SelectCurrentState ) //Camera가 뒤로 빠지는 경우..
+				if ( SelectNextState > SelectCurrentState ) //Camera?? ??? ?????? ???..
 				{
 
 					TarDist += step;
@@ -1461,7 +1485,7 @@ int HoLogin::Main()
 					if ( ( CameraZPos[ SelectNextState ] - CameraZPos[ SelectCurrentState ] ) / 16 * 15 + CameraZPos[ SelectCurrentState ] < TarDist )
 						step = 100;
 				}
-				else if ( SelectNextState < SelectCurrentState ) //Camera가 앞으로 가는 경우.
+				else if ( SelectNextState < SelectCurrentState ) //Camera?? ?????? ???? ???.
 				{
 					TarDist -= step;
 					if ( TarDist < CameraZPos[ SelectNextState ] - 800 )
@@ -1492,6 +1516,10 @@ int HoLogin::Main()
 
 		if ( SelectCurrentState == FACE_SELECT_STATE && SelectNextState == JOB_SELECT_STATE )
 		{
+			for ( int index = 0; index < JobCharacterCount; index++ )
+				HoLogin_StandJobChar( &JobCharacter[ index ], Stage, JobCharacterPos[ index ][ 0 ], JobCharacterPos[ index ][ 1 ] );
+			CharacterReturnFlag = FALSE;
+			CharacterStopFlag = FALSE;
 			JobBodySelectNum = -1;
 			JobFaceSelectNum = -1;
 			memset( UserCharacterNewName, 0, sizeof( UserCharacterNewName ) );
@@ -1549,21 +1577,10 @@ int HoLogin::Main()
 
 	}
 
-	//상태 변화 중이거나, 변화중이 아닐 때 아무때나...
-	if ( SelectNextState == FACE_SELECT_STATE )// Character Name을 쓸 때..
+	if ( SelectNextState == FACE_SELECT_STATE && JobBodySelectNum >= 0 && CharacterStopFlag == FALSE )
 	{
-
-		if ( JobCharacter[ JobBodySelectNum ].pZ < -415 * fONE && CharacterStopFlag == FALSE ) //JobCharacter에서 고른 캐릭터가 어느정도 앞으로 나오면 서있게 한다.
-		{
-			JobCharacter[ JobBodySelectNum ].MoveFlag = FALSE;
-			JobCharacter[ JobBodySelectNum ].Angle.x = 0;
-			JobCharacter[ JobBodySelectNum ].Angle.y = ANGLE_180;
-			JobCharacter[ JobBodySelectNum ].Angle.z = 0;
-			JobCharacter[ JobBodySelectNum ].ActionPattern = 0;
-			JobCharacter[ JobBodySelectNum ].pZ = -429 * fONE;
-
-			CharacterStopFlag = TRUE;
-		}
+		HoLogin_StandJobChar( &JobCharacter[ JobBodySelectNum ], Stage, FacePreviewPos[ 0 ], FacePreviewPos[ 1 ] );
+		CharacterStopFlag = TRUE;
 	}
 
 	return TRUE;
@@ -1579,7 +1596,7 @@ int HoLogin::MainDefaultButton()
 	{
 		if ( MouseDownCharacterNum != -1 )
 		{
-			//Character를 삭제할때.
+			//Character?? ???????.
 			if ( DeleteButton.Main( pCursorPos.x, pCursorPos.y, MouseButton[ 0 ] ) )
 			{
 				SelectSubState = SUB_SELECT_CHARACTER_MANAGE;
@@ -1614,7 +1631,7 @@ int HoLogin::MainDefaultButton()
 	if ( OkButton.Main( pCursorPos.x, pCursorPos.y, MouseButton[ 0 ] ) )
 	{
 		PlayWav( 4 - 1 );
-		//User Character를 선택한 경우...
+		//User Character?? ?????? ???...
 		if ( SelectCurrentState == CHARACTER_SELECT_STATE )
 		{
 			if ( MouseDownCharacterNum != -1 )
@@ -1635,8 +1652,7 @@ int HoLogin::MainDefaultButton()
 			if ( MouseDownCharacterNum != -1 )
 			{
 				SelectNextState = FACE_SELECT_STATE;
-				JobCharacter[ JobBodySelectNum ].SetTargetPosi( 0, ( -420 * fONE ) >> FLOATNS );
-				JobCharacter[ JobBodySelectNum ].MoveMode = TRUE;
+				HoLogin_StandJobChar( &JobCharacter[ JobBodySelectNum ], Stage, FacePreviewPos[ 0 ], FacePreviewPos[ 1 ] );
 
 				JobCharacter[ JobBodySelectNum ].smCharInfo.Weight[ 0 ] = 0;
 				JobCharacter[ JobBodySelectNum ].smCharInfo.Weight[ 1 ] = 1000;
@@ -1646,9 +1662,9 @@ int HoLogin::MainDefaultButton()
 				JobCharacter[ JobBodySelectNum ].smCharInfo.ArrowPosi[ 1 ] = 0;
 
 				JobCharacter[ JobBodySelectNum ].Flag = 1;
-				OpenEachPlayer( &JobCharacter[ JobBodySelectNum ] );
 				MouseDownCharacterNum = -1;
 				CharacterReturnFlag = TRUE;
+				CharacterStopFlag = TRUE;
 			}
 
 			if ( JobBodySelectNum == -1 )
@@ -1657,11 +1673,11 @@ int HoLogin::MainDefaultButton()
 		}
 		else if ( SelectCurrentState == FACE_SELECT_STATE )
 		{
-			//NewCharacter 게임을 들어갈 경우..
+			//NewCharacter ?????? ??? ???..
 			if ( JobBodySelectNum != -1 && JobFaceSelectNum != -1 )
 			{
 				hFocusWnd = NULL;
-				if ( strlen( UserCharacterNewName ) > 0 )//New Player의 이름이 있으면..
+				if ( strlen( UserCharacterNewName ) > 0 )//New Player?? ????? ??????..
 				{
 					MessageBox.Flag = TRUE;
 					SelectSubState = SUB_SELECT_CHARACTER_NEW;
@@ -1679,7 +1695,7 @@ int HoLogin::MainDefaultButton()
 
 	}
 
-	//Button 처리 
+	//Button ??? 
 	if ( QuitButton.Main( pCursorPos.x, pCursorPos.y, MouseButton[ 0 ] ) )
 	{
 		PlayWav( 4 - 1 );
@@ -1755,25 +1771,28 @@ int HoLogin::DrawJobCharacter( int x, int y, int z, int ax, int ay, int az )
 					JobCharacter[ JobBodySelectNum ].smCharInfo.Stamina[ 0 ] = 100;
 					JobCharacter[ JobBodySelectNum ].smCharInfo.Stamina[ 1 ] = 100;
 
-					JobCharacter[ JobBodySelectNum ].SetTargetPosi( 0, ( -420 * fONE ) >> FLOATNS );
-					JobCharacter[ JobBodySelectNum ].MoveMode = TRUE;
+					HoLogin_StandJobChar( &JobCharacter[ JobBodySelectNum ], Stage, FacePreviewPos[ 0 ], FacePreviewPos[ 1 ] );
 					CharacterReturnFlag = TRUE;
+					CharacterStopFlag = TRUE;
 
 					JobCharacter[ JobBodySelectNum ].smCharInfo.Weight[ 0 ] = 0;
 					JobCharacter[ JobBodySelectNum ].smCharInfo.Weight[ 1 ] = 1000;
 					JobCharacter[ JobBodySelectNum ].smCharInfo.Stamina[ 0 ] = 1000;
-					//JobCharacter[JobBodySelectNum].smCharInfo.State = smCHAR_STATE_NPC;
 					JobCharacter[ JobBodySelectNum ].smCharInfo.ArrowPosi[ 0 ] = 0;
 					JobCharacter[ JobBodySelectNum ].smCharInfo.ArrowPosi[ 1 ] = 0;
 
 					JobCharacter[ JobBodySelectNum ].Flag = 1;
 
-					OpenEachPlayer( &JobCharacter[ JobBodySelectNum ] );
 					MouseDblClick = FALSE;
 					MouseButton[ 0 ] = FALSE;
 				}
 			}
 		}
+
+		if ( SelectCurrentState == FACE_SELECT_STATE && SelectNextState == FACE_SELECT_STATE &&
+			 JobBodySelectNum >= 0 && index != JobBodySelectNum )
+			continue;
+
 		JobCharacter[ index ].Draw();
 		smRender.Color_R = 0;
 		smRender.Color_G = 0;
@@ -1835,7 +1854,9 @@ int HoLogin::DrawUserCharacter( int x, int y, int z, int ax, int ay, int az )
 
 		}
 
-		if ( UserCharacter[ index ].DisplayFlag )
+		if ( UserCharacter[ index ].DisplayFlag &&
+			 SelectCurrentState != FACE_SELECT_STATE &&
+			 SelectNextState != FACE_SELECT_STATE )
 			UserCharacter[ index ].Draw();
 
 		smRender.Color_R = 0;
@@ -1857,14 +1878,16 @@ int HoLogin::DrawUserCharacter( int x, int y, int z, int ax, int ay, int az )
 int HoLogin::DrawTitle( int state )
 {
 	dsDrawTexImage( TitleBoxFrameImage, smScreenWidth / 2 - 256 / 2, 0, 256, 128, 255 );
+	// Campo interno da placa (faixa dourada ~Y 10-46); sprite 128x30 centralizado
+	const float titleY = 14.f;
 	if ( state == CHARACTER_SELECT_STATE )
-		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), 53.f, 128.f, 30.f, 0.f, 0.f, 128.f, 30.f, 255 );
+		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), titleY, 128.f, 30.f, 0.f, 0.f, 128.f, 30.f, 255 );
 	else if ( state == RACE_SELECT_STATE )
-		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), 53.f, 128.f, 30.f, 0.f, 30.f, 128.f, 30.f, 255 );
+		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), titleY, 128.f, 30.f, 0.f, 30.f, 128.f, 30.f, 255 );
 	else if ( state == JOB_SELECT_STATE )
-		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), 53.f, 128.f, 30.f, 0.f, 60.f, 128.f, 30.f, 255 );
+		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), titleY, 128.f, 30.f, 0.f, 60.f, 128.f, 30.f, 255 );
 	else if ( state == FACE_SELECT_STATE )
-		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), 53.f, 128.f, 30.f, 0.f, 90.f, 128.f, 30.f, 255 );
+		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), titleY, 128.f, 30.f, 0.f, 90.f, 128.f, 30.f, 255 );
 
 	return TRUE;
 }
@@ -1932,7 +1955,7 @@ int HoLogin::DrawLight()
 		smRender.AddDynamicLight( 200 * fONE - tt*fONE, 0, -300 * fONE, 80, 30, 0, 255, 40000 + tt*fONE );
 
 		if ( SelectCurrentState == FACE_SELECT_STATE )
-			smRender.AddDynamicLight( 0, 0, -430 * fONE, 110, 40, 0, 255, 10000 + tt*fONE );
+			smRender.AddDynamicLight( 0, 0, FacePreviewPos[ 1 ] * fONE, 110, 40, 0, 255, 10000 + tt*fONE );
 
 		if ( tt == 40 )
 			flag = TRUE;
@@ -2039,7 +2062,7 @@ int HoLogin::DrawCharacterInfo()
 	return TRUE;
 }
 
-//Sub 상태 관리..
+//Sub ???? ????..
 int HoLogin::DrawSelectSubState()
 {
 	if ( SelectNextState == COMPLETE_SELECT_STATE ||
@@ -2052,20 +2075,20 @@ int HoLogin::DrawSelectSubState()
 		case SUB_SELECT_CHARACTER_MANAGE:
 		{
 			flag = MessageBox.Main( pCursorPos.x, pCursorPos.y, MouseButton[ 0 ] ); //TRUE
-			if ( flag == 1 ) //Ok(삭제 할 경우)
+			if ( flag == 1 ) //Ok(???? ?? ???)
 			{
 				PlayWav2( 4 - 1 );
-				//ktj : 캐릭터 삭제시 클랜에 등록된 사람인지의 여부첵크해 클랜장인경우 못지움.
+				//ktj : ?????? ?????? ????? ???? ????????? ???????? ????????? ??????.
 				int isDELETE_character( char *charName );
 				int chk = isDELETE_character( DownUserCharacterInfo[ MouseDownCharacterNum ].Name );
 				//chk = 103;
-				if ( chk == 102 || chk == 1 ) //클랜 가입안된 캐릭..
+				if ( chk == 102 || chk == 1 ) //??? ?????? ????..
 				{
 					PlayWav2( 6 - 1 );
 					UserCharacter[ MouseDownCharacterNum ].Init();
 					UserCharacterCount--;
 
-					//지울 캐릭터를 서버에 보낸다.
+					//???? ??????? ?????? ??????.
 					if ( smWsockDataServer )
 					{
 						TransUserCommand( smTRANSCODE_DELRECORDDATA, UserAccount, DownUserCharacterInfo[ MouseDownCharacterNum ].Name );
@@ -2073,12 +2096,12 @@ int HoLogin::DrawSelectSubState()
 					MouseDownCharacterNum = -1;
 					SelectSubState = SUB_SELECT_NONE;
 				}
-				else if ( chk == 101 || chk == 100 ) //클랜장, 일반 클랜
+				else if ( chk == 101 || chk == 100 ) //?????, ??? ???
 				{
 					ErrorSelect = ERROR_DELETE_CLAN_MEMBER;
 					SelectSubState = SUB_SELECT_NONE;
 				}
-				else if ( chk == 103 ) //클랜 서버 접속 불가.
+				else if ( chk == 103 ) //??? ???? ???? ???.
 				{
 					ErrorSelect = ERROR_CLAN_SERVER_NONE;
 					SelectSubState = SUB_SELECT_NONE;
@@ -2090,7 +2113,7 @@ int HoLogin::DrawSelectSubState()
 				}
 
 			}
-			else if ( flag == 2 ) //Cancel(삭제 안할 경우..)
+			else if ( flag == 2 ) //Cancel(???? ???? ???..)
 			{
 				PlayWav2( 4 - 1 );
 				SelectSubState = SUB_SELECT_NONE;
@@ -2184,6 +2207,40 @@ int HoLogin::DrawSelectSubState()
 extern Graphics::Camera* camera;
 extern Graphics::Camera* frameCamera;
 
+// face_bigbox2: TGA 256x128; a placa visivel (NICK:) fica no meio/baixo, nao no topo
+static const int kNickArtW = 256;
+static const int kNickArtH = 128;
+static const int kNickPlaqueOffY = 40;
+static const int kNickPlaqueOffX = -16;
+static const int kNickPlaqueH = 36;
+static const int kNickTextInsetX = 88;
+static const int kNickFontH = 15;
+static const int kNickTextPadBottom = 8;
+
+static void HoLogin_NickTextLayout( const RECT& nick, int* textX, int* textY, int* charW )
+{
+	if ( nick.right <= nick.left || nick.bottom <= nick.top )
+	{
+		*textX = 0;
+		*textY = 0;
+		*charW = 7;
+		return;
+	}
+
+	*textX = nick.left + kNickTextInsetX;
+	*textY = nick.bottom - kNickFontH - kNickTextPadBottom;
+	if ( *textY < nick.top )
+		*textY = nick.top;
+	*charW = 7;
+}
+
+static void HoLogin_JobDescBoxPos( int* boxX, int* boxY )
+{
+	const int boxW = 256 + 32;
+	*boxX = smScreenWidth / 2 - boxW / 2;
+	*boxY = 76;
+}
+
 int HoLogin::KeyFilter()
 {
 
@@ -2241,8 +2298,8 @@ int HoLogin::KeyFilter()
 				( UserCharacterNewName[ index ] >= 58 && UserCharacterNewName[ index ] <= 64 ) ||
 				( UserCharacterNewName[ index ] >= 91 && UserCharacterNewName[ index ] <= 96 ) ||
 				( UserCharacterNewName[ index ] >= 123 && UserCharacterNewName[ index ] <= 127 ) ||
-				( UserCharacterNewName[ index ] == 0x09 ) ||	//탭키 방지
-				( UserCharacterNewName[ index ] == 0xff || UserCharacterNewName[ index ] == 0x20 ) 		// 스페이스 블럭
+				( UserCharacterNewName[ index ] == 0x09 ) ||	//??? ????
+				( UserCharacterNewName[ index ] == 0xff || UserCharacterNewName[ index ] == 0x20 ) 		// ??????? ????
 				)
 			{
 				UserCharacterNewName[ index ] = 0;
@@ -2252,9 +2309,9 @@ int HoLogin::KeyFilter()
 				break;
 			}
 #else
-			//중국
+			//???
 #ifdef _LANGUAGE_CHINESE
-			//cursefilter.cht 파일을 읽어들여 해당 텍스트를 지워버린다.
+			//cursefilter.cht ?????? ????? ??? ?????? ??????????.
 			if ( IsCurseID( UserCharacterNewName ) == TRUE )
 			{
 				UserCharacterNewName[ index ] = 0;
@@ -2269,9 +2326,9 @@ int HoLogin::KeyFilter()
 				( UserCharacterNewName[ index ] >= 58 && UserCharacterNewName[ index ] <= 64 ) ||
 				( UserCharacterNewName[ index ] >= 91 && UserCharacterNewName[ index ] <= 96 ) ||
 				( UserCharacterNewName[ index ] >= 123 && UserCharacterNewName[ index ] <= 127 ) ||
-				( UserCharacterNewName[ index ] == 0x09 ) ||										//탭키 방지
-				( UserCharacterNewName[ index ] == ' ' ) ||										    //빈공백을 메꿔야 하는데 우선 임시로..
-				( UserCharacterNewName[ index ] == 0xff || UserCharacterNewName[ index ] == 0x20 ) 		// 스페이스 블럭
+				( UserCharacterNewName[ index ] == 0x09 ) ||										//??? ????
+				( UserCharacterNewName[ index ] == ' ' ) ||										    //??????? ???? ???? ??? ?????..
+				( UserCharacterNewName[ index ] == 0xff || UserCharacterNewName[ index ] == 0x20 ) 		// ??????? ????
 				)
 			{
 				UserCharacterNewName[ index ] = 0;
@@ -2280,10 +2337,10 @@ int HoLogin::KeyFilter()
 				SendMessage( hFocusWnd, EM_SETSEL, lstrlen( UserCharacterNewName ), lstrlen( UserCharacterNewName ) + 1 );
 				break;
 			}
-			//전각금지, 반각허용
+			//????????, ??????
 
 			if ( UserCharacterNewName[ index ] == -93 )
-			{																							//Unicode(중국어 전각)
+			{																							//Unicode(????? ????)
 				if ( UserCharacterNewName[ index + 1 ] >= -95 && UserCharacterNewName[ index + 1 ] <= -2 )
 				{
 					UserCharacterNewName[ index ] = 0;
@@ -2393,7 +2450,7 @@ int HoLogin::KeyFilter()
 			}
 #endif
 #else
-			/*extern BYTE  VRKeyBuff[256];    //키입력 버퍼
+			/*extern BYTE  VRKeyBuff[256];    //???? ????
 			if (VRKeyBuff[VK_CONTROL] || VRKeyBuff[VK_SHIFT])
 			{
 			if(VRKeyBuff[v] || VRKeyBuff[VK_INSERT])
@@ -2411,7 +2468,7 @@ int HoLogin::KeyFilter()
 				 ( UserCharacterNewName[ index ] == 0x5e ) ||
 				 ( UserCharacterNewName[ index ] == 0x5f ) ||
 				 ( UserCharacterNewName[ index ] == 0x60 ) ||
-				 //캐릭 이름에 탭키 막기
+				 //???? ????? ??? ????
 				 ( UserCharacterNewName[ index ] == 0x09 ) ||
 				 ( UserCharacterNewName[ index ] >= 0x0e && UserCharacterNewName[ index ] <= 0x0f ) ||
 				 ( UserCharacterNewName[ index ] == 0x16 ) ||
@@ -2446,7 +2503,7 @@ int HoLogin::KeyFilter()
 #endif
 
 
-				//한글일 경우..
+				//????? ???..
 				if ( ( BYTE )UserCharacterNewName[ index ] >= 0x80 )
 				{
 					/*
@@ -2479,11 +2536,11 @@ int HoLogin::KeyFilter()
 
 #ifdef _LANGUAGE_CHINESE
 
-					//중국어 필터 ( GB2312 )
+					//????? ???? ( GB2312 )
 					int fstByte = ( BYTE )UserCharacterNewName[ index ];
 					int sndByte = ( BYTE )UserCharacterNewName[ index + 1 ];
 
-					if ( fstByte<0xA1 || fstByte>0xF7 || sndByte<0xA1 || sndByte>0xFE ) //2바이트인데 중국어코드 아님
+					if ( fstByte<0xA1 || fstByte>0xF7 || sndByte<0xA1 || sndByte>0xFE ) //2????????? ???????? ???
 					{
 						UserCharacterNewName[ index ] = 0;
 						SetWindowText( hFocusWnd, 0 );
@@ -2497,13 +2554,13 @@ int HoLogin::KeyFilter()
 #endif
 
 #ifdef _LANGUAGE_KOREAN
-					//한글 필터
+					//??? ????
 					int fstByte = ( BYTE )UserCharacterNewName[ index ];
 					int sndByte = ( BYTE )UserCharacterNewName[ index + 1 ];
 
 					result = ( fstByte - 0xb0 ) * 94 + sndByte - 0xa1;
 
-					if ( result < 0 || result >= 2350 ) //2바이트인데 한글아님.
+					if ( result < 0 || result >= 2350 ) //2????????? ?????.
 					{
 						UserCharacterNewName[ index ] = 0;
 						SetWindowText( hFocusWnd, 0 );
@@ -2520,7 +2577,7 @@ int HoLogin::KeyFilter()
 		}
 
 #ifdef _LANGUAGE_JAPANESE
-		//IsJTS ( 일본 문자 )
+		//IsJTS ( ??? ???? )
 		result = IsJTS( UserCharacterNewName );
 		if ( result >= 0 )
 		{
@@ -2532,7 +2589,7 @@ int HoLogin::KeyFilter()
 		}
 
 #endif
-		//영어 관련 처리를 넣어야 한다.
+		//???? ???? ????? ???? ???.
 #ifdef _LANGUAGE_ENGLISH
 		result = IsENG( UserCharacterNewName );
 		if ( result >= 0 )
@@ -2550,7 +2607,7 @@ int HoLogin::KeyFilter()
 		ZeroMemory(UserCharacterNewName,sizeof(char)*256);
 		}*/
 #endif
-		//태국어 관련 처리를 넣어야 한다.
+		//?????? ???? ????? ???? ???.
 #ifdef _LANGUAGE_THAI
 		result = IsTHAI( UserCharacterNewName );
 		if ( ( result >= 0 ) && ( IsCurse( UserCharacterNewName ) == 0 ) )
@@ -2568,7 +2625,7 @@ int HoLogin::KeyFilter()
 		}
 #endif
 #ifdef _LANGUAGE_TAIWAN
-		//자유중국 문자 ( 번체 )
+		//??????? ???? ( ??? )
 		result = IsTaiwan( UserCharacterNewName );
 		if ( result >= 0 )
 		{
@@ -2581,45 +2638,26 @@ int HoLogin::KeyFilter()
 #endif
 
 		SendMessage( hFocusWnd, EM_GETSEL, ( WPARAM )&start, NULL );
-		HDC hdc = NULL;
-		//lpDDSBack->GetDC( &hdc );
+		HideCaret( hTextWnd );
 
-		//SetBkMode( hdc, TRANSPARENT );
-		SetFontTextColor( RGB( 255, 255, 255 ) );
-		SelectObject( hdc, Font );
-
-
-		static int i = 0;
-		if ( i < 6 )
+		const DWORD caretHalfMs = 530;
+		const bool showCaret = ( ( GetTickCount() / caretHalfMs ) % 2 ) == 0;
+		if ( showCaret )
 		{
-#ifdef	_LANGUAGE_VEITNAM
-			int newTexPosX = int( ( ( float )smScreenWidth*356.f ) / 800.f + 13 );
-#else
-			int newTexPosX = int( ( ( float )smScreenWidth*356.f ) / 800.f );
-#endif
-			int newTexPosY = int( ( ( float )smScreenHeight*397.f ) / 600.f );
-
-			if( ( smConfig.ScreenSize.y / 9 ) * 16 == smConfig.ScreenSize.x )
-				dsTextLineOut( hdc, ( newTexPosX + start * 6 ) + 15, newTexPosY + 4, "|", 1 );
-			else
-				dsTextLineOut( hdc, ( newTexPosX + 20 + start * 6 ), newTexPosY + 30, "|", 1 );
+			int textX = 0, textY = 0, charW = 7;
+			HoLogin_NickTextLayout( NickBarRect, &textX, &textY, &charW );
+			DrawFontText( textX + start * charW, textY, "|", RGB( 255, 250, 250 ), 2 );
 		}
-
-		i++;
-		if ( i > 12 )
-			i = 0;
-		//dsTextLineOut(hdc, 358, 398, UserCharacterNewName, strlen(UserCharacterNewName));
-		//lpDDSBack->ReleaseDC( hdc );
 	}
 	return TRUE;
 }
 
-//그리기 함수 캐릭터 선택
+//????? ??? ?????? ????
 int HoLogin::Draw()
 {
 	MainFade();
 
-	//에러 메시지 출력시.. 없애는 경우...
+	//???? ????? ?????.. ????? ???...
 	if ( ErrorSelect != ERROR_NONE )
 	{
 		if ( MouseButton[ 0 ] || MouseDblClick )
@@ -2660,7 +2698,7 @@ int HoLogin::Draw()
 	}
 
 	DrawSelectSubState();
-	//카메라 각도 계산...
+	//???? ???? ???...
 	int x, y, z;
 	int anx, any;
 	//int cnt;
@@ -2686,27 +2724,25 @@ int HoLogin::Draw()
 	if ( Stage )
 		Stage->DrawStage( x, y, z, anx, any, 0 );
 
-	//Character를 찍는다.
+	//Character?? ?????.
 	DrawUserCharacter( x, y, z, anx, any, 0 );
 	DrawJobCharacter( x, y, z, anx, any, 0 );
 
 
 	DrawEffect( x, y, z, anx, any, 0 );
 
-	//Game 틀을 찍는다..
+	//Game ??? ?????..
 	DrawGameFrame();
 	DrawTitle( SelectCurrentState );
 
 	int twoButtonStartPos = m_ScreenHalf - 120;
 	int threeButtonStartPos = m_ScreenHalf - 150;
-	int screenWidthHalf = smScreenWidth / 2;
-	int screenHeightHalf = smScreenHeight / 2;
-	//상태 이동이 완전히 됐을 경우. (BeginRender(), EndRender() 사이에 들어가는 루틴)
+	//???? ????? ?????? ???? ???. (BeginRender(), EndRender() ????? ????? ???)
 	if ( SelectCurrentState == SelectNextState && FadeCurrentState == FadeNextState )
 	{
 		MainDefaultButton();
 
-		//버튼 출력...
+		//??? ???...
 		if ( SelectCurrentState == CHARACTER_SELECT_STATE ) //Character Select State
 		{
 			int userCount = 0;
@@ -2716,37 +2752,29 @@ int HoLogin::Draw()
 					userCount++;
 			}
 
-			if ( pCursorPos.x >( screenWidthHalf - 128 ) &&
-				 pCursorPos.x < ( screenWidthHalf + 128 ) &&
-				 pCursorPos.y >( screenHeightHalf / 2 - 80 ) &&
-				 pCursorPos.y < ( screenHeightHalf / 2 + 130 ) &&
-				 SelectSubState == SUB_SELECT_NONE && ErrorSelect == ERROR_NONE )
-			{
-				//ktj : 위의 동그란그림에 마우스가 들어가면 //캐릭터만들기 라는 이미지가 뜨는곳임.
-				dsDrawTexImage( NewCharacterImage, ( m_ScreenHalf )-128, 150, 256, 64, 255 );
+			const int newCharX = m_ScreenHalf - 128;
+			const int newCharY = 150;
+			const int newCharW = 256;
+			const int newCharH = 64;
+			const bool hoverNewChar =
+				pCursorPos.x > newCharX && pCursorPos.x < newCharX + newCharW &&
+				pCursorPos.y > newCharY && pCursorPos.y < newCharY + newCharH &&
+				SelectSubState == SUB_SELECT_NONE && ErrorSelect == ERROR_NONE;
 
-				if ( MouseButton[ 0 ] ) //New Character 선택시..
+			dsDrawTexImage( NewCharacterImage, newCharX, newCharY, newCharW, newCharH, hoverNewChar ? 255 : 150 );
+
+			if ( hoverNewChar && MouseButton[ 0 ] )
+			{
+				if ( UserCharacterCount < CHARACTER_USER_MAX )
 				{
-					//캐릭터 갯수 보다 많이 캐릭터를 만들 경우...
-					if ( UserCharacterCount < CHARACTER_USER_MAX )
-					{
-						SelectNextState = RACE_SELECT_STATE;
-						PlayWav2( 5 - 1 );
-					}
-					else
-					{
-						MouseButton[ 0 ] = FALSE;
-						MouseDblClick = FALSE;
-						ErrorSelect = ERROR_MAX_NEWPLAYER;
-					}
+					SelectNextState = RACE_SELECT_STATE;
+					PlayWav2( 5 - 1 );
 				}
-			}
-			else
-			{
-				if ( userCount == 0 )
+				else
 				{
-
-					dsDrawTexImage( NewCharacterImage, ( m_ScreenHalf )-128, 150, 256, 64, ( int )NewCharacterImageBlendCount );
+					MouseButton[ 0 ] = FALSE;
+					MouseDblClick = FALSE;
+					ErrorSelect = ERROR_MAX_NEWPLAYER;
 				}
 			}
 
@@ -2765,22 +2793,22 @@ int HoLogin::Draw()
 			BackButton.Draw( threeButtonStartPos + 100, smScreenHeight - 40 );
 			QuitButton.Draw( threeButtonStartPos + 200, smScreenHeight - 40 );
 
-			if ( USE_MOR == 0 ) //템스크론만 선택시사용됨.
+			if ( USE_MOR == 0 ) //???????? ????????.
 			{
-				//종족 마크를 화면에 표시
+				//???? ????? ??? ???
 				if ( menuPos[ 0 ].left < pCursorPos.x  && pCursorPos.x < menuPos[ 0 ].right &&
 					 menuPos[ 0 ].top < pCursorPos.y && pCursorPos.y < menuPos[ 0 ].bottom
 					 && RaceMarkBlendCount >= 200 && ErrorSelect == ERROR_NONE )
 				{
-					//ktj : 바꿈.
+					//ktj : ???.
 					dsDrawTexImage( TempscronLogoImage, smScreenWidth / 2 - 128, smScreenHeight / 4, 128, 64, 255 );
 					dsDrawTexImage( TempscronMarkImage, smScreenWidth / 2, smScreenHeight / 4, 128, 128, 255 );
 					if ( MouseButton[ 0 ] )
 					{
-						//ktj : 새로너음.
-						tribeNum = TRIBE_Tempscron;			//종족번호
+						//ktj : ????????.
+						tribeNum = TRIBE_Tempscron;			//???????
 
-						//ktj : 새로너음.
+						//ktj : ????????.
 						JobCharacter[ 0 ].Close();
 						JobCharacter[ 1 ].Close();
 						JobCharacter[ 2 ].Close();
@@ -2790,7 +2818,7 @@ int HoLogin::Draw()
 						SelectNextState = JOB_SELECT_STATE;
 						RaceMarkScaleSize = 128;
 
-						//현재는 Tempscron종족일거라구 가정하고.. (RaceSelect가 있어야 함)....
+						//????? Tempscron???????? ???????.. (RaceSelect?? ???? ??)....
 						JobCharacterCount = 0;
 
 						JobCharacter[ JobCharacterCount ].smCharInfo.JOB_CODE = 2;
@@ -2821,8 +2849,8 @@ int HoLogin::Draw()
 					 pCursorPos.y < ( smScreenHeight / 5 + 130 )
 					 && RaceMarkBlendCount >= 200 && ErrorSelect == ERROR_NONE )
 				{
-					//ktj : 바꿈.
-					//마우스가 올라 갔을 경우..
+					//ktj : ???.
+					//????J?? ??? ???? ???..
 					dsDrawTexImage( TempscronMarkImage, smScreenWidth / 2 - 140, smScreenHeight / 5, 128, 128, 255 );
 					dsDrawTexImage( TempscronLogoImage, smScreenWidth / 2 - 140 - 6, smScreenHeight / 5 + 118, 128, 32, 255 );
 
@@ -2833,10 +2861,10 @@ int HoLogin::Draw()
 
 					if ( MouseButton[ 0 ] )
 					{
-						//ktj : 새로너음.
-						tribeNum = TRIBE_Tempscron;			//종족번호
+						//ktj : ????????.
+						tribeNum = TRIBE_Tempscron;			//???????
 
-						//ktj : 새로너음.
+						//ktj : ????????.
 						JobCharacter[ 0 ].Close();
 						JobCharacter[ 1 ].Close();
 						JobCharacter[ 2 ].Close();
@@ -2848,7 +2876,7 @@ int HoLogin::Draw()
 						SelectNextState = JOB_SELECT_STATE;
 						RaceMarkScaleSize = 128;
 
-						//현재는 Tempscron종족일거라구 가정하고.. (RaceSelect가 있어야 함)....
+						//????? Tempscron???????? ???????.. (RaceSelect?? ???? ??)....
 						JobCharacterCount = 0;
 
 						JobCharacter[ JobCharacterCount ].smCharInfo.JOB_CODE = 2;
@@ -2871,12 +2899,12 @@ int HoLogin::Draw()
 					dsDrawTexImage( TempscronMarkImage, smScreenWidth / 2 - 140, smScreenHeight / 5, 128, 128, RaceMarkBlendCount );
 					dsDrawTexImage( TempscronLogoImage, smScreenWidth / 2 - 140 - 6, smScreenHeight / 5 + 118, 128, 32, RaceMarkBlendCount );
 				}
-				//ktj : 새로넣은 모라이온 ================================= start
+				//ktj : ???????? ?????? ================================= start
 				if ( ( smScreenWidth / 2 + 12 ) < pCursorPos.x  && pCursorPos.x < ( smScreenWidth / 2 + 12 + 130 ) &&
 					 ( smScreenHeight / 5 ) < pCursorPos.y  && pCursorPos.y < ( smScreenHeight / 5 + 130 )
 					 && RaceMarkBlendCount >= 200 && ErrorSelect == ERROR_NONE )
 				{
-					//ktj : 모라이온 마크
+					//ktj : ?????? ???
 					dsDrawTexImage( MoryonMarkImage, smScreenWidth / 2 + 12, smScreenHeight / 5, 128, 128, 255 );
 					dsDrawTexImage( MoryonLogoImage, smScreenWidth / 2 + 12 - 6, smScreenHeight / 5 + 118, 128, 32, 255 );
 
@@ -2886,10 +2914,10 @@ int HoLogin::Draw()
 
 					if ( MouseButton[ 0 ] )
 					{
-						//ktj : 넣음.
-						tribeNum = TRIBE_Moryon;			//종족번호
+						//ktj : ????.
+						tribeNum = TRIBE_Moryon;			//???????
 
-						//ktj : 새로너음.
+						//ktj : ????????.
 						JobCharacter[ 0 ].Close();
 						JobCharacter[ 1 ].Close();
 						JobCharacter[ 2 ].Close();
@@ -2900,7 +2928,7 @@ int HoLogin::Draw()
 						SelectNextState = JOB_SELECT_STATE;
 						RaceMarkScaleSize = 128;
 
-						//현재는 Tempscron종족일거라구 가정하고.. (RaceSelect가 있어야 함)....
+						//????? Tempscron???????? ???????.. (RaceSelect?? ???? ??)....
 						JobCharacterCount = 0;
 
 
@@ -2924,7 +2952,7 @@ int HoLogin::Draw()
 					dsDrawTexImage( MoryonLogoImage, smScreenWidth / 2 + 12 - 6, smScreenHeight / 5 + 118, 128, 32, RaceMarkBlendCount );
 				}
 
-				//ktj : 새로넣은 모라이온 ================================= end
+				//ktj : ???????? ?????? ================================= end
 			}
 		}
 		else if ( SelectCurrentState == JOB_SELECT_STATE ) //Job Select State
@@ -2933,7 +2961,7 @@ int HoLogin::Draw()
 			BackButton.Draw( threeButtonStartPos + 100, smScreenHeight - 40 );
 			QuitButton.Draw( threeButtonStartPos + 200, smScreenHeight - 40 );
 
-			//임시로 캐릭터의 위치를 2d로 찾기 고쳐야 함...
+			//????? ???????? ????? 2d?? ??? ????? ??...
 			RECT rect;
 			POINT	sPos;
 			smRender.SetCameraPosi( x, y, z, anx, any, 0 );
@@ -2950,7 +2978,7 @@ int HoLogin::Draw()
 #else
 
 
-				//ktj : 종족추가에 따라 새로 넣음. (각캐릭터의 이름이 써진 2d 그림임)
+				//ktj : ????????? ???? ???? ????. (?????????? ????? ???? 2d ?????)
 				switch ( tribeNum )
 				{
 					case TRIBE_Tempscron:
@@ -2960,10 +2988,11 @@ int HoLogin::Draw()
 
 							if ( MouseDownCharacterNum != index )
 							{
-								//캐릭터 정보 출력
-								dsDrawTexImage( JobTextBoxImage[ 0 ], smScreenWidth / 2 - 140, smScreenHeight / 5, 256, 256, 255 );
-								dsDrawTexImage( JobTextBoxImage[ 1 ], smScreenWidth / 2 - 140 + 256, smScreenHeight / 5, 32, 256, 255 );
-								dsDrawTexImage( TempscronJobTextImage[ index ], smScreenWidth / 2 - 140 + 10, smScreenHeight / 5 + 4, 256, 256, 255 );
+								int jobBoxX = 0, jobBoxY = 0;
+								HoLogin_JobDescBoxPos( &jobBoxX, &jobBoxY );
+								dsDrawTexImage( JobTextBoxImage[ 0 ], jobBoxX, jobBoxY, 256, 256, 255 );
+								dsDrawTexImage( JobTextBoxImage[ 1 ], jobBoxX + 256, jobBoxY, 32, 256, 255 );
+								dsDrawTexImage( TempscronJobTextImage[ index ], jobBoxX + 10, jobBoxY + 4, 256, 256, 255 );
 							}
 
 						}
@@ -2976,10 +3005,11 @@ int HoLogin::Draw()
 							dsDrawTexImage( MoryonJobImage[ index ][ 1 ], rect.left - 10, rect.top - 15, 128, 32, 255 );
 							if ( MouseDownCharacterNum != index )
 							{
-								dsDrawTexImage( JobTextBoxImage[ 0 ], smScreenWidth / 2 - 140, smScreenHeight / 5, 256, 256, 255 );
-								dsDrawTexImage( JobTextBoxImage[ 1 ], smScreenWidth / 2 - 140 + 256, smScreenHeight / 5, 32, 256, 255 );
-
-								dsDrawTexImage( MoryonJobTextImage[ index ], smScreenWidth / 2 - 140 + 10, smScreenHeight / 5 + 4, 256, 256, 255 );
+								int jobBoxX = 0, jobBoxY = 0;
+								HoLogin_JobDescBoxPos( &jobBoxX, &jobBoxY );
+								dsDrawTexImage( JobTextBoxImage[ 0 ], jobBoxX, jobBoxY, 256, 256, 255 );
+								dsDrawTexImage( JobTextBoxImage[ 1 ], jobBoxX + 256, jobBoxY, 32, 256, 255 );
+								dsDrawTexImage( MoryonJobTextImage[ index ], jobBoxX + 10, jobBoxY + 4, 256, 256, 255 );
 							}
 						}
 						else
@@ -2996,14 +3026,12 @@ int HoLogin::Draw()
 			OkButton.Draw( threeButtonStartPos, smScreenHeight - 40 );
 			BackButton.Draw( threeButtonStartPos + 100, smScreenHeight - 40 );
 			QuitButton.Draw( threeButtonStartPos + 200, smScreenHeight - 40 );
-
-			dsDrawTexImage( BlackBoxImage, 150, 410, 500, 128 + 10, 20 );
 		}
 
 	}
 
-	//상태 이동중..
-	//RaceSelect -> JobSelect 로 이동중...(마크 서서히 사라짐)
+	//???? ?????..
+	//RaceSelect -> JobSelect ?? ?????...(??? ?????? ?????)
 	if ( ( SelectCurrentState == RACE_SELECT_STATE ) && ( SelectNextState == JOB_SELECT_STATE ) )
 	{
 		if ( tribeNum == TRIBE_Tempscron )
@@ -3019,24 +3047,24 @@ int HoLogin::Draw()
 
 	IncTextureFrame();
 
-	//상태 이동이 완전히 됐을 경우. BeginRender,EndRender 사이에 루틴을 쓰지 못하는 경우(예:GDI(Message, MessageBox))
+	//???? ????? ?????? ???? ???. BeginRender,EndRender ????? ????? ???? ????? ???(??:GDI(Message, MessageBox))
 	if ( SelectCurrentState == SelectNextState && FadeCurrentState == FadeNextState )
 	{
-		//캐릭터 선택일 경우..
+		//?????? ?????? ???..
 		if ( SelectCurrentState == CHARACTER_SELECT_STATE )
 		{
-			//User의 캐릭터 정보 출력..
+			//User?? ?????? ???? ???..
 			if ( MouseMoveCharacterNum != -1 )
 				DrawCharacterInfo();
 
 			if ( SelectSubState == SUB_SELECT_CHARACTER_MANAGE )
-				//MessageBox.Draw(290, 450, "캐릭터를 삭제 하시겠습니까?", RGB(255, 0, 0));
+				//MessageBox.Draw(290, 450, "??????? ???? ??????????", RGB(255, 0, 0));
 				MessageBox.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 0 ], RGB( 255, 0, 0 ) );
 			if ( SelectSubState == SUB_SELECT_CHARACTER_USER )
-				//MessageBox.Draw(290, 450, "게임을 시작합니다");
+				//MessageBox.Draw(290, 450, "?????? ????????");
 				MessageBox.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 1 ] );
 			if ( ErrorSelect == ERROR_MAX_NEWPLAYER )
-				//Message.Draw(295, 450,    "캐릭터를 더이상 생성 못합니다.");
+				//Message.Draw(295, 450,    "??????? ????? ???? ??????.");
 				Message.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 2 ] );
 		}
 		else if ( SelectCurrentState == RACE_SELECT_STATE && ErrorSelect == ERROR_NONE )
@@ -3078,38 +3106,25 @@ int HoLogin::Draw()
 						break;
 				}
 				JobCharacter[ JobBodySelectNum ].Flag = 1;
-				OpenEachPlayer( &JobCharacter[ JobBodySelectNum ] );
+				HoLogin_StandJobChar( &JobCharacter[ JobBodySelectNum ], Stage, FacePreviewPos[ 0 ], FacePreviewPos[ 1 ] );
 			}
+
 			int addX = smScreenWidth / 2 - 800 / 2;
 
-			if( (smConfig.ScreenSize.x == 800 && smConfig.ScreenSize.y == 600 ) ||
-				( smConfig.ScreenSize.x == 1024 && smConfig.ScreenSize.y == 768 ) ||
-				( smConfig.ScreenSize.x == 1280 && smConfig.ScreenSize.y == 960 ) ||
-				( smConfig.ScreenSize.x == 1400 && smConfig.ScreenSize.y == 1050 ) )
-			{
-				int newPosX = int( ( ( float )smScreenWidth*272.f ) / 800.f );
-				int newPosY = int( ( ( float )smScreenHeight*82.f ) / 600.f );
-				int newWidth = int( ( ( float )smScreenWidth*256.f ) / 800.f );
-				int newHeight = int( ( ( float )smScreenHeight*128.f ) / 600.f );
+			const int hairTop = smScreenHeight - ( 50 + 128 );
+			const int nickX = ( smScreenWidth - kNickArtW ) / 2 + kNickPlaqueOffX;
+			int nickY = smScreenHeight / 2 + 80;
+			if ( nickY + kNickPlaqueOffY + kNickPlaqueH + 16 > hairTop )
+				nickY = hairTop - kNickPlaqueOffY - kNickPlaqueH - 16;
+			if ( nickY < 80 )
+				nickY = 80;
 
-				dsDrawTexImage( FaceBoxBigImage[ 0 ], newPosX, newPosY, newWidth, newWidth, 255 );
-				dsDrawTexImage( FaceBoxBigImage[ 1 ], newPosX, newPosY + newWidth, newWidth, newHeight, 255 );
+			dsDrawTexImage( FaceBoxBigImage[ 1 ], nickX, nickY, kNickArtW, kNickArtH, 255 );
 
-			}
-			else
-			{
-				int newPosX = int( ( ( float )smScreenWidth*272.f ) / 724.f );
-				int newPosY = int( ( ( float )smScreenHeight*82.f ) / 600.f );
-				int newWidth = int( ( ( float )smScreenWidth*256.f ) / 1028.f );
-				int newHeight = int( ( ( float )smScreenHeight*128.f ) / 772.f );
-
-				dsDrawTexImage( FaceBoxBigImage[ 0 ], newPosX, newPosY + 10, newWidth, newWidth, 255 );
-				dsDrawTexImage( FaceBoxBigImage[ 1 ], newPosX, newPosY + newWidth + 10, newWidth, newHeight, 255 );
-			}
-
-			int addY = smScreenHeight / 2 - 600 / 2;
-		
-			DrawEachPlayer( 0.5f, 0.4f, 2 );
+			NickBarRect.left = nickX;
+			NickBarRect.top = nickY + kNickPlaqueOffY;
+			NickBarRect.right = nickX + kNickArtW;
+			NickBarRect.bottom = nickY + kNickPlaqueOffY + kNickPlaqueH;
 
 			int    mouseMoveFace = -1;
 			bool   selectFaceFlag = false;
@@ -3121,8 +3136,8 @@ int HoLogin::Draw()
 				{
 					if ( pCursorPos.x >( TempFacePos[ JobBodySelectNum ][ index ] + addX ) &&
 						 pCursorPos.x < ( TempFacePos[ JobBodySelectNum ][ index ] + 128 + addX ) &&
-						 pCursorPos.y >( smScreenHeight - ( 70 + 128 ) ) &&
-						 pCursorPos.y < ( smScreenHeight - ( 70 + 128 ) + 128 ) && ErrorSelect == ERROR_NONE && SelectSubState == SUB_SELECT_NONE )
+						 pCursorPos.y >( smScreenHeight - ( 50 + 128 ) ) &&
+						 pCursorPos.y < ( smScreenHeight - ( 50 + 128 ) + 128 ) && ErrorSelect == ERROR_NONE && SelectSubState == SUB_SELECT_NONE )
 					{
 
 						mouseMoveFace = index;
@@ -3133,7 +3148,7 @@ int HoLogin::Draw()
 							{
 
 #ifdef NOTUSE_MOR 
-								//ktj : 원본
+								//ktj : ????
 								if ( JobBodySelectNum == 0 ) //Mech
 									SetChangeJobFace( szTempMechBodyName[ 0 ], szTempMechFaceName[ 0 ][ index ], JobBodySelectNum );
 								else if ( JobBodySelectNum == 1 ) // Fighter
@@ -3149,7 +3164,7 @@ int HoLogin::Draw()
 
 
 
-								//ktj : 종족추가에 따라 새로 넣음. (각캐릭터의 이름이 써진 그림임)
+								//ktj : ????????? ???? ???? ????. (?????????? ????? ???? ?????)
 								switch ( tribeNum )
 								{
 									case TRIBE_Tempscron:
@@ -3184,7 +3199,6 @@ int HoLogin::Draw()
 								JobFaceSelectNum = index;
 
 								JobCharacter[ JobBodySelectNum ].Flag = 1;
-								OpenEachPlayer( &JobCharacter[ JobBodySelectNum ] );
 							}
 							if ( JobBodySelectNum != -1 )
 							{
@@ -3201,7 +3215,7 @@ int HoLogin::Draw()
 					}
 
 
-					//선택된 얼굴 표시..
+					//????? ?? ???..
 					if ( JobFaceSelectNum == index )
 					{
 
@@ -3209,7 +3223,7 @@ int HoLogin::Draw()
 #ifdef NOTUSE_MOR 
 						dsDrawTexImage( TempFaceImage[ JobBodySelectNum ][ JobFaceSelectNum ][ 1 ], TempFacePos[ JobBodySelectNum ][ JobFaceSelectNum ] + addX, smScreenHeight - ( 50 + 128 ), 128, 128, 255 );
 #else
-						//ktj : 얼굴그림 새로 넣음.
+						//ktj : ???? ???? ????.
 						switch ( tribeNum )
 						{
 							case TRIBE_Tempscron:
@@ -3222,7 +3236,7 @@ int HoLogin::Draw()
 
 #endif
 					}
-					else //얼굴이 선택되지 않았을 때..
+					else //???? ??????? ????? ??..
 					{
 						if ( mouseMoveFace != -1 && mouseMoveFace == index )
 						{
@@ -3233,7 +3247,7 @@ int HoLogin::Draw()
 #ifdef NOTUSE_MOR 
 							dsDrawTexImage( TempFaceImage[ JobBodySelectNum ][ index ][ 1 ], TempFacePos[ JobBodySelectNum ][ index ] + addX, smScreenHeight - ( 50 + 128 ), 128, 128, 200 );
 #else
-							//ktj : 얼굴그림 새로 넣음.
+							//ktj : ???? ???? ????.
 							switch ( tribeNum )
 							{
 								case TRIBE_Tempscron:
@@ -3255,7 +3269,7 @@ int HoLogin::Draw()
 #ifdef NOTUSE_MOR 
 							dsDrawTexImage( TempFaceImage[ JobBodySelectNum ][ index ][ 0 ], TempFacePos[ JobBodySelectNum ][ index ] + addX, smScreenHeight - ( 50 + 128 ), 128, 128, 150 );
 #else
-							//ktj : 얼굴그림 새로 넣음.
+							//ktj : ???? ???? ????.
 							switch ( tribeNum )
 							{
 								case TRIBE_Tempscron:
@@ -3271,21 +3285,26 @@ int HoLogin::Draw()
 					}
 				}
 
-				dsDrawTexImage( FaceBoxSmallImage[ 2 ], 305 + addX, smScreenHeight - ( 66 ), 64, 16, 255 );
-				dsDrawTexImage( FaceBoxSmallImage[ 2 ], 305 + 128 + addX, smScreenHeight - ( 66 ), 64, 16, 255 );
-
 				
 			}
 
 
+			// Limpa selecao so fora dos retratos e do campo NICK
+			const int faceTop = smScreenHeight - ( 50 + 128 );
+			const int faceBottom = faceTop + 128;
+			const bool clickOnHair = ( pCursorPos.y >= faceTop && pCursorPos.y < faceBottom );
+			const bool clickOnNick = ( pCursorPos.x >= NickBarRect.left && pCursorPos.x < NickBarRect.right &&
+									   pCursorPos.y >= NickBarRect.top && pCursorPos.y < NickBarRect.bottom );
 			if ( selectFaceFlag == false && MouseButton[ 0 ] && SelectSubState == SUB_SELECT_NONE &&
-				 pCursorPos.x > 0 && pCursorPos.x < 800 && pCursorPos.y > 0 && pCursorPos.y < 546 )
+				 pCursorPos.x > 0 && pCursorPos.x < smScreenWidth &&
+				 pCursorPos.y > 0 && pCursorPos.y < smScreenHeight &&
+				 !clickOnHair && !clickOnNick )
 				 JobFaceSelectNum = -1;
 
 			if ( JobBodySelectNum != -1 && JobFaceSelectNum != -1 && SelectSubState == SUB_SELECT_NONE &&
 				 ErrorSelect == ERROR_NONE )
 			{
-				//hFocusWnd가 NULL 이면 Enter Key가 눌린거 하구 같다.
+				//hFocusWnd?? NULL ??? Enter Key?? ?????? ??? ????.
 				if ( MouseDblClick || ( hFocusWnd == NULL && FocusWndFlag ) )
 				{
 					FocusWndFlag = FALSE;
@@ -3308,18 +3327,9 @@ int HoLogin::Draw()
 				}
 			}
 
-			HDC hdc = NULL;
-			SetFontTextColor( RGB( 255, 255, 255 ) );
-			SelectObject( hdc, Font );
-
-			int newTexPosX = int( ( ( float )smScreenWidth*358.f ) / 800.f );
-			int newTexPosY = int( ( ( float )smScreenHeight*398.f ) / 600.f );
-
-			// txt nome do personagem na cria豫o aqui
-			if( ( smConfig.ScreenSize.y / 9 ) * 16 == smConfig.ScreenSize.x )
-				dsTextLineOut( hdc, newTexPosX + 15, newTexPosY + 4, UserCharacterNewName, strlen( UserCharacterNewName ) );
-			else
-				dsTextLineOut( hdc, newTexPosX + 20, newTexPosY + 30, UserCharacterNewName, strlen( UserCharacterNewName ) );
+			int nickTextX = 0, nickTextY = 0, nickCharW = 7;
+			HoLogin_NickTextLayout( NickBarRect, &nickTextX, &nickTextY, &nickCharW );
+			DrawFontText( nickTextX, nickTextY, UserCharacterNewName, RGB( 255, 250, 250 ), 2 );
 
 			if ( JobFaceSelectNum >= 0 )
 				int nLength = strlen( UserCharacterNewName );
@@ -3356,24 +3366,24 @@ int HoLogin::Draw()
 
 
 	if ( SelectSubState == SUB_SELECT_CHARACTER_NEW )
-		MessageBox.Draw( smScreenWidth / 2 - 150, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 3 ] );//"캐릭터 생성을 마쳤습니다 위 설정이 맞습니까?");
+		MessageBox.Draw( smScreenWidth / 2 - 150, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 3 ] );//"?????? ?????? ???????? ?? ?????? ????????");
 	if ( ErrorSelect == ERROR_NONAME_NEWPLAYER )
-		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 4 ] );//"캐릭터의 이름을 입력하세요");
+		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 4 ] );//"???????? ????? ????????");
 	if ( ErrorSelect == ERROR_EXHIST_NEWPLAYER )
-		Message.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 5 ] );//"캐릭터 이름이 존재합니다");
+		Message.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 5 ] );//"?????? ????? ????????");
 
 	if ( ErrorSelect == ERROR_SELECT_CHAR )
-		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 6 ] );//"  캐릭터를 선택하세요  ");
+		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 6 ] );//"  ??????? ?????????  ");
 	if ( ErrorSelect == ERROR_SELECT_RACE )
-		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 7 ] );//" 종족마크를 선택하세요 ");
+		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 7 ] );//" ????????? ????????? ");
 	if ( ErrorSelect == ERROR_SELECT_JOB )
-		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 8 ] );//"  캐릭터를 선택하세요  ");
+		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 8 ] );//"  ??????? ?????????  ");
 	if ( ErrorSelect == ERROR_SELECT_FACE )
-		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 9 ] ); //"캐릭터 얼굴을 선택하세요");
+		Message.Draw( smScreenWidth / 2 - 100, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 9 ] ); //"?????? ???? ?????????");
 	if ( ErrorSelect == ERROR_DELETE_CLAN_MEMBER )
-		Message.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 10 ] ); //"클랜에 가입되어 있는 캐릭터는 삭제할수 없습니다
+		Message.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 10 ] ); //"????? ?????? ??? ??????? ??????? ???????
 	if ( ErrorSelect == ERROR_CLAN_SERVER_NONE )
-		Message.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 11 ] ); //클랜 정보를 확인할수 없습니다
+		Message.Draw( smScreenWidth / 2 - 128, smScreenHeight / 2 + smScreenHeight / 6, HoTextSelectMessage[ 11 ] ); //??? ?????? ?????? ???????
 
 	if ( MessageBox.Flag )
 	{
@@ -3451,7 +3461,7 @@ int HoLogin::DrawFade()
 
 int HoLogin::MainFade()
 {
-	//FadeIn FadeOut 관련..
+	//FadeIn FadeOut ????..
 	if ( FadeCurrentState != FadeNextState )
 	{
 		if ( FadeNextState == FADE_IN )
@@ -3465,7 +3475,7 @@ int HoLogin::MainFade()
 
 int HoLogin::MainFadeIn()
 {
-	//나누는 250.0f는 단계다...
+	//?????? 250.0f?? ????...
 	if ( BlendValue > 0 )
 	{
 		BlendValue -= 6;
@@ -3514,7 +3524,7 @@ int HoLogin::MainFadeOut()
 
 void HoLogin::SetFade()
 {
-	//Fade In을 해야 할경우.... 점점 밝아 지는 경우..
+	//Fade In?? ??? ????.... ???? ??? ???? ???..
 
 	if ( FadeCurrentState == FADE_OUT )
 	{
@@ -3522,7 +3532,7 @@ void HoLogin::SetFade()
 		BlendValue = 255;
 		LoginVolume = 0;
 	}
-	else//Fade Out을 해야 할 경우...
+	else//Fade Out?? ??? ?? ???...
 	{
 		FadeNextState = FADE_OUT;
 		BlendValue = 0;

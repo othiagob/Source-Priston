@@ -97,6 +97,7 @@ public:
 	int						FaceBoxSmallImage[3];
 
 	BOOL					FaceSelectFirstFlag;
+	RECT					NickBarRect;
 	int						DrawTitle(int state);
 
 	int						ErrorDelayCount;

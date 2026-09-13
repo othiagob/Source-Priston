@@ -379,7 +379,7 @@ public:
 	//Equipe na arena
 	int nEquipeArena = 0;
 
-	//Nível do vip
+	//N?vel do vip
 	int vipLevel = 0;
 
 	smPAT3D	*Pattern;			//ÀÏÂ÷ ÆÐÅÏ
@@ -993,6 +993,10 @@ extern BOOL isEnemy;
 extern int smCHAR_CameraX;
 extern int smCHAR_CameraY;
 extern int smCHAR_CameraZ;
+
+extern int smCHAR_CameraAngX;
+extern int smCHAR_CameraAngY;
+extern int smCHAR_CameraAngZ;
 
 extern int CastleBattleZone_LineZ;
 extern int CastleBattleZone_DoorLineZ;

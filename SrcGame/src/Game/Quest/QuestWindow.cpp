@@ -197,8 +197,7 @@ static bool DrawHeaderIcon(const char* id, HeaderIconKind kind)
 	const ImVec2 p = ImGui::GetItemRectMin();
 	const ImVec2 b1(p.x + kHeaderBtnW, p.y + kHeaderBtnH);
 	ImDrawList* draw = ImGui::GetWindowDrawList();
-	draw->AddRectFilled(p, b1, hovered ? IM_COL32(56, 46, 22, 255) : IM_COL32(18, 20, 24, 255), kHeaderBtnRound);
-	draw->AddRect(p, b1, hovered ? kGoldBright : kGold, kHeaderBtnRound, 0, 1.2f);
+	DrawPlayerControlBezel(draw, p, b1, hovered);
 
 	const ImVec2 c((p.x + b1.x) * 0.5f, (p.y + b1.y) * 0.5f);
 	const ImU32 iconCol = IM_COL32(236, 220, 160, 255);
@@ -409,7 +408,7 @@ void QuestWindow::DrawTitleHeader(bool* p_open)
 
 	if (m_titleTex && m_titleW > 0 && m_titleH > 0)
 	{
-		const ImVec2 sz = FitImageSize(m_titleW, m_titleH, 210.0f, 32.0f);
+		const ImVec2 sz = FitImageSize(m_titleW, m_titleH, 260.0f, 38.0f);
 		const float x = p0.x + (size.x - sz.x) * 0.5f;
 		const float y = p0.y + (kMainHeaderH - sz.y) * 0.5f + 1.0f;
 		draw->AddImage((ImTextureID)m_titleTex, ImVec2(x, y), ImVec2(x + sz.x, y + sz.y));
@@ -418,7 +417,7 @@ void QuestWindow::DrawTitleHeader(bool* p_open)
 	{
 		const char* title = "DESAFIOS";
 		const ImVec2 ts = ImGui::CalcTextSize(title);
-		draw->AddText(ImVec2(p0.x + (size.x - ts.x) * 0.5f, p0.y + 20.0f), kGoldBright, title);
+		draw->AddText(ImVec2(p0.x + (size.x - ts.x) * 0.5f, p0.y + (kMainHeaderH - ts.y) * 0.5f), kGoldBright, title);
 	}
 
 	if (p_open)
@@ -568,18 +567,9 @@ void QuestWindow::DrawWindowChrome(float headerH)
 
 void QuestWindow::DrawOverlayChrome(float headerH)
 {
-	ImDrawList* draw = ImGui::GetWindowDrawList();
-	const ImVec2 p0 = ImGui::GetWindowPos();
-	const ImVec2 size = ImGui::GetWindowSize();
-	const ImVec2 p1(p0.x + size.x, p0.y + size.y);
-
-	draw->AddRectFilled(p0, p1, IM_COL32(10, 12, 16, 235), 0.0f);
-	draw->AddRectFilled(p0, ImVec2(p1.x, p0.y + headerH), kGoldFill, 0.0f);
-	draw->AddLine(ImVec2(p0.x + 1.0f, p0.y + headerH), ImVec2(p1.x - 1.0f, p0.y + headerH), kGold, 2.6f);
-	draw->AddLine(p0, ImVec2(p0.x, p1.y), kGold, 1.6f);
-	draw->AddLine(ImVec2(p1.x, p0.y), p1, kGold, 1.6f);
-	draw->AddLine(p0, ImVec2(p1.x, p0.y), kGold, 3.0f);
-	draw->AddLine(ImVec2(p0.x, p1.y), p1, kGold, 3.0f);
+	DrawPlayerWindowChrome(
+		ImGui::GetWindowDrawList(), headerH, kGold, kGoldFill,
+		kPlayerOverlayBezelThickness);
 }
 
 std::string QuestWindow::ToUtf8(const char* src) const
@@ -1327,7 +1317,10 @@ void QuestWindow::questOverlay(bool* p_open)
 	EnsureOverlayTitleTexture();
 
 	ImGuiIO& io = ImGui::GetIO();
-	if (m_overlayW <= 0.0f)
+	// DisplaySize cai pra quase zero com a janela minimizada. Se a gente
+	// reposicionar/clamp nesse momento, a taskbar vai parar em (0,0).
+	const bool displayOk = io.DisplaySize.x >= 200.0f && io.DisplaySize.y >= 150.0f;
+	if (!m_overlayHasPos)
 		ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x - 16.0f, 36.0f), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
 	else
 		ImGui::SetNextWindowPos(ImVec2(m_overlayX, m_overlayY), ImGuiCond_Always);
@@ -1360,11 +1353,12 @@ void QuestWindow::questOverlay(bool* p_open)
 	const float headerH = 36.0f;
 	const float iconStackW = kHeaderBtnW * 2.0f + kHeaderBtnGap + 20.0f;
 
-	if (m_overlayW <= 0.0f)
+	if (!m_overlayHasPos)
 	{
 		const ImVec2 spawn = ImGui::GetWindowPos();
 		m_overlayX = spawn.x;
 		m_overlayY = spawn.y;
+		m_overlayHasPos = true;
 	}
 
 	ImGui::SetCursorPos(ImVec2(8.0f, 4.0f));
@@ -1373,6 +1367,7 @@ void QuestWindow::questOverlay(bool* p_open)
 	{
 		m_overlayX += io.MouseDelta.x;
 		m_overlayY += io.MouseDelta.y;
+		m_overlayHasPos = true;
 	}
 
 	DrawOverlayChrome(headerH);
@@ -1382,9 +1377,9 @@ void QuestWindow::questOverlay(bool* p_open)
 	if (m_overlayTitleTex && m_overlayTitleW > 0 && m_overlayTitleH > 0)
 	{
 		const float titleAreaW = ImGui::GetWindowWidth() - iconStackW;
-		const ImVec2 sz = FitImageSize(m_overlayTitleW, m_overlayTitleH, 150.0f, 18.0f);
+		const ImVec2 sz = FitImageSize(m_overlayTitleW, m_overlayTitleH, 176.0f, 28.0f);
 		const float x = win.x + 10.0f + (titleAreaW - 8.0f - sz.x) * 0.5f;
-		const float y = win.y + (headerH - sz.y) * 0.5f;
+		const float y = win.y + (headerH - sz.y) * 0.5f + 2.0f;
 		draw->AddImage((ImTextureID)m_overlayTitleTex, ImVec2(x, y), ImVec2(x + sz.x, y + sz.y));
 	}
 	else
@@ -1438,12 +1433,23 @@ void QuestWindow::questOverlay(bool* p_open)
 				ImGui::BeginGroup();
 				ImGui::Dummy(ImVec2(0.0f, 4.0f));
 				ImGui::Indent(6.0f);
-				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertU32ToFloat4(nameCol));
-				if (ImGui::Selectable(name.empty() ? u8"(sem nome)" : name.c_str(), false))
+				const char* displayName = name.empty() ? u8"(sem nome)" : name.c_str();
+				const ImVec2 nameMin = ImGui::GetCursorScreenPos();
+				float nameW = ImGui::GetContentRegionAvail().x - 6.0f;
+				if (nameW < 1.0f)
+					nameW = 1.0f;
+				const float nameH = ImGui::GetTextLineHeight() + 2.0f;
+				ImGui::InvisibleButton("##QuestOverlayOpen", ImVec2(nameW, nameH));
+				const bool nameHovered = ImGui::IsItemHovered();
+				const bool nameClicked = ImGui::IsItemClicked();
+				const ImVec2 nameMax(nameMin.x + nameW, nameMin.y + nameH);
+				if (nameHovered)
+					cardDraw->AddRectFilled(nameMin, nameMax, IM_COL32(65, 54, 29, 115), 2.0f);
+				cardDraw->PushClipRect(nameMin, nameMax, true);
+				cardDraw->AddText(ImVec2(nameMin.x + 2.0f, nameMin.y + 1.0f), nameCol, displayName);
+				cardDraw->PopClipRect();
+				if (nameClicked)
 					FocusQuest(body.questID);
-				ImGui::PopStyleColor();
-				if (ImGui::IsItemHovered())
-					ImGui::SetTooltip("Abrir em Desafios");
 
 				int current = 0, total = 0;
 				GetQuestProgress(&body, &info, &current, &total);
@@ -1492,12 +1498,15 @@ void QuestWindow::questOverlay(bool* p_open)
 	}
 
 	const ImVec2 sz = ImGui::GetWindowSize();
-	if (m_overlayX < 0.0f) m_overlayX = 0.0f;
-	if (m_overlayY < 0.0f) m_overlayY = 0.0f;
-	if (m_overlayX + sz.x > io.DisplaySize.x) m_overlayX = io.DisplaySize.x - sz.x;
-	if (m_overlayY + sz.y > io.DisplaySize.y) m_overlayY = io.DisplaySize.y - sz.y;
-	m_overlayW = sz.x;
-	m_overlayH = sz.y;
+	if (displayOk && sz.x > 1.0f && sz.y > 1.0f)
+	{
+		if (m_overlayX + sz.x > io.DisplaySize.x) m_overlayX = io.DisplaySize.x - sz.x;
+		if (m_overlayY + sz.y > io.DisplaySize.y) m_overlayY = io.DisplaySize.y - sz.y;
+		if (m_overlayX < 0.0f) m_overlayX = 0.0f;
+		if (m_overlayY < 0.0f) m_overlayY = 0.0f;
+		m_overlayW = sz.x;
+		m_overlayH = sz.y;
+	}
 
 	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) || ImGui::IsWindowHovered())
 		ImGui::CaptureMouseFromApp(true);

@@ -30,22 +30,23 @@ algo que já ficou polido no jogo. Não invente cromado paralelo.
 Pinte no `ImDrawList` da própria janela. `WindowBg` fica transparente;
 o fundo real é o retângulo do chrome.
 
-- Fundo: `IM_COL32(10, 12, 16, 248)`.
-- Janela grande: `WindowRounding` nativo **0**. O rounding grande
-  do ImGui não aparece bem no DirectX. O contorno desenhado usa
-  rounding **~3.5** (o mesmo do mockup: cantos levemente suaves).
-- Contorno: **bezel de duas camadas** no `ImDrawList`, colado no
-  retângulo da janela (`DrawPlayerWindowChrome` em
-  `HUD/ImGuiWindowChrome.h`). Traço externo ~1.9, hairline interno
-  ~1.0 a ~3 px para dentro. Sem PNG 9-slice, sem losango, sem barra
-  grossa, sem terceira sombra. Popup usa o mesmo bezel.
+- Fundo: gradiente grafite/azul quase preto desenhado no `ImDrawList`.
+- Janela grande: `WindowRounding` nativo **0**. O rounding pequeno
+  existe somente no contorno desenhado.
+- Moldura: **vetorial**, compartilhada por `DrawPlayerWindowChrome`.
+  Perfil fino de pedra/metal (~3–4 px), luz em cima/esquerda, sombra
+  embaixo/direita e filete dourado interno. Pequenos entalhes ficam
+  dentro dos cantos; nenhum ornamento pode ultrapassar a janela.
+- Não usar PNG de painel, 9-slice, fundo tileado nem banner externo.
+  Imagens ficam restritas aos títulos 400×64.
 - Divisórias internas: **uma** linha dourada fina (header; lista|
   detalhe via `DrawPlayerColumnSplit`). Children de lista/detalhe
-  **sem** `ChildBorder` — a moldura da janela é o único quadro.
-- Overlay compacto: traço simples (não o bezel duplo).
-- Faixa do título (header ~50 px): `IM_COL32(20, 24, 32, 255)`.
-- Linha dourada sob o header: `IM_COL32(200, 170, 90, 220)`, ~1.5.
-- `WindowBorderSize` nativo = 0 (a borda é desenhada à mão).
+  **sem** `ChildBorder`.
+- Overlay compacto: o mesmo cromado vetorial em perfil mais fino
+  (~2–3 px), com altura automática.
+- Faixa do título (header ~50 px): cor uniforme `RGB(20,24,32)` e uma
+  divisória dourada fina. Não usar gradiente atrás de PNG com fundo opaco.
+- `WindowBorderSize` nativo = 0.
 - Arredondamento **só** em controles pequenos, e sempre suave (~2–3):
   botões, child, abas, plaquinha de seção. Nunca 8–10.
 
@@ -74,7 +75,12 @@ item fora da regra (ex.: fora do nível), não o título da lista.
 ## Título da janela
 
 - Centralizado na faixa do header (~50 px).
-- Preferir **imagem PNG**: texto dourado recortado, fundo transparente.
+- Preferir **imagem PNG** com fundo opaco `RGB(20,24,32)`. O header usa
+  exatamente a mesma cor, sem emenda visível no DX9. Padrão aplicado em
+  Desafios, `EM ANDAMENTO`, Loja de Coins, Loja de Tempo, Ranking e
+  Lista de Mix; novos títulos seguem o mesmo acabamento.
+- Acabamento do título: ouro antigo **fosco**, com textura/entalhes internos
+  em bronze escuro. Sem halo, bloom, brilho branco ou ponto especular forte.
 - **Ícone + nome** na mesma placa de ouro (adotado nas janelas grandes):
   relevo metálico à esquerda, mesmo metal/bisel das letras, vão de
   cerca de uma letra, depois o título. O grupo inteiro fica
@@ -86,7 +92,8 @@ item fora da regra (ex.: fora do nível), não o título da lista.
   Usar esta dimensão em Desafios, Configurações, Loja e **toda janela
   ImGui nova** daqui pra frente. Um arquivo só; o código reduz com
   proporção (`FitImageSize`) para a faixa (~210–320×32–40 na janela
-  grande, ~150×18 no overlay). Não precisa de um PNG menor só para o overlay.
+  grande, ~150–176×18–28 no overlay). Não precisa de PNG menor só para
+  o overlay.
 - Sempre recortar o desenho **dentro** dos 400×64. Canvas enorme
   (ex.: 1274×832) com fundo vazio vira um selo ilegível — a escala
   usa a imagem **inteira**.
@@ -187,14 +194,13 @@ moldura diferente.
 
 Quando a tela tiver um painel flutuante (progresso, atalho):
 
-- Compacto, arrastável, minimizável. Cantos **retos** (rounding 0).
-- Linha dourada do cabeçalho um pouco mais grossa (~2.6) que na janela
-  grande.
+- Compacto, arrastável, minimizável. Fundo e moldura vetoriais; nenhum
+  elemento decorativo pode sair do retângulo da janela.
 - Ícones − / + / x: **o mesmo botão de header das janelas grandes**
-  (retângulo ~28×22, rounding ~3, borda dourada, ícone geométrico).
-  Não usar quadrado 20 px sem rounding nem `SmallButton`.
+  (retângulo ~28×22, bisel de pedra pequeno + filete dourado, ícone
+  geométrico). Não usar quadrado 20 px sem rounding nem `SmallButton`.
 - Título: PNG no mesmo recorte do título da janela, ou texto dourado.
-  Overlay: caber em ~150×18 (menor que a janela grande).
+  Overlay: caber em até ~176×28 (menor que a janela grande).
 - Arrastar: `NoMove` + hitbox no header. Guardar X/Y e aplicar com
   `SetNextWindowPos` **antes** do `Begin`. Não chamar `SetWindowPos`
   no meio do frame — o cromado e o PNG saem de sincronia e o título
@@ -246,7 +252,7 @@ errado quebra o outro (ex.: minimapa `IlusÃµes`).
 
 1. Cromado local (`Push`/`Pop` com contagem igual). Sem
    `StyleColorArmageddon()`.
-2. Título PNG **400×64**, fundo transparente, em
+2. Título PNG **400×64**, fundo opaco `RGB(20,24,32)`, em
    `game/images/<tela>/<nome>.png` no cliente (`C:\Cliente Full`).
    Sem arquivo: texto dourado de fallback.
 3. Fechar = retângulo geométrico (`DrawHeaderClose` / `DrawHeaderIcon`).
