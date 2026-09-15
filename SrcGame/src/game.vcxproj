@@ -339,6 +339,7 @@
     <ClCompile Include="Game\HUD\MixWindow.cpp" />
     <ClCompile Include="Game\HUD\Party\CPartyWindow.cpp" />
     <ClCompile Include="Game\HUD\RankingWindow.cpp" />
+    <ClCompile Include="Game\HUD\WarehouseWindow.cpp" />
     <ClCompile Include="Game\HUD\RestaureWindow.cpp" />
     <ClCompile Include="Game\HUD\Roleta.cpp" />
     <ClCompile Include="Game\HUD\SodWindow.cpp" />
@@ -640,6 +641,7 @@
     <ClInclude Include="Game\HUD\MixWindow.h" />
     <ClInclude Include="Game\HUD\Party\CPartyWindow.h" />
     <ClInclude Include="Game\HUD\RankingWindow.h" />
+    <ClInclude Include="Game\HUD\WarehouseWindow.h" />
     <ClInclude Include="Game\HUD\RestaureWindow.h" />
     <ClInclude Include="Game\HUD\Roleta.h" />
     <ClInclude Include="Game\HUD\SodWindow.h" />

@@ -15,22 +15,32 @@ Projeto de MMO cliente-servidor em C++17, Visual Studio 2022 (toolset v143),
 - `dependencies/` = bibliotecas de terceiros vendorizadas (Delta3D,
   ziparchive) — nunca editar
 
-Documentação completa do projeto (vault Obsidian):
-`C:\Users\carol\Desktop\doc-projeto` (repo `othiagob/doc-projeto`).
-Há um caminho antigo em
-`C:\Users\carol\Desktop\OTHIAGOB PROJETO\source-priston\priston-documents`
-— use `doc-projeto` como fonte viva. Arquitetura em
-`02-Arquitetura/Arquitetura.md`, protocolo em
-`02-Arquitetura/Protocolo-de-Rede.md`, design em
-`05-Specs/SDD-Source-Priston.md`, evolução em `11-Evolucao/`.
-Leia-os (ou peça para eu ler) antes de mudanças estruturais.
+Tres diretorios nesta maquina (nao misturar). Detalhe:
+`.cursor/rules/05-directories-and-art.mdc`.
+
+| Papel | Caminho |
+|---|---|
+| Cliente do jogo | `C:\Cliente Full` |
+| Source code (este repo) | `C:\Source Priston\Source Priston` |
+| Documentacao (vault) | `C:\Users\carol\Desktop\doc-projeto` |
+
+Vault: repo `othiagob/doc-projeto`. Caminho antigo
+`OTHIAGOB PROJETO\source-priston\priston-documents` **nao** e a fonte viva.
+Livro de evolucao: `Home.md` no vault (`00-Inicio/Livro-de-Evolucao.md`).
+Arquitetura `02-Arquitetura/Arquitetura.md`, protocolo
+`Protocolo-de-Rede.md`, SDD `05-Specs/SDD-Source-Priston.md`, UI
+`12-UI-e-Artes/`. Leia-os (ou peca para eu ler) antes de mudancas
+estruturais.
+
+PNG/TGA novos: **Antigravity + Gemini**, gravar no Cliente Full. O Cursor
+nao gera esses arquivos de arte.
 
 ## Quem trabalha no projeto
 
 Uma pessoa (Thiago), **aprendendo C++ no processo**. Ao explicar mudanças,
 não assuma conhecimento avançado de C++ — explique brevemente o "porquê",
-não só o "o quê". Ele usa o Cursor como editor com IA e o Hermes para
-análises/documentação; ambos leem este mesmo contexto.
+não só o "o quê". Cursor = codigo e docs no Windows. Hermes / opencode =
+analise e vault. Artes visuais = Antigravity (Gemini).
 
 ## Regras de ouro (não negociáveis)
 
@@ -59,21 +69,38 @@ análises/documentação; ambos leem este mesmo contexto.
    em vez de impor um padrão novo.
 8. **Janela de jogador = padrão anotado.** Sempre que a tarefa for criar,
    abrir, remodelar ou refazer o layout de uma janela ImGui de jogador
-   (Desafios, Loja, Configurações, Ranking, Party e as que vierem),
+   (Desafios, Loja, Configurações, Ranking, Party, Armazém e as que vierem),
    **leia e siga** `.cursor/rules/15-imgui-windows.mdc` do começo ao fim.
-   Não invente cromado, título, acento ou botão paralelo. HUD clássico
-   de pedra (`sinbaram/`, inventário, HP) fica como está até o usuário
-   pedir para migrar aquela tela.
+   Entregue o **prompt de arte** (`06-antigravity-brief.mdc`): bronze do
+   login, botões centralizados da seleção, título 400×64. Cromado =
+   ImDrawList; PNG = Antigravity (Gemini). Não invente cromado paralelo.
+   HUD clássico de pedra (`sinbaram/`, inventário, HP) fica como está até
+   o usuário pedir para migrar aquela tela — o **armazém já migrou**
+   (ImGui, ADR 0006). Se pedir textura nova de pedra, o
+   prompt cita a pedra (`shop-1.bmp`), não o ImGui.
    Ferramentas desktop (`Server.exe`): `.cursor/rules/16-desktop-tools.mdc`
    (claro suave, acento azul). Não leve o cromado de jogador para o servidor.
+9. **Consultar o livro antes de mexer.** Criar, ajustar ou refatorar =
+   olhar o vault (`CHANGELOG`, `10-Processos/`, `11-Evolucao/`, specs, ADRs)
+   para ver se já trabalhamos nisso e o que foi revertido. Detalhe:
+   `.cursor/rules/01-consult-vault.mdc`. Ritual diario/semanal de sync
+   do vault: quando o usuario pedir (nao inventar commit).
 
 ## Como responder
 
+- Antes de criar, ajustar ou refatorar: consultar o vault (historia /
+  evolucao / spec / ADR). Ver `01-consult-vault.mdc`.
 - Antes de editar algo em `Shared/`, liste os pontos de impacto conhecidos.
 - Depois de qualquer edição, resuma: o que mudou, por que, e o que testar.
 - Se a tarefa tocar em protocolo de rede, cite o(s) `smTRANSCODE_*` envolvido(s)
   explicitamente.
 - Se a tarefa for janela/layout de **jogador**: trate `15-imgui-windows.mdc`
-  como contrato. Se for **ferramenta desktop** (`Server.exe`): `16-desktop-tools.mdc`.
+  como contrato **e** entregue o prompt de arte completo
+  (`06-antigravity-brief.mdc`) — referencias concretas (bronze do login,
+  botoes centralizados da selecao, titulo 400x64). Cromado = ImDrawList;
+  pecas de arquivo = Gemini. Se for **ferramenta desktop** (`Server.exe`):
+  `16-desktop-tools.mdc` (sem prompt Fallen Tale).
+- Artes visuais (PNG/TGA/BMP): **nao gerar**. Prompt para Antigravity
+  (Gemini); gravar em `C:\Cliente Full`. Paths: `05-directories-and-art.mdc`.
 - Explique conceitos em linguagem simples quando o usuário for iniciante —
   ele quer entender o que está fazendo, não só receber código pronto.

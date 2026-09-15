@@ -43,6 +43,7 @@
 
 #include "HUD\\MixWindow.h"
 #include "HUD\\RankingWindow.h"
+#include "HUD\\WarehouseWindow.h"
 #include "playsub.h"
 #include "cracker.h"
 #include "SkillSub.h"
@@ -416,6 +417,27 @@ void LeIniStr(char* Section, char* Key, char* szFileIni, char* Var1)
 #include "ofuscate.h"
 #include "Engine/Mouse/Mouse.h"
 extern CAntiCheat* pcAntiCheat;
+
+static int HudBlocksWorldMouse()
+{
+	if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse)
+		return TRUE;
+	if (Settings::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	if (QuestWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	if (NewShop::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	if (NewShopTime::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	return FALSE;
+}
 
 BOOL bAdjustWindow = FALSE;
 BOOL bNoLag = FALSE;
@@ -1270,6 +1292,12 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		if (GetForegroundWindow() != hWnd)
 			return 0;
 
+		if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard() && wParam != VK_ESCAPE)
+		{
+			VRKeyBuff[wParam] = 1;
+			break;
+		}
+
 		if (!NewShop::GetInstance()->editingNick)
 		{
 			if (KEYBOARDHANDLER->OnKeyPress(wParam, TRUE) && !sinMessageBoxShowFlag)
@@ -1296,6 +1324,11 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == VK_RETURN)
 		{
+			if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard())
+			{
+				VRKeyBuff[wParam] = 1;
+				break;
+			}
 			keydownEnt = 1;
 		}
 
@@ -1486,6 +1519,11 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == VK_ESCAPE && VRKeyBuff[wParam] == 0)
 		{
+			if (WarehouseWindow::GetInstance()->OnEscape())
+			{
+				VRKeyBuff[wParam] = 1;
+				break;
+			}
 			if (Settings::GetInstance()->IsOpen())
 			{
 				Settings::GetInstance()->Close();
@@ -1634,7 +1672,7 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 				if ((wParam & MK_MBUTTON))
 					SetMousePlay(3);
-				else
+				else if (!HudBlocksWorldMouse())
 				{
 					if (wParam == MK_LBUTTON || TraceMode_DblClick)
 						SetMousePlay(2);
@@ -1669,7 +1707,7 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 			if ((wParam & MK_MBUTTON))
 				SetMousePlay(3);
-			else
+			else if (!HudBlocksWorldMouse())
 			{
 				if (wParam == MK_LBUTTON || TraceMode_DblClick)
 					SetMousePlay(2);
@@ -1723,6 +1761,9 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			return 0;
 
 		if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
+		if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return 0;
 
 		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
@@ -1850,6 +1891,9 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			break;
 
 		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))

@@ -173,7 +173,7 @@ void cSKINCHANGER::Init()
 
 void cSKINCHANGER::Draw()
 {
-	if (!OpenFlag)
+	if (!OpenFlag || cWareHouse.OpenFlag)
 		return;
 
 	BaseX = 50;
@@ -251,7 +251,7 @@ void cSKINCHANGER::Draw()
 
 bool cSKINCHANGER::LButtonDown()
 {
-	if (!OpenFlag)
+	if (!OpenFlag || cWareHouse.OpenFlag)
 		return false;
 
 	if (isMousePos(BaseX + 162, BaseY + 166, 26, 26))

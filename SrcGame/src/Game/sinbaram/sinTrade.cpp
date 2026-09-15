@@ -1,4 +1,8 @@
 #include "sinLinkHeader.h"
+#include "..\\netplay.h"
+#include "..\\HUD\\WarehouseWindow.h"
+#include "..\\HUD\\MixWindow.h"
+#include "..\\cSkinChanger.h"
 #include "Utils\\Geometry.h"
 #define AGING_MONEY_FREE
 
@@ -185,7 +189,7 @@ int DownTradePosi[9][4] = {
 int TradeStartX = DownTradePosi[T_SET_BOX][0], TradeStartY = DownTradePosi[T_SET_BOX][1], TradeEndX = DownTradePosi[T_SET_BOX][2], TradeEndY = DownTradePosi[T_SET_BOX][3];
 
 char szAgingMsgBuff[128];
-char* SheltomName[MAX_SHELTOM] = { "Lucidy", "Fadeo", "Sparki", "Raident", "Transparo", "Murki", "Devine", "Celesto", "Mirage", "¹Inferna", "Enigma", "Bellum", "Ordo", "Sapphire" };
+char* SheltomName[MAX_SHELTOM] = { "Lucidy", "Fadeo", "Sparki", "Raident", "Transparo", "Murki", "Devine", "Celesto", "Mirage", "ï¿½Inferna", "Enigma", "Bellum", "Ordo", "Sapphire" };
 
 int BaseX = (WinSizeX - 260) / 2;
 int BaseY = (WinSizeY - 161) / 2;
@@ -370,8 +374,10 @@ void cTRADE::Draw()
 	sinInterHeight2 = -50;
 
 	int i = 0, j = 0;
+	const bool hideClassicNpc = WarehouseWindow::GetInstance()->ShouldHideClassicPanels();
 
-	DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), 90 + sinInterHeight2, cShop.lpShopMain, 0, 0, 344, 264);
+	// Pedra do baÃº: a janela ImGui (WarehouseWindow) substitui este painel.
+	// CraftItemMain.bmp (Item / Item+) sÃ³ pode aparecer se o baÃº NÃƒO estiver na tela.
 
 	if (chaPremiumitem.m_CaravanArma > 0 && chaPremiumitem.m_CaravanArma > chaPremiumitem.m_CaravanBuma && chaPremiumitem.m_CaravanArma > chaPremiumitem.m_CaravanHopy)
 		DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), 90 + sinInterHeight2, cShop.MainCaravan_Arma, 0, 0, 344, 264);
@@ -382,11 +388,15 @@ void cTRADE::Draw()
 	if (chaPremiumitem.m_CaravanBuma > 0 && chaPremiumitem.m_CaravanBuma > chaPremiumitem.m_CaravanHopy && chaPremiumitem.m_CaravanBuma > chaPremiumitem.m_CaravanArma)
 		DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), 90 + sinInterHeight2, cShop.MainCaravan_Buma, 0, 0, 344, 264);
 
+	if (!hideClassicNpc) {
+	if (cTrade.OpenFlag) {
 	DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_TRADE]), 90 + sinInterHeight2, cShop.lpShopMain, 0, 0, 344, 264);
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_TRADE]), 47, cShop.lpTitle_Trade, 0, 0, 111, 244);
 
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_TRADE]), 47, cShop.lpTitle_T, 0, 0, 111, 32);
+	}
 
+	if (cCraftItem.OpenFlag) {
 	DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]), 90 + sinInterHeight2, cShop.lpShopMain, 0, 0, 344, 264);
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]), 47, cShop.lpTitle_CraftItem, 0, 0, 111, 32);
 	DrawSprite(18 - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]), 135 + sinInterHeight2, cShop.lpCraftItemMain, 0, 0, 320, 208);
@@ -402,25 +412,34 @@ void cTRADE::Draw()
 		DrawSprite(18 - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]), 135 + sinInterHeight2, lpForceMain, 0, 0, 217, 208);
 		DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]), 47, lpForceTitle, 0, 0, 111, 32);
 	}
+	}
 
+	if (cAging.OpenFlag) {
 	DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_AGING]), 90 + sinInterHeight2, cShop.lpShopMain, 0, 0, 344, 264);
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_AGING]), 47, cShop.lpTitle_Aging, 0, 0, 111, 32);
 	DrawSprite(18 - (256 + 128 - sinMoveKindInter[SIN_AGING]), 135 + sinInterHeight2, cShop.lpCraftItemMain, 0, 0, 320, 208);
 	DrawSprite(200 - (256 + 128 - sinMoveKindInter[SIN_AGING]), 314 + sinInterHeight2, cShop.lpGoldEdit, 0, 0, 98, 21);
+	}
 
+	if (SmeltingItem.OpenFlag) {
 	DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_SMELTING]), 90 + sinInterHeight2, cShop.lpShopMain, 0, 0, 344, 264);
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_SMELTING]), 47, cShop.lpTitle_SmeltingItem, 0, 0, 111, 32);
 	DrawSprite(18 - (256 + 128 - sinMoveKindInter[SIN_SMELTING]), 135 + sinInterHeight2, cShop.lpSmeltingItemMain, 0, 0, 320, 208);
 	DrawSprite(200 - (256 + 128 - sinMoveKindInter[SIN_SMELTING]), 314 + sinInterHeight2, cShop.lpGoldEdit, 0, 0, 98, 21);
+	}
 
+	if (ManufactureItem.m_OpenFlag) {
 	DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]), 90 + sinInterHeight2, cShop.lpShopMain, 0, 0, 344, 264);
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]), 47, cShop.lpTitle_ManufactureItem, 0, 0, 111, 32);
 	DrawSprite(18 - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]), 135 + sinInterHeight2, cShop.lpManufactureItemMain, 0, 0, 320, 208);
 	DrawSprite(200 - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]), 314 + sinInterHeight2, cShop.lpGoldEdit, 0, 0, 98, 21);
+	}
 
+	if (cMixtureReset.OpenFlag) {
 	DrawSprite(0 - (256 + 128 - sinMoveKindInter[SIN_MIXTURE_RESET]), 90 + sinInterHeight2, cShop.lpShopMain, 0, 0, 344, 264);
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_MIXTURE_RESET]), 47, cShop.lpMResetTitle, 0, 0, 111, 32);
 	DrawSprite(18 - (256 + 128 - sinMoveKindInter[SIN_MIXTURE_RESET]), 135 + sinInterHeight2, cShop.lpMResetMain, 0, 0, 320, 208);
+	}
 
 	for (i = 0; i < 9; i++)
 		DrawSprite(21 + (i * 22) - (256 + 128 - sinMoveKindInter[SIN_TRADE]), 224 + sinInterHeight2, lpCenterBox, 0, 0, 22, 21);
@@ -447,8 +466,9 @@ void cTRADE::Draw()
 	{
 		DrawSprite(DownTradePosi[T_CHECK_POSI][0] - (256 + 128 - sinMoveKindInter[SIN_TRADE]), DownTradePosi[T_CHECK_POSI][1], lpCheck_Glay, 0, 0, 26, 26);
 	}
+	}
 
-	if (CloseWareHouseFlag) {
+	if (false && CloseWareHouseFlag) {
 		DrawSprite(304 - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), 313 + sinInterHeight2, cShop.lpExit, 0, 0, 20, 20);
 		DrawSprite(304 - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), 313 - 27 + sinInterHeight2, cInvenTory.lpExitInfo, 0, 0, 47, 27);
 	}
@@ -490,7 +510,7 @@ void cTRADE::Draw()
 			break;
 		}
 
-		// Botão renomear
+		// Botï¿½o renomear
 		if (CustomHud::GetInstance()->MouseAction(270 - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), 90 + 177 + sinInterHeight2, 28, 28))
 		{
 			DrawSprite(270 - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), 100 + 177 + sinInterHeight2, cShop.Caravan_Rename_, 0, 0, 28, 28);
@@ -562,7 +582,7 @@ void cTRADE::Draw()
 		CHANGECARAVANNAME->Render();
 	}
 
-	if (cAging.OpenFlag) {
+	if (!hideClassicNpc && cAging.OpenFlag) {
 		for (i = 0; i < 4; i++) {
 			for (int t = 0; t < 3; t++)
 				if (AgingLevelSheltomIndex[i][t]) {
@@ -573,7 +593,7 @@ void cTRADE::Draw()
 		}
 	}
 
-	if (SmeltingItem.OpenFlag)
+	if (!hideClassicNpc && SmeltingItem.OpenFlag)
 	{
 		int SheltomIndex = 0;
 		if (S_smeltingItem.SmeltingItem[0].Flag)
@@ -590,89 +610,84 @@ void cTRADE::Draw()
 	switch (TradeColorIndex) {
 	case SET_ITEM_CHECK_COLOR:
 		if (MouseItem.Flag) {
+			if (!cWareHouse.OpenFlag) {
 			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_TRADE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
-			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_AGING]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_SMELTING]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_MIXTURE_RESET]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
+			}
 			dsDrawColorBox(sinInvenColor[0], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		}
 		break;
 	case OVERLAP_ITEM_COLOR:
 		if (TradeCrashItemIndex[0])
 		{
-			dsDrawColorBox(sinInvenColor[1], sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].x - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]),
-				sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].y, sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].w, sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].h);
-
 			dsDrawColorBox(sinInvenColor[1], sCaravan.CaravanItem[TradeCrashItemIndex[0] - 1].x - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]),
 				sCaravan.CaravanItem[TradeCrashItemIndex[0] - 1].y, sCaravan.CaravanItem[TradeCrashItemIndex[0] - 1].w, sCaravan.CaravanItem[TradeCrashItemIndex[0] - 1].h);
 		}
 
 		break;
 	case NOT_SETTING_COLOR:
+		if (!cWareHouse.OpenFlag) {
 		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_TRADE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
-		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_AGING]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_SMELTING]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_MIXTURE_RESET]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
+		}
 		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		break;
 
 	case NOT_AGING_ITEM:
-		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_AGING]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
+		if (!cWareHouse.OpenFlag)
+			dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_AGING]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 
 	case NOT_USE_COLOR:
-		dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_TRADE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
+		if (!cWareHouse.OpenFlag)
+			dsDrawColorBox(sinInvenColor[2], TradeColorRect.left - (256 + 128 - sinMoveKindInter[SIN_TRADE]), TradeColorRect.top, TradeColorRect.right, TradeColorRect.bottom);
 		break;
 
 	case SELECT_ITEM_COLOR:
 		for (i = 0; i < 10; i++) {
 			if (CopyItemIndex7[i]) {
-				dsDrawColorBox(sinInvenColor[4], sWareHouse.WareHouseItem[CopyItemIndex7[i] - 1].x - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]),
-					sWareHouse.WareHouseItem[CopyItemIndex7[i] - 1].y, sWareHouse.WareHouseItem[CopyItemIndex7[i] - 1].w, sWareHouse.WareHouseItem[CopyItemIndex7[i] - 1].h);
-
 				dsDrawColorBox(sinInvenColor[4], sCaravan.CaravanItem[CopyItemIndex7[i] - 1].x - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]),
 					sCaravan.CaravanItem[CopyItemIndex7[i] - 1].y, sCaravan.CaravanItem[CopyItemIndex7[i] - 1].w, sCaravan.CaravanItem[CopyItemIndex7[i] - 1].h);
 			}
 		}
 		if (!SelectTradeItemIndex)break;
-		if (ItemKindFlag == 1) {
+		if (!cWareHouse.OpenFlag && ItemKindFlag == 1) {
 			dsDrawColorBox(sinInvenColor[4], sTrade.TradeItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_TRADE]),
 				sTrade.TradeItem[SelectTradeItemIndex - 1].y, sTrade.TradeItem[SelectTradeItemIndex - 1].w, sTrade.TradeItem[SelectTradeItemIndex - 1].h);
 		}
 
-		if (ItemKindFlag == 2) {
+		if (!cWareHouse.OpenFlag && ItemKindFlag == 2) {
 			dsDrawColorBox(sinInvenColor[4], sTradeRecv.TradeItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_TRADE]),
 				sTradeRecv.TradeItem[SelectTradeItemIndex - 1].y - T_REVISION_Y, sTradeRecv.TradeItem[SelectTradeItemIndex - 1].w, sTradeRecv.TradeItem[SelectTradeItemIndex - 1].h);
 		}
-		if (sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].Flag)
-			dsDrawColorBox(sinInvenColor[4], sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]),
-				sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].y, sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].w, sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].h);
-		if (sCraftItem.CraftItem[SelectTradeItemIndex - 1].Flag)
+		if (!cWareHouse.OpenFlag && sCraftItem.CraftItem[SelectTradeItemIndex - 1].Flag)
 			dsDrawColorBox(sinInvenColor[4], sCraftItem.CraftItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_CRAFTITEM]),
 				sCraftItem.CraftItem[SelectTradeItemIndex - 1].y, sCraftItem.CraftItem[SelectTradeItemIndex - 1].w, sCraftItem.CraftItem[SelectTradeItemIndex - 1].h);
-		if (sAgingItem.AgingItem[SelectTradeItemIndex - 1].Flag)
+		if (!cWareHouse.OpenFlag && sAgingItem.AgingItem[SelectTradeItemIndex - 1].Flag)
 			dsDrawColorBox(sinInvenColor[4], sAgingItem.AgingItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_AGING]),
 				sAgingItem.AgingItem[SelectTradeItemIndex - 1].y, sAgingItem.AgingItem[SelectTradeItemIndex - 1].w, sAgingItem.AgingItem[SelectTradeItemIndex - 1].h);
 		if (sCaravan.CaravanItem[SelectTradeItemIndex - 1].Flag)
 			dsDrawColorBox(sinInvenColor[4], sCaravan.CaravanItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]),
 				sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].y, sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].w, sWareHouse.WareHouseItem[SelectTradeItemIndex - 1].h);
-		if (S_smeltingItem.SmeltingItem[SelectTradeItemIndex - 1].Flag)
+		if (!cWareHouse.OpenFlag && S_smeltingItem.SmeltingItem[SelectTradeItemIndex - 1].Flag)
 		{
 			dsDrawColorBox(sinInvenColor[4], S_smeltingItem.SmeltingItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_SMELTING]),
 				S_smeltingItem.SmeltingItem[SelectTradeItemIndex - 1].y, S_smeltingItem.SmeltingItem[SelectTradeItemIndex - 1].w, S_smeltingItem.SmeltingItem[SelectTradeItemIndex - 1].h);
 		}
 
-		if (g_sManufactureItem.ManufactureItem[SelectTradeItemIndex - 1].Flag)
+		if (!cWareHouse.OpenFlag && g_sManufactureItem.ManufactureItem[SelectTradeItemIndex - 1].Flag)
 		{
 			dsDrawColorBox(sinInvenColor[4], g_sManufactureItem.ManufactureItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]),
 				g_sManufactureItem.ManufactureItem[SelectTradeItemIndex - 1].y, g_sManufactureItem.ManufactureItem[SelectTradeItemIndex - 1].w, g_sManufactureItem.ManufactureItem[SelectTradeItemIndex - 1].h);
 		}
-		if (sMixtureResetItem.MixtureResetItem[SelectTradeItemIndex - 1].Flag)
+		if (!cWareHouse.OpenFlag && sMixtureResetItem.MixtureResetItem[SelectTradeItemIndex - 1].Flag)
 		{
 			dsDrawColorBox(sinInvenColor[4], sMixtureResetItem.MixtureResetItem[SelectTradeItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_MIXTURE_RESET]),
 				sMixtureResetItem.MixtureResetItem[SelectTradeItemIndex - 1].y, sMixtureResetItem.MixtureResetItem[SelectTradeItemIndex - 1].w, sMixtureResetItem.MixtureResetItem[SelectTradeItemIndex - 1].h);
@@ -681,6 +696,7 @@ void cTRADE::Draw()
 		break;
 
 	}
+	if (!cWareHouse.OpenFlag) {
 	for (i = 0; i < MAX_TRADE_ITEM; i++) {
 		if (sTrade.TradeItem[i].Flag) {
 			DrawSprite(sTrade.TradeItem[i].x - (256 + 128 - sinMoveKindInter[SIN_TRADE]), sTrade.TradeItem[i].y, sTrade.TradeItem[i].lpItem, 0, 0, sTrade.TradeItem[i].w, sTrade.TradeItem[i].h);
@@ -696,6 +712,7 @@ void cTRADE::Draw()
 			}
 
 		}
+	}
 	}
 	if (TradeRequestFlag)
 	{
@@ -713,21 +730,6 @@ void cTRADE::Draw()
 
 	}
 
-	for (i = 0; i < 100; i++) {
-		if (sWareHouse.WareHouseItem[i].Flag) {
-			DrawSprite(sWareHouse.WareHouseItem[i].x - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), sWareHouse.WareHouseItem[i].y, sWareHouse.WareHouseItem[i].lpItem, 0, 0, sWareHouse.WareHouseItem[i].w, sWareHouse.WareHouseItem[i].h);
-			if ((sWareHouse.WareHouseItem[i].CODE & sinITEM_MASK2) == sinFO1) {
-				cInvenTory.DrawForceOrbEffect(sWareHouse.WareHouseItem[i].x - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), sWareHouse.WareHouseItem[i].y);
-			}
-
-		}
-	}
-
-	DrawSprite(231 - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), 243 + sinInterHeight2, cShop.lpGoldEdit, 0, 0, 99, 24);
-	DrawSprite(231 - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), 241 + sinInterHeight2, cShop.lpWeightEdit, 0, 0, 20, 20);
-	DrawSprite(243 - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), 100, cShop.lpTitle_WareHouse, 0, 0, 79, 40);
-
-
 	for (i = 0; i < 100; i++)
 	{
 		if (sCaravan.CaravanItem[i].Flag)
@@ -743,6 +745,7 @@ void cTRADE::Draw()
 	//DrawSprite(231 - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), 241 + sinInterHeight2, cShop.Caravan_Stay, 0, 0, 20, 20);
 	//DrawSprite(243 - (256 + 128 - sinMoveKindInter[SIN_CARAVANA]), 100, cShop.lpTitle_WareHouse, 0, 0, 79, 40);
 
+	if (!cWareHouse.OpenFlag) {
 	if (AgingCheckSheltomFlag) {
 		DrawSprite(158 - (256 + 128 - sinMoveKindInter[SIN_AGING]), 222 + sinInterHeight2, cShop.lpCraftItemButton, 0, 0, 26, 26);
 
@@ -837,11 +840,12 @@ void cTRADE::Draw()
 			DrawSprite(g_sManufactureItem.ManufactureItem[i].x - (256 + 128 - sinMoveKindInter[SIN_MANUFACTURE]), g_sManufactureItem.ManufactureItem[i].y, g_sManufactureItem.ManufactureItem[i].lpItem, 0, 0, g_sManufactureItem.ManufactureItem[i].w, g_sManufactureItem.ManufactureItem[i].h);
 		}
 	}
+	}
 
 	CraftItemMessageBoxPosi.x = 230;
 	CraftItemMessageBoxPosi.y = 200;
 
-	if (ShowItemCraftMessageFlag || ShowItemAgingMessageFlag || ShowItemSmeltingMessageFlag || ShowItemManufactureMessageFlag || ShowItemOverSpace) {
+	if (!cWareHouse.OpenFlag && (ShowItemCraftMessageFlag || ShowItemAgingMessageFlag || ShowItemSmeltingMessageFlag || ShowItemManufactureMessageFlag || ShowItemOverSpace)) {
 		for (i = 0; i < CraftItemMessageSize.x; i++) {
 			for (int j = 0; j < CraftItemMessageSize.y; j++) {
 				if (i == 0 && j == 0)
@@ -867,6 +871,8 @@ void cTRADE::Draw()
 			}
 		}
 	}
+
+	WarehouseWindow::GetInstance()->EndFrameClassicDraw();
 }
 
 DWORD	dwTradeDelayTime = 0;
@@ -882,6 +888,8 @@ DWORD   dwForceDelayTime = 0;
 
 void cTRADE::Main()
 {
+	if (WarehouseWindow::GetInstance()->ConsumeCloseRequest() && cWareHouse.OpenFlag)
+		cWareHouse.CloseWareHouse();
 
 	if (cCraftItem.ForceFlag) {
 		if (MixItemNoCopyFlag) {
@@ -1008,15 +1016,24 @@ void cTRADE::Main()
 	}
 
 	if (cWareHouse.OpenFlag) {
-		if (pCursorPos.x >= DownTradePosi[T_CLOSE_POSI][0] && pCursorPos.x <= DownTradePosi[T_CLOSE_POSI][2] &&
-			pCursorPos.y >= DownTradePosi[T_CLOSE_POSI][1] && pCursorPos.y <= DownTradePosi[T_CLOSE_POSI][3]) {
-			CloseWareHouseFlag = 1;
-		}
-		cWareHouse.PickUpWareHouseItem(pCursorPos.x, pCursorPos.y);
-		if (MouseItem.Flag) {
-			cWareHouse.SetWareHouseItemAreaCheck(&MouseItem);
+		cCraftItem.OpenFlag = 0;
+		cCraftItem.ForceFlag = 0;
+		cAging.OpenFlag = 0;
+		SmeltingItem.OpenFlag = 0;
+		ManufactureItem.m_OpenFlag = 0;
+		cMixtureReset.OpenFlag = 0;
+		MixWindow::GetInstance()->openFlag = false;
+		if (cSkinChanger.isOpen())
+			cSkinChanger.Close();
+		CraftItemButtonIndex = 0;
+		sinMoveKindInter[SIN_WAREHOUSE] = 0;
+		sinMoveKindInter[SIN_CRAFTITEM] = 0;
+		sinMoveKindInter[SIN_AGING] = 0;
+		sinMoveKindInter[SIN_SMELTING] = 0;
+		sinMoveKindInter[SIN_MANUFACTURE] = 0;
+		sinMoveKindInter[SIN_MIXTURE_RESET] = 0;
+		sinMoveKindInter[SIN_TRADE] = 0;
 
-		}
 		sWareHouse.BuyAreaCount = 10;
 		sWareHouse.Weight[1] = (sWareHouse.BuyAreaCount * 100) + 196;
 
@@ -1097,7 +1114,7 @@ void cTRADE::Main()
 		}
 	}
 
-	if (cCraftItem.OpenFlag || cAging.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag) {
+	if (!cWareHouse.OpenFlag && (cCraftItem.OpenFlag || cAging.OpenFlag || SmeltingItem.OpenFlag || ManufactureItem.m_OpenFlag || cMixtureReset.OpenFlag)) {
 		if (!MouseItem.Flag) {
 			if (pCursorPos.x >= 158 && pCursorPos.x <= 158 + 26 &&
 				pCursorPos.y >= 222 + sinInterHeight2 && pCursorPos.y <= 222 + 26 + sinInterHeight2) {
@@ -1121,7 +1138,7 @@ void cTRADE::Main()
 		}
 
 	}
-	if (cAging.OpenFlag) {
+	if (!cWareHouse.OpenFlag && cAging.OpenFlag) {
 		if (MouseItem.Flag) {
 			cAging.SetAgingItemAreaCheck(&MouseItem);
 		}
@@ -1130,7 +1147,7 @@ void cTRADE::Main()
 
 	}
 
-	if (SmeltingItem.OpenFlag)
+	if (!cWareHouse.OpenFlag && SmeltingItem.OpenFlag)
 	{
 		if (MouseItem.Flag)
 		{
@@ -1152,7 +1169,7 @@ void cTRADE::Main()
 		}
 	}
 
-	if (ManufactureItem.m_OpenFlag)
+	if (!cWareHouse.OpenFlag && ManufactureItem.m_OpenFlag)
 	{
 		if (MouseItem.Flag)
 		{
@@ -1164,7 +1181,7 @@ void cTRADE::Main()
 		}
 	}
 
-	if (cMixtureReset.OpenFlag)
+	if (!cWareHouse.OpenFlag && cMixtureReset.OpenFlag)
 	{
 		if (MouseItem.Flag)
 			cMixtureReset.SetMixtureItemResetAreaCheck(&MouseItem);
@@ -1212,10 +1229,12 @@ void cTRADE::Close()
 
 }
 /*----------------------------------------------------------------------------*
-*						Botão Esquerdo no trade
+*						Botï¿½o Esquerdo no trade
 *-----------------------------------------------------------------------------*/
 void cTRADE::LButtonDown(int x, int y)
 {
+	if (cWareHouse.OpenFlag)
+		return;
 
 	if (LbuttonUpCheckFlag)return;
 
@@ -1289,17 +1308,12 @@ void cTRADE::LButtonDown(int x, int y)
 
 	}
 
-	if (CloseWareHouseFlag)
-	{
-		cWareHouse.CloseWareHouse();
-	}
-
 	if (CloseCaravanFlag)
 	{
 		Caravana::GetInstance()->CloseCaravan();
 	}
 
-	if (cWareHouse.OpenFlag)
+	if (false && cWareHouse.OpenFlag)
 	{
 		if (MouseItem.Flag) {
 
@@ -1695,7 +1709,7 @@ void cTRADE::LButtonDown(int x, int y)
 							{
 								int LineCount = 0, Temp;
 								ShowItemOverSpace = 1;
-								lstrcpy(szCraftItemBuff, "°ø°£À» È®º¸ÇØ ÁÖ¼¼¿ä");
+								lstrcpy(szCraftItemBuff, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½");
 
 								strcat(szCraftItemBuff, "\r");
 								Temp = lstrlen(szCraftItemBuff);
@@ -2153,7 +2167,7 @@ void cTRADE::RButtonDown(int x, int y)
 		}
 	}
 
-	//Clique direito para remover itens da limpeza para o inventário
+	//Clique direito para remover itens da limpeza para o inventï¿½rio
 	if (cMixtureReset.OpenFlag) {
 		if (!sinCraftItemStartFlag2 && !MixCancelButtonDelayFlag) {
 			if (cMixtureReset.PickUpMixtureResetItem(x, y, TRUE)) {
@@ -2169,7 +2183,7 @@ void cTRADE::RButtonDown(int x, int y)
 		}
 	}
 
-	//Clique direito para remover itens da fundição para o inventário
+	//Clique direito para remover itens da fundiï¿½ï¿½o para o inventï¿½rio
 	if (SmeltingItem.OpenFlag) {
 		if (!sinCraftItemStartFlag2 && !MixCancelButtonDelayFlag) {
 			if (SmeltingItem.PickUpSmeltingItem(x, y, TRUE)) {
@@ -2185,7 +2199,7 @@ void cTRADE::RButtonDown(int x, int y)
 		}
 	}
 
-	//Clique direito para remover itens da criação para o inventário
+	//Clique direito para remover itens da criaï¿½ï¿½o para o inventï¿½rio
 	if (ManufactureItem.m_OpenFlag) {
 		if (!sinCraftItemStartFlag2 && !MixCancelButtonDelayFlag) {
 			if (ManufactureItem.PickUpManufactureItem(x, y, TRUE)) {
@@ -2201,7 +2215,7 @@ void cTRADE::RButtonDown(int x, int y)
 		}
 	}
 
-	//Clique direito para remover itens da troca para o inventário
+	//Clique direito para remover itens da troca para o inventï¿½rio
 	if (cTrade.OpenFlag) {
 		if (cTrade.PickUpTradeItem(x, y, TRUE)) {
 			if (cCraftItem.CraftCheckEmptyArea(&MouseItem)) {
@@ -2215,31 +2229,14 @@ void cTRADE::RButtonDown(int x, int y)
 		}
 	}
 
-	//Clique direito para remover itens do armazém para o inventário
+	// Clique direito na grade: a janela ImGui trata em HandleDragAndClick.
 	if (cWareHouse.OpenFlag)
 	{
-		if (!cInvenTory.CheckSetOk(&MouseItem, 1))
-		{
-			cMessageBox.ShowMessageEvent("Excede o peso limite.");
+		if (WarehouseWindow::GetInstance()->IsOverGrid(x, y))
 			return;
-		}
-
-		if (cWareHouse.PickUpWareHouseItem(x, y, TRUE))
-		{
-			if (cCraftItem.CraftCheckEmptyArea(&MouseItem))
-			{
-				MouseItem.x = MouseItem.SetX;
-				MouseItem.y = MouseItem.SetY;
-				cInvenTory.LastSetInvenItem(&MouseItem);
-			}
-			else
-			{
-				cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
-			}
-		}
 	}
 
-	//Clique direito para remover itens do armazém para o inventário
+	//Clique direito para remover itens do armazï¿½m para o inventï¿½rio
 	if (Caravana::GetInstance()->OpenFlag)
 	{
 		if (Caravana::GetInstance()->PickUpCaravanItem(x, y, TRUE))
@@ -2270,9 +2267,9 @@ void cTRADE::KeyDown()
 {
 	/*
 		if(sinGetKeyClick('M')){
-			lstrcpy(szCraftItemBuff,"¸ðµç¼Ó¼º +5\r±â·Â +10\r¸íÁß·Â +50\r ÃÖ´ë°ø°Ý·Â+5\r"); //¾ÆÀÌÅÛ Á¤º¸¸¦ º¸¿©ÁØ´Ù
-			CraftItemMessageSize.x = 14;           //¹Ú½º »çÀÌÁî
-			CraftItemMessageSize.y = ((3)*2)+2;  //¹Ú½º »çÀÌÁî
+			lstrcpy(szCraftItemBuff,"ï¿½ï¿½ï¿½?ï¿½ +5\rï¿½ï¿½ï¿½ +10\rï¿½ï¿½ï¿½?ï¿½ +50\r ï¿½?ï¿½ï¿½ï¿½?ï¿½+5\r"); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
+			CraftItemMessageSize.x = 14;           //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			CraftItemMessageSize.y = ((3)*2)+2;  //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 		}
@@ -2289,8 +2286,11 @@ void cTRADE::DrawTradeText()
 	BaseY = (WinSizeY - 161) / 2;
 	SIZE size = {};
 
-	if (ShowItemAgingMessageFlag || ShowItemCraftMessageFlag || TradeRequestFlag || ShowItemSmeltingMessageFlag || ShowItemManufactureMessageFlag || ShowItemOverSpace || sinMoveKindInter[SIN_TRADE] ||
-		sinMoveKindInter[SIN_CRAFTITEM] || sinMoveKindInter[SIN_WAREHOUSE] || sinMoveKindInter[SIN_AGING] || sinMoveKindInter[SIN_SMELTING] || sinMoveKindInter[SIN_MANUFACTURE] || sinMoveKindInter[SIN_CARAVANA]) {
+	if (ShowItemAgingMessageFlag || ShowItemCraftMessageFlag || TradeRequestFlag || ShowItemSmeltingMessageFlag || ShowItemManufactureMessageFlag || ShowItemOverSpace ||
+		sinMoveKindInter[SIN_CARAVANA] ||
+		(!WarehouseWindow::GetInstance()->ShouldHideClassicPanels() &&
+			(sinMoveKindInter[SIN_TRADE] || sinMoveKindInter[SIN_CRAFTITEM] || sinMoveKindInter[SIN_AGING] ||
+			sinMoveKindInter[SIN_SMELTING] || sinMoveKindInter[SIN_MANUFACTURE]))) {
 
 		int i;
 		HDC hdc = NULL;
@@ -2318,7 +2318,7 @@ void cTRADE::DrawTradeText()
 
 		}
 
-		if (cWareHouse.OpenFlag)
+		if (false && cWareHouse.OpenFlag)
 		{
 			memset(strBuff, 0, sizeof(strBuff));
 			NumLineComa(sWareHouse.Money - 2023, strBuff);
@@ -2424,7 +2424,7 @@ void cTRADE::DrawTradeText()
 
 		char szMoneyTemp[256];
 
-		if (sAgingItem.AgingItem[0].Flag)
+		if (!cWareHouse.OpenFlag && sAgingItem.AgingItem[0].Flag)
 		{
 			if (AgingEvento == TRUE)
 			{
@@ -2437,7 +2437,7 @@ void cTRADE::DrawTradeText()
 			else
 			{
 #ifdef HASIEGE_MODE
-				// Fórmula de valor do aging
+				// Fï¿½rmula de valor do aging
 				wsprintf(szMoneyTemp, "%d", cShop.haShopItemPrice((sAgingItem.AgingItem[0].sItemInfo.Price + (sAgingItem.AgingItem[0].sItemInfo.Price * sAgingItem.AgingItem[0].sItemInfo.ItemAgingNum[0])) / 2));
 #else
 				wsprintf(szMoneyTemp, "%d", (sAgingItem.AgingItem[0].sItemInfo.Price + (sAgingItem.AgingItem[0].sItemInfo.Price * sAgingItem.AgingItem[0].sItemInfo.ItemAgingNum[0])) / 2);
@@ -2473,7 +2473,7 @@ void cTRADE::DrawTradeText()
 			dsTextLineOut(hdc, CheckEditSize(200, 1, chanceStrQuebra), 324 + sinInterHeight2, chanceStrQuebra, lstrlen(chanceStrQuebra));
 		}
 
-		if (sCraftItem.CraftItem[0].Flag)
+		if (!cWareHouse.OpenFlag && sCraftItem.CraftItem[0].Flag)
 		{
 			if (MixEvento == TRUE)
 			{
@@ -2490,7 +2490,7 @@ void cTRADE::DrawTradeText()
 			dsTextLineOut(hdc, CheckEditSize(200, 325, szMoneyTemp), 318 + sinInterHeight2, szMoneyTemp, lstrlen(szMoneyTemp));
 		}
 
-		if (cCraftItem.ForceFlag) {
+		if (!cWareHouse.OpenFlag && cCraftItem.ForceFlag) {
 #ifdef HASIEGE_MODE
 			wsprintf(szMoneyTemp, "%d", cShop.haShopItemPrice(ForceItemPrice2));
 #else
@@ -2500,13 +2500,13 @@ void cTRADE::DrawTradeText()
 
 		}
 
-		if (S_smeltingItem.SmeltingItem[0].Flag)
+		if (!cWareHouse.OpenFlag && S_smeltingItem.SmeltingItem[0].Flag)
 		{
 			wsprintf(szMoneyTemp, "%d", ForceItemPrice2);
 			dsTextLineOut(hdc, CheckEditSize(200, 325, szMoneyTemp), 318 + sinInterHeight2, szMoneyTemp, lstrlen(szMoneyTemp));
 		}
 
-		if (g_sManufactureItem.ManufactureItem[0].Flag)
+		if (!cWareHouse.OpenFlag && g_sManufactureItem.ManufactureItem[0].Flag)
 		{
 			wsprintf(szMoneyTemp, "%d", ForceItemPrice2);
 			dsTextLineOut(hdc, CheckEditSize(200, 325, szMoneyTemp), 318 + sinInterHeight2, szMoneyTemp, lstrlen(szMoneyTemp));
@@ -2522,7 +2522,7 @@ void cTRADE::DrawTradeText()
 
 		lstrcpy(TempszCraftItemBuff, szCraftItemBuff);
 
-		if (ShowItemCraftMessageFlag || ShowItemAgingMessageFlag || ShowItemSmeltingMessageFlag || ShowItemManufactureMessageFlag || ShowItemOverSpace) {
+		if (!cWareHouse.OpenFlag && (ShowItemCraftMessageFlag || ShowItemAgingMessageFlag || ShowItemSmeltingMessageFlag || ShowItemManufactureMessageFlag || ShowItemOverSpace)) {
 			SetFontTextColor(RGB(222, 231, 255));
 			SelectObject(hdc, sinBoldFont);
 			if (ShowItemCraftMessageFlag)
@@ -2848,7 +2848,7 @@ bool cTRADE::IsItemOkay(sITEM* pItem)
 	}
 
 	int kk = 0;
-	//µî·ÏµÈ ¾ÆÀÌÅÛÀº Æ®·¹ÀÌµå ÇÒ¼ö¾ø´Ù
+	//ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (kk = 0; kk < NotSet_Item_CODECnt; kk++) {
 		if (NotSet_Item_CODE[kk] == pItem->sItemInfo.CODE) {
 			return false;
@@ -3135,30 +3135,30 @@ int cTRADE::CancelTradeItem()
 	int i = 0;
 	for (i = 0; i < MAX_TRADE_ITEM; i++) {
 		if (sTrade.TradeItem[i].Flag) {
-			if (cInvenTory.CheckRequireItemToSet(&sTrade.TradeItem[i])) { //°ð¹Ù·Î ¼ÂÆÃµÉ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù  
+			if (cInvenTory.CheckRequireItemToSet(&sTrade.TradeItem[i])) { //ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½  
 				if (!cInvenTory.AutoSetInvenItem(&sTrade.TradeItem[i])) {
-					//¾ÆÀÌÅÛÀÌ ²ËÂ÷ÀÖÀ»°æ¿ì´Â ÀÎº¥Åä¸®¸¦ µÚÁý¾î¼­ ¼ÂÆÃÇÑ´Ù
-					if (ArrowState[0] == 0)sArrowPosi = 2; //¿ä±â´Â ÀÎº¥Ã¢°í 
+					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
+					if (ArrowState[0] == 0)sArrowPosi = 2; //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 					else sArrowPosi = 1;
 					sinButtonFlag = sArrowPosi;
-					SelectInvenItemIndex = 0; //¿¡Å×¸£ ÄÚ¾î³²¹ßÀ» ¸·±âÀ§ÇØ ÃÊ±âÈ­
-					cInvenTory.ChangeABItem(sArrowPosi); // 2º¸´Ù ÀÛÀ»¶§ ÀÎº¥ ¹Ú½º 
+					SelectInvenItemIndex = 0; //ï¿½ï¿½ï¿½?ï¿½ ï¿½??ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?
+					cInvenTory.ChangeABItem(sArrowPosi); // 2ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½ 
 
-					if (!cInvenTory.AutoSetInvenItem(&sTrade.TradeItem[i])) { //±×·¡µÎ ¾ÈµÇ¸é ¹ö¸°´Ù ÆÈÀÚ·Á´Ï ÇØ¶ó
-						if (sinThrowItemToFeild(&sTrade.TradeItem[i])) {//¾ÆÀÌÅÛÀ» ¹ö¸°´Ù 
+					if (!cInvenTory.AutoSetInvenItem(&sTrade.TradeItem[i])) { //ï¿½?ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						if (sinThrowItemToFeild(&sTrade.TradeItem[i])) {//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 							sTrade.TradeItem[i].Flag = 0;
 						}
 					}
 
 					/*
-					//¿ä±â´Â ¹«±âÆ÷Áö¼Ç(ÇöÁ¦ »ç¿ëÇÏ°íÀÖÁö¾Ê´Ù)
+					//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½)
 					if(ArrowState[1]==0)sArrowPosi = 4;
 					else sArrowPosi = 3;
 					sinButtonFlag = sArrowPosi;
 					sinChangeSetFlag = sArrowPosi;
 					*/
 
-					if (sinThrowItemToFeild(&sTrade.TradeItem[i])) {//¾ÆÀÌÅÛÀ» ¹ö¸°´Ù 
+					if (sinThrowItemToFeild(&sTrade.TradeItem[i])) {//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 						sTrade.TradeItem[i].Flag = 0;
 					}
 				}
@@ -3167,20 +3167,20 @@ int cTRADE::CancelTradeItem()
 	}
 
 	if (sTrade.Money > 0) {
-		CheckCharForm();//ÀÎÁõ 
+		CheckCharForm();//ï¿½ï¿½ï¿½ï¿½ 
 		//sinChar->Money += sTrade.Money-193;
 		sinPlusMoney(sTrade.Money - 193);
-		ReformCharForm();//ÀçÀÎÁõ 	
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+		ReformCharForm();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 	
+		SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
 		sinPlaySound(SIN_SOUND_COIN);
 	}
 
 
-	//¸¶¿ì½º¿¡ ¾ÆÀÌÅÛÀÌ ÀÖÀ»°æ¿ì¿¡´Â ¸¶¿ì½º ¾ÆÀÌÅÛµµ ÀÎº¥¿¡ °ð¹Ù·Î ¼ÂÆÃÇÑ´Ù 
+	//ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 	if (MouseItem.Flag) {
-		if (cInvenTory.CheckRequireItemToSet(&MouseItem)) {         //°ð¹Ù·Î ¼ÂÆÃµÉ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù  
+		if (cInvenTory.CheckRequireItemToSet(&MouseItem)) {         //ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½  
 			if (!cInvenTory.AutoSetInvenItem(&MouseItem)) {
-				if (sinThrowItemToFeild(&MouseItem)) {//¾ÆÀÌÅÛÀ» ¹ö¸°´Ù 
+				if (sinThrowItemToFeild(&MouseItem)) {//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 					MouseItem.Flag = 0;
 				}
 			}
@@ -3188,9 +3188,9 @@ int cTRADE::CancelTradeItem()
 
 	}
 
-	//¸Þ¼¼Áö ¹Ú½º °ü·ÃÀº Àá½Ã ´ë±â 
+	//ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 
 
-	if (sinMessageBoxShowFlag) { //¸Þ¼¼Áö ¹Ú½º°¡ ÀÖÀ¸¸é ³À´Ù ´Ý´Â´Ù 
+	if (sinMessageBoxShowFlag) { //ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 		if (sMessageBox2[MESSAGE_MOVE_MONEY_TRADE].Flag) {
 			sMessageBox2[MESSAGE_MOVE_MONEY_TRADE].Flag = 0;
 			sinMessageBoxShowFlag = 0;
@@ -3203,22 +3203,22 @@ int cTRADE::CancelTradeItem()
 		}
 	}
 
-	//Æ®·¹ÀÌµå Ãë¼Ò½Ã Ã¢À» ´Ý¾ÆÁØ´Ù
+	//?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ ? ï¿½?ï¿½ï¿½?ï¿½
 	cTrade.OpenFlag = FALSE;
 	cMessageBox.ShowMessage(MESSAGE_TRADE_CANCEL);
 
-	memset(&sTrade, 0, sizeof(sTRADE));		//¼ÂÆÃµÈÈÄ °ªµéÀ» ÃÊ±âÈ­ÇØÁØ´Ù 
-	memset(&sTradeRecv, 0, sizeof(sTRADE));	//¼ÂÆÃµÈÈÄ °ªµéÀ» ÃÊ±âÈ­ÇØÁØ´Ù 
+	memset(&sTrade, 0, sizeof(sTRADE));		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½ï¿½?ï¿½ 
+	memset(&sTradeRecv, 0, sizeof(sTRADE));	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½ï¿½?ï¿½ 
 	TempShowMoney = 0;
 	TempShowCoin = 0;
-	ItemPickUpFlag = 0; //ÇÃ·¢ ÃÊ±âÈ­ 
+	ItemPickUpFlag = 0; //ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
 	CloseEachPlayer();
-	cInvenTory.CheckWeight();	//ÀÎº¥Åä¸® ÀÇ ¹«°Ô¸¦ º¸Á¤ÇÑ´Ù
+	cInvenTory.CheckWeight();	//ï¿½?ï¿½ï¿½? ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 	return TRUE;
 }
 
-//¾ÆÀÌÅÛ ÀÌ¹ÌÁö¸¦ ·ÎµåÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ 
 int cTRADE::LoadTradeItemIamge()
 {
 
@@ -3233,18 +3233,18 @@ int cTRADE::LoadTradeItemIamge()
 					if (!sItem[j].lpTempItem)
 						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
 
-					//º¹ÁÖ ¸Ó´Ï °ü·Ã
+					//ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½
 					if ((sTradeRecv.TradeItem[i].sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || (sTradeRecv.TradeItem[i].sItemInfo.CODE & sinITEM_MASK2) == sinPZ2) {
-						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ÆÛÁñÀº ·ÎµåÇÑ´Ù
+						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½
 						if (sTradeRecv.TradeItem[i].sItemInfo.PotionCount <= 1) {
-							//º¹ÁÖ¸Ó´Ï¸¦ Ã£´Â´Ù.
+							//ï¿½ï¿½ï¿½???ï¿½ ?ï¿½.
 							for (cnt = 0; cnt < MAX_ITEM; cnt++) {
 								if (sItem[cnt].sItemInfo.CODE == (sinPZ1 | sin00)) {
 									break;
 								}
 							}
 							wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[cnt].ItemFilePath, sItem[cnt].LastCategory);
-							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ÀÌ¹ÌÁö¸¦ ¸ÕÀúÀÐ¾îÁØ´Ù
+							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½
 						}
 					}
 					sTradeRecv.TradeItem[i].lpItem = sItem[j].lpTempItem;
@@ -3258,8 +3258,8 @@ int cTRADE::LoadTradeItemIamge()
 
 int cTRADE::CheckTradeButtonOk()
 {
-	///////////////Æ®·¹ÀÌµå Ã¼Å© 
-	if (!TradeSendSucessFlag && sTrade.CheckFlag && sTradeRecv.CheckFlag) { //±³È¯! 
+	///////////////?ï¿½ï¿½ï¿½?ï¿½ ï¿½? 
+	if (!TradeSendSucessFlag && sTrade.CheckFlag && sTradeRecv.CheckFlag) { //ï¿½ï¿½?! 
 		SendTradeCheckItem(TradeCharCode);
 		TradeSendSucessFlag = TRUE;
 	}
@@ -3267,7 +3267,7 @@ int cTRADE::CheckTradeButtonOk()
 	return TRUE;
 }
 
-//¹«°Ô¸¦ ¾ò¾î¿Â´Ù 
+//ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 
 int cTRADE::GetWeight()
 {
 	sTrade.Weight = 0;
@@ -3359,16 +3359,16 @@ bool cWAREHOUSE::GetEmptyArea(sITEM* pItem, POINT* EmptyPos)
 }
 
 /*******************************************************************************************/
-/*							¿©±â¼­ ºÎÅÍ´Â Ã¢°í
+/*							ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½?ï¿½ ?
 /*******************************************************************************************/
 
-//¾ÆÀÌÅÛÀÌ ¼ÂÆÃµÉ °ø°£À» Ã£´Â´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ 
 int cWAREHOUSE::SetWareHouseItemAreaCheck(sITEM* pItem)
 {
 	int i, j;
-	TradeColorIndex = 0; //ÃÊ±âÈ­
-	TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-	cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+	TradeColorIndex = 0; //ï¿½?ï¿½?
+	TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+	cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 	TradeStartX = 21;
 	TradeStartY = 136 + sinInterHeight2;
@@ -3377,16 +3377,16 @@ int cWAREHOUSE::SetWareHouseItemAreaCheck(sITEM* pItem)
 
 	for (i = pItem->x + 11; i < pItem->x + pItem->w; i += 22) {
 		for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22) {
-			if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+			if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 				TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
 				TradeColorRect.top = TradeStartY + (((j - TradeStartY) / 22) * 22);
 				TradeColorRect.right = pItem->w;
 				TradeColorRect.bottom = pItem->h;
 				if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-					cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+					cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 					return FALSE;
 				}
-				//Äù½ºÆ® ¾ÆÀÌÅÛÀÏ°æ¿ì¿¡´Â ¾ÆÀÌÅÛÀ» Ã¢°í¿¡ ³ÖÀ»¼ö¾öµû 
+				//ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 				if (pItem->sItemInfo.ItemKindCode == ITEM_KIND_QUEST ||
 					(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA1 ||
 					(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA2 ||
@@ -3398,7 +3398,7 @@ int cWAREHOUSE::SetWareHouseItemAreaCheck(sITEM* pItem)
 					return FALSE;
 				}
 				int kk = 0;
-				//µî·ÏµÈ ¾ÆÀÌÅÛÀº Ã¢°í¿¡ ³ÖÀ»¼ö¾ø´Ù
+				//ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				for (kk = 0; kk < NotSet_Item_CODECnt; kk++) {
 					if (NotSet_Item_CODE[kk] == pItem->sItemInfo.CODE) {
 						TradeColorIndex = NOT_SETTING_COLOR;
@@ -3419,7 +3419,7 @@ int cWAREHOUSE::SetWareHouseItemAreaCheck(sITEM* pItem)
 						return FALSE;
 					}
 				}
-				//////////// ÀÌº¥Æ® ¼ÛÆí
+				//////////// ï¿½?ï¿½? ï¿½ï¿½ï¿½ï¿½
 				if (pItem->sItemInfo.ItemKindCode == ITEM_KIND_EVENT) {
 					TradeColorIndex = NOT_SETTING_COLOR;
 					return FALSE;
@@ -3434,21 +3434,21 @@ int cWAREHOUSE::SetWareHouseItemAreaCheck(sITEM* pItem)
 
 				pItem->SetX = TradeColorRect.left;
 				pItem->SetY = TradeColorRect.top;
-				pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-				TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+				pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+				TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
-				if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 1)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
-					//¿ä±â¼­ º¹»ç¾ÆÀÌÅÛÀ» Ã¼Å©ÇÑ´Ù 
+				if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 1)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
+					//ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ 
 					if (!CopyItemNotPickUp(&sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1], TradeCrashItemIndex[0] - 1)) {
 						TradeColorIndex = NOT_SETTING_COLOR;
-						TradeCrashItemIndex[0] = 0; //ÃÊ±âÈ­ 
-						TradeCrashItemIndex[1] = 0; //ÃÊ±âÈ­ 
+						TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½? 
+						TradeCrashItemIndex[1] = 0; //ï¿½?ï¿½? 
 						return FALSE;
 
 					}
-					if (TradeCrashItemIndex[1] = cTrade.CrashTradeItem(TradeColorRect, TradeCrashItemIndex[0], 1)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+					if (TradeCrashItemIndex[1] = cTrade.CrashTradeItem(TradeColorRect, TradeCrashItemIndex[0], 1)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 						TradeColorIndex = NOT_SETTING_COLOR;
-						TradeCrashItemIndex[1] = 0; //ÃÊ±âÈ­ 
+						TradeCrashItemIndex[1] = 0; //ï¿½?ï¿½? 
 						return FALSE;
 					}
 					TradeColorIndex = OVERLAP_ITEM_COLOR;
@@ -3466,7 +3466,7 @@ int cWAREHOUSE::SetWareHouseItemAreaCheck(sITEM* pItem)
 }
 
 
-//¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 int cWAREHOUSE::LastSetWareHouseItem(sITEM* pItem)
 {
 	CheckWareHouseForm();
@@ -3476,9 +3476,9 @@ int cWAREHOUSE::LastSetWareHouseItem(sITEM* pItem)
 			memcpy(&sWareHouse.WareHouseItem[j], pItem, sizeof(sITEM));
 			sWareHouse.WareHouseItem[j].x = pItem->SetX;
 			sWareHouse.WareHouseItem[j].y = pItem->SetY;
-			pItem->Flag = 0; //ÃÊ±âÈ­ 
+			pItem->Flag = 0; //ï¿½?ï¿½? 
 			sinPlaySound(sWareHouse.WareHouseItem[j].SoundIndex);
-			GetWeight(); //¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù 
+			GetWeight(); //ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½?ï¿½ 
 			ReFormWareHouse();
 			return TRUE;
 
@@ -3488,16 +3488,22 @@ int cWAREHOUSE::LastSetWareHouseItem(sITEM* pItem)
 	return FALSE;
 }
 
-//Ã¢°í¸¦ ´Ý´Â´Ù 
+//?ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 int cWAREHOUSE::CloseWareHouse()
 {
 	int RestoreFlag = 1;
 
 	CloseWareHouseCheckFlag3 = 1;
-	cWareHouse.OpenFlag = 0; //Ã¢°í¸¦ ´Ý´Â´Ù 
+	cWareHouse.OpenFlag = 0;
+	if (!AllPagesReady()) {
+		LoadingPages = 0;
+		ZeroMemory(PagesReady, sizeof(PagesReady));
+		WareHouseSaveFlag = 0;
+		return TRUE;
+	}
 	if (WareHouseSaveFlag) {
-		if (!SaveWareHouse(&sWareHouse)) { //¾ÆÀÌÅÛÀ» ÀúÀå½ÃÅ²´Ù 
-			cWareHouse.RestoreInvenItem(); //ÀúÀåÀÌ µÇÁö¾ÊÀ¸¸é º¹±¸ÇØÁØ´Ù 
+		if (!SaveAllPages()) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ 
+			cWareHouse.RestoreInvenItem(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 			cMessageBox.ShowMessage(MESSAGE_OVER_ITEM_NUM);
 			RestoreFlag = 0;
 		}
@@ -3521,41 +3527,45 @@ int cWAREHOUSE::CloseWareHouse()
 		}
 
 	}
-	WareHouseSaveFlag = 0;//ÇÃ·¢ ÃÊ±âÈ­ 
-	ResetInvenItemCode();		//ÀÌº¥Åä¸® ¾ÆÀÌÅÛ ÄÚµå ÃÊ±âÈ­ ********************
-	ResetInvenMoney();			//ÀÌº¥Åä¸® µ· °Ë»ç ÃÊ±âÈ­
+	WareHouseSaveFlag = 0;
+	LoadingPages = 0;
+	ZeroMemory(PagesReady, sizeof(PagesReady));
+	ResetInvenItemCode();
+	ResetInvenMoney();
 	return RestoreFlag;
 }
 
 
 
-//¾ÆÀÌÅÛÀ» Áý´Â´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 
 int cWAREHOUSE::PickUpWareHouseItem(int x, int y, int PickUpFlag)
 {
 	int i = 0;
-	SelectTradeItemIndex = 0;    //ÁýÀ» ¾ÆÀÌÅÛ 
+	SelectTradeItemIndex = 0;    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	for (i = 0; i < 100; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
+			if (!ItemMatchesSearch(&sWareHouse.WareHouseItem[i]))
+				continue;
 			if (sWareHouse.WareHouseItem[i].x < x && sWareHouse.WareHouseItem[i].x + sWareHouse.WareHouseItem[i].w > x &&
 				sWareHouse.WareHouseItem[i].y < y && sWareHouse.WareHouseItem[i].y + sWareHouse.WareHouseItem[i].h > y) {
 				if (PickUpFlag) {
 
-					//¼öÁ¤ ÇÏ´ë¿ë
-					//Ã¢°íÀÌ¿ë½Ã ÀÎº¥Åä¸® ºó°ø°£ÀÌ ¾øÀ»°æ¿ì´Â ÀÌ¿ëÀÌ ºÒ°¡´ÉÇÏ´Ù/
-					//°¡»óÀÇ °ø°£ Ã¼Å©¿ë ÀÓ½Ã ¾ÆÀÌÅÛ
+					//ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½
+					//?ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½/
+					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					sITEM TempItem;
 					TempItem.w = ITEMSIZE * 2;
 					TempItem.h = ITEMSIZE * 4;
 					TempItem.Flag = 1;
 					if (cInvenTory.CheckSetEmptyArea(&TempItem)) {
-						////////////¿ä±â¼­ º¹»çµÈ ¾ÆÀÌÅÛÀº µé¼ö°¡¾ø´Ù 
+						////////////ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 						if (CopyItemNotPickUp(&sWareHouse.WareHouseItem[i], i)) {
 							CheckWareHouseForm();
 							memcpy(&MouseItem, &sWareHouse.WareHouseItem[i], sizeof(sITEM));
 							sWareHouse.WareHouseItem[i].Flag = 0;
 							sinPlaySound(sWareHouse.WareHouseItem[i].SoundIndex);
 							TradeColorIndex = 0;
-							GetWeight(); //¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù 
+							GetWeight(); //ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½?ï¿½ 
 							ReFormWareHouse();
 							return TRUE;
 						}
@@ -3565,14 +3575,14 @@ int cWAREHOUSE::PickUpWareHouseItem(int x, int y, int PickUpFlag)
 						break;
 					}
 
-					////////////¿ä±â¼­ º¹»çµÈ ¾ÆÀÌÅÛÀº µé¼ö°¡¾ø´Ù 
+					////////////ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 					if (CopyItemNotPickUp(&sWareHouse.WareHouseItem[i], i)) {
 						CheckWareHouseForm();
 						memcpy(&MouseItem, &sWareHouse.WareHouseItem[i], sizeof(sITEM));
 						sWareHouse.WareHouseItem[i].Flag = 0;
 						sinPlaySound(sWareHouse.WareHouseItem[i].SoundIndex);
 						TradeColorIndex = 0;
-						GetWeight(); //¹«°Ô¸¦ Ã¼Å©ÇÑ´Ù 
+						GetWeight(); //ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½?ï¿½ 
 						ReFormWareHouse();
 						return TRUE;
 					}
@@ -3591,10 +3601,10 @@ int cWAREHOUSE::PickUpWareHouseItem(int x, int y, int PickUpFlag)
 	return FALSE;
 }
 
-//°ãÄ£ ¾ÆÀÌÅÛÀ» ±³È¯ÇÑ´Ù 
+//ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½?ï¿½ 
 int cWAREHOUSE::ChangeWareHouseItem(sITEM* pItem)
 {
-	if (pItem->Class == ITEM_CLASS_POTION) {	//¹°¾àÀº Ã¢°í¿¡ º¸°üÇÒ¼ö¾ø´Ù 
+	if (pItem->Class == ITEM_CLASS_POTION) {	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ 
 		cMessageBox.ShowMessage(MESSAGE_POTION_NOT_SETTING);
 		return TRUE;
 
@@ -3607,7 +3617,7 @@ int cWAREHOUSE::ChangeWareHouseItem(sITEM* pItem)
 
 	CheckWareHouseForm();
 
-	if (TradeCrashItemIndex[0]) {//Ãæµ¹ µÈ ¾ÆÀÌÅÛÀÌ ÀÖÀ¸¸é ¾ÆÀÌÅÛÀ» ¹Ù²ãÁØ´Ù 
+	if (TradeCrashItemIndex[0]) {//ï¿½? ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ 
 		if (sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].Class == ITEM_CLASS_POTION) {
 			if (sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].CODE == pItem->CODE) {
 				sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].sItemInfo.PotionCount += pItem->sItemInfo.PotionCount;
@@ -3618,12 +3628,12 @@ int cWAREHOUSE::ChangeWareHouseItem(sITEM* pItem)
 
 			}
 		}
-		memcpy(&TempItem, &sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1], sizeof(sITEM)); //¸¶¿ì½º ¾ÆÀÌÅÛÀ» ÅÛÇÁ·Î º¹»ç 
-		sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].Flag = 0; //º¹»çÇÑÈÄ¿¡ ÃÊ±âÈ­
+		memcpy(&TempItem, &sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1], sizeof(sITEM)); //ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+		sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1].Flag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½?
 		TempItem.x = pItem->x;
 		TempItem.y = pItem->y;
 		ReFormWareHouse();
-		LastSetWareHouseItem(pItem); //¸¶¿ì½º ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®·Î º¹»ç 
+		LastSetWareHouseItem(pItem); //ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 		memcpy(pItem, &TempItem, sizeof(sITEM));
 		GetWeight();
 		ReFormWareHouse();
@@ -3634,19 +3644,20 @@ int cWAREHOUSE::ChangeWareHouseItem(sITEM* pItem)
 	return FALSE;
 }
 
-//¹«°Ô¸¦ ±¸ÇÑ´Ù 
+//ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½?ï¿½ 
 int cWAREHOUSE::GetWeight()
 {
+	CopyCurrentToPage();
 	sWareHouse.Weight[0] = 197;
-	for (int i = 0; i < 100; i++) {
-		if (sWareHouse.WareHouseItem[i].Flag) {
-			if (sWareHouse.WareHouseItem[i].Class == ITEM_CLASS_POTION)
-				sWareHouse.Weight[0] += sWareHouse.WareHouseItem[i].sItemInfo.PotionCount;
-			else
-				sWareHouse.Weight[0] += sWareHouse.WareHouseItem[i].sItemInfo.Weight;
-
+	for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
+		for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
+			if (Pages[p][i].Flag) {
+				if (Pages[p][i].Class == ITEM_CLASS_POTION)
+					sWareHouse.Weight[0] += Pages[p][i].sItemInfo.PotionCount;
+				else
+					sWareHouse.Weight[0] += Pages[p][i].sItemInfo.Weight;
+			}
 		}
-
 	}
 
 	WareHouseSaveFlag = 1;
@@ -3654,7 +3665,174 @@ int cWAREHOUSE::GetWeight()
 	return TRUE;
 }
 
-int cWAREHOUSE::LoadWareHouseItemIamge()
+int cWAREHOUSE::ItemMatchesSearch(sITEM* pItem)
+{
+	if (!szSearch[0])
+		return TRUE;
+	if (!pItem || !pItem->Flag)
+		return FALSE;
+
+	char name[32] = {};
+	char filter[32] = {};
+	strncpy_s(name, sizeof(name), pItem->sItemInfo.ItemName, _TRUNCATE);
+	strncpy_s(filter, sizeof(filter), szSearch, _TRUNCATE);
+	CharUpperA(name);
+	CharUpperA(filter);
+	return strstr(name, filter) ? TRUE : FALSE;
+}
+
+int cWAREHOUSE::FindSearchPage()
+{
+	if (!szSearch[0])
+		return CurrentPage;
+
+	for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
+		if (sWareHouse.WareHouseItem[i].Flag && ItemMatchesSearch(&sWareHouse.WareHouseItem[i]))
+			return CurrentPage;
+	}
+
+	for (int page = 0; page < WAREHOUSE_PAGE_COUNT; page++) {
+		if (page == CurrentPage)
+			continue;
+		for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
+			if (Pages[page][i].Flag && ItemMatchesSearch(&Pages[page][i]))
+				return page;
+		}
+	}
+	return CurrentPage;
+}
+
+int cWAREHOUSE::BeginLoad()
+{
+	WarehouseWindow::GetInstance()->ArmHideClassic();
+	ZeroMemory(Pages, sizeof(Pages));
+	ZeroMemory(PagesReady, sizeof(PagesReady));
+	CurrentPage = 0;
+	LoadingPages = 1;
+	return TRUE;
+}
+
+int cWAREHOUSE::MarkPageReady(int page)
+{
+	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
+		return FALSE;
+	PagesReady[page] = 1;
+	return TRUE;
+}
+
+int cWAREHOUSE::AllPagesReady()
+{
+	for (int i = 0; i < WAREHOUSE_PAGE_COUNT; i++) {
+		if (!PagesReady[i])
+			return FALSE;
+	}
+	return TRUE;
+}
+
+int cWAREHOUSE::IsLoadingPages()
+{
+	return LoadingPages != 0;
+}
+
+int cWAREHOUSE::FillEmptyRemainingPages()
+{
+	for (int i = 1; i < WAREHOUSE_PAGE_COUNT; i++) {
+		ZeroMemory(Pages[i], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+		PagesReady[i] = 1;
+	}
+	return TRUE;
+}
+
+int cWAREHOUSE::TryFinishOpen()
+{
+	if (OpenFlag || !AllPagesReady())
+		return FALSE;
+
+	WarehouseWindow::GetInstance()->ArmHideClassic();
+	LoadingPages = 0;
+	CurrentPage = 0;
+	memcpy(sWareHouse.WareHouseItem, Pages[0], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+	LoadWareHouseItemIamge(1);
+	BackUpInvenItem();
+	ResetInvenItemCode();
+	ResetInvenMoney();
+	return TRUE;
+}
+
+int cWAREHOUSE::CopyCurrentToPage()
+{
+	if (CurrentPage < 0 || CurrentPage >= WAREHOUSE_PAGE_COUNT)
+		CurrentPage = 0;
+	memcpy(Pages[CurrentPage], sWareHouse.WareHouseItem, sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+	return TRUE;
+}
+
+int cWAREHOUSE::SwitchPage(int page)
+{
+	if (!AllPagesReady())
+		return FALSE;
+	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT || page == CurrentPage)
+		return FALSE;
+	if (MouseItem.Flag)
+		return FALSE;
+
+	CopyCurrentToPage();
+	CurrentPage = page;
+	memcpy(sWareHouse.WareHouseItem, Pages[CurrentPage], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+	LoadWareHouseItemIamge(0);
+	ReFormWareHouse();
+	return TRUE;
+}
+
+int cWAREHOUSE::ApplyLoadedPage(int page, sITEM* items)
+{
+	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT || !items)
+		return FALSE;
+
+	memcpy(Pages[page], items, sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+	if (page == CurrentPage || (!OpenFlag && page == 0))
+	{
+		CurrentPage = page;
+		memcpy(sWareHouse.WareHouseItem, Pages[page], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+		if (OpenFlag)
+			ReFormWareHouse();
+	}
+	return TRUE;
+}
+
+int cWAREHOUSE::SaveAllPages()
+{
+	CopyCurrentToPage();
+
+	const int keepPage = CurrentPage;
+	const int money = sWareHouse.Money;
+	const short w0 = sWareHouse.Weight[0];
+	const short w1 = sWareHouse.Weight[1];
+	const int buy = sWareHouse.BuyAreaCount;
+	const int fake = sWareHouse.FakeMoney;
+
+	for (int page = 0; page < WAREHOUSE_PAGE_COUNT; page++)
+	{
+		memcpy(sWareHouse.WareHouseItem, Pages[page], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+		sWareHouse.Money = money;
+		sWareHouse.Weight[0] = w0;
+		sWareHouse.Weight[1] = w1;
+		sWareHouse.BuyAreaCount = buy;
+		sWareHouse.FakeMoney = fake;
+		if (!SaveWareHousePage(&sWareHouse, page))
+		{
+			memcpy(sWareHouse.WareHouseItem, Pages[keepPage], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+			CurrentPage = keepPage;
+			return FALSE;
+		}
+	}
+
+	memcpy(sWareHouse.WareHouseItem, Pages[keepPage], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+	CurrentPage = keepPage;
+	return TRUE;
+}
+
+int cWAREHOUSE::LoadWareHouseItemIamge(int openInterface)
 {
 
 	char szFilePath[256];
@@ -3663,30 +3841,30 @@ int cWAREHOUSE::LoadWareHouseItemIamge()
 		if (sWareHouse.WareHouseItem[i].Flag) {
 			for (int j = 0; j < MAX_ITEM; j++) {
 				if (sWareHouse.WareHouseItem[i].sItemInfo.CODE == sItem[j].CODE) {
-					sWareHouse.WareHouseItem[i].w = sItem[j].w; //Å©±â º¸Á¤ 
+					sWareHouse.WareHouseItem[i].w = sItem[j].w; //?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 					sWareHouse.WareHouseItem[i].h = sItem[j].h;
 					wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
 					if (!sItem[j].lpTempItem)
 						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
-					//º¹ÁÖ ¸Ó´Ï °ü·Ã
+					//ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½
 					if ((sWareHouse.WareHouseItem[i].sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || (sWareHouse.WareHouseItem[i].sItemInfo.CODE & sinITEM_MASK2) == sinPZ2) {
 						if (sWareHouse.WareHouseItem[i].sItemInfo.PotionCount == 2) {
 							wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
-							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ÀÌ¹ÌÁö¸¦ ¸ÕÀúÀÐ¾îÁØ´Ù
-							sWareHouse.WareHouseItem[i].w = sItem[j].w; //Å©±â º¸Á¤ 
+							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½
+							sWareHouse.WareHouseItem[i].w = sItem[j].w; //?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 							sWareHouse.WareHouseItem[i].h = sItem[j].h;
 
 						}
 						else {
-							//º¹ÁÖ¸Ó´Ï¸¦ Ã£´Â´Ù.
+							//ï¿½ï¿½ï¿½???ï¿½ ?ï¿½.
 							for (cnt = 0; cnt < MAX_ITEM; cnt++) {
 								if (sItem[cnt].sItemInfo.CODE == (sinPZ1 | sin00)) {
 									break;
 								}
 							}
 							wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[cnt].ItemFilePath, sItem[cnt].LastCategory);
-							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ÀÌ¹ÌÁö¸¦ ¸ÕÀúÀÐ¾îÁØ´Ù
-							sWareHouse.WareHouseItem[i].w = sItem[cnt].w; //Å©±â º¸Á¤ 
+							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½
+							sWareHouse.WareHouseItem[i].w = sItem[cnt].w; //?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 							sWareHouse.WareHouseItem[i].h = sItem[cnt].h;
 						}
 
@@ -3698,11 +3876,12 @@ int cWAREHOUSE::LoadWareHouseItemIamge()
 		}
 	}
 
-	cInterFace.CheckAllBox(SIN_WAREHOUSE);
+	if (openInterface)
+		cInterFace.CheckAllBox(SIN_WAREHOUSE);
 	return TRUE;
 }
 
-//ÀÎº¥Åä¸® ¾ÆÀÌÅÛÀ» Àá½Ã ¹é¾÷ÇÑ´Ù 
+//ï¿½?ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 int cWAREHOUSE::BackUpInvenItem()
 {
 
@@ -3735,7 +3914,7 @@ int cWAREHOUSE::RestoreInvenItem()
 	memcpy(&cInvenTory.InvenItemTemp, BackUpInvenTempItem2, sizeof(sITEM) * 100);
 	memcpy(&sInven, BackUpsInven, sizeof(sINVENTORY) * INVENTORY_MAX_POS);
 
-	//¸¶¿ì½º ¾ÆÀÌÅÛÀ» ¾ø¾ÖÁØ´Ù
+	//ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 	if (MouseItem.Flag)
 		MouseItem.Flag = 0;
 
@@ -3755,12 +3934,12 @@ int cWAREHOUSE::RestoreInvenItem()
 
 	}
 
-	if (sInven[0].ItemIndex) { //¹«±â 
+	if (sInven[0].ItemIndex) { //ï¿½ï¿½ï¿½ï¿½ 
 		sinSetCharItem(cInvenTory.InvenItem[sInven[0].ItemIndex - 1].CODE, cInvenTory.InvenItem[sInven[0].ItemIndex - 1].SetModelPosi, TRUE);
 
 	}
 
-	if (sInven[1].ItemIndex) { //¹æÆÐ 
+	if (sInven[1].ItemIndex) { //ï¿½ï¿½ï¿½ï¿½ 
 		sinSetCharItem(cInvenTory.InvenItem[sInven[1].ItemIndex - 1].CODE, cInvenTory.InvenItem[sInven[1].ItemIndex - 1].SetModelPosi, TRUE);
 
 	}
@@ -3772,36 +3951,36 @@ int cWAREHOUSE::RestoreInvenItem()
 
 	}
 	if ((InvenGold - 2023) == (RealGold / 3) - 2023) {
-		CheckCharForm();//ÀÎÁõ 
+		CheckCharForm();//ï¿½ï¿½ï¿½ï¿½ 
 		sinChar->Money = InvenGold - 2023;
-		ReformCharForm();//ÀçÀÎÁõ 	
+		ReformCharForm();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 	
 
 	}
 	else {
-		SendSetHackUser(6); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
+		SendSetHackUser(6); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
 	}
 	InvenGold = 0;
 	RealGold = 0;
 
-	cInvenTory.SetItemToChar(); //ÆÄ¶ó¸ÞÅÍ ¼ÂÆÃ 
-	cInvenTory.ReFormInvenItem(); //¾ÆÀÌÅÛ ÀÎÁõÀ» ´Ù½Ã ¹Þ´Â´Ù 
-	cInvenTory.CheckWeight();	  //¹«°Ô ¼ÂÆÃ 	
+	cInvenTory.SetItemToChar(); //ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+	cInvenTory.ReFormInvenItem(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½ï¿½ 
+	cInvenTory.CheckWeight();	  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 	
 
 	return TRUE;
 }
 
 /*****************************************************************************/
-/*							¾ÆÀÌÅÛ Á¶ÇÕ										 */
+/*							ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½										 */
 /*****************************************************************************/
-//¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ 
 int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 {
 
 	int i, j;
-	TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù) 
-	TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-	cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+	TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) 
+	TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+	cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 	if (((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinCA1) || ((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinCA2) || pItem->sItemInfo.expireTime > 0)
 	{
@@ -3809,22 +3988,22 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 		return FALSE;
 	}
 
-	// ¹ÚÀç¿ø - ¸®½ºÆå ½ºÅæ(¸®½ºÆå(¾ÆÀÌÅÛ Àç±¸¼º)Ã¢¿¡¼­ ¸®½ºÆå ½ºÅæ ÀÚ¸®¿¡ ¾ÆÀÌÅÛÀ» ³ÖÀ» ¶§ ¸¶¿ì½º¿¡ ´Þ·ÁÀÖ´Â »óÅÂ)
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½)?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	if (pItem->sItemInfo.CODE == (sinBI1 | sin90))
 	{
 		int ReconStoneX = 159 + 11, ReconStoneY = 268 + 11 + sinInterHeight2;
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 		if (ReconStoneX <= pItem->x + 22 && ReconStoneX > pItem->x && ReconStoneY < pItem->y + 22 && ReconStoneY > pItem->y)
 		{
 			pItem->SetX = ReconStoneX + (((pItem->x + 22 - ReconStoneX) / 22) * 22) - 11;
 			pItem->SetY = ReconStoneY + (((pItem->y + 22 - ReconStoneY) / 22) * 22) - 11;
-			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 			if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-				cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+				cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 				return FALSE;
 			}
-			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 2)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 2)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 				TradeColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 			}
@@ -3832,7 +4011,7 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 		}
 	}
 
-	if ((pItem->CODE & sinITEM_MASK2) == sinOS1 || (pItem->CODE & sinITEM_MASK2) == sinSE1) { //½©ÅÒÀÏ °æ¿ì || ¾ÆÀÌÅÛ Àç±¸¼º ¾Á 
+	if ((pItem->CODE & sinITEM_MASK2) == sinOS1 || (pItem->CODE & sinITEM_MASK2) == sinSE1) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ || ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ ï¿½ï¿½ 
 		TradeStartX = 218;
 		TradeStartY = 193 + sinInterHeight2;
 		TradeEndX = TradeStartX + (3 * 22);
@@ -3840,27 +4019,27 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 
 		for (i = pItem->x + 11; i < pItem->x + pItem->w; i += 22) {
 			for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22) {
-				if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+				if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 					TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
 					TradeColorRect.top = TradeStartY + (((j - TradeStartY) / 22) * 22);
 					TradeColorRect.right = pItem->w;
 					TradeColorRect.bottom = pItem->h;
 					if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-						cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+						cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 						return FALSE;
 					}
 
 					pItem->SetX = TradeColorRect.left;
 					pItem->SetY = TradeColorRect.top;
-					pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-					TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+					pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+					TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
-					//Æ÷½º ¿Àºê
+					//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 					if (cCraftItem.ForceFlag) {
-						//µ·ÀÌ ºÎÁ·ÇÒ °æ¿ì 
+						//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 
 						//--------------------------------------------------------------------------//
 #ifdef HASIEGE_MODE
-	//°ø¼ºÀü ¼¼À²Àû¿ë Æ÷½º ¿Àºê¸Ó´Ï¸¦ Ã¼Å©ÇÑ´Ù.
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½??ï¿½ ï¿½?ï¿½?ï¿½.
 						if (cShop.haBuyMoneyCheck(cCraftItem.CheckForceOrbPrice(pItem)) == 0) {
 #else
 						if (sinChar->Money < cCraftItem.CheckForceOrbPrice(pItem)) {
@@ -3871,12 +4050,12 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 						}
 
 #ifdef	_LANGUAGE_JAPANESE
-						// ¹ÚÀç¿ø  ÀÏº»Àº ¹Ì¶óÁö±îÁö »ç¿ëÇÑ´Ù. ÀÏ¹ÝÀ¯ÀúµéÀº 
-						// os101 ~ os110±îÁö¸¸ Æ÷½º¸¶½ºÅÍÇÑÅ× Æ÷½º¸¦ Á¦ÀÛÇÒ ¼ö ÀÖ´Ù.
+						// ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½. ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+						// os101 ~ os110ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½.
 						if (!smConfig.DebugMode)
 						{
-							// ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º´Â È£¶±ÆÄÀÏ »ó°ü¾øÀÌ ¹«Á¶°Ç ´Ù Á¦ÀÛÀÌ °¡´ÉÇÔ
-							// ÀÏ¹Ý Æ÷½º´Â ÇöÀç ÀÎÆä¸£³ª ÀÌ´Ï±×¸¶ º§·ë, ¿À¸£µµ´Â À¯Àú¸ðµå¿¡¼­´Â Á¦ÀÛ ºÒ°¡´É
+							// ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+							// ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½???ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½
 							if (((pItem->sItemInfo.CODE & sinITEM_MASK3) >= sin11) && ((pItem->sItemInfo.CODE & sinITEM_MASK3) <= sin14))
 							{
 								TradeColorIndex = NOT_SETTING_COLOR;
@@ -3884,7 +4063,7 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 							}
 						}
 #else
-						// Kyle ÀÌ´Ï±×¸¶±îÁö »ç¿ë
+						// Kyle ï¿½???ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 						if (!smConfig.DebugMode) {
 							if ((pItem->sItemInfo.CODE & sinITEM_MASK3) >= sin33) {
 								TradeColorIndex = NOT_SETTING_COLOR;
@@ -3894,7 +4073,7 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 #endif
 
 						/*
-						// pluto ¼¿·¹½ºÅä±îÁö »ç¿ë
+						// pluto ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 						if(!smConfig.DebugMode){
 							if((pItem->sItemInfo.CODE & sinITEM_MASK3) >= sin10){
 								TradeColorIndex = NOT_SETTING_COLOR;
@@ -3903,9 +4082,9 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 						}
 						*/
 						/*
-						//µ¥ºñ³×±îÁö »ç¿ë
+						//ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 						if(!smConfig.DebugMode)
-						{//gm¸ðµå°¡ µÇ´Â°Ç gm¸ðµå¸¸ µÇ°ÔÇÑ°Å´Ù. À¯Àú¸ðµå´Â ¾ÈµÇ´Â°Å´Ù!
+						{//gmï¿½ï¿½? ï¿½?ï¿½ï¿½ gmï¿½ï¿½? ï¿½?ï¿½ï¿½??ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½?ï¿½!
 							if((pItem->sItemInfo.CODE & sinITEM_MASK3) >= sin09)
 							{
 								TradeColorIndex = NOT_SETTING_COLOR;
@@ -3915,20 +4094,20 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 						*/
 							}
 
-					//Äù½ºÆ® ¾ÆÀÌÅÛÀÏ °æ¿ì¿¡´Â ¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÒ¼ö ¾öµû 
+					//ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 					if (pItem->sItemInfo.ItemKindCode == ITEM_KIND_QUEST ||
 						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA1 ||
 						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA2 ||
 						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinQW1 ||
-						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || //ÆÛÁñµµ ¿Ã¸±¼ö¾öµû
+						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ2 ||
 						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinFO1 ||
-						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinSP1 || // pluto ¼±¹°»óÀÚ ¼ÛÆí... °è¿­
-						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinWR1 || // ¹ÚÀç¿ø - ¹«±â Á¦ÀÛ¼­ °è¿­
-						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinDR1 || // ¹ÚÀç¿ø - ¹æ¾î±¸ Á¦ÀÛ¼­ °è¿­
-						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinGP1 || // ¹ÚÀç¿ø - Å©¸®½ºÅ» °è¿­
-						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinCH1 || // ¹ÚÀç¿ø - ÃÊÄÝ¸´, »çÅÁ °è¿­
-						(pItem->sItemInfo.CODE >= (sinOR2 | sin06) && pItem->sItemInfo.CODE <= (sinOR2 | sin25)) || // ¹ÚÀç¿ø : Å¬·£Ä¡ÇÁ¸µ °è¿­
+						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinSP1 || // pluto ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½... ï¿½?
+						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinWR1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½?
+						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinDR1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½? ï¿½ï¿½ï¿½?ï¿½ ï¿½?
+						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinGP1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ?ï¿½ï¿½ï¿½ï¿½? ï¿½?
+						(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinCH1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½?
+						(pItem->sItemInfo.CODE >= (sinOR2 | sin06) && pItem->sItemInfo.CODE <= (sinOR2 | sin25)) || // ï¿½ï¿½ï¿½ï¿½ï¿½ : ?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?
 						pItem->sItemInfo.SpecialItemFlag[0] == CHECK_GIVE_ITEM ||
 						pItem->sItemInfo.CODE == (sinGF1 | sin01) ||
 						pItem->sItemInfo.CODE == (sinGF1 | sin02) ||
@@ -3936,43 +4115,43 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 						pItem->sItemInfo.CODE == (sinGF1 | sin04) ||
 						pItem->sItemInfo.CODE == (sinGF1 | sin05) ||
 						pItem->sItemInfo.CODE == (sinGF1 | sin06) ||
-						pItem->sItemInfo.CODE == (sinOR2 | sin27) || // ¹ÚÀç¿ø - »êÅ¸ ¸µ Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA1 | sin32) || // ¹ÚÀç¿ø - »êÅ¸ ¾Æ¹Ä·¿ Ãß°¡
-						pItem->sItemInfo.CODE == (sinOR2 | sin28) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¸µ(7ÀÏ) Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA1 | sin33) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¾Æ¹Ä·¿(7ÀÏ) Ãß°¡
-						pItem->sItemInfo.CODE == (sinOR2 | sin29) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¸µ(1½Ã°£) Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA1 | sin34) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¾Æ¹Ä·¿(1½Ã°£) Ãß°¡
-						pItem->sItemInfo.CODE == (sinOR2 | sin30) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¸µ(1ÀÏ) Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA1 | sin35) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¾Æ¹Ä·¿(1ÀÏ) Ãß°¡
-						pItem->sItemInfo.CODE == (sinDB1 | sin31) || // ¹ÚÀç¿ø - ½ºÇÇµå ºÎÃ÷(7ÀÏ) Ãß°¡
-						pItem->sItemInfo.CODE == (sinDB1 | sin32) || // ¹ÚÀç¿ø - ½ºÇÇµå ºÎÃ÷(30ÀÏ) Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin15) || // ¹ÚÀç¿ø - ¼ö¹Ú ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin27) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin28) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin29) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin30) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin31) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin32) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin33) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-						pItem->sItemInfo.CODE == (sinOR2 | sin31) || // ¹ÚÀç¿ø - º¸½º ¸ó½ºÅÍ ¸µ Ãß°¡(¹Ùº§)
-						pItem->sItemInfo.CODE == (sinOR2 | sin32) ||  // ¹ÚÀç¿ø - º¸½º ¸ó½ºÅÍ ¸µ Ãß°¡(Ç»¸®)
-						pItem->sItemInfo.CODE == (sinSP1 | sin35) || // Àåº° - ¹ß·»Å¸ÀÎ ÃÊÄÝ¸´ ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinOR2 | sin33) ||   // Àåº° - ÇÏÆ®¸µ(7ÀÏ) ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA1 | sin36) || // Àåº° - ´«²É ¸ñ°ÉÀÌ(7ÀÏ) ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin36) || // Àåº° - Äµµðµ¥ÀÌÁî Äµµð ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA1 | sin37) ||   // Àåº° - ÇÏÆ®¾Æ¹Ä·¿(7ÀÏ) ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA2 | sin33) || // Àåº° - ½´ÆÛ ¾Ï¸´(1ÀÏ)
-						pItem->sItemInfo.CODE == (sinDB1 | sin33) || // Àåº° - ½ºÇÇµå ºÎÃ÷(1ÀÏ) Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin34) || // ¹ÚÀç¿ø - È£¶ûÀÌ Ä¸½¶ Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin37) || // Àåº° - ¸ÅÁöÄÃ±×¸° ºñÃë ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinSP1 | sin38) || // Àåº° - ¸ÅÁöÄÃ±×¸° ¿¡¸Þ¶öµå ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinBI1 | sin84) || // Àåº° - ±×¶óºñÆ¼ ½ºÅ©·Ñ Ãß°¡
-						pItem->sItemInfo.CODE == (sinDB1 | sin34) || // Àåº° - ½ºÇÇµå ºÎÃ÷(1½Ã°£) Ãß°¡
-						pItem->sItemInfo.CODE == (sinOA2 | sin34) || // Àåº° - ½´ÆÛ ¾Ï¸´(1½Ã°£)
-						pItem->sItemInfo.CODE == (sinSP1 | sin39) || // Àåº° - Ä«¶óÀÇ ´«¹° ¾ÆÀÌÅÛ Ãß°¡
-						pItem->sItemInfo.CODE == (sinGF1 | sin07) || // Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó
-						pItem->sItemInfo.CODE == (sinGF1 | sin08) ||	// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó
-						pItem->sItemInfo.CODE == (sinOR2 | sin36) || // Àåº° - ¼Ò¿ï½ºÅæ
+						pItem->sItemInfo.CODE == (sinOR2 | sin27) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA1 | sin32) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOR2 | sin28) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½ï¿½(7ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA1 | sin33) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½??ï¿½(7ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOR2 | sin29) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA1 | sin34) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½??ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOR2 | sin30) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA1 | sin35) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½??ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinDB1 | sin31) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(7ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinDB1 | sin32) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(30ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin15) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin27) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin28) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin29) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin30) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin31) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin32) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin33) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOR2 | sin31) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½(ï¿½?ï¿½)
+						pItem->sItemInfo.CODE == (sinOR2 | sin32) ||  // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½(?ï¿½ï¿½)
+						pItem->sItemInfo.CODE == (sinSP1 | sin35) || // ï¿½? - ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOR2 | sin33) ||   // ï¿½? - ï¿½ï¿½?ï¿½ï¿½(7ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA1 | sin36) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½(7ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin36) || // ï¿½? - ?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA1 | sin37) ||   // ï¿½? - ï¿½ï¿½?ï¿½??ï¿½(7ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA2 | sin33) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
+						pItem->sItemInfo.CODE == (sinDB1 | sin33) || // ï¿½? - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin34) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ?ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin37) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinSP1 | sin38) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinBI1 | sin84) || // ï¿½? - ï¿½?ï¿½ï¿½? ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinDB1 | sin34) || // ï¿½? - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOA2 | sin34) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
+						pItem->sItemInfo.CODE == (sinSP1 | sin39) || // ï¿½? - ?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinGF1 | sin07) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinGF1 | sin08) ||	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+						pItem->sItemInfo.CODE == (sinOR2 | sin36) || // ï¿½? - ï¿½??ï¿½ï¿½
 						pItem->sItemInfo.CODE == (sinOR2 | sin37) ||
 						pItem->sItemInfo.CODE == (sinOR2 | sin38) ||
 						pItem->sItemInfo.CODE == (sinOR2 | sin39) ||
@@ -3981,7 +4160,7 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 						pItem->sItemInfo.CODE == (sinOA1 | sin40) ||
 						pItem->sItemInfo.CODE == (sinOA1 | sin41) ||
 						pItem->sItemInfo.CODE == (sinOA1 | sin42) ||
-						pItem->sItemInfo.CODE == (sinOA1 | sin38) || // Àåº° - º¹³¯ ÀÌº¥Æ® ¾Æ¹Ä·¿, ¸µ 
+						pItem->sItemInfo.CODE == (sinOA1 | sin38) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½??ï¿½, ï¿½ï¿½ 
 						pItem->sItemInfo.CODE == (sinOR2 | sin34) ||
 						pItem->sItemInfo.CODE == (sinOR2 | sin35) ||
 
@@ -4012,7 +4191,7 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 
 					}
 
-					// ¹ÚÀç¿ø - ¸ÅÁ÷ ½©ÅÒ Á¶ÇÕ ±ÝÁö
+					// ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 					if (!cCraftItem.ForceFlag)
 					{
 						if ((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinOS1)
@@ -4026,7 +4205,7 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 					}
 
 					int kk = 0;
-					//µî·ÏµÈ ¾ÆÀÌÅÛÀº ¹Í½ºÇÒ¼ö¾ø´Ù
+					//ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½
 					for (kk = 0; kk < NotSet_Item_CODECnt; kk++) {
 						if (NotSet_Item_CODE[kk] == pItem->sItemInfo.CODE) {
 							TradeColorIndex = NOT_SETTING_COLOR;
@@ -4050,8 +4229,8 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 
 					//if((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinGP1)return FALSE;
 
-					if (Kind == 0) { //¹Í½ºÃÄ 
-						if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 2)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+					if (Kind == 0) { //ï¿½?ï¿½ï¿½ï¿½ 
+						if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 2)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 							TradeColorIndex = NOT_SETTING_COLOR;
 							return FALSE;
 
@@ -4059,8 +4238,8 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 						return TRUE;
 
 					}
-					if (Kind == 1) { //¿¡ÀÌÂ¡ 
-						if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+					if (Kind == 1) { //ï¿½ï¿½ï¿½ï¿½ï¿½ 
+						if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 							TradeColorIndex = NOT_SETTING_COLOR;
 							return FALSE;
 
@@ -4075,17 +4254,17 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 					}
 				}
 	else {
-		//Æ÷½º ¿Àºê
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (cCraftItem.ForceFlag)return FALSE;
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-		TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-		cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+		cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 		TradeStartX = 58;
 		TradeStartY = 193 + sinInterHeight2;
 		TradeEndX = TradeStartX + (3 * 22);
 		TradeEndY = TradeStartY + (4 * 22);
-		if (TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+		if (TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y) { //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 			TradeColorRect.left = TradeStartX;
 			TradeColorRect.top = TradeStartY;
 			TradeColorRect.right = TradeEndX - TradeStartX;
@@ -4094,16 +4273,16 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 
 			pItem->SetX = TradeStartX + ((TradeEndX - TradeStartX) - pItem->w) / 2;
 			pItem->SetY = TradeStartY + ((TradeEndY - TradeStartY) - pItem->h) / 2;
-			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
-			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 2)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 2)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 				TradeColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 
 			}
 
-			//µ·ÀÌ ºÎÁ·ÇÒ °æ¿ì 
+			//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 
 			//--------------------------------------------------------------------------//
 			if (MixEvento)
 			{
@@ -4111,7 +4290,7 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 			else
 			{
 #ifdef HASIEGE_MODE
-				//°ø¼ºÀü ¼¼À²Àû¿ë ¹Í½ººñ¿ëÀ» Ã¼Å©ÇÑ´Ù.
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½.
 				if (cShop.haBuyMoneyCheck(pItem->sItemInfo.Price) == 0)
 				{
 #else
@@ -4122,65 +4301,65 @@ int cCRAFTITEM::SetCraftItemAreaCheck(sITEM* pItem, int Kind)
 					return FALSE;
 				}
 				}
-			//º¹»çµÇ ¾ÆÀÌÅÛÀº ¹Í½ºÃÄ¿Í ¿¡ÀÌÂ¡À» ÇÒ¼ö¾ø´Ù MakeItemÀº ¹Í½ºÇÒ¼ö¾ø´Ù 
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ MakeItemï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ 
 			if (pItem->sItemInfo.SpecialItemFlag[0] == CHECK_COPY_ITEM ||
 				pItem->sItemInfo.ItemKindCode == ITEM_KIND_QUEST ||
 				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA1 ||
 				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA2 ||
 				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinQW1 ||
-				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || //ÆÛÁñµµ ¿Ã¸±¼ö¾öµû 
+				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ2 ||
-				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinFO1 || //Æ÷½ºµµ¾ÈµÈ´Ù
-				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinSP1 || // pluto ¼±¹°»óÀÚ ¼ÛÆí... °è¿­
-				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinWR1 || // ¹ÚÀç¿ø - ¹«±â Á¦ÀÛ¼­ °è¿­
-				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinDR1 || // ¹ÚÀç¿ø - ¹æ¾î±¸ Á¦ÀÛ¼­ °è¿­
-				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinGP1 || // ¹ÚÀç¿ø - Å©¸®½ºÅ» °è¿­
-				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinCH1 || // ¹ÚÀç¿ø - ÃÊÄÝ¸´, »çÅÁ °è¿­
-				(pItem->sItemInfo.CODE >= (sinOR2 | sin06) && pItem->sItemInfo.CODE <= (sinOR2 | sin25)) || // ¹ÚÀç¿ø : Å¬·£Ä¡ÇÁ¸µ °è¿­
+				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinFO1 || //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½??ï¿½
+				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinSP1 || // pluto ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½... ï¿½?
+				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinWR1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½?
+				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinDR1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½? ï¿½ï¿½ï¿½?ï¿½ ï¿½?
+				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinGP1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ?ï¿½ï¿½ï¿½ï¿½? ï¿½?
+				(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinCH1 || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½?
+				(pItem->sItemInfo.CODE >= (sinOR2 | sin06) && pItem->sItemInfo.CODE <= (sinOR2 | sin25)) || // ï¿½ï¿½ï¿½ï¿½ï¿½ : ?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?
 				pItem->sItemInfo.CODE == (sinGF1 | sin01) ||
 				pItem->sItemInfo.CODE == (sinGF1 | sin02) ||
 				//	pItem->sItemInfo.CODE == (sinGF1|sin03) || 
 				//	pItem->sItemInfo.CODE == (sinGF1|sin04) ||
 				pItem->sItemInfo.CODE == (sinGF1 | sin05) ||
 				pItem->sItemInfo.CODE == (sinGF1 | sin06) ||
-				pItem->sItemInfo.CODE == (sinOR2 | sin27) || // ¹ÚÀç¿ø - »êÅ¸ ¸µ Ãß°¡
-				pItem->sItemInfo.CODE == (sinOA1 | sin32) || // ¹ÚÀç¿ø - »êÅ¸ ¾Æ¹Ä·¿ Ãß°¡ 
-				pItem->sItemInfo.CODE == (sinOR2 | sin28) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¸µ Ãß°¡(7ÀÏ)
-				pItem->sItemInfo.CODE == (sinOA1 | sin33) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¾Æ¹Ä·¿ Ãß°¡(7ÀÏ) 
-				pItem->sItemInfo.CODE == (sinOR2 | sin29) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¸µ Ãß°¡(1½Ã°£)
-				pItem->sItemInfo.CODE == (sinOA1 | sin34) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¾Æ¹Ä·¿ Ãß°¡(1½Ã°£) 
-				pItem->sItemInfo.CODE == (sinOR2 | sin30) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¸µ Ãß°¡(1ÀÏ)
-				pItem->sItemInfo.CODE == (sinOA1 | sin35) || // ¹ÚÀç¿ø - ÀÌº¥Æ® ¾Æ¹Ä·¿ Ãß°¡(1ÀÏ) 
+				pItem->sItemInfo.CODE == (sinOR2 | sin27) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinOA1 | sin32) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½?ï¿½ 
+				pItem->sItemInfo.CODE == (sinOR2 | sin28) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½ï¿½ ï¿½?ï¿½(7ï¿½ï¿½)
+				pItem->sItemInfo.CODE == (sinOA1 | sin33) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½??ï¿½ ï¿½?ï¿½(7ï¿½ï¿½) 
+				pItem->sItemInfo.CODE == (sinOR2 | sin29) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
+				pItem->sItemInfo.CODE == (sinOA1 | sin34) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½??ï¿½ ï¿½?ï¿½(1ï¿½ï¿½) 
+				pItem->sItemInfo.CODE == (sinOR2 | sin30) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
+				pItem->sItemInfo.CODE == (sinOA1 | sin35) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½? ï¿½??ï¿½ ï¿½?ï¿½(1ï¿½ï¿½) 
 
-				pItem->sItemInfo.CODE == (sinDB1 | sin31) || // ¹ÚÀç¿ø - ½ºÇÇµå ºÎÃ÷(7ÀÏ) Ãß°¡
-				pItem->sItemInfo.CODE == (sinDB1 | sin32) || // ¹ÚÀç¿ø - ½ºÇÇµå ºÎÃ÷(30ÀÏ) Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin15) || // ¹ÚÀç¿ø - ¼ö¹Ú ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin27) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin28) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin29) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin30) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin31) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin32) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin33) || // ¹ÚÀç¿ø - ¾ËÆÄºª Á¶ÇÕ ÀÌº¥Æ® Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin35) || // Àåº° - ¹ß·»Å¸ÀÎ ÃÊÄÝ¸´ ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinOR2 | sin33) || // Àåº° - ÇÏÆ®¸µ ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinOR2 | sin31) || // ¹ÚÀç¿ø - º¸½º ¸ó½ºÅÍ ¸µ Ãß°¡(¹Ùº§)
-				pItem->sItemInfo.CODE == (sinOR2 | sin32) || // ¹ÚÀç¿ø - º¸½º ¸ó½ºÅÍ ¸µ Ãß°¡(Ç»¸®)
-				pItem->sItemInfo.CODE == (sinOA1 | sin36) ||   // Àåº° - ´«²É ¸ñ°ÉÀÌ(7ÀÏ) ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin36) || // Àåº° - Äµµðµ¥ÀÌÁî Äµµð ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinOA1 | sin37) ||   // Àåº° - ÇÏÆ®¾Æ¹Ä·¿ ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinOA2 | sin33) || // Àåº° - ½´ÆÛ ¾Ï¸´(1ÀÏ)
-				pItem->sItemInfo.CODE == (sinDB1 | sin33) || // Àåº° - ½ºÇÇµå ºÎÃ÷(1ÀÏ) Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin34) || // ¹ÚÀç¿ø - È£¶ûÀÌ Ä¸½¶ Ãß°¡ 
-				pItem->sItemInfo.CODE == (sinSP1 | sin37) || // Àåº° - ¸ÅÁöÄÃ±×¸° ºñÃë ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinSP1 | sin38) || // Àåº° - ¸ÅÁöÄÃ±×¸° ¿¡¸Þ¶öµå ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinBI1 | sin84) || // Àåº° - ±×¶óºñÆ¼ ½ºÅ©·Ñ Ãß°¡
-				pItem->sItemInfo.CODE == (sinDB1 | sin34) || // Àåº° - ½ºÇÇµå ºÎÃ÷(1½Ã°£) Ãß°¡
-				pItem->sItemInfo.CODE == (sinOA2 | sin34) || // Àåº° - ½´ÆÛ ¾Ï¸´(1½Ã°£)
-				pItem->sItemInfo.CODE == (sinSP1 | sin39) || // Àåº° - Ä«¶óÀÇ ´«¹° ¾ÆÀÌÅÛ Ãß°¡
-				pItem->sItemInfo.CODE == (sinDA1 | sin54) || pItem->sItemInfo.CODE == (sinDA2 | sin54) ||// ¹ÚÀç¿ø - ¼ö¿µº¹ º¹Àå Ãß°¡ - Á¶ÇÕ±ÝÁö
-				pItem->sItemInfo.CODE == (sinDA1 | sin55) || pItem->sItemInfo.CODE == (sinDA2 | sin55) ||  // ¹ÚÀç¿ø - ¼ö¿µº¹ º¹Àå Ãß°¡ - Á¶ÇÕ±ÝÁö
-				pItem->sItemInfo.CODE == (sinOR2 | sin36) || // Àåº° - ¼Ò¿ï½ºÅæ
+				pItem->sItemInfo.CODE == (sinDB1 | sin31) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(7ï¿½ï¿½) ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinDB1 | sin32) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(30ï¿½ï¿½) ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin15) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin27) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin28) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin29) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin30) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin31) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin32) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin33) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin35) || // ï¿½? - ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinOR2 | sin33) || // ï¿½? - ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinOR2 | sin31) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½(ï¿½?ï¿½)
+				pItem->sItemInfo.CODE == (sinOR2 | sin32) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½(?ï¿½ï¿½)
+				pItem->sItemInfo.CODE == (sinOA1 | sin36) ||   // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½(7ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin36) || // ï¿½? - ?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinOA1 | sin37) ||   // ï¿½? - ï¿½ï¿½?ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinOA2 | sin33) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
+				pItem->sItemInfo.CODE == (sinDB1 | sin33) || // ï¿½? - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin34) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ?ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½?ï¿½ 
+				pItem->sItemInfo.CODE == (sinSP1 | sin37) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinSP1 | sin38) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinBI1 | sin84) || // ï¿½? - ï¿½?ï¿½ï¿½? ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinDB1 | sin34) || // ï¿½? - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinOA2 | sin34) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
+				pItem->sItemInfo.CODE == (sinSP1 | sin39) || // ï¿½? - ?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinDA1 | sin54) || pItem->sItemInfo.CODE == (sinDA2 | sin54) ||// ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ - ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
+				pItem->sItemInfo.CODE == (sinDA1 | sin55) || pItem->sItemInfo.CODE == (sinDA2 | sin55) ||  // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ - ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
+				pItem->sItemInfo.CODE == (sinOR2 | sin36) || // ï¿½? - ï¿½??ï¿½ï¿½
 				pItem->sItemInfo.CODE == (sinOR2 | sin37) ||
 				pItem->sItemInfo.CODE == (sinOR2 | sin38) ||
 				pItem->sItemInfo.CODE == (sinOR2 | sin39) ||
@@ -4267,7 +4446,7 @@ int ForceOrbPriceIndex[] = { 200,500,1000,2000,4000,5000,10000,20000,30000,40000
 int MagicForceOrbPriceIndex[] = { 200,500,1000,2000,4000,5000,10000,20000,30000,40000,50000,60000,70000,80000 };
 
 DWORD SheltomCode2[] = { sin01,sin02,sin03,sin04,sin05,sin06,sin07,sin08,sin09,sin10,sin11,sin12,sin13,sin14,sin15 }; // Sheltons que podem ser utilizados no npc de force aqui
-DWORD MagicSheltomCode[] = { sin21,sin22,sin23,sin24,sin25,sin26,sin27,sin28,sin29,sin30,sin31,sin32 }; // Sheltons mágicos que podem ser usados no npc de force aqui
+DWORD MagicSheltomCode[] = { sin21,sin22,sin23,sin24,sin25,sin26,sin27,sin28,sin29,sin30,sin31,sin32 }; // Sheltons mï¿½gicos que podem ser usados no npc de force aqui
 
 DWORD BillingMagicSheltomCode[] = { sin35, sin36, sin37 };
 
@@ -4491,23 +4670,23 @@ int cCRAFTITEM::PickUpCraftItem(int x, int y, int PickUpFlag, int Kind)
 						CheckCraftItemForm();
 						memcpy(&MouseItem, &sCraftItem.CraftItem[i], sizeof(sITEM));
 						sCraftItem.CraftItem[i].Flag = 0;
-						haCraftSortItem(&sCraftItem);  //¾ÆÀÌÅÛ Àç±¸¼º ¶§¹®¿¡ ¹è¿­ ÀÌµ¿
-						//memset(&sCraftItem.CraftItem[i],0,sizeof(sITEM));  //¼­¹ö ÇØÅ· ¿¡·¯ ¶§¹®¿¡ ÀÓ½Ã ¹æÆíÀÌ´Ù.
+						haCraftSortItem(&sCraftItem);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? ï¿½?ï¿½
+						//memset(&sCraftItem.CraftItem[i],0,sizeof(sITEM));  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 
 						sinPlaySound(sCraftItem.CraftItem[i].SoundIndex);
 						TradeColorIndex = 0;
 						ReFormCraftItem();
 						if (ForceFlag)
-							CheckForceOrbPrice(); // Forece Orb ÇÃ·¢ÀÖÀ»°æ¿ì¿£ Æ÷½º°¡°ÝÀ» Ç¥½Ã
+							CheckForceOrbPrice(); // Forece Orb ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½
 
-						if (i == 0) {  //¾Á¾ÆÀÌÅÛ ¶§¹®¿¡ 
+						if (i == 0) {  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 							for (int i = 1; i < 15; i++) {
 								if (sCraftItem.CraftItem[i].Flag) {
 									if ((sCraftItem.CraftItem[i].CODE & sinITEM_MASK2) == sinSE1) {
 										if (!cInvenTory.AutoSetInvenItem(&sCraftItem.CraftItem[i])) {
 											sinThrowItemToFeild(&sCraftItem.CraftItem[i]);
 											sCraftItem.CraftItem[i].Flag = 0;
-											memset(&sCraftItem.CraftItem[i], 0, sizeof(sCRAFTITEM)); //¾ÆÀÌÅÛÀ» ´Ù ³¯·Á¹ö¸°´Ù 
+											memset(&sCraftItem.CraftItem[i], 0, sizeof(sCRAFTITEM)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 										}
 									}
 								}
@@ -4532,7 +4711,7 @@ int cCRAFTITEM::PickUpCraftItem(int x, int y, int PickUpFlag, int Kind)
 				if (sAgingItem.AgingItem[i].x < x && sAgingItem.AgingItem[i].x + sAgingItem.AgingItem[i].w > x &&
 					sAgingItem.AgingItem[i].y < y && sAgingItem.AgingItem[i].y + sAgingItem.AgingItem[i].h > y) {
 					if (PickUpFlag) {
-						//½©ÅÒ Á¶ÇÕ »óÅÂ¿¡¼­ ¿¡ÀÌÂ¡À» Äµ½½ÇÏÁö ¸øÇÑ´Ù.======================================================
+						//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½.======================================================
 						int cnt = 0;
 						for (cnt = 1; cnt < 15; cnt++) {
 							if (i == 0 && sAgingItem.AgingItem[cnt].Flag) {
@@ -4570,7 +4749,7 @@ int cCRAFTITEM::PickUpCraftItem(int x, int y, int PickUpFlag, int Kind)
 						}
 						else {
 							if (i == 0) {
-								for (int y = 0; y < 4; y++) { //½©ÅÒ ÀÎµ¦½º ÃÊ±âÈ­ 
+								for (int y = 0; y < 4; y++) { //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 									for (int h = 0; h < 3; h++) {
 										AgingLevelSheltomIndex[y][h] = 0;
 										AgingCheckSheltomFlag = 0;
@@ -4604,29 +4783,29 @@ int cCRAFTITEM::PickUpCraftItem(int x, int y, int PickUpFlag, int Kind)
 
 DWORD SheltomCode[MAX_SHELTOM] = { sin01,sin02,sin03,sin04,sin05,sin06,sin07,sin08,sin09, sin10, sin11, sin12, sin13, sin14 };
 
-//¾ÆÀÌÅÛÀ» Á¶ÇÕÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 int cCRAFTITEM::MixingItem()
 {
 	int i, j, t, k, CheckFlag = 0, Temp = 0, LineCount = 0;
 	DWORD TempCode2 = 0;
 	int  ReConCnt = 0;
-	if (sCraftItem_Recv.DocIndex == 2000) { //¾ÆÀÌÅÛ Àç±¸¼º
+	if (sCraftItem_Recv.DocIndex == 2000) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½
 		for (i = 0; i < 12; i++) {
 			if (sCraftItem_Recv.SheltomCode[i]) {
 				TempCode2 = sCraftItem_Recv.SheltomCode[i];
 				break;
 			}
 		}
-		for (j = 0; j < MAX_SEEL_COUNT; j++) { // ¹ÚÀç¿ø - Å×ÀÌ¿ÍÁî ¾Á Ãß°¡ (3Á¾·ù -> 4Á¾·ù)
+		for (j = 0; j < MAX_SEEL_COUNT; j++) { // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½ (3ï¿½ï¿½ï¿½ï¿½ -> 4ï¿½ï¿½ï¿½ï¿½)
 			if (sReconItem[j].dwCODE == TempCode2) {
 				ReConCnt = sReconItem[j].iCount;
 			}
 		}
-		if (!ReConCnt) {  //ÄÚµå°¡ Æ²¸®¸é ½ÇÆÐ
+		if (!ReConCnt) {  //ï¿½?? ?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			sCraftItem_Recv.Result = FALSE;
 			return FALSE;
 		}
-		for (i = 0; i < ReConCnt; i++) { //°¹¼ö°¡ ¾È¸ÂÀ¸¸é ½ÇÆÐ 
+		for (i = 0; i < ReConCnt; i++) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 			if (sCraftItem_Recv.SheltomCode[i]) {
 				if (TempCode2 != sCraftItem_Recv.SheltomCode[i]) {
 					sCraftItem_Recv.Result = FALSE;
@@ -4638,7 +4817,7 @@ int cCRAFTITEM::MixingItem()
 		return 2000;
 	}
 
-	//¾Á¾ÆÀÌÅÛ ¾ÆÀÌÅÛ ¹Í½ºÃÄ ¹æÁö
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	for (j = 0; j < 12; j++) {
 		if ((sCraftItem_Recv.SheltomCode[j] & sinITEM_MASK2) == sinSE1) {
 			sCraftItem_Recv.Result = FALSE;
@@ -4649,12 +4828,12 @@ int cCRAFTITEM::MixingItem()
 
 	//sITEM TempItem;
 
-	for (j = 0; j < 14; j++) //ÃÊ±âÈ­ 
+	for (j = 0; j < 14; j++) //ï¿½?ï¿½? 
 		sCraftItem.SheltomIndex[j] = 0;
 
 
-	/////////////½©ÅÒÀ» °Ë»öÇÑ´Ù 
-	for (i = 0; i < 12; i++) { //1ºÎÅÍ´Â ½©ÅÒ
+	/////////////ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ 
+	for (i = 0; i < 12; i++) { //1ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (sCraftItem_Recv.SheltomCode[i] & sinITEM_MASK2) {
 			for (j = 0; j < 14; j++) {
 				if ((sCraftItem_Recv.SheltomCode[i] & sinITEM_MASK3) == SheltomCode[j]) {
@@ -4713,7 +4892,7 @@ int cCRAFTITEM::MixingItem()
 									sCraftItem_Recv.DesCraftItem.sItemInfo.Resistance[sITEMINFO_BIONIC] += (int)sCraftItem_Info[i].AddElement[k];
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_BIO;
 									break;
-								case SIN_ADD_CRITICAL:		//Å©¸®Æ¼ÄÃ 
+								case SIN_ADD_CRITICAL:		//?ï¿½ï¿½?ï¿½ï¿½ 
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.Critical_Hit += (int)sCraftItem_Info[i].AddElement[k];
 									else
@@ -4721,7 +4900,7 @@ int cCRAFTITEM::MixingItem()
 									//sCraftItem_Recv.DesCraftItem.sItemInfo.Critical_Hit +=  (int)((float)sCraftItem_Recv.DesCraftItem.sItemInfo.Critical_Hit*(sCraftItem_Info[i].AddElement									[k] / 100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_CRITICAL;
 									break;
-								case SIN_ADD_ATTACK_RATE:	//¸íÁß·Â 
+								case SIN_ADD_ATTACK_RATE:	//ï¿½ï¿½ï¿½?ï¿½ 
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.Attack_Rating += (int)sCraftItem_Info[i].AddElement[k];
 									else
@@ -4729,7 +4908,7 @@ int cCRAFTITEM::MixingItem()
 									//sCraftItem_Recv.DesCraftItem.sItemInfo.Attack_Rating +=  (int)((float)sCraftItem_Recv.DesCraftItem.sItemInfo.Attack_Rating*(sCraftItem_Info[i].											AddElement[k]/100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_ATTACK_RATE;
 									break;
-								case SIN_ADD_DAMAGE_MIN:	//ÃÖ¼Ò´ë¹ÌÁö
+								case SIN_ADD_DAMAGE_MIN:	//ï¿½??ï¿½ï¿½ï¿½ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.Damage[0] += (int)sCraftItem_Info[i].AddElement[k];
 									else
@@ -4738,7 +4917,7 @@ int cCRAFTITEM::MixingItem()
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_DAMAGE_MIN;
 									break;
 
-								case SIN_ADD_DAMAGE_MAX:	//ÃÖ´ë´ë¹ÌÁö
+								case SIN_ADD_DAMAGE_MAX:	//ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.Damage[1] += (int)sCraftItem_Info[i].AddElement[k];
 									else
@@ -4746,7 +4925,7 @@ int cCRAFTITEM::MixingItem()
 									//sCraftItem_Recv.DesCraftItem.sItemInfo.Damage[1] +=  (int)((float)sCraftItem_Recv.DesCraftItem.sItemInfo.Damage[1]*(sCraftItem_Info[i].AddElement[k]/100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_DAMAGE_MAX;
 									break;
-								case SIN_ADD_ATTACK_SPEED:	//°ø°Ý¼Óµµ
+								case SIN_ADD_ATTACK_SPEED:	//ï¿½ï¿½ï¿½??ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.Attack_Speed += (int)sCraftItem_Info[i].AddElement[k];
 									else
@@ -4754,14 +4933,14 @@ int cCRAFTITEM::MixingItem()
 									//sCraftItem_Recv.DesCraftItem.sItemInfo.Attack_Speed += (int)((float)sCraftItem_Recv.DesCraftItem.sItemInfo.Attack_Speed*(sCraftItem_Info[i].AddElement[k]/											100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_ATTACK_SPEED;
 									break;
-								case SIN_ADD_ABSORB:	//Èí¼ö·Â 
+								case SIN_ADD_ABSORB:	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fAbsorb += sCraftItem_Info[i].AddElement[k];
 									else
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fAbsorb += (GetItemAbsorb(&sCraftItem_Recv.DesCraftItem.sItemInfo) * (sCraftItem_Info[i].AddElement[k] / 100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_ABSORB;
 									break;
-								case SIN_ADD_DEFENCE:	//¹æ¾î·Â 
+								case SIN_ADD_DEFENCE:	//ï¿½ï¿½ï¿½ï¿½ 
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.Defence += (int)sCraftItem_Info[i].AddElement[k];
 									else
@@ -4769,14 +4948,14 @@ int cCRAFTITEM::MixingItem()
 									//sCraftItem_Recv.DesCraftItem.sItemInfo.Defence += (int)((float)sCraftItem_Recv.DesCraftItem.sItemInfo.Defence*(sCraftItem_Info[i].AddElement[k]/100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_DEFENCE;
 									break;
-								case SIN_ADD_BLOCK_RATE: //ºí·°À² 
+								case SIN_ADD_BLOCK_RATE: //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fBlock_Rating += sCraftItem_Info[i].AddElement[k];
 									else
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fBlock_Rating += (sCraftItem_Recv.DesCraftItem.sItemInfo.fBlock_Rating * (sCraftItem_Info[i].AddElement[k] / 100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_BLOCK_RATE;
 									break;
-								case SIN_ADD_MOVE_SPEED: //ÀÌµ¿¼Óµµ 
+								case SIN_ADD_MOVE_SPEED: //ï¿½?ï¿½ï¿½?ï¿½ 
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fSpeed += sCraftItem_Info[i].AddElement[k];
 									else
@@ -4784,7 +4963,7 @@ int cCRAFTITEM::MixingItem()
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_MOVE_SPEED;
 									break;
 
-								case SIN_ADD_LIFE: //ÃÖ´ë »ý¸í·Â 
+								case SIN_ADD_LIFE: //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fIncrease_Life += sCraftItem_Info[i].AddElement[k];
 									else
@@ -4792,28 +4971,28 @@ int cCRAFTITEM::MixingItem()
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_LIFE;
 									break;
 
-								case SIN_ADD_MANA: //ÃÖ´ë ±â·Â
+								case SIN_ADD_MANA: //ï¿½?ï¿½ ï¿½ï¿½ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fIncrease_Mana += sCraftItem_Info[i].AddElement[k];
 									else
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fIncrease_Mana += (sCraftItem_Recv.DesCraftItem.sItemInfo.fIncrease_Mana * (sCraftItem_Info[i].AddElement[k] / 100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_MANA;
 									break;
-								case SIN_ADD_STAMINA: //ÃÖ´ë ±Ù·Â
+								case SIN_ADD_STAMINA: //ï¿½?ï¿½ ï¿½?ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fIncrease_Stamina += sCraftItem_Info[i].AddElement[k];
 									else
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fIncrease_Stamina += (sCraftItem_Recv.DesCraftItem.sItemInfo.fIncrease_Stamina * (sCraftItem_Info[i].AddElement[k] / 100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_STAMINA;
 									break;
-								case SIN_ADD_LIFEREGEN: //»ý¸í·ÂÀç»ý
+								case SIN_ADD_LIFEREGEN: //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fLife_Regen += sCraftItem_Info[i].AddElement[k];
 									else
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fLife_Regen += (sCraftItem_Recv.DesCraftItem.sItemInfo.fLife_Regen * (sCraftItem_Info[i].AddElement[k] / 100));
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_LIFEREGEN;
 									break;
-								case SIN_ADD_MANAREGEN: //±â·ÂÀç»ý
+								case SIN_ADD_MANAREGEN: //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fMana_Regen += sCraftItem_Info[i].AddElement[k];
 									else
@@ -4821,7 +5000,7 @@ int cCRAFTITEM::MixingItem()
 									sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindMask |= SIN_ADD_MANAREGEN;
 
 									break;
-								case SIN_ADD_STAMINAREGEN: //±Ù·ÂÀç»ý
+								case SIN_ADD_STAMINAREGEN: //ï¿½?ï¿½ï¿½ï¿½ï¿½
 									if (sCraftItem_Info[i].ElementKind[k] == SIN_ADD_NUM)
 										sCraftItem_Recv.DesCraftItem.sItemInfo.fStamina_Regen += sCraftItem_Info[i].AddElement[k];
 									else
@@ -4834,18 +5013,18 @@ int cCRAFTITEM::MixingItem()
 							}
 						}
 
-						////////¼öÄ¡Àû¿ë ³¡ 
-						ReformItem(&sCraftItem_Recv.DesCraftItem.sItemInfo);  //¾ÆÀÌÅÛ ÀÎÁõ ¹Þ±â 
+						////////ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ 
+						ReformItem(&sCraftItem_Recv.DesCraftItem.sItemInfo);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ 
 
-						//¾ÆÀÌÅÛ ÀÎÁõ ±× µÎ¹øÂ° 
+						//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 						if (!CheckMixItem(&sCraftItem_Recv.DesCraftItem.sItemInfo)) {
-							SendSetHackUser(50); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
+							SendSetHackUser(50); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 							return FALSE;
 						}
 
 
 						sCraftItem_Recv.DesCraftItem.sItemInfo.ItemKindCode = ITEM_KIND_CRAFT;
-						ReformMixItem(&sCraftItem_Recv.DesCraftItem.sItemInfo); //ÀçÀÎÁõ 
+						ReformMixItem(&sCraftItem_Recv.DesCraftItem.sItemInfo); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 						sCraftItem_Recv.DocIndex = i;
 						sCraftItem_Recv.Result = TRUE;
@@ -4864,7 +5043,7 @@ int cCRAFTITEM::MixingItem()
 	return FALSE;
 }
 
-//¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´ÂÁö Ã¼Å©ÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ 
 int cCRAFTITEM::CraftCheckEmptyArea(sITEM * pItem)
 {
 	int cntx, cnty;
@@ -4872,13 +5051,13 @@ int cCRAFTITEM::CraftCheckEmptyArea(sITEM * pItem)
 
 	RECT	rect;
 	int		flag;
-	int StartX = 23;  //ÀÎº¥ ¹Ú½ºÀÇ ½ÃÀÛÁ¡ X
+	int StartX = 23;  //ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X
 	int StartY = 436; // Y
 
-	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Xï¿½ï¿½? 
+	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Yï¿½ï¿½?
 
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//ï¿½?? ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ 
 	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22) {
 			flag = 0;
@@ -4907,7 +5086,7 @@ int cCRAFTITEM::CraftCheckEmptyArea(sITEM * pItem)
 
 }
 
-//¹Í½ºÃÄ ¾ÆÀÌÅÛÀ» Ãë¼ÒÇÑ´Ù 
+//ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 int cCRAFTITEM::CancelMixItem()
 {
 	if (MixItemNoCopyFlag)return FALSE;
@@ -4920,14 +5099,14 @@ int cCRAFTITEM::CancelMixItem()
 		}
 	}
 
-	cCraftItem.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù 
-	memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //¾ÆÀÌÅÛÀ» ´Ù ³¯·Á¹ö¸°´Ù 
-	ResetInvenItemCode();				//ÀÌº¥ ¾ÆÀÌÅÛ ÄÚµå ÃÊ±âÈ­
+	cCraftItem.OpenFlag = 0; //? ï¿½?ï¿½ï¿½ 
+	memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+	ResetInvenItemCode();				//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½?
 
-	memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­  (ÀÏ´Ü °°ÀÌÇØÁØ´Ù)
-	memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+	memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?  (ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½)
+	memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
-	//Force Orb ÃÊ±âÈ­
+	//Force Orb ï¿½?ï¿½?
 	ForceFlag = 0;
 	ForceItemPrice = 0;
 	ForceItemPrice2 = 0;
@@ -4936,10 +5115,10 @@ int cCRAFTITEM::CancelMixItem()
 
 int CraftItemCheckDelayTime = 0;
 
-//Å©·¡ÇÁÆ® ¾ÆÀÌÅÛÀ» Á¶ÀÛÇÏ´Â ¸ÁÇÒ À¯Àú¸¦ º´½Å ¸¸µç´Ù 
+//?ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 
 int cCRAFTITEM::CheckHackCraftItem()
 {
-	//ÇöÁ¦ ¼­¹ö¿¡¼­ ÇÏµµ·Ï µÇ¾îÀÖ¾î Àû¿ëÀÌ ¾ÈµÈ´Ù 
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ 
 	CraftItemCheckDelayTime++;
 	if (CraftItemCheckDelayTime < 70 * 10)return FALSE;
 	CraftItemCheckDelayTime = 0;
@@ -4960,16 +5139,16 @@ int cCRAFTITEM::CheckHackCraftItem()
 
 	}
 	if (CheckAddItemData != AddItemCheckSum) {
-		SendSetHackUser(8); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
+		SendSetHackUser(8); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
 	}
 
 	return TRUE;
 }
 
-//////////¹Í½ºÃÄ ¾ÆÀÌÅÛ Á¶ÀÛ ¹æÁö¸¦ À§ÇÑ Èû°Ü¿î ³ë·Â 
+//////////ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ 
 int cCRAFTITEM::CheckCraftItemForm()
-{ //Ã¼Å©  
+{ //ï¿½?  
 	int TempCheckDataSum = 0;
 
 	if (!cCraftItem.ForceFlag) {
@@ -4982,15 +5161,15 @@ int cCRAFTITEM::CheckCraftItemForm()
 
 			}
 		}
-		//if(TempCheckDataSum != CraftItemCheckSum) //ÇÊ¿ä¾ø´À°Å °°¼­¸® »¯´Ù ÇÏÇÖ
-			//SendSetHackUser(9); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
+		//if(TempCheckDataSum != CraftItemCheckSum) //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			//SendSetHackUser(9); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 	}
 	return TRUE;
 
 }
 
 int cCRAFTITEM::ReFormCraftItem()
-{ //ÀÎÁõ 
+{ //ï¿½ï¿½ï¿½ï¿½ 
 
 	CraftItemCheckSum = 0;
 	for (int i = 0; i < 15; i++) {
@@ -5006,11 +5185,11 @@ int cCRAFTITEM::ReFormCraftItem()
 	return TRUE;
 }
 
-//////////Æ®·¹ÀÌµå  ¾ÆÀÌÅÛ Á¶ÀÛ ¹æÁö¸¦ À§ÇÑ Èû°Ü¿î ³ë·Â ÇíÇíÇí
+//////////?ï¿½ï¿½ï¿½?ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //ReFormTradeItem();
 //CheckTradeItemForm();
 int cTRADE::CheckTradeItemForm()
-{ //Ã¼Å©  
+{ //ï¿½?  
 	int TempCheckDataSum = 0;
 	for (int i = 0; i < MAX_TRADE_ITEM; i++) {
 		if (sTrade.TradeItem[i].Flag) {
@@ -5022,14 +5201,14 @@ int cTRADE::CheckTradeItemForm()
 		}
 	}
 	if (TempCheckDataSum != TradeItemCheckSum)
-		SendSetHackUser(10); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
+		SendSetHackUser(10); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
 	return TRUE;
 
 }
 
 int cTRADE::ReFormTradeItem()
-{ //ÀÎÁõ 
+{ //ï¿½ï¿½ï¿½ï¿½ 
 
 	TradeItemCheckSum = 0;
 	for (int i = 0; i < MAX_TRADE_ITEM; i++) {
@@ -5046,9 +5225,9 @@ int cTRADE::ReFormTradeItem()
 
 //CheckWareHouseForm();
 //ReFormWareHouse();
-////////////////////Ã¢°í¸¦ Á¶ÀÛÇÏ·Á´Â ³ª»Û ÀÚ½ÄµéÀ» ¹úÁÖ±â À§ÇÑ Èû°Ü¿î ³ë·Â !!!
+////////////////////?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ !!!
 int cWAREHOUSE::CheckWareHouseForm()
-{ //Ã¼Å©  
+{ //ï¿½?  
 	int TempCheckDataSum = 0;
 	for (int i = 0; i < 100; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
@@ -5060,14 +5239,14 @@ int cWAREHOUSE::CheckWareHouseForm()
 		}
 	}
 	if (TempCheckDataSum != WareHouseCheckSum)
-		SendSetHackUser(11); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á 
+		SendSetHackUser(11); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
 	return TRUE;
 
 }
 
 int cWAREHOUSE::ReFormWareHouse()
-{ //ÀÎÁõ 
+{ //ï¿½ï¿½ï¿½ï¿½ 
 
 	WareHouseCheckSum = 0;
 	for (int i = 0; i < 100; i++) {
@@ -5237,7 +5416,7 @@ int cAGING::AgingItem(int MakeItemFlag)
 	// chance de subir +2
 	int PlusAgingPercent[16] = { 12, 12, 12, 10, 10, 10, 8, 8, 8, 6, 6, 6, 4, 4, 4, 0 };
 
-	// Aging quebrando aqui, 0 = quebra padrão = 3
+	// Aging quebrando aqui, 0 = quebra padrï¿½o = 3
 	int AgingItemFaildNum = 3;
 
 	int DownPersent = GetRandomPos(0, 100);
@@ -5354,7 +5533,7 @@ int cAGING::AgingItem(int MakeItemFlag)
 		}
 	}
 
-	else if (cAging.AginStoneKind == 5) // Pedra 100% (Não voltar mas pode quebrar)
+	else if (cAging.AginStoneKind == 5) // Pedra 100% (Nï¿½o voltar mas pode quebrar)
 	{
 		if (chanceQuebra[sAging_Recv.DesCraftItem.sItemInfo.ItemAgingNum[0]] > DestroyPersent)
 		{
@@ -5554,23 +5733,23 @@ int cAGING::CancelAgingItem(int Flag)
 		}
 	}
 
-	for (int y = 0; y < 4; y++) { //½©ÅÒ ÀÎµ¦½º ÃÊ±âÈ­ 
+	for (int y = 0; y < 4; y++) { //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		for (int h = 0; h < 3; h++) {
 			AgingLevelSheltomIndex[y][h] = 0;
 		}
 
 	}
 
-	AgingCheckSheltomFlag = 0; //¿¡ÀÌÂ¡ °¡´É ÇÃ·¢ ÃÊ±âÈ­ 
+	AgingCheckSheltomFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 	AgingSheltomCnt2 = 0;
 	if (!Flag)
-		cAging.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù 
+		cAging.OpenFlag = 0; //? ï¿½?ï¿½ï¿½ 
 
-	ResetInvenItemCode();				//ÀÌº¥ ¾ÆÀÌÅÛ ÄÚµå ÃÊ±âÈ­
+	ResetInvenItemCode();				//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½?
 	return TRUE;
 }
 
-//¿¡ÀÌÂ¡ÇÒ¼öÀÖ´Â ¾ÆÀÌÅÛÀÎÁö¸¦ Ã¼Å©ÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ 
 int cAGING::CheckItem(sITEM * pItem)
 {
 	int k = 0;
@@ -5582,7 +5761,7 @@ int cAGING::CheckItem(sITEM * pItem)
 	else {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 3; j++) {
-				AgingLevelSheltomIndex[i][j] = AgingLevelSheltom[pItem->sItemInfo.ItemAgingNum[0]][k++]; //½©ÅÒÀÇ Á¾·ù¿Í ÀÎµ¦½º¸¦ ³Ö´Â´Ù 
+				AgingLevelSheltomIndex[i][j] = AgingLevelSheltom[pItem->sItemInfo.ItemAgingNum[0]][k++]; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 
 			}
 
@@ -5614,28 +5793,28 @@ DWORD AgingItemCode3[12] = { sinWA1,sinWC1,sinWH1,sinWM1,sinWP1,sinWS1,sinWS2,si
 //PEDRAS AGE
 int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 {
-	// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¼³Á¤ º¯°æ(¿À¸£µµ Ãß°¡)
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½)
 	DWORD SheltomCODE[MAX_SHELTOM] = { sin01,sin02,sin03,sin04,sin05,sin06,sin07,sin08,sin09,sin10,sin11,sin12,sin13,sin14/*,sin15*/ };
 	int SheltomIndex2 = 0;
 	int i, j;
 	if (pItem->sItemInfo.CODE == (sinBI1 | sin10) || pItem->sItemInfo.CODE == (sinBI1 | sin11) ||
-		pItem->sItemInfo.CODE == (sinBI1 | sin60) || pItem->sItemInfo.CODE == (sinBI1 | sin61) || // ¹ÚÀç¿ø - ¿¤´õ ÄÚÆÛ ¿À¾î, ½´ÆÛ ¿¡ÀÌÂ¡ ½ºÅæ Ãß°¡
-		pItem->sItemInfo.CODE == (sinBI1 | sin85) || pItem->sItemInfo.CODE == (sinBI2 | sin38) || pItem->sItemInfo.CODE == (sinBI2 | sin52) || pItem->sItemInfo.CODE == (sinBI2 | sin69)) // Àåº° - ½´ÆÛ ¿¡ÀÌÂ¡ ½ºÅæ 1.5
+		pItem->sItemInfo.CODE == (sinBI1 | sin60) || pItem->sItemInfo.CODE == (sinBI1 | sin61) || // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+		pItem->sItemInfo.CODE == (sinBI1 | sin85) || pItem->sItemInfo.CODE == (sinBI2 | sin38) || pItem->sItemInfo.CODE == (sinBI2 | sin52) || pItem->sItemInfo.CODE == (sinBI2 | sin69)) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1.5
 	{
 		cAging.AginStoneKind = 0;
 		int AgingStoneX = 159 + 11, AgingStoneY = 268 + 11 + sinInterHeight2;
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-		cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 		if (AgingStoneX <= pItem->x + 22 && AgingStoneX > pItem->x && AgingStoneY< pItem->y + 22 && AgingStoneY > pItem->y) {
 			pItem->SetX = AgingStoneX + (((pItem->x + 22 - AgingStoneX) / 22) * 22) - 11;
 			pItem->SetY = AgingStoneY + (((pItem->y + 22 - AgingStoneY) / 22) * 22) - 11;
-			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 			if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-				cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+				cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 				return FALSE;
 			}
-			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 				TradeColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 			}
@@ -5643,22 +5822,22 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 		}
 	}
 
-	if (pItem->sItemInfo.CODE == (sinBI1 | sin61)) // ¹ÚÀç¿ø - ¿¤´õ ÄÚÆÛ ¿À¾î, ½´ÆÛ ¿¡ÀÌÂ¡ ½ºÅæ Ãß°¡
+	if (pItem->sItemInfo.CODE == (sinBI1 | sin61)) // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
 	{
 		cAging.AginStoneKind = 4;
 		int AgingStoneX = 159 + 11, AgingStoneY = 268 + 11 + sinInterHeight2;
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-		cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 		if (AgingStoneX <= pItem->x + 22 && AgingStoneX > pItem->x && AgingStoneY< pItem->y + 22 && AgingStoneY > pItem->y) {
 			pItem->SetX = AgingStoneX + (((pItem->x + 22 - AgingStoneX) / 22) * 22) - 11;
 			pItem->SetY = AgingStoneY + (((pItem->y + 22 - AgingStoneY) / 22) * 22) - 11;
-			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 			if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-				cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+				cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 				return FALSE;
 			}
-			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 				TradeColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 			}
@@ -5667,23 +5846,23 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 	}
 
 
-	// Àåº° - ½´ÆÛ ¿¡ÀÌÂ¡ ½ºÅæ 1.5
+	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1.5
 	if (pItem->sItemInfo.CODE == (sinBI1 | sin85))
 	{
 		cAging.AginStoneKind = 5;
 		int AgingStoneX = 159 + 11, AgingStoneY = 268 + 11 + sinInterHeight2;
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-		cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 		if (AgingStoneX <= pItem->x + 22 && AgingStoneX > pItem->x && AgingStoneY< pItem->y + 22 && AgingStoneY > pItem->y) {
 			pItem->SetX = AgingStoneX + (((pItem->x + 22 - AgingStoneX) / 22) * 22) - 11;
 			pItem->SetY = AgingStoneY + (((pItem->y + 22 - AgingStoneY) / 22) * 22) - 11;
-			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 			if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-				cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+				cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 				return FALSE;
 			}
-			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 				TradeColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 			}
@@ -5694,9 +5873,9 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 	//-----------------------------------------------------------------------------------
 	if ((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA2) {
 		if (sAgingItem.AgingItem[0].Flag && (sAgingItem.AgingItem[0].sItemInfo.CODE & sinITEM_MASK2) == sinMA1) {
-			TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-			TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-			cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+			TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+			TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+			cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 			TradeStartX = 218;
 			TradeStartY = 193 + sinInterHeight2;
 			TradeEndX = TradeStartX + (3 * 22);
@@ -5704,22 +5883,22 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 
 			for (i = pItem->x + 11; i < pItem->x + pItem->w; i += 22) {
 				for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22) {
-					if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+					if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 						TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
 						TradeColorRect.top = TradeStartY + (((j - TradeStartY) / 22) * 22);
 						TradeColorRect.right = pItem->w;
 						TradeColorRect.bottom = pItem->h;
 						if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-							cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+							cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 							return FALSE;
 						}
 
 						pItem->SetX = TradeColorRect.left;
 						pItem->SetY = TradeColorRect.top;
-						pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-						TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+						pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+						TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
-						if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+						if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 							TradeColorIndex = NOT_SETTING_COLOR;
 							return FALSE;
 						}
@@ -5735,15 +5914,15 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 	}
 
 	if ((pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA1) {
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-		TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-		cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+		cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 		TradeStartX = 58;
 		TradeStartY = 193 + sinInterHeight2;
 		TradeEndX = TradeStartX + (3 * 22);
 		TradeEndY = TradeStartY + (4 * 22);
-		if (TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+		if (TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y) { //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 			TradeColorRect.left = TradeStartX;
 			TradeColorRect.top = TradeStartY;
 			TradeColorRect.right = TradeEndX - TradeStartX;
@@ -5752,9 +5931,9 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 
 			pItem->SetX = TradeStartX + ((TradeEndX - TradeStartX) - pItem->w) / 2;
 			pItem->SetY = TradeStartY + ((TradeEndY - TradeStartY) - pItem->h) / 2;
-			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
-			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
+			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 				TradeColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 
@@ -5763,7 +5942,7 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 		}
 	}
 
-	/////////¿©±â´Â ±âº»¿¡ÀÌÂ¡ 
+	/////////ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	for (int y = 0; y < MAX_SHELTOM; y++) {
 		if (SheltomCODE[y] == (pItem->sItemInfo.CODE & sinITEM_MASK3)) {
 			SheltomIndex2 = y + 1;
@@ -5771,12 +5950,12 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 		}
 	}
 
-	int AgingOkWeaponGroupFlag = 0;	//¿¡ÀÌÂ¡À» ÇÒ¼öÀÖ´Â ¾ÆÀÌÅÛ ±ºÀÎ°¡?
-	TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-	TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-	cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+	int AgingOkWeaponGroupFlag = 0;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½?
+	TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+	TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+	cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
-	if ((pItem->CODE & sinITEM_MASK2) == sinOS1) { //½©ÅÒÀÏ °æ¿ì 
+	if ((pItem->CODE & sinITEM_MASK2) == sinOS1) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 
 //		TradeStartX = 218;
 //		TradeStartY = 193;
 //		TradeEndX = TradeStartX+(3*22);
@@ -5792,27 +5971,27 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 
 					for (i = pItem->x + 11; i < pItem->x + pItem->w; i += 22) {
 						for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22) {
-							if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+							if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j) { //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 								TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
 								TradeColorRect.top = TradeStartY + (((j - TradeStartY) / 22) * 22);
 								TradeColorRect.right = pItem->w;
 								TradeColorRect.bottom = pItem->h;
 								if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11) {
-									cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+									cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 									return FALSE;
 								}
 
 								pItem->SetX = TradeColorRect.left;
 								pItem->SetY = TradeColorRect.top;
-								pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-								if ((pItem->CODE & sinITEM_MASK3) > sin20) // ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º(¿¡ÀÌÂ¡ÇÒ¶§ ¸ÅÁ÷ ½©ÅÒÀº ¿Ã·Á³õÁö ¸øÇÏµµ·Ï ÇÑ´Ù)
+								pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+								if ((pItem->CODE & sinITEM_MASK3) > sin20) // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½)
 								{
 									TradeColorIndex = NOT_SETTING_COLOR;
 								}
 								else
-									TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+									TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
-								if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+								if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 									TradeColorIndex = NOT_SETTING_COLOR;
 									return FALSE;
 
@@ -5826,15 +6005,15 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 		}
 	}
 	else {
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-		TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-		cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+		cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 		TradeStartX = 58;
 		TradeStartY = 193 + sinInterHeight2;
 		TradeEndX = TradeStartX + (3 * 22);
 		TradeEndY = TradeStartY + (4 * 22);
-		if (TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y) { //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+		if (TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y) { //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 			TradeColorRect.left = TradeStartX;
 			TradeColorRect.top = TradeStartY;
 			TradeColorRect.right = TradeEndX - TradeStartX;
@@ -5843,8 +6022,8 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 
 			pItem->SetX = TradeStartX + ((TradeEndX - TradeStartX) - pItem->w) / 2;
 			pItem->SetY = TradeStartY + ((TradeEndY - TradeStartY) - pItem->h) / 2;
-			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
 
 			for (int i = 0; i < 12; i++) {
@@ -5854,47 +6033,47 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 				}
 			}
 
-			//ºÎÈ°ÀÇ ¹ÝÁöµµ ¿¡ÀÌÂ¡ÇÒ¼öÀÖ´Ù 
+			//ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ 
 			if (pItem->sItemInfo.CODE == (sinOR2 | sin01))AgingOkWeaponGroupFlag = 1;
 
-			//¿¡ÀÌÂ¡À» ÇÒ¼ö¾ø´Â ¾ÆÀÌÅÛ±º  ÀÏ°æ¿ì¿¡´Â 
-			if (!AgingOkWeaponGroupFlag || pItem->sItemInfo.ItemAgingNum[0] >= MAX_AGING) {  //¿¡ÀÌÂ¡ +18
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½  ï¿½?ï¿½?ï¿½ï¿½ 
+			if (!AgingOkWeaponGroupFlag || pItem->sItemInfo.ItemAgingNum[0] >= MAX_AGING) {  //ï¿½ï¿½ï¿½ï¿½ï¿½ +18
 				TradeColorIndex = NOT_AGING_ITEM;
 				return FALSE;
 			}
 
-			//¿¡ÀÌÂ¡ ÇÒ¼ö¾ø´Â ¾ÆÀÌÅÛÀÏ °æ¿ì 
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 
 			if (pItem->sItemInfo.UniqueItem || pItem->sItemInfo.ItemKindCode == ITEM_KIND_CRAFT || MouseItem.sItemInfo.ItemAgingNum[1] == 1 ||
 				pItem->sItemInfo.ItemKindCode == ITEM_KIND_QUEST ||
 				pItem->sItemInfo.SpecialItemFlag[0] == CHECK_GIVE_ITEM ||
 				pItem->sItemInfo.CODE == (sinGF1 | sin01) ||
 				pItem->sItemInfo.CODE == (sinGF1 | sin02) ||
-				pItem->sItemInfo.CODE == (sinGF1 | sin07) ||	// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó
-				pItem->sItemInfo.CODE == (sinGF1 | sin08) ||	// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó
+				pItem->sItemInfo.CODE == (sinGF1 | sin07) ||	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
+				pItem->sItemInfo.CODE == (sinGF1 | sin08) ||	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
 				pItem->sItemInfo.CODE == (sinGF1 | sin05) ||
 				pItem->sItemInfo.CODE == (sinGF1 | sin06) ||
-				//ÆÄÆ¼º¹ ÄÚ½ºÆ¬
+				//ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½?
 
-				(pItem->sItemInfo.CODE == (sinDB1 | sin31)) || (pItem->sItemInfo.CODE == (sinDB1 | sin32)) ||  // ¹ÚÀç¿ø - ½ºÇÇµå ºÎÃ÷(7ÀÏ, 30ÀÏ) Ãß°¡
-				(pItem->sItemInfo.CODE == (sinOR2 | sin33)) || (pItem->sItemInfo.CODE == (sinSP1 | sin35)) || // Àåº° - ÇÏÆ®¸µ, ÃÊÄÝ¸´ ¿¡ÀÌÂ¡ ±ÝÁö
-				(pItem->sItemInfo.CODE == (sinOA1 | sin36)) ||	// Àåº° - ´«²É ¸ñ°ÉÀÌ ¿¡ÀÌÂ¡ ±ÝÁö
-				(pItem->sItemInfo.CODE == (sinOA1 | sin37)) || (pItem->sItemInfo.CODE == (sinSP1 | sin36)) || // Àåº° - Äµµðµ¥ÀÌÁî ÇÏÆ®¾Æ¹Ä·¿, Äµµð ¿¡ÀÌÂ¡ ±ÝÁö
-				(pItem->sItemInfo.CODE == (sinOA2 | sin33)) || // Àåº° - ½´ÆÛ ¾Ï¸´(1ÀÏ)
-				(pItem->sItemInfo.CODE == (sinDB1 | sin33)) || // Àåº° - ½ºÇÇµå ºÎÃ÷(1ÀÏ) Ãß°¡
-				(pItem->sItemInfo.CODE == (sinSP1 | sin37)) || (pItem->sItemInfo.CODE == (sinSP1 | sin38)) || // Àåº° - ¸ÅÁöÄÃ±×¸° ¿¡¸Þ¶öµå, ºñÃë ¿¡ÀÌÂ¡ ±ÝÁö
-				(pItem->sItemInfo.CODE == (sinBI1 | sin84)) || // Àåº° - ±×¶óºñÆ¼ ½ºÅ©·Ñ
-				(pItem->sItemInfo.CODE == (sinDB1 | sin34)) || // Àåº° - ½ºÇÇµå ºÎÃ÷(1½Ã°£) Ãß°¡
-				(pItem->sItemInfo.CODE == (sinOA2 | sin34)) ||// Àåº° - ½´ÆÛ ¾Ï¸´(1½Ã°£)
+				(pItem->sItemInfo.CODE == (sinDB1 | sin31)) || (pItem->sItemInfo.CODE == (sinDB1 | sin32)) ||  // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(7ï¿½ï¿½, 30ï¿½ï¿½) ï¿½?ï¿½
+				(pItem->sItemInfo.CODE == (sinOR2 | sin33)) || (pItem->sItemInfo.CODE == (sinSP1 | sin35)) || // ï¿½? - ï¿½ï¿½?ï¿½ï¿½, ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+				(pItem->sItemInfo.CODE == (sinOA1 | sin36)) ||	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+				(pItem->sItemInfo.CODE == (sinOA1 | sin37)) || (pItem->sItemInfo.CODE == (sinSP1 | sin36)) || // ï¿½? - ?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½??ï¿½, ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+				(pItem->sItemInfo.CODE == (sinOA2 | sin33)) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
+				(pItem->sItemInfo.CODE == (sinDB1 | sin33)) || // ï¿½? - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+				(pItem->sItemInfo.CODE == (sinSP1 | sin37)) || (pItem->sItemInfo.CODE == (sinSP1 | sin38)) || // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+				(pItem->sItemInfo.CODE == (sinBI1 | sin84)) || // ï¿½? - ï¿½?ï¿½ï¿½? ï¿½ï¿½?ï¿½ï¿½
+				(pItem->sItemInfo.CODE == (sinDB1 | sin34)) || // ï¿½? - ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½(1ï¿½ï¿½) ï¿½?ï¿½
+				(pItem->sItemInfo.CODE == (sinOA2 | sin34)) ||// ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½(1ï¿½ï¿½)
 				(pItem->sItemInfo.CODE == (sinSP1 | sin42)) ||
 
 
-				// Itens que não podem dar age
+				// Itens que nï¿½o podem dar age
 				pItem->sItemInfo.itemType == 7) {
 				TradeColorIndex = NOT_AGING_ITEM;
 				return FALSE;
 			}
 			int kk = 0;
-			//µî·ÏµÈ ¾ÆÀÌÅÛÀº ¿¡ÀÌÂ¡ÇÒ¼ö¾ø´Ù
+			//ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½
 			for (kk = 0; kk < NotSet_Item_CODECnt; kk++) {
 				if (NotSet_Item_CODE[kk] == pItem->sItemInfo.CODE) {
 					TradeColorIndex = NOT_AGING_ITEM;
@@ -5918,8 +6097,8 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 			}
 
 
-			//¾ÆÀÌÅÛÀÌ °ãÄ¥°æ¿ì 
-			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ 
+			if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 3)) {  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 				TradeColorIndex = NOT_SETTING_COLOR;
 				return FALSE;
 
@@ -5931,7 +6110,7 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 			else
 			{
 #ifdef HASIEGE_MODE
-				//°ø¼ºÀü ¼¼À²Àû¿ë ¿¡ÀÌÂ¡ °¡°ÝÀ» Ã¼Å©ÇÑ´Ù.
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½.
 				if (cShop.haBuyMoneyCheck((pItem->sItemInfo.Price + (pItem->sItemInfo.Price * pItem->sItemInfo.ItemAgingNum[0])) / 2) == 0) {
 #else
 				if (sinChar->Money < (pItem->sItemInfo.Price + (pItem->sItemInfo.Price * pItem->sItemInfo.ItemAgingNum[0])) / 2)
@@ -5953,7 +6132,7 @@ int cAGING::SetAgingItemAreaCheck(sITEM * pItem)
 /*
 int CraftItemCheckDelayTime = 0;
 
-//Å©·¡ÇÁÆ® ¾ÆÀÌÅÛÀ» Á¶ÀÛÇÏ´Â ¸ÁÇÒ À¯Àú¸¦ º´½Å ¸¸µç´Ù  (¼­¹ö¿¡¼­ ÇÏ´Â°ü°è·Î ÀÇ¹Ì°¡ ¾ø±äÇÏ³ª È¤½Ã³ªÇØ¼­ ÁÖ¼®Ã³¸®ÇÔ)
+//?ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½  (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ?ï¿½ï¿½?ï¿½ ï¿½?ï¿½??ï¿½)
 int cCRAFTITEM::CheckHackCraftItem()
 {
 	CraftItemCheckDelayTime++;
@@ -5976,7 +6155,7 @@ int cCRAFTITEM::CheckHackCraftItem()
 
 	}
 	if( CheckAddItemData != AddItemCheckSum){
-		SendSetHackUser(8); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á
+		SendSetHackUser(8); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	}
 
@@ -5987,7 +6166,7 @@ int cCRAFTITEM::CheckHackCraftItem()
 
 int AgingItemCheckDelayTime = 0;
 
-//¿¡ÀÌÂ¡ µ¥ÀÌÅ¸ÀÇ Á¶ÀÛ¿©ºÎ¸¦ Á¶Á¤ÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 int cAGING::CheckAgingData()
 {
 	/*
@@ -6000,7 +6179,7 @@ int cAGING::CheckAgingData()
 	AgingItemCheckDelayTime = 0;
 
 	unsigned int AddItemCheckSum = 0;
-	const unsigned int CheckAddItemData = 1848296; //ÀÌ·¸°Ô ÇØ³õÀ¸¸é ÀÐ±â Àü¿ëÀ¸·Î¸¸ µÈ´Ù³×... À½ÇÏÇÏÇÏ
+	const unsigned int CheckAddItemData = 1848296; //ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½??ï¿½... ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 	int i,j;
@@ -6018,7 +6197,7 @@ int cAGING::CheckAgingData()
 
 	}
 	if( CheckAddItemData != AddItemCheckSum){
-		SendSetHackUser(107); //ÇØÅ·À» ÇÏ·Á°íÇß´ø ¸øµÈ À¯Àú¸¦ °í¹ß TRUE Á¢¼Ó Á¾·á
+		SendSetHackUser(107); //ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TRUE ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	}
 #endif
@@ -6027,14 +6206,14 @@ int cAGING::CheckAgingData()
 	return TRUE;
 }
 
-////////////Ã¢°í¿¡ º¹»çµÈ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö¸¦ Ã£´Â´Ù 
+////////////?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ 
 int cWAREHOUSE::CopyItemNotPickUp(sITEM * pItem, int JumpIndex)
 {
 	int i;
-	if (smConfig.DebugMode)return TRUE; //µð¹ö±× ¸ðµåÀÏ¶§´Â µé¼öÀÖµû Å©Å©Å©
+	if (smConfig.DebugMode)return TRUE; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ ???
 	for (i = 0; i < 100; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
-			if (JumpIndex == i)continue; //ÀÚ½ÅÀÇ ¾ÆÀÌÅÛÀº Ã£Áö¾Ê´Â´Ù
+			if (JumpIndex == i)continue; //ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½?ï¿½ï¿½
 			if (CompareItems(&pItem->sItemInfo, &sWareHouse.WareHouseItem[i].sItemInfo)) {
 				CopyItemIndex7[i] = i + 1;
 				return FALSE;
@@ -6049,7 +6228,7 @@ int cWAREHOUSE::CopyItemNotPickUp(sITEM * pItem, int JumpIndex)
 }
 
 int SendServerFlag7 = 0;
-//º¹»çµÈ ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ 
 int cWAREHOUSE::CheckCopyItem()
 {
 	int i, j;
@@ -6059,8 +6238,8 @@ int cWAREHOUSE::CheckCopyItem()
 			for (j = 0; j < 100; j++) {
 				if (i != j && sWareHouse.WareHouseItem[j].Flag) {
 					if (CompareItems(&sWareHouse.WareHouseItem[i].sItemInfo, &sWareHouse.WareHouseItem[j].sItemInfo)) {
-						SendSetHackUser2(1010, sWareHouse.WareHouseItem[i].CODE); //ÇØÅ·ÇÑ À¯Àú¸¦ ½Å°íÇÑ´Ù
-						SendServerFlag7 = 1; //ÇÑ¹ø¸¸ Ã¼Å©ÇÏµµ·ÏÇÑ´Ù 
+						SendSetHackUser2(1010, sWareHouse.WareHouseItem[i].CODE); //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½
+						SendServerFlag7 = 1; //ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 						break;
 					}
 				}
@@ -6068,9 +6247,9 @@ int cWAREHOUSE::CheckCopyItem()
 		}
 	}
 	/*
-	//µ¢´Þ¾Æ µ·°íµµ Ã¼Å© (À½... ÂóÂóÇÏ´Ù)
+	//ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? (ï¿½ï¿½... ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½)
 	if(8000000 < sWareHouse.Money-2023-1000000){
-			SendSetHackUser2(1110,sWareHouse.Money-2023); //ÇØÅ·ÇÑ À¯Àú¸¦ ½Å°íÇÑ´Ù
+			SendSetHackUser2(1110,sWareHouse.Money-2023); //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½
 
 	}
 	*/
@@ -6080,7 +6259,7 @@ int cWAREHOUSE::CheckCopyItem()
 }
 int CheckCraftMoney = 0;
 
-///////// ¹Í½ºÃÄ ¾ÆÀÌÅÛÀ» ¼­¹ö¿¡ º¸³½´Ù 
+///////// ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 int cCRAFTITEM::sinSendCraftItem()
 {
 
@@ -6088,19 +6267,19 @@ int cCRAFTITEM::sinSendCraftItem()
 	int i = 0;
 
 
-	//º¹»ç¸¦ Ã¼Å©ÇÏ±âÀ§ÇÑ ¹é¾÷º»À» ¸¸µç´Ù
+	//ï¿½ï¿½ï¿½? ï¿½?ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	memcpy(&sCraftItemBackUp, &sCraftItem, sizeof(sCRAFTITEM));
 
-	MixItemNoCopyFlag = 1; //¾ÆÀÌÅÛÀÌ º¹»çµÇ´Â°É ¹æÁöÇÏ±âÀ§ÇØ ÇÃ·ºÀ»ÁØ´Ù
+	MixItemNoCopyFlag = 1; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 
-	if (ForceFlag) { //Force Orb ÀÌ¸é 
+	if (ForceFlag) { //Force Orb ï¿½?ï¿½ 
 		memset(&sCraftItem_Send.DesCraftItem, 0, sizeof(sITEM));
 		memset(&sCraftItemBackUp, 0, sizeof(sCRAFTITEM));
 		sCraftItem_Send.DesCraftItem.CODE = 1000;
 		sCraftItem_Send.Money = ForceItemPrice;
 
 	}
-	//haGoon¾ÆÀÌÅÛ Àç±¸¼º À» ¼­¹ö·Î º¸³½´Ù.---------------------------------------------------------------------------
+	//haGoonï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.---------------------------------------------------------------------------
 	if (cCraftItem.iReconItemFlag) {
 		memset(&sCraftItem_Send.DesCraftItem, 0, sizeof(sITEM));
 		memset(&sCraftItemBackUp, 0, sizeof(sCRAFTITEM));
@@ -6124,7 +6303,7 @@ int cCRAFTITEM::sinSendCraftItem()
 		}
 	}
 
-	// ¹ÚÀç¿ø - ¸®½ºÆå ½ºÅæµµ ¼­¹ö·Î º¸³½´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 	if (sCraftItem.CraftItem[14].Flag) {
 		sCraftItem_Send.A_StoneItemCode = sCraftItem.CraftItem[14].CODE;
 		sCraftItem_Send.A_StoneCheckSum = sCraftItem.CraftItem[14].sItemInfo.ItemHeader.dwChkSum;
@@ -6134,12 +6313,12 @@ int cCRAFTITEM::sinSendCraftItem()
 
 	CheckCraftMoney = sCraftItem_Send.Money;
 
-	CraftItemSendServerIndex++; //ÀÎµ¦½º¸¦ º¸³½´Ù 
+	CraftItemSendServerIndex++; //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	sCraftItem_Send.Index = CraftItemSendServerIndex;
-	//ÀúÀåµÈ ±¸Á¶Ã¼¸¦ ¼­¹ö¿¡ º¸³½´Ù 
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	cCraftItem.iReconItemFlag = 0;
 
-	if (ForceFlag) { //Æ÷½º ¿Àºê´Â À®À¸·Î º¸³½´Ù
+	if (ForceFlag) { //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		SendWingItemToServer(&sCraftItem_Send);
 	}
 	else {
@@ -6148,11 +6327,11 @@ int cCRAFTITEM::sinSendCraftItem()
 
 	return TRUE;
 }
-///////// ¿¡ÀÌÂ¡ ¾ÆÀÌÅÛÀ» ¼­¹ö¿¡ º¸³½´Ù 
+///////// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 int cAGING::sinSendAgingItem()
 {
 	int i = 0;
-	//¾ÆÀÌÅÛÀ» º¸³¾¶§ º¹»ç¸¦ ¹æÁöÇÏ±âÀ§ÇÑ ¹é¾÷º»À» ¸¸µç´Ù
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	memcpy(&sAgingItemBackUp, &sAgingItem, sizeof(sAGINGITEM));
 
 	MixItemNoCopyFlag = 1;
@@ -6169,7 +6348,7 @@ int cAGING::sinSendAgingItem()
 			sAging_Send.Head[i] = sAgingItem.AgingItem[i + 1].sItemInfo.ItemHeader.Head;
 		}
 	}
-	//¿¡ÀÌÂ¡ ½ºÅæµµ ¼­¹ö·Î º¸³½´Ù.
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 	if (sAgingItem.AgingItem[14].Flag)
 	{
 		sAging_Send.A_StoneItemCode = sAgingItem.AgingItem[14].CODE;
@@ -6188,17 +6367,17 @@ int cAGING::sinSendAgingItem()
 		CheckCraftMoney = sAging_Send.Money;
 	}
 
-	CraftItemSendServerIndex++; //ÀÎµ¦½º¸¦ º¸³½´Ù 
+	CraftItemSendServerIndex++; //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	sAging_Send.Index = CraftItemSendServerIndex;
 
-	//ÀúÀåµÈ ±¸Á¶Ã¼¸¦ ¼­¹ö¿¡ º¸³½´Ù 
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	SendAgingItemToServer(&sAging_Send);
 
 	int Price = 0;
 
 	if (AgingEvento == TRUE)
 	{
-		Price = 0; // ¹«·á
+		Price = 0; // ï¿½ï¿½ï¿½ï¿½
 	}
 	else
 	{
@@ -6206,13 +6385,13 @@ int cAGING::sinSendAgingItem()
 	}
 
 
-	CheckCharForm();		//ÀÎÁõ 
+	CheckCharForm();		//ï¿½ï¿½ï¿½ï¿½ 
 	sinMinusMoney(Price, 1);
-	ReformCharForm();		//ÀçÀÎÁõ 
-	SendSaveMoney();		//±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+	ReformCharForm();		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+	SendSaveMoney();		//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
 	return TRUE;
 }
-///////// ¼­¹ö¿¡¼­ ¹Í½ºÃÄ ¾ÆÀÌÅÛÀÇ ±¸Á¶¸¦ ¹Þ´Â´Ù 
+///////// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 int cCRAFTITEM::sinRecvCraftItem(sCRAFTITEM_SERVER * pCraftItem_Server)
 {
 	memcpy(&sCraftItem_Recv, pCraftItem_Server, sizeof(sCRAFTITEM_SERVER));
@@ -6220,7 +6399,7 @@ int cCRAFTITEM::sinRecvCraftItem(sCRAFTITEM_SERVER * pCraftItem_Server)
 	return TRUE;
 }
 
-///////// ¼­¹ö¿¡¼­ ¿¡ÀÌÂ¡ ¾ÆÀÌÅÛÀÇ ±¸Á¶¸¦ ¹Þ´Â´Ù
+///////// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½
 int cAGING::sinRecvAgingItem(sCRAFTITEM_SERVER * pCraftItem_Server)
 {
 	memcpy(&sAging_Recv, pCraftItem_Server, sizeof(sCRAFTITEM_SERVER));
@@ -6228,48 +6407,48 @@ int cAGING::sinRecvAgingItem(sCRAFTITEM_SERVER * pCraftItem_Server)
 	return TRUE;
 }
 
-//¿¡ÀÌÂ¡ ¾ÆÀÌÅÛÀÇ °á°ú¸¦ ¼­¹ö¿¡¼­ ¹Þ´Â´Ù 
+//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 int cAGING::sinRecvAgingItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 {
 
-	//Äù½ºÆ® ¾ÆÀÌÅÛÀÏ°æ¿ì
+	//ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½
 	if (pCraftItem_Server->DesCraftItem.sItemInfo.ItemKindCode == ITEM_KIND_QUEST_WEAPON) {
 		if (pCraftItem_Server->Result) {
 			cInvenTory.DeleteInvenItemToServer(TempQuestItem.sItemInfo.CODE, TempQuestItem.sItemInfo.ItemHeader.Head, TempQuestItem.sItemInfo.ItemHeader.dwChkSum);
 			memset(&TempQuestItem, 0, sizeof(sITEM));
-			//Ä«¿îÆ® °»½Å
+			//?ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½
 			pCraftItem_Server->DesCraftItem.sItemInfo.ItemAgingCount[0] = pCraftItem_Server->DesCraftItem.sItemInfo.ItemAgingCount[1];
 			if (cInvenTory.AutoSetInvenItem(&pCraftItem_Server->DesCraftItem)) {
 				cMessageBox.ShowMessage(MESSAGE_QUEST_ITEM_AGING);
-				sinPlaySound(SIN_SOUND_EAT_POTION2);//´ë¹Ú »ç¿îµå
-				StartEffect(lpCurPlayer->pX, lpCurPlayer->pY, lpCurPlayer->pZ, EFFECT_AGING); //¿¡ÀÌÂ¡ÀÌÆåÆ®
+				sinPlaySound(SIN_SOUND_EAT_POTION2);//ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+				StartEffect(lpCurPlayer->pX, lpCurPlayer->pY, lpCurPlayer->pZ, EFFECT_AGING); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
 				sinQuest_ChangeJob3.Monster[0] = pCraftItem_Server->DesCraftItem.sItemInfo.ItemAgingNum[0];
 				StartQuest_Code(sinQuest_ChangeJob3.CODE);
 
 			}
-			//Äù½ºÆ® ¸Þ¼¼Áö¸¦ º¸¿©ÁØ´Ù
+			//ï¿½ï¿½ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 			if (pCraftItem_Server->DesCraftItem.sItemInfo.ItemAgingNum[0] == 4) {
 				sinQuest_ChangeJob3.State = 4;
 			}
 		}
 		else {
-			//Áö¿ü´ø ¾ÆÀÌÅÛÀ» º¹±¸ÇØÁØ´Ù
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 			cInvenTory.AutoSetInvenItem(&TempQuestItem);
 
 		}
-		memset(&sAging_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sAging_Send, 0, sizeof(sCRAFTITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		NotChangeSetItemFlag = 0; //¹«±â¼ÂÆÃ Ã¼ÀÎÁö Á¦ÇÑÀ» ÃÊ±âÈ­ÇØÁØ´Ù
+		memset(&sAging_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sAging_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		NotChangeSetItemFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½ï¿½?ï¿½
 		return TRUE;
 
 	}
 
 	if (!cAging.OpenFlag) {
-		AgingCheckSheltomFlag = 0; //¿¡ÀÌÂ¡ °¡´É ÇÃ·¢ ÃÊ±âÈ­ 
+		AgingCheckSheltomFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		AgingSheltomCnt2 = 0;
-		MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
-		memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+		MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
+		memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		MixCancelButtonDelayFlag = 0;
 		return FALSE;
 	}
@@ -6283,43 +6462,43 @@ int cAGING::sinRecvAgingItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 				sinThrowItemToFeild(&pCraftItem_Server->DesCraftItem);
 
 			}
-			CheckCharForm(); //ÀÎÁõ
+			CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½
 			switch (pCraftItem_Server->Result) {
-			case 1: //¿¡ÀÌÂ¡ -1
+			case 1: //ï¿½ï¿½ï¿½ï¿½ï¿½ -1
 				cMessageBox.ShowMessage(MESSAGE_AGING_LEVEL_DOWN1);
-				sinPlaySound(SIN_SOUND_FAILD_MIXITEM); //½ÇÆÐ »ç¿îµå 
+				sinPlaySound(SIN_SOUND_FAILD_MIXITEM); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 				break;
-			case 2: //¿¡ÀÌÂ¡ -2
+			case 2: //ï¿½ï¿½ï¿½ï¿½ï¿½ -2
 				cMessageBox.ShowMessage(MESSAGE_AGING_LEVEL_DOWN2);
-				sinPlaySound(SIN_SOUND_FAILD_MIXITEM); //½ÇÆÐ »ç¿îµå 
+				sinPlaySound(SIN_SOUND_FAILD_MIXITEM); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 				break;
-			case 3: //¼º°ø
+			case 3: //ï¿½ï¿½ï¿½ï¿½
 				cMessageBox.ShowMessage(MESSAGE_AGING_LEVEL_PLUS);
-				sinPlaySound(SIN_SOUND_EAT_POTION2);//´ë¹Ú »ç¿îµå
+				sinPlaySound(SIN_SOUND_EAT_POTION2);//ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				break;
-			case 4: //2¹è 
+			case 4: //2ï¿½ï¿½ 
 				cMessageBox.ShowMessage(MESSAGE_AGING_LEVEL_PLUS2);
-				sinPlaySound(SIN_SOUND_EAT_POTION2);//´ë¹Ú »ç¿îµå
+				sinPlaySound(SIN_SOUND_EAT_POTION2);//ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				break;
 			}
-			SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
-			ReformCharForm(); //ÀçÀÎÁõ 
+			SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
+			ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 		}
 	}
 	else {
-		sinPlaySound(SIN_SOUND_FAILD_MIXITEM); //½ÇÆÐ »ç¿îµå 
+		sinPlaySound(SIN_SOUND_FAILD_MIXITEM); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 		cMessageBox.ShowMessage(MESSAGE_FAILD_AGING_ITEM);
 
 	}
 
-	for (int y = 0; y < 4; y++) { //½©ÅÒ ÀÎµ¦½º ÃÊ±âÈ­ 
+	for (int y = 0; y < 4; y++) { //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		for (int h = 0; h < 3; h++) {
 			AgingLevelSheltomIndex[y][h] = 0;
 		}
 
 	}
 
-	for (int i = 0; i < 15; i++) { //¿¡ÀÌÂ¡ ¾ÆÀÌÅÛÀ» ³¯¸°´Ù
+	for (int i = 0; i < 15; i++) { //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (sAgingItemBackUp.AgingItem[i].Flag) {
 			cInvenTory.DeleteInvenItemToServer(sAgingItemBackUp.AgingItem[i].sItemInfo.CODE,
 				sAgingItemBackUp.AgingItem[i].sItemInfo.ItemHeader.Head,
@@ -6331,14 +6510,14 @@ int cAGING::sinRecvAgingItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 
 	memset(&sAgingItem, 0, sizeof(sAGINGITEM));
 	memset(&sAgingItemBackUp, 0, sizeof(sAGINGITEM));
-	cAging.OpenFlag = 0; //¿¡ÀÌÂ¡ ÀÎÅÍÆäÀÌ½º¸¦ ´Ý´Â´Ù 
-	AgingCheckSheltomFlag = 0; //¿¡ÀÌÂ¡ °¡´É ÇÃ·¢ ÃÊ±âÈ­ 
+	cAging.OpenFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
+	AgingCheckSheltomFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 	AgingSheltomCnt2 = 0;
-	MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
+	MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 	MixCancelButtonDelayFlag = 0;
-	memset(&sAging_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sAging_Send, 0, sizeof(sCRAFTITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	cInvenTory.CheckDamage(); //ÃÖ´ëµ¥¹ÌÁö°¡ ³ª¿Ã ¹«±â·Î °è»êÇÏ¿© ¼­¹ö·Î º¸³»ÁØ´Ù 
+	memset(&sAging_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sAging_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	cInvenTory.CheckDamage(); //ï¿½??ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 	return TRUE;
 }
 
@@ -6523,16 +6702,16 @@ bool cAGING::isSheltomAreaEmpty(sITEM * Item, int Area)
 	return false;
 }
 
-//Å©·¡ÇÁÆ® ¾ÆÀÌÅÛÀÇ °á°ú¹°À» ¼­¹ö¿¡¼­ ¹Þ´Â´Ù 
+//?ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 int cCRAFTITEM::sinRecvCraftItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 {
-	CheckMixItemCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º  
+	CheckMixItemCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½  
 	if (!cCraftItem.OpenFlag) {
-		MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
-		memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sCraftItemBackUp, 0, sizeof(sCRAFTITEM)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+		MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
+		memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sCraftItemBackUp, 0, sizeof(sCRAFTITEM)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		MixCancelButtonDelayFlag = 0;
 		return FALSE;
 
@@ -6540,21 +6719,21 @@ int cCRAFTITEM::sinRecvCraftItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 
 	int i, LineCount = 0, Temp;
 
-	/*   µ·°ü·Ã ºÎºÐÀº »«´Ù
-	if(CheckCraftMoney != pCraftItem_Server->Money) //µ·ÀÌ ¸ÂÁö ¾ÊÀ¸¸é ½ÇÆÐ·Î °£ÁÖÇÑ´Ù
+	/*   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	if(CheckCraftMoney != pCraftItem_Server->Money) //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 		pCraftItem_Server->Result = 0;
 	*/
 
 	if (pCraftItem_Server->Result) {
-		if (pCraftItem_Server->DocIndex == 2000) { //¾ÆÀÌÅÛ Àç±¸¼º½Ã½ºÅÛ 
-			//¾ÆÀÌÅÛÀÏ °æ¿ì 
+		if (pCraftItem_Server->DocIndex == 2000) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 
 			sITEM TempItem;
 			if (LoadItemImage(&pCraftItem_Server->DesCraftItem.sItemInfo, &TempItem)) {
-				if (cInvenTory.CheckRequireItemToSet(&TempItem)) {         //°ð¹Ù·Î ¼ÂÆÃµÉ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù  
-					//haGoon¼öÁ¤================================================================================
+				if (cInvenTory.CheckRequireItemToSet(&TempItem)) {         //ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½  
+					//haGoonï¿½ï¿½ï¿½ï¿½================================================================================
 					if (!cInvenTory.AutoSetInvenItem(&TempItem, 1)) {
 						sinThrowItemToFeild(&pCraftItem_Server->DesCraftItem);
-						memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
+						memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 						cCraftItem.OpenFlag = 0;
 						return FALSE;
 					}
@@ -6565,8 +6744,8 @@ int cCRAFTITEM::sinRecvCraftItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 			cMessageBox.ShowMessage(MESSAGE_RECONITEM_OK);
 		}
 		else {
-			ShowItemCraftMessageFlag = 1; //¾ÆÀÌÅÛÀÌ Á¶ÇÕ‰çÀ»¶§ ¸Þ¼¼Áö¸¦ º¸¿©ÁØ´Ù 
-			lstrcpy(szCraftItemBuff, sCraftItem_Info[pCraftItem_Server->DocIndex].Doc); //¾ÆÀÌÅÛ Á¤º¸¸¦ º¸¿©ÁØ´Ù 
+			ShowItemCraftMessageFlag = 1; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+			lstrcpy(szCraftItemBuff, sCraftItem_Info[pCraftItem_Server->DocIndex].Doc); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 
 			Temp = lstrlen(szCraftItemBuff);
 			for (i = 0; i < Temp; i++) {
@@ -6575,28 +6754,28 @@ int cCRAFTITEM::sinRecvCraftItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 				}
 			}
 
-			CraftItemMessageSize.x = 14;           //¹Ú½º »çÀÌÁî 
-			CraftItemMessageSize.y = ((LineCount) * 2) + 2;  //¹Ú½º »çÀÌÁî 
+			CraftItemMessageSize.x = 14;           //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+			CraftItemMessageSize.y = ((LineCount) * 2) + 2;  //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 
 			sinAgingSuccessFlag2 = 1;
 
-			//CheckCharForm(); //ÀÎÁõ 
+			//CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½ 
 			//sinChar->Money -= sCraftItem_Recv.DesCraftItem.sItemInfo.Price;
 			//sinMinusMoney(pCraftItem_Server->DesCraftItem.sItemInfo.Price,1);
-			//ReformCharForm(); //ÀçÀÎÁõ 
-			//SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
-			//½ÇÆÐµç ¼º°øÀÌµç°£¿¡ ¾ÆÀÌÅÛÀ» ¿ø»ó º¹±Í ½ÃÅ²´Ù 
-			//cCraftItem.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù
-			//cInvenTory.AutoSetInvenItem(&pCraftItem_Server->DesCraftItem); //¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
+			//ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+			//SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
+			//ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½??ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ 
+			//cCraftItem.OpenFlag = 0; //? ï¿½?ï¿½ï¿½
+			//cInvenTory.AutoSetInvenItem(&pCraftItem_Server->DesCraftItem); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 
-			//haGoon¼öÁ¤ ============================================================================
+			//haGoonï¿½ï¿½ï¿½ï¿½ ============================================================================
 			if (!cInvenTory.AutoSetInvenItem(&pCraftItem_Server->DesCraftItem)) {
 				sinThrowItemToFeild(&pCraftItem_Server->DesCraftItem);
 			}
 			//=======================================================================================
 
-			//¹«±â°¡ º¹»çµÇ¾úÀ¸¸é ¹«±â¸¦ Áö¿î´Ù
+			//ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (sCraftItemBackUp.CraftItem[0].Flag) {
 				cInvenTory.DeleteInvenItemToServer(sCraftItemBackUp.CraftItem[0].sItemInfo.CODE,
 					sCraftItemBackUp.CraftItem[0].sItemInfo.ItemHeader.Head,
@@ -6604,59 +6783,59 @@ int cCRAFTITEM::sinRecvCraftItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 			}
 
 			/*
-			for(int y=1;y<15;y++){ //³¯¶ó°£ ½©ÅÒÀ» ¼­¹ö¿¡ ¾Ë·ÁÁØ´Ù
+			for(int y=1;y<15;y++){ //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½
 				if(sCraftItem.CraftItem[y].Flag)
 					SendSaveThrowItem(&sCraftItem.CraftItem[y].sItemInfo);
 
 			}
 			*/
 		}
-		cCraftItem.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù
-		CheckCharForm(); //ÀÎÁõ 
+		cCraftItem.OpenFlag = 0; //? ï¿½?ï¿½ï¿½
+		CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½ 
 
 		if (MixEvento)
 			sinMinusMoney(0, 1);
 		else
 			sinMinusMoney(sCraftItem.CraftItem[0].sItemInfo.Price, 1);
 
-		ReformCharForm(); //ÀçÀÎÁõ 
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+		ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
 		SaveGameData();
 	}
 	else {
 
 
-		//haGoon¼öÁ¤============================================================================
-		if (!cInvenTory.AutoSetInvenItem(&sCraftItem.CraftItem[0])) { //¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
+		//haGoonï¿½ï¿½ï¿½ï¿½============================================================================
+		if (!cInvenTory.AutoSetInvenItem(&sCraftItem.CraftItem[0])) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 			sinThrowItemToFeild(&sCraftItem.CraftItem[0]);
 		}
 		//=======================================================================================
 		/*
-		for(int y=1;y<15;y++){ //³¯¶ó°£ ½©ÅÒÀ» ¼­¹ö¿¡ ¾Ë·ÁÁØ´Ù
+		for(int y=1;y<15;y++){ //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½
 			if(sCraftItem.CraftItem[y].Flag)
 				SendSaveThrowItem(&sCraftItem.CraftItem[y].sItemInfo);
 
 		}
 		*/
 
-		//¹Í½ºÃÄ ÇÒ¶§ µ·À» »«´Ù 
-		CheckCharForm(); //ÀÎÁõ 
+		//ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+		CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½ 
 
 		if (MixEvento)
 			sinMinusMoney(0, 1);
 		else
 			sinMinusMoney(sCraftItem.CraftItem[0].sItemInfo.Price, 1);
 
-		ReformCharForm(); //ÀçÀÎÁõ 
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+		ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
 
-		cCraftItem.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù 
+		cCraftItem.OpenFlag = 0; //? ï¿½?ï¿½ï¿½ 
 		cMessageBox.ShowMessage(MESSAGE_FAILD_CRAFT_ITEM);
 		sinPlaySound(SIN_SOUND_FAILD_MIXITEM);
 
 	}
 
-	//º¹»ç°¡µÇ¾ú°Å³ªÇÑ ¾ÆÀÌÅÛÀ» Áö¿î´Ù (½©ÅÒ¸¸Áö¿î´Ù)
+	//ï¿½ï¿½ï¿½?ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 	for (i = 1; i < 15; i++) {
 		if (sCraftItemBackUp.CraftItem[i].Flag) {
 			cInvenTory.DeleteInvenItemToServer(sCraftItemBackUp.CraftItem[i].sItemInfo.CODE,
@@ -6665,17 +6844,17 @@ int cCRAFTITEM::sinRecvCraftItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 		}
 
 	}
-	memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sCraftItemBackUp, 0, sizeof(sCRAFTITEM)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+	memset(&sCraftItem, 0, sizeof(sCRAFTITEM)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sCraftItemBackUp, 0, sizeof(sCRAFTITEM)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sCraftItem_Recv, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sCraftItem_Send, 0, sizeof(sCRAFTITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
-	MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
+	MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 	MixCancelButtonDelayFlag = 0;
 	return TRUE;
 }
 
-////////º¹»ç ¾ÆÀÌÅÛÀ» ¾ø¾ÖÁØ´Ù 
+////////ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 int cWAREHOUSE::DeleteCopyItem()
 {
 	int i, j;
@@ -6684,9 +6863,9 @@ int cWAREHOUSE::DeleteCopyItem()
 			for (j = 0; j < 100; j++) {
 				if (i != j && sWareHouse.WareHouseItem[j].Flag) {
 					if (CompareItems(&sWareHouse.WareHouseItem[i].sItemInfo, &sWareHouse.WareHouseItem[j].sItemInfo)) {
-						//SendSetHackUser2(1010,sWareHouse.WareHouseItem[i].CODE); //ÇØÅ·ÇÑ À¯Àú¸¦ ½Å°íÇÑ´Ù
-						//SendServerFlag7 = 1; //ÇÑ¹ø¸¸ Ã¼Å©ÇÏµµ·ÏÇÑ´Ù 
-						sWareHouse.WareHouseItem[j].Flag = 0; //º¹»ç ¾ÆÀÌÅÛÀ» ³¯¸°´Ù 
+						//SendSetHackUser2(1010,sWareHouse.WareHouseItem[i].CODE); //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½
+						//SendServerFlag7 = 1; //ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+						sWareHouse.WareHouseItem[j].Flag = 0; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 						cWareHouse.ReFormWareHouse();
 						break;
 					}
@@ -6697,34 +6876,34 @@ int cWAREHOUSE::DeleteCopyItem()
 	return TRUE;
 }
 
-////////¹Í½º¿¡¼­ º¹»çµÈ ¾ÆÀÌÅÛÀ» ¾ø¾ÖÁØ´Ù 
+////////ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
 int CopyMixItemCheckDelete(sITEM * pItem)
 {
 	for (int i = 0; i < INVENTORY_MAXITEM; i++) {
 		if (cInvenTory.InvenItem[i].Flag) {
 			if (CompareItems(&cInvenTory.InvenItem[i].sItemInfo, &pItem->sItemInfo)) {
-				cInvenTory.InvenItem[i].Flag = 0; //º¹»çµÈ ¾ÆÀÌÅÛÀ» Áö¿î´Ù 
+				cInvenTory.InvenItem[i].Flag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 
 			}
 		}
 		if (cInvenTory.InvenItemTemp[i].Flag) {
 			if (CompareItems(&cInvenTory.InvenItemTemp[i].sItemInfo, &pItem->sItemInfo)) {
-				cInvenTory.InvenItemTemp[i].Flag = 0; //º¹»çµÈ ¾ÆÀÌÅÛÀ» Áö¿î´Ù 
+				cInvenTory.InvenItemTemp[i].Flag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 
 			}
 		}
 	}
 	return TRUE;
 }
 
-//MakeÇÒ ¾ÆÀÌÅÛÀÌ ¸Â´Â°¡ ÄÚµå¸¦ È®ÀÎÇÑ´Ù
+//Makeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?? ?ï¿½ï¿½ï¿½?ï¿½
 int sinMakeItemCheck()
 {
 	int ResultCount = 0;
 	int ResultCountCheck = 0;
 	DWORD TempCODE[15] = { 0, };
 	int  i = 0;
-	//ÄÚµå º¹»ç 
+	//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 	for (i = 0; i < MAX_MAKEITEM_INFO; i++) {
-		for (int p = 0; p < 15; p++) {  //ÄÚµå¸¦ ÇÑ¹ø¾¿ ÃÊ±âÈ­ÇØÁØ´Ù 
+		for (int p = 0; p < 15; p++) {  //ï¿½?? ï¿½?ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½ï¿½?ï¿½ 
 			if (sAgingItem.AgingItem[p].Flag)
 				TempCODE[p] = sAgingItem.AgingItem[p].CODE;
 		}
@@ -6755,45 +6934,45 @@ int sinMakeItemCheck()
 	return TRUE;
 }
 /*****************************************************************************/
-/*							PostBox ½Ã½ºÅÛ
+/*							PostBox ï¿½ï¿½ï¿½ï¿½ï¿½
 /*****************************************************************************/
 int sinPosBoxNpc()
 {
-	//ÀüÇô ÇÏ´ÂÀÏ ¾ø´Â ¹é¼ö ÇÔ¼ö -_-;
-	//ÃÊ±âÈ­
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½ -_-;
+	//ï¿½?ï¿½?
 	//memset(sPostbox_Item,0,sizeof(sPOSTBOX_ITEM));
 	//PostBoxIndexCnt = 0; 
 
-	//¸Þ¼¼Áö¸¦ ¶ç¿î´Ù 
+	//ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 	HelpBoxKindIndex = SIN_POST_BOX;
 	cSinHelp.sinShowHelp(SIN_HELP_KIND_POSTBOX, QuestMessageBoxPosi2.x, QuestMessageBoxPosi2.y, QuestMessageBoxSize2.x, QuestMessageBoxSize2.y, D3DCOLOR_RGBA(0, 15, 128, 125), PostBoxDocFilePath[0]);
 	cInvenTory.OpenFlag = 1;
-	cInterFace.CheckAllBox(SIN_INVENTORY); //ÀÎº¥Åä¸® Ã¢À» ¶ç¿î´Ù 
+	cInterFace.CheckAllBox(SIN_INVENTORY); //ï¿½?ï¿½ï¿½? ? ï¿½ï¿½ï¿½ï¿½ 
 	return TRUE;
 }
-//haGoon¾ÆÀÌÅÛ Àç±¸¼ºÀ» Ã¼Å©ÇÑ´Ù.----------------------------------------------------------------------------
+//haGoonï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½.----------------------------------------------------------------------------
 int cCRAFTITEM::haCheckReconItem()
 {
-	int cnt[MAX_SEEL_COUNT] = { 0 }; // ¹ÚÀç¿ø - Å×ÀÌ¿ÍÁî ¾Á Ãß°¡ (3Á¾·ù -> 4Á¾·ù)
+	int cnt[MAX_SEEL_COUNT] = { 0 }; // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½ (3ï¿½ï¿½ï¿½ï¿½ -> 4ï¿½ï¿½ï¿½ï¿½)
 	int CheckNotReconItem = 0;
 	int CheckBlockCount = 0;
 	cCraftItem.iReconItemFlag = 0;
 
-	//¾Á¾ÆÀÌÅÛÀÌ ¾Æ´Ñ°ÍÀº ´Ù Ã¼Å©ÇÑ´Ù.
-	for (int k = 1; k < 14; k++) { // ¹ÚÀç¿ø - ¸®½ºÆå ½ºÅæ(sCraftItem.CraftItem[14]´Â ¸®½ºÆå ½ºÅæÀÌ¹Ç·Î Ã¼Å©¿¡¼­ Á¦¿ÜÇÑ´Ù) for(int k=1;k<15;k++) -> for(int k=1;k<14;k++)
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½?ï¿½.
+	for (int k = 1; k < 14; k++) { // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(sCraftItem.CraftItem[14]ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½??ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½) for(int k=1;k<15;k++) -> for(int k=1;k<14;k++)
 		if (sCraftItem.CraftItem[k].Flag) {
 			if ((sCraftItem.CraftItem[k].CODE & sinITEM_MASK2) == sinSE1)
-				CheckBlockCount++;   //¾Á ¾ÆÀÌÅÛ Ã¼Å©
+				CheckBlockCount++;   //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?
 			else
-				CheckNotReconItem++; //¾Á¿Ü¾ÆÀÌÅÛ Ã¼Å©
+				CheckNotReconItem++; //ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?
 		}
 		else
-			memset(&sCraftItem.CraftItem[k], 0, sizeof(sITEM));  //¼­¹ö ÇØÅ· ¿¡·¯ ¶§¹®¿¡ ÀÓ½Ã ¹æÆíÀÌ´Ù.
+			memset(&sCraftItem.CraftItem[k], 0, sizeof(sITEM));  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 	}
-	//¾ÁÀ» Ã¼Å©ÇÑ´Ù.
-	for (int i = 1; i < 14; i++) { // ¹ÚÀç¿ø - ¸®½ºÆå ½ºÅæ(sCraftItem.CraftItem[14]´Â ¸®½ºÆå ½ºÅæÀÌ¹Ç·Î Ã¼Å©¿¡¼­ Á¦¿ÜÇÑ´Ù) for(int k=1;k<15;k++) -> for(int k=1;k<14;k++)
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½.
+	for (int i = 1; i < 14; i++) { // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(sCraftItem.CraftItem[14]ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½??ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½) for(int k=1;k<15;k++) -> for(int k=1;k<14;k++)
 		if ((sCraftItem.CraftItem[i].CODE & sinITEM_MASK2) == sinSE1 && sCraftItem.CraftItem[i].Flag) {
-			for (int k = 0; k < MAX_SEEL_COUNT; k++) { // ¹ÚÀç¿ø - Å×ÀÌ¿ÍÁî ¾Á Ãß°¡ (3Á¾·ù -> 4Á¾·ù)
+			for (int k = 0; k < MAX_SEEL_COUNT; k++) { // ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½ (3ï¿½ï¿½ï¿½ï¿½ -> 4ï¿½ï¿½ï¿½ï¿½)
 				if (sCraftItem.CraftItem[i].CODE == sReconItem[k].dwCODE) {
 					cnt[k]++;
 					if (sReconItem[k].iCount == cnt[k] && CheckNotReconItem < 1 && CheckBlockCount == cnt[k]) {
@@ -6807,11 +6986,11 @@ int cCRAFTITEM::haCheckReconItem()
 	return FALSE;
 }
 /*----------------------------------------------------------------------------*
-*Desc: ºó¹è¿­À» ´ç°ÜÁØ´Ù.
+*Desc: ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½.
 *-----------------------------------------------------------------------------*/
 int cCRAFTITEM::haCraftSortItem(sCRAFTITEM * pCraftItem)
 {
-	//ºó ¾ÆÀÌÅÛ ¹è¿­À» ´ç°ÜÁØ´Ù.
+	//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½.
 	int i;
 	for (i = 1; i < 13; i++) {
 		if (!pCraftItem->CraftItem[i].Flag) {
@@ -6916,7 +7095,7 @@ bool cCRAFTITEM::isMixableItem(sITEM * pItem)
 			(pItem->sItemInfo.CODE == (sinOA2 | sin34)) ||
 			(pItem->sItemInfo.CODE == (sinSP1 | sin42)) ||
 
-			// Itens que não podem ser mixados
+			// Itens que nï¿½o podem ser mixados
 			(pItem->sItemInfo.itemType == 7) ||
 			(pItem->sItemInfo.expireTime > 0)
 
@@ -6970,7 +7149,7 @@ bool cCRAFTITEM::isStoneAreaEmpty()
 }
 
 /*----------------------------------------------------------------------------*
-*Desc: ÀÎº¥Åä¸®ÀÇ 22*22Å©±âÀÇ ºóÄ­À» ±¸ÇØ ¸®ÅÏÇÑ´Ù.
+*Desc: ï¿½?ï¿½ï¿½?ï¿½ï¿½ 22*22?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 *-----------------------------------------------------------------------------*/
 int cCRAFTITEM::GetCraftCheckEmptyArea()
 {
@@ -6979,14 +7158,14 @@ int cCRAFTITEM::GetCraftCheckEmptyArea()
 
 	RECT	rect;
 	int		flag;
-	int StartX = 23;  //ÀÎº¥ ¹Ú½ºÀÇ ½ÃÀÛÁ¡ X
+	int StartX = 23;  //ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X
 	int StartY = 436; // Y
 
-	cx = (22 * INVENTORY_BOX_ROW) - 22; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - 22; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - 22; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Xï¿½ï¿½? 
+	cy = (22 * INVENTORY_BOX_COL) - 22; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Yï¿½ï¿½?
 
 	int count = 0;
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//ï¿½?? ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ 
 	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22) {
 			flag = 0;
@@ -7015,20 +7194,20 @@ int cCRAFTITEM::GetCraftCheckEmptyArea()
 
 //extern int iStateWindow;
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛÀÌ µé¾î°¥ °ø°£À» Ã¼Å©ÇÏ´Â ÇÔ¼ö ±¸Çö
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½
 int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 {
-	TradeColorIndex = 0;			// ÃÊ±âÈ­
-	TradeCrashItemIndex[0] = 0;		// Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-	cTrade.InitTradeColorRect();	// ¿µ¿ª ÃÊ±âÈ­
+	TradeColorIndex = 0;			// ï¿½?ï¿½?
+	TradeCrashItemIndex[0] = 0;		// ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+	cTrade.InitTradeColorRect();	// ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 
-	if ((pItem->CODE & sinITEM_MASK2) == sinBI1)		// ºô¸µ ¾ÆÀÌÅÛÀÌ°í...
+	if ((pItem->CODE & sinITEM_MASK2) == sinBI1)		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½...
 	{
-		// ¹Í½ºÃÄ ¸®¼Â ½ºÅæÀÌ ¾Æ´Ï¸é ¸®ÅÏ
+		// ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if ((pItem->sItemInfo.CODE & sinITEM_MASK3) != sin89)
 			return FALSE;
 
-		// ½ºÅæÀÌ À§Ä¡ÇÒ ÁÂÇ¥¸¦ °è»êÇØ ³½´Ù.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		TradeStartX = AgingLevelSheltomXY[0][0].x + 23;
 		TradeStartY = AgingLevelSheltomXY[0][0].y + 31;
 		TradeEndX = TradeStartX + 22;
@@ -7041,7 +7220,7 @@ int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 			{
 				if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j)
 				{
-					//ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+					//ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 					TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
 					TradeColorRect.top = TradeStartY + (((j - TradeStartY) / 22) * 22);
 					TradeColorRect.right = pItem->w;
@@ -7049,18 +7228,18 @@ int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 
 					if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11)
 					{
-						cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+						cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 						return FALSE;
 					}
 
-					// ¾ÆÀÌÅÛÀÇ À§Ä¡¸¦ ÁöÁ¤ÇÑ´Ù.
+					// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 					pItem->SetX = TradeColorRect.left;
 					pItem->SetY = TradeColorRect.top;
-					pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù
+					pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 
-					TradeColorIndex = SET_ITEM_CHECK_COLOR;		//¼ÂÆÃÇÒ¿µ¿ª
+					TradeColorIndex = SET_ITEM_CHECK_COLOR;		//ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
-					// °ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+					// ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 					if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 6))
 					{
 						TradeColorIndex = NOT_SETTING_COLOR;
@@ -7077,17 +7256,17 @@ int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 	{
 		if ((pItem->sItemInfo.ItemKindCode != ITEM_KIND_CRAFT) && (pItem->sItemInfo.ItemKindCode != ITEM_KIND_AGING))
 		{
-			TradeColorIndex = 0;				//ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-			TradeCrashItemIndex[0] = 0;		//Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-			cTrade.InitTradeColorRect();	//ÃÊ±âÈ­
+			TradeColorIndex = 0;				//ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+			TradeCrashItemIndex[0] = 0;		//ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+			cTrade.InitTradeColorRect();	//ï¿½?ï¿½?
 
-			// ¹Í½ºÃÄ°¡ ¼öÇàµÈ ¾ÆÀÌÅÛÀÌ µé¾î°¥ ÀÚ¸®ÀÇ ÁÂÇ¥¸¦ ±¸ÇÔ
+			// ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			TradeStartX = 58;
 			TradeStartY = 193 + sinInterHeight2;
 			TradeEndX = TradeStartX + (3 * 22);
 			TradeEndY = TradeStartY + (4 * 22);
 
-			//ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+			//ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 			if ((TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y))
 			{
 				TradeColorRect.left = TradeStartX;
@@ -7098,10 +7277,10 @@ int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 
 				pItem->SetX = TradeStartX + ((TradeEndX - TradeStartX) - pItem->w) / 2;
 				pItem->SetY = TradeStartY + ((TradeEndY - TradeStartY) - pItem->h) / 2;
-				pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-				TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+				pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+				TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
-				//¾ÆÀÌÅÛÀÌ °ãÄ¥°æ¿ì 
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ 
 				if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 6))
 				{
 					TradeColorIndex = NOT_SETTING_COLOR;
@@ -7119,7 +7298,7 @@ int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 			TradeEndX = TradeStartX + (3 * 22);
 			TradeEndY = TradeStartY + (4 * 22);
 			if ((TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y))
-			{ //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+			{ //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 				TradeColorRect.left = TradeStartX;
 				TradeColorRect.top = TradeStartY;
 				TradeColorRect.right = TradeEndX - TradeStartX;
@@ -7128,8 +7307,8 @@ int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 
 				pItem->SetX = TradeStartX + ((TradeEndX - TradeStartX) - pItem->w) / 2;
 				pItem->SetY = TradeStartY + ((TradeEndY - TradeStartY) - pItem->h) / 2;
-				pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-				TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+				pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+				TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
 				if ((pItem->sItemInfo.ItemKindCode != ITEM_KIND_CRAFT) && (pItem->sItemInfo.ItemKindCode != ITEM_KIND_AGING))
 				{
@@ -7146,7 +7325,7 @@ int cMIXTURERESET::SetMixtureItemResetAreaCheck(sITEM * pItem)
 	return TRUE;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛÀÇ Á¤º¸ Ã¼Å©
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?
 int cMIXTURERESET::CheckMixtureResetItemForm()
 {
 	int TempCheckDataSum = 0;
@@ -7165,7 +7344,7 @@ int cMIXTURERESET::CheckMixtureResetItemForm()
 	return TRUE;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛÀÇ Á¤º¸ ´Ù½Ã Ã¼Å©
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?
 int cMIXTURERESET::ReformMixtureResetItem()
 {
 	MixtureResetItemCheckSum = 0;
@@ -7185,11 +7364,11 @@ int cMIXTURERESET::ReformMixtureResetItem()
 	return TRUE;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛÀ» Áý´Â ÇÔ¼ö
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
 int cMIXTURERESET::PickUpMixtureResetItem(int x, int y, int PickUpFlag, int Kind)
 {
 	int i = 0;
-	SelectTradeItemIndex = 0;    //ÁýÀ» ¾ÆÀÌÅÛ 
+	SelectTradeItemIndex = 0;    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 	if (Kind == 0)
 	{
@@ -7203,9 +7382,9 @@ int cMIXTURERESET::PickUpMixtureResetItem(int x, int y, int PickUpFlag, int Kind
 					if (PickUpFlag)
 					{
 						if (i == 1)
-							MixtureResetCheckFlag = 0;	// Á¶ÇÕ ¹öÆ° ºñÈ°¼ºÈ­
+							MixtureResetCheckFlag = 0;	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½?ï¿½ï¿½?
 
-						// ½ºÅæÀÌ ÀÖ´Â »óÅÂ¿¡¼± ¹Í½ºÃÄ µÈ ¾ÆÀÌÅÛ µé±â ºÒ°¡
+						// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½
 						if (sMixtureResetItem.MixtureResetItem[1].Flag && i == 0)
 						{
 							cMessageBox.ShowMessage(MESSAGE_NOT_MIXTURE_RESET_ITEM);
@@ -7215,7 +7394,7 @@ int cMIXTURERESET::PickUpMixtureResetItem(int x, int y, int PickUpFlag, int Kind
 						CheckMixtureResetItemForm();
 						memcpy(&MouseItem, &sMixtureResetItem.MixtureResetItem[i], sizeof(sITEM));
 						sMixtureResetItem.MixtureResetItem[i].Flag = 0;
-						memset(&sMixtureResetItem.MixtureResetItem[i], 0, sizeof(sITEM));  //¼­¹ö ÇØÅ· ¿¡·¯ ¶§¹®¿¡ ÀÓ½Ã ¹æÆíÀÌ´Ù.
+						memset(&sMixtureResetItem.MixtureResetItem[i], 0, sizeof(sITEM));  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 
 						sinPlaySound(sMixtureResetItem.MixtureResetItem[i].SoundIndex);
 						TradeColorIndex = 0;
@@ -7260,34 +7439,34 @@ bool cMIXTURERESET::isEmpty(int Index)
 	return true;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛÀ» Ã¢¿¡ À§Ä¡½ÃÅ°µµ·Ï ÇÏ´Â ÇÔ¼ö
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ? ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½
 int cMIXTURERESET::LastSetMixtureResetItem(sITEM * pItem, int kind)
 {
 	//CheckMixtureResetItemForm();
 
 	if (kind == 1)
 	{
-		// ¹Í½ºÃÄµÈ ¾ÆÀÌÅÛÀº ¿Ã·ÁÁ® ÀÖ°í, ½ºÅæÀº ³õ¿©ÀÖÁö ¾Ê´Ù¸é...
+		// ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½...
 		if (sMixtureResetItem.MixtureResetItem[0].Flag && !sMixtureResetItem.MixtureResetItem[1].Flag)
 		{
 			memcpy(&sMixtureResetItem.MixtureResetItem[1], pItem, sizeof(sITEM));
 			sMixtureResetItem.MixtureResetItem[1].x = pItem->SetX;
 			sMixtureResetItem.MixtureResetItem[1].y = pItem->SetY;
-			pItem->Flag = 0; //ÃÊ±âÈ­ 
+			pItem->Flag = 0; //ï¿½?ï¿½? 
 			sinPlaySound(sMixtureResetItem.MixtureResetItem[1].SoundIndex);
 			//ReformMixtureResetItem();
 			return TRUE;
 		}
 	}
-	else if (kind == 2)		// ¹Í½ºÃÄµÈ ¾ÆÀÌÅÛÀÌ¸é...
+	else if (kind == 2)		// ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½...
 	{
-		// ¹Í½ºÃÄµÈ ¾ÆÀÌÅÛÀÌ ¿Ã·ÁÁ® ÀÖÁö ¾Ê´Ù¸é...
+		// ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½...
 		if (!sMixtureResetItem.MixtureResetItem[0].Flag)
 		{
 			memcpy(&sMixtureResetItem.MixtureResetItem[0], pItem, sizeof(sITEM));
 			sMixtureResetItem.MixtureResetItem[0].x = pItem->SetX;
 			sMixtureResetItem.MixtureResetItem[0].y = pItem->SetY;
-			pItem->Flag = 0; //ÃÊ±âÈ­ 
+			pItem->Flag = 0; //ï¿½?ï¿½? 
 			sinPlaySound(sMixtureResetItem.MixtureResetItem[0].SoundIndex);
 			//ReformMixtureResetItem();
 			return TRUE;
@@ -7297,14 +7476,14 @@ int cMIXTURERESET::LastSetMixtureResetItem(sITEM * pItem, int kind)
 	return TRUE;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼ÂÀ» Ãë¼ÒÇÑ´Ù.
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½.
 int cMIXTURERESET::CancelMixtureItemReset(int Flag)
 {
-	// º¹»ç ¹æÁö ÇÃ·¢ÀÌ È°¼ºÈ­ µÇ¾î ÀÖ´Ù¸é....
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½? ï¿½?ï¿½ ï¿½??ï¿½....
 	if (MixItemNoCopyFlag)
 		return FALSE;
 
-	// ¹Í½ºÃÄ ¸®¼Â¿¡ ¿Ã·È´ø ¾ÆÀÌÅÛÀÌ ÀÖ´Ù¸é ÀÎº¥ÀÇ ºó °ø°£À¸·Î ÀÚµ¿ ¼ÂÆÃÇÏ°í, Áö¿î´Ù.
+	// ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½.
 	if (sMixtureResetItem.MixtureResetItem[0].Flag)
 	{
 		if (!cInvenTory.AutoSetInvenItem(&sMixtureResetItem.MixtureResetItem[0]))
@@ -7313,32 +7492,32 @@ int cMIXTURERESET::CancelMixtureItemReset(int Flag)
 		sMixtureResetItem.MixtureResetItem[0].Flag = 0;
 	}
 
-	MixtureResetCheckFlag = 0;	// ¹Í½ºÃÄ ¸®¼Â ºÒ°¡´É
+	MixtureResetCheckFlag = 0;	// ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½
 
-	// ¹Í½ºÃÄ ¸®¼Â Ã¢À» ´Ý´Â´Ù.
+	// ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ? ï¿½?ï¿½ï¿½.
 	if (!Flag)
 		cMixtureReset.OpenFlag = 0;
 
-	ResetInvenItemCode();	// ÀÎº¥ ¾ÆÀÌÅÛ ÄÚµå ÃÊ±âÈ­
+	ResetInvenItemCode();	// ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½?
 
 	return TRUE;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼ÂµÉ ¾ÆÀÌÅÛÀ» ¼­¹ö·Î Àü¼ÛÇÑ´Ù.
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 int cMIXTURERESET::sinSendMixtureItemReset()
 {
 	if (MixItemNoCopyFlag)
 		return FALSE;
 
-	memcpy(&sMixtureResetItemBackUp, &sMixtureResetItem, sizeof(sMIXTURE_RESET_ITEM));	// º¹»ç¸¦ Ã¼Å©ÇÏ±âÀ§ÇÑ ¹é¾÷º»À» ¸¸µç´Ù
-	MixItemNoCopyFlag = 1;	//¾ÆÀÌÅÛÀÌ º¹»çµÇ´Â°É ¹æÁöÇÏ±âÀ§ÇØ ÇÃ·ºÀ»ÁØ´Ù
-	memset(&sMixtureReset_Send, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER));	// ¼­¹ö¿¡ º¸³¾ ±¸Á¶Ã¼ ÃÊ±âÈ­
+	memcpy(&sMixtureResetItemBackUp, &sMixtureResetItem, sizeof(sMIXTURE_RESET_ITEM));	// ï¿½ï¿½ï¿½? ï¿½?ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+	MixItemNoCopyFlag = 1;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
+	memset(&sMixtureReset_Send, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER));	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 
-	// ¹Í½ºÃÄ ¸®¼Â ½ÃÅ³ ¾ÆÀÌÅÛÀ» ÀúÀå
+	// ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (sMixtureResetItem.MixtureResetItem[0].Flag)
 		sMixtureReset_Send.DesMixtureResetItem = sMixtureResetItem.MixtureResetItem[0];
 
-	// ¹Í½ºÃÄ ¸®¼Â ½ºÅæÀ» ÀúÀå
+	// ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (sMixtureResetItem.MixtureResetItem[1].Flag)
 	{
 		sMixtureReset_Send.dwMixtureResetStoneItemCode = sMixtureResetItem.MixtureResetItem[1].CODE;
@@ -7346,18 +7525,18 @@ int cMIXTURERESET::sinSendMixtureItemReset()
 		sMixtureReset_Send.dwMixtureResetStoneHead = sMixtureResetItem.MixtureResetItem[1].sItemInfo.ItemHeader.Head;
 	}
 
-	// ÀÎµ¦½º¸¦ º¸³½´Ù 
+	// ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	CraftItemSendServerIndex++;
 	sMixtureReset_Send.Index = CraftItemSendServerIndex;
 
-	// ÀúÀåµÈ ±¸Á¶Ã¼¸¦ ¼­¹ö¿¡ º¸³½´Ù 
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	SendMixtureResetItemToServer(&sMixtureReset_Send);
 
 
 	return TRUE;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼ÂµÈ ¾ÆÀÌÅÛÀ» Recv¿ë º¯¼ö·Î º¹»ç
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Recvï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int	cMIXTURERESET::sinRecvMixtureItemReset(sMIXTURE_RESET_ITEM_SERVER * pMixtureResetItem)
 {
 	memcpy(&sMixtureReset_Recv, pMixtureResetItem, sizeof(sMIXTURE_RESET_ITEM_SERVER));
@@ -7365,19 +7544,19 @@ int	cMIXTURERESET::sinRecvMixtureItemReset(sMIXTURE_RESET_ITEM_SERVER * pMixture
 	return TRUE;
 }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛ ÃÖÁ¾ °á°ú Ã³¸®
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½
 int cMIXTURERESET::sinRecvMixtureItemResetResult(sMIXTURE_RESET_ITEM_SERVER * pMixtureResetItem_Server)
 {
-	CheckMixItemCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º  
+	CheckMixItemCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½  
 
-	// ¹Í½ºÃÄ¸®¼Â Ã¢ÀÌ ¿­·ÁÀÖÁö ¾Ê´Ù¸é ¸ðµÎ ÃÊ±âÈ­
+	// ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 	if (!cMixtureReset.OpenFlag)
 	{
-		MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
-		memset(&sMixtureResetItem, 0, sizeof(sMIXTURE_RESET_ITEM));			//±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sMixtureResetItemBackUp, 0, sizeof(sMIXTURE_RESET_ITEM));	//±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sMixtureReset_Recv, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ¸®¼Â ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sMixtureReset_Send, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ¸®¼Â ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+		MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
+		memset(&sMixtureResetItem, 0, sizeof(sMIXTURE_RESET_ITEM));			//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sMixtureResetItemBackUp, 0, sizeof(sMIXTURE_RESET_ITEM));	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sMixtureReset_Recv, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sMixtureReset_Send, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		MixCancelButtonDelayFlag = 0;
 
 		return FALSE;
@@ -7402,12 +7581,12 @@ int cMIXTURERESET::sinRecvMixtureItemResetResult(sMIXTURE_RESET_ITEM_SERVER * pM
 				}
 			}
 
-			CraftItemMessageSize.x = 14;				//¹Ú½º »çÀÌÁî 
-			CraftItemMessageSize.y = ((LineCount) * 2) + 2; //¹Ú½º »çÀÌÁî 
+			CraftItemMessageSize.x = 14;				//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+			CraftItemMessageSize.y = ((LineCount) * 2) + 2; //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 			if (cInvenTory.CheckRequireItemToSet(&TempItem))
 			{
-				//°ð¹Ù·Î ¼ÂÆÃµÉ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù  
+				//ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½  
 				if (!cInvenTory.AutoSetInvenItem(&TempItem, 1))
 				{
 					sinThrowItemToFeild(&pMixtureResetItem_Server->DesMixtureResetItem);
@@ -7418,22 +7597,22 @@ int cMIXTURERESET::sinRecvMixtureItemResetResult(sMIXTURE_RESET_ITEM_SERVER * pM
 
 		cMessageBox.ShowMessage(MESSAGE_OK_MIXTURE_RESET_ITEM);
 
-		CheckCharForm();	//ÀÎÁõ 
-		ReformCharForm();	//ÀçÀÎÁõ 
-		SendSaveMoney();	//±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+		CheckCharForm();	//ï¿½ï¿½ï¿½ï¿½ 
+		ReformCharForm();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney();	//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
 		SaveGameData();
-		cMixtureReset.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù
+		cMixtureReset.OpenFlag = 0; //? ï¿½?ï¿½ï¿½
 	}
 	else
 	{
-		CheckCharForm();	//ÀÎÁõ 
-		ReformCharForm();	//ÀçÀÎÁõ 
-		SendSaveMoney();	//±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
-		cMixtureReset.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù
+		CheckCharForm();	//ï¿½ï¿½ï¿½ï¿½ 
+		ReformCharForm();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney();	//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
+		cMixtureReset.OpenFlag = 0; //? ï¿½?ï¿½ï¿½
 		cMessageBox.ShowMessage(MESSAGE_FAIL_MIXTURE_RESET_ITEM);
 	}
 
-	//º¹»ç°¡µÇ¾ú°Å³ªÇÑ ¾ÆÀÌÅÛÀ» Áö¿î´Ù
+	//ï¿½ï¿½ï¿½?ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (i = 0; i < 2; i++)
 	{
 		if (sMixtureResetItemBackUp.MixtureResetItem[i].Flag)
@@ -7445,19 +7624,19 @@ int cMIXTURERESET::sinRecvMixtureItemResetResult(sMIXTURE_RESET_ITEM_SERVER * pM
 
 	}
 
-	memset(&sMixtureResetItem, 0, sizeof(sMIXTURE_RESET_ITEM));			//±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sMixtureResetItemBackUp, 0, sizeof(sMIXTURE_RESET_ITEM));		//±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sMixtureReset_Recv, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER));	//¹ÞÀº ¹Í½ºÃÄ¸®¼Â ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sMixtureReset_Send, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER));	//º¸³½ ¹Í½ºÃÄ¸®¼Â ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+	memset(&sMixtureResetItem, 0, sizeof(sMIXTURE_RESET_ITEM));			//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sMixtureResetItemBackUp, 0, sizeof(sMIXTURE_RESET_ITEM));		//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sMixtureReset_Recv, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER));	//ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sMixtureReset_Send, 0, sizeof(sMIXTURE_RESET_ITEM_SERVER));	//ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
-	MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
+	MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 	MixCancelButtonDelayFlag = 0;
 
 
 	return TRUE;
 }
 
-// pluto Á¦·Ã
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::CancelSmeltingItem()
 {
 
@@ -7476,11 +7655,11 @@ int CSmeltingItem::CancelSmeltingItem()
 	SmeltingItem.OpenFlag = 0;
 	m_SmeltingPrice = 0;
 	ForceItemPrice2 = 0;
-	memset(&S_smeltingItem, 0, sizeof(SSmeltingItem)); //¾ÆÀÌÅÛÀ» ´Ù ³¯·Á¹ö¸°´Ù 
-	ResetInvenItemCode();				//ÀÎº¥ ¾ÆÀÌÅÛ ÄÚµå ÃÊ±âÈ­
+	memset(&S_smeltingItem, 0, sizeof(SSmeltingItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+	ResetInvenItemCode();				//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½?
 
-	memset(&sSmeltingItem_Recv, 0, sizeof(sSMELTINGITEM_SERVER)); //¹ÞÀº ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­  (ÀÏ´Ü °°ÀÌÇØÁØ´Ù)
-	memset(&sSmeltingItem_Send, 0, sizeof(sSMELTINGITEM_SERVER)); //º¸³½ ¹Í½ºÃÄ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+	memset(&sSmeltingItem_Recv, 0, sizeof(sSMELTINGITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?  (ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½)
+	memset(&sSmeltingItem_Send, 0, sizeof(sSMELTINGITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
 	return TRUE;
 }
@@ -7540,22 +7719,22 @@ bool CSmeltingItem::GetEmptyArea(POINT * Area)
 	return false;
 }
 
-// pluto Á¦·Ã
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 {
-	//±¤¼®	  ÄÉÀÌ¾Æ½º ÀÌÇÁ¸®¾Æ ÆæÅ¸³ª  ¹Ù·ç³ª µµ·ç³×¾Æ »çÆ¼Äí¾Æ ¸Þ·çÄ«¹Ù
+	//ï¿½ï¿½ï¿½ï¿½	  ï¿½ï¿½ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½?? ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½
 	int SmeltingPriceIndexOre = 25000;
 
-	//¼öÁ¤    ÄÉÀÌ¾Æ½º ÀÌÇÁ¸®¾Æ ÆæÅ¸³ª  ¹Ù·ç³ª µµ·ç³×¾Æ »çÆ¼Äí¾Æ ¸Þ·çÄ«¹Ù ´«°áÁ¤ ½º³ë¿ìÇÃ¶ó¿ö ÇÏ¾á´«¹°
+	//ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½?? ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ï¿½
 	int SmeltingPriceIndexCrystal = 50000;
-	//	int SmeltingPriceIndexCrystal = 10000; // Àåº° - ÀÏº» ¿äÃ»À¸·Î ÀÓ½Ã·Î ¸¸¿ø
-		// Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+	//	int SmeltingPriceIndexCrystal = 10000; // ï¿½? - ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 	DWORD SmeltingCode[] = { sin01, sin02, sin03, sin04, sin05, sin06, sin07, sin08, sin09, sin10, sin11, sin12, sin13, sin14 };
 
 	int i, j;
-	TradeColorIndex = 0; // ÃÊ±âÈ­
-	TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-	cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+	TradeColorIndex = 0; // ï¿½?ï¿½?
+	TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+	cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 	if ((pItem->CODE & sinITEM_MASK2) == sinOS1)
 	{
@@ -7569,30 +7748,30 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 		//	for( j=pItem->y+11 ; j<pItem->y+pItem->h ; j+=22)
 		//	{
 		//		if(TradeStartX <= i && TradeEndX > i && TradeStartY <=j && TradeEndY > j)
-		//		{ //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+		//		{ //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 		//			TradeColorRect.left =  TradeStartX +( ( ( i - TradeStartX) /22)*22) ; 
 		//			TradeColorRect.top  =  TradeStartY +( ( ( j - TradeStartY) /22)*22) ; 
 		//			TradeColorRect.right  = pItem->w;
 		//			TradeColorRect.bottom = pItem->h;
 		//			if(TradeEndX < (TradeColorRect.left + TradeColorRect.right)-11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom)-11)
 		//			{
-		//				cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+		//				cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 		//				return FALSE;
 		//			}
 
 		//			pItem->SetX = TradeColorRect.left;
 		//			pItem->SetY = TradeColorRect.top;
-		//			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-		//			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+		//			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+		//			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 		//			if( !S_smeltingItem.SmeltingItem[0].Flag )
 		//			{
 		//				TradeColorIndex = NOT_SETTING_COLOR;
 		//				return FALSE;
 		//			}
 		//			if(Kind == 0)
-		//			{ //¹Í½ºÃÄ 
+		//			{ //ï¿½?ï¿½ï¿½ï¿½ 
 		//				if(TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect,0,4))
-		//				{  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+		//				{  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 		//					TradeColorIndex = NOT_SETTING_COLOR;
 		//					return FALSE;
 
@@ -7606,7 +7785,7 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 		//}
 
 
-		//int SmeltingSheltomAray[4][3] = { 0, 0, 0,		// ½©ÅÒ °¹¼ö ´Ã¾î ³ª¸é ¾²ÀÚ
+		//int SmeltingSheltomAray[4][3] = { 0, 0, 0,		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		//								  0, 0, 0,
 		//								  0, 0, 0,
 		//								  0, 0, 0 };
@@ -7624,13 +7803,13 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 				break;
 			}
 		}
-		//for(int p = 0 ; p < 4 ; p++)			// ½©ÅÒ °¹¼ö ´Ã¾î ³ª¸é ¾²ÀÚ
+		//for(int p = 0 ; p < 4 ; p++)			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		{
 			//for(int m=0; m < 3 ; m++)
 			{
 				if (SmeltingSheltomIndex == Smelting_SheltomIndex)
 				{
-					TradeStartX = AgingLevelSheltomXY[0][0].x + 22;			// ÁÂÇ¥´Â °°¾Æ¼­ °Á ›§À½
+					TradeStartX = AgingLevelSheltomXY[0][0].x + 22;			// ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 					TradeStartY = AgingLevelSheltomXY[0][0].y + 30;
 					TradeEndX = TradeStartX + 22;
 					TradeEndY = TradeStartY + 22;
@@ -7639,22 +7818,22 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 						for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22)
 						{
 							if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j)
-							{ //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+							{ //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 								TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
 								TradeColorRect.top = TradeStartY + (((j - TradeStartY) / 22) * 22);
 								TradeColorRect.right = pItem->w;
 								TradeColorRect.bottom = pItem->h;
 								if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11)
 								{
-									cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+									cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 									return FALSE;
 								}
 
 								pItem->SetX = TradeColorRect.left;
 								pItem->SetY = TradeColorRect.top;
-								pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù
+								pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 
-								TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+								TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 								if (!S_smeltingItem.SmeltingItem[0].Flag)
 								{
 									TradeColorIndex = NOT_SETTING_COLOR;
@@ -7662,7 +7841,7 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 								}
 
 								if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 4))
-								{  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+								{  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 									TradeColorIndex = NOT_SETTING_COLOR;
 									return FALSE;
 
@@ -7682,9 +7861,9 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 		//{
 		//	return false;
 		//}
-		TradeColorIndex = 0; //ÃÊ±âÈ­   (Æ®·¹ÀÌµå Ã¢°ú Ã¢°í°¡ °°ÀÌ ¾´´Ù)
-		TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-		cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+		TradeColorIndex = 0; //ï¿½?ï¿½?   (?ï¿½ï¿½ï¿½?ï¿½ ? ?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+		cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 		//TradeStartX = 58;
 		//TradeStartY = 193+sinInterHeight2;
@@ -7700,7 +7879,7 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 			for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22)
 			{
 				if (TradeStartX <= pCursorPos.x && TradeEndX > pCursorPos.x && TradeStartY <= pCursorPos.y && TradeEndY > pCursorPos.y)
-				{ //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© // ÇÏ´ÂÁß
+				{ //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? // ï¿½?ï¿½ï¿½ï¿½
 					if (!(80 <= pCursorPos.x && 101 >= pCursorPos.x && 143 <= pCursorPos.y && 164 >= pCursorPos.y))
 					{
 						TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
@@ -7709,25 +7888,25 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 						TradeColorRect.bottom = pItem->h;
 						if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11)
 						{
-							cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+							cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 							return FALSE;
 						}
 
 						pItem->SetX = TradeColorRect.left;
 						pItem->SetY = TradeColorRect.top;
-						pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-						TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+						pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+						TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
 						if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 4))
-						{  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+						{  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 							TradeColorIndex = NOT_SETTING_COLOR;
 							return FALSE;
 						}
 
-						// Á¦·Ã ÇÒ¼ö ÀÖ´Â µ·ÀÌ ÀÖ³ª °Ë»ç
+						// ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½
 						for (int i = 0; i < 7; i++)
 						{
-							// ±¤¼®
+							// ï¿½ï¿½ï¿½ï¿½
 							if ((pItem->CODE & sinITEM_MASK2) == sinPR1)
 							{
 								if ((pItem->sItemInfo.CODE & sinITEM_MASK3) == SmeltingCode[i])
@@ -7741,9 +7920,9 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 							}
 						}
 
-						for (int i = 0; i < 14; i++) // Àåº° - Á¦·Ã // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+						for (int i = 0; i < 14; i++) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 						{
-							// ¼öÁ¤
+							// ï¿½ï¿½ï¿½ï¿½
 							if ((pItem->CODE & sinITEM_MASK2) == sinPR2)
 							{
 								if ((pItem->sItemInfo.CODE & sinITEM_MASK3) == SmeltingCode[i])
@@ -7757,22 +7936,22 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 							}
 						}
 
-						////º¹»çµÇ ¾ÆÀÌÅÛÀº ¹Í½ºÃÄ¿Í ¿¡ÀÌÂ¡À» ÇÒ¼ö¾ø´Ù MakeItemÀº ¹Í½ºÇÒ¼ö¾ø´Ù 
+						////ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ MakeItemï¿½ï¿½ ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ 
 						if (pItem->sItemInfo.SpecialItemFlag[0] == CHECK_COPY_ITEM ||
 							pItem->sItemInfo.ItemKindCode == ITEM_KIND_QUEST ||
 							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA1 ||
 							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinMA2 ||
 							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinQW1 ||
-							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || //ÆÛÁñµµ ¿Ã¸±¼ö¾öµû 
+							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ1 || //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinPZ2 ||
-							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinFO1 || //Æ÷½ºµµ¾ÈµÈ´Ù
+							(pItem->sItemInfo.CODE & sinITEM_MASK2) == sinFO1 || //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½??ï¿½
 							pItem->sItemInfo.CODE == (sinGF1 | sin01) ||
 							pItem->sItemInfo.CODE == (sinGF1 | sin02) ||
 							pItem->sItemInfo.CODE == (sinGF1 | sin03) ||
 							pItem->sItemInfo.CODE == (sinGF1 | sin04) ||
 							pItem->sItemInfo.CODE == (sinGF1 | sin05) ||
 							pItem->sItemInfo.CODE == (sinGF1 | sin06) ||
-							pItem->sItemInfo.CODE == (sinGF1 | sin07) ||	// Àåº° - Á¶»ç¿øÀ» Ã£¾Æ¶ó
+							pItem->sItemInfo.CODE == (sinGF1 | sin07) ||	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½
 							pItem->sItemInfo.CODE == (sinGF1 | sin08))
 						{
 
@@ -7789,14 +7968,14 @@ int CSmeltingItem::SetSmeltingItemAreaCheck(sITEM * pItem, int Kind)
 	return TRUE;
 }
 
-// pluto Á¦·Ã
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::LastSetSmeltingItem(sITEM * pItem, int Kind)
 {
 	if (Kind == 0)
 	{
 		CheckSmeltingItemForm();
 		if ((pItem->CODE & sinITEM_MASK2) == sinOS1)
-		{ //½©ÅÒÀÏ °æ¿ì
+		{ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 			//for(int j=12 ; j < 24 ; j++)
 			//{
 			//	if(!S_smeltingItem.SmeltingItem[j].Flag)
@@ -7804,18 +7983,18 @@ int CSmeltingItem::LastSetSmeltingItem(sITEM * pItem, int Kind)
 			//		memcpy(&S_smeltingItem.SmeltingItem[j],pItem,sizeof(sITEM));
 			//		S_smeltingItem.SmeltingItem[j].x = pItem->SetX;
 			//		S_smeltingItem.SmeltingItem[j].y = pItem->SetY;
-			//		pItem->Flag = 0; //ÃÊ±âÈ­ 
+			//		pItem->Flag = 0; //ï¿½?ï¿½? 
 			//		sinPlaySound(S_smeltingItem.SmeltingItem[j].SoundIndex);
 			//		ReFormSmeltingItem();
 			//		return TRUE;
 			//	}
 			//}
-			if (!S_smeltingItem.SmeltingItem[4].Flag)	// pluto ½©ÅÒ ÇÑ°³¸¸ ³õ´Â´Ù 
+			if (!S_smeltingItem.SmeltingItem[4].Flag)	// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 
 			{
 				memcpy(&S_smeltingItem.SmeltingItem[4], pItem, sizeof(sITEM));
 				S_smeltingItem.SmeltingItem[4].x = pItem->SetX;
 				S_smeltingItem.SmeltingItem[4].y = pItem->SetY;
-				pItem->Flag = 0; //ÃÊ±âÈ­ 
+				pItem->Flag = 0; //ï¿½?ï¿½? 
 				sinPlaySound(S_smeltingItem.SmeltingItem[4].SoundIndex);
 				ReFormSmeltingItem();
 				return TRUE;
@@ -7824,24 +8003,24 @@ int CSmeltingItem::LastSetSmeltingItem(sITEM * pItem, int Kind)
 		}
 		else
 		{
-			int k = 3; // Àåº° - Á¦·Ã ½Ã½ºÅÛ ¼öÁ¤
+			int k = 3; // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			//if( (pItem->CODE & sinITEM_MASK2) == sinPR1 )
 			//{
-			//	k = 5;		// ±¤¼®
+			//	k = 5;		// ï¿½ï¿½ï¿½ï¿½
 			//}
 			//else if( (pItem->CODE & sinITEM_MASK2) == sinPR2 )
 			//{
-			//	k = 3;		// ¼öÁ¤
+			//	k = 3;		// ï¿½ï¿½ï¿½ï¿½
 			//}
 
 			for (int i = 0; i < k; i++)
 			{
-				if (!S_smeltingItem.SmeltingItem[i].Flag)		// ±¤¼®, ¼öÁ¤
+				if (!S_smeltingItem.SmeltingItem[i].Flag)		// ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½
 				{
 					memcpy(&S_smeltingItem.SmeltingItem[i], pItem, sizeof(sITEM));
 					S_smeltingItem.SmeltingItem[i].x = pItem->SetX;
 					S_smeltingItem.SmeltingItem[i].y = pItem->SetY;
-					pItem->Flag = 0; //ÃÊ±âÈ­ 
+					pItem->Flag = 0; //ï¿½?ï¿½? 
 					sinPlaySound(sCraftItem.CraftItem[i].SoundIndex);
 					ReFormSmeltingItem();
 					CheckSmeltingPrice();
@@ -7853,9 +8032,9 @@ int CSmeltingItem::LastSetSmeltingItem(sITEM * pItem, int Kind)
 	return TRUE;
 }
 
-// pluto Á¦·Ã
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::CheckSmeltingItemForm()
-{ //Ã¼Å©  
+{ //ï¿½?  
 	int TempCheckDataSum = 0;
 
 
@@ -7874,9 +8053,9 @@ int CSmeltingItem::CheckSmeltingItemForm()
 	return TRUE;
 }
 
-// pluto Á¦·Ã
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::ReFormSmeltingItem()
-{ //ÀÎÁõ 
+{ //ï¿½ï¿½ï¿½ï¿½ 
 
 	SmeltingItemCheckSum = 0;
 	for (int i = 0; i < 5; i++)
@@ -7894,11 +8073,11 @@ int CSmeltingItem::ReFormSmeltingItem()
 	return TRUE;
 }
 
-// pluto Á¦·Ã ¾ÆÀÌÅÛ Áý±â
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::PickUpSmeltingItem(int x, int y, int PickUpFlag, int Kind)
 {
 	int i = 0;
-	SelectTradeItemIndex = 0;    //ÁýÀ» ¾ÆÀÌÅÛ 
+	SelectTradeItemIndex = 0;    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	if (Kind == 0)
 	{
 		for (i = 0; i < 5; i++)
@@ -7918,7 +8097,7 @@ int CSmeltingItem::PickUpSmeltingItem(int x, int y, int PickUpFlag, int Kind)
 						CheckSmeltingItemForm();
 						memcpy(&MouseItem, &S_smeltingItem.SmeltingItem[i], sizeof(sITEM));
 						S_smeltingItem.SmeltingItem[i].Flag = 0;
-						memset(&S_smeltingItem.SmeltingItem[i], 0, sizeof(sITEM));  //¼­¹ö ÇØÅ· ¿¡·¯ ¶§¹®¿¡ ÀÓ½Ã ¹æÆíÀÌ´Ù.
+						memset(&S_smeltingItem.SmeltingItem[i], 0, sizeof(sITEM));  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 
 						sinPlaySound(S_smeltingItem.SmeltingItem[i].SoundIndex);
 						TradeColorIndex = 0;
@@ -7940,7 +8119,7 @@ int CSmeltingItem::PickUpSmeltingItem(int x, int y, int PickUpFlag, int Kind)
 	return FALSE;
 }
 
-// pluto Á¦·Ã
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::sinSendSmeltingItem()
 {
 	if (MixItemNoCopyFlag)
@@ -7950,9 +8129,9 @@ int CSmeltingItem::sinSendSmeltingItem()
 
 	int i = 0;
 
-	//º¹»ç¸¦ Ã¼Å©ÇÏ±âÀ§ÇÑ ¹é¾÷º»À» ¸¸µç´Ù
+	//ï¿½ï¿½ï¿½? ï¿½?ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	memcpy(&sSmeltingItemBackUp, &S_smeltingItem, sizeof(SSmeltingItem));
-	MixItemNoCopyFlag = 1; //¾ÆÀÌÅÛÀÌ º¹»çµÇ´Â°É ¹æÁöÇÏ±âÀ§ÇØ ÇÃ·ºÀ»ÁØ´Ù
+	MixItemNoCopyFlag = 1; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 	memset(&sSmeltingItem_Send.DesSmeltingItem, 0, sizeof(sITEM));
 
 	sSmeltingItem_Send.Money = m_SmeltingPrice;
@@ -7969,9 +8148,9 @@ int CSmeltingItem::sinSendSmeltingItem()
 
 	CheckCraftMoney = sSmeltingItem_Send.Money;
 
-	CraftItemSendServerIndex++; //ÀÎµ¦½º¸¦ º¸³½´Ù 
+	CraftItemSendServerIndex++; //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	sSmeltingItem_Send.Index = CraftItemSendServerIndex;
-	//ÀúÀåµÈ ±¸Á¶Ã¼¸¦ ¼­¹ö¿¡ º¸³½´Ù 
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 
 	SendSmeltingItemToServer(&sSmeltingItem_Send);
@@ -7986,17 +8165,17 @@ int CSmeltingItem::sinRecvSmeltingItem(sSMELTINGITEM_SERVER * pSmeltingItem_Serv
 	return TRUE;
 }
 
-// pluto Á¦·Ã ¾ÆÀÌÅÛÀÇ °á°ú¹°À» ¼­¹ö¿¡¼­ ¹Þ´Â´Ù 
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ 
 int CSmeltingItem::sinRecvSmeltingItemResult(sSMELTINGITEM_SERVER * pSmeltingItem_Server)
 {
-	CheckMixItemCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º  
+	CheckMixItemCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½  
 	if (!SmeltingItem.OpenFlag)
 	{
-		MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
-		memset(&S_smeltingItem, 0, sizeof(SSmeltingItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sSmeltingItemBackUp, 0, sizeof(SSmeltingItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sSmeltingItem_Recv, 0, sizeof(sSMELTINGITEM_SERVER)); //¹ÞÀº Á¦·Ã ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&sSmeltingItem_Send, 0, sizeof(sSMELTINGITEM_SERVER)); //º¸³½ Á¦·Ã ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+		MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
+		memset(&S_smeltingItem, 0, sizeof(SSmeltingItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sSmeltingItemBackUp, 0, sizeof(SSmeltingItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sSmeltingItem_Recv, 0, sizeof(sSMELTINGITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&sSmeltingItem_Send, 0, sizeof(sSMELTINGITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		MixCancelButtonDelayFlag = 0;
 		return FALSE;
 
@@ -8007,7 +8186,7 @@ int CSmeltingItem::sinRecvSmeltingItemResult(sSMELTINGITEM_SERVER * pSmeltingIte
 
 	if (pSmeltingItem_Server->Result)
 	{
-		ShowItemSmeltingMessageFlag = 1; // ¾ÆÀÌÅÛÀÌ Á¦·Ã‰çÀ»¶§ ¸Þ¼¼Áö¸¦ º¸¿©ÁØ´Ù
+		ShowItemSmeltingMessageFlag = 1; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 
 		sITEM TempItem;
 		if (LoadItemImage(&pSmeltingItem_Server->DesSmeltingItem.sItemInfo, &TempItem))
@@ -8023,12 +8202,12 @@ int CSmeltingItem::sinRecvSmeltingItemResult(sSMELTINGITEM_SERVER * pSmeltingIte
 					LineCount++;
 				}
 			}
-			CraftItemMessageSize.x = 14;           //¹Ú½º »çÀÌÁî 
-			CraftItemMessageSize.y = ((LineCount) * 2) + 2;  //¹Ú½º »çÀÌÁî 
+			CraftItemMessageSize.x = 14;           //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+			CraftItemMessageSize.y = ((LineCount) * 2) + 2;  //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 			if (cInvenTory.CheckRequireItemToSet(&TempItem))
 			{
-				//°ð¹Ù·Î ¼ÂÆÃµÉ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù  
+				//ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½  
 				if (!cInvenTory.AutoSetInvenItem(&TempItem, 1))
 				{
 					sinThrowItemToFeild(&pSmeltingItem_Server->DesSmeltingItem);
@@ -8037,24 +8216,24 @@ int CSmeltingItem::sinRecvSmeltingItemResult(sSMELTINGITEM_SERVER * pSmeltingIte
 
 		}
 
-		CheckCharForm(); //ÀÎÁõ 
+		CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½ 
 		sinMinusMoney(m_SmeltingPrice);
-		ReformCharForm(); //ÀçÀÎÁõ 
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+		ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
 		SaveGameData();
-		SmeltingItem.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù
+		SmeltingItem.OpenFlag = 0; //? ï¿½?ï¿½ï¿½
 	}
 	else
 	{
-		CheckCharForm(); //ÀÎÁõ 
+		CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½ 
 		sinMinusMoney(m_SmeltingPrice);
-		ReformCharForm(); //ÀçÀÎÁõ 
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
-		SmeltingItem.OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù 
+		ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
+		SmeltingItem.OpenFlag = 0; //? ï¿½?ï¿½ï¿½ 
 		cMessageBox.ShowMessage(MESSAGE_FAILD_SMELTING_ITEM);
 	}
 
-	//º¹»ç°¡µÇ¾ú°Å³ªÇÑ ¾ÆÀÌÅÛÀ» Áö¿î´Ù
+	//ï¿½ï¿½ï¿½?ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (i = 0; i < 5; i++)
 	{
 		if (sSmeltingItemBackUp.SmeltingItem[i].Flag)
@@ -8065,19 +8244,19 @@ int CSmeltingItem::sinRecvSmeltingItemResult(sSMELTINGITEM_SERVER * pSmeltingIte
 		}
 
 	}
-	memset(&S_smeltingItem, 0, sizeof(SSmeltingItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sSmeltingItemBackUp, 0, sizeof(SSmeltingItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sSmeltingItem_Recv, 0, sizeof(sSMELTINGITEM_SERVER)); //¹ÞÀº Á¦·Ã ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&sSmeltingItem_Send, 0, sizeof(sSMELTINGITEM_SERVER)); //º¸³½ Á¦·Ã ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+	memset(&S_smeltingItem, 0, sizeof(SSmeltingItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sSmeltingItemBackUp, 0, sizeof(SSmeltingItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sSmeltingItem_Recv, 0, sizeof(sSMELTINGITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&sSmeltingItem_Send, 0, sizeof(sSMELTINGITEM_SERVER)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
-	MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
+	MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 	MixCancelButtonDelayFlag = 0;
 	m_SmeltingPrice = 0;
 	ForceItemPrice2 = 0;
 	return TRUE;
 }
 
-// pluto Á¦·Ã
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CSmeltingItem::SmeltingCheckEmptyArea(sITEM * pItem)
 {
 	int cntx, cnty;
@@ -8085,13 +8264,13 @@ int CSmeltingItem::SmeltingCheckEmptyArea(sITEM * pItem)
 
 	RECT	rect;
 	int		flag;
-	int StartX = 23;  //ÀÎº¥ ¹Ú½ºÀÇ ½ÃÀÛÁ¡ X
+	int StartX = 23;  //ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X
 	int StartY = 436; // Y
 
-	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Xï¿½ï¿½? 
+	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Yï¿½ï¿½?
 
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//ï¿½?? ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ 
 	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22) {
 			flag = 0;
@@ -8107,7 +8286,7 @@ int CSmeltingItem::SmeltingCheckEmptyArea(sITEM * pItem)
 						flag++;
 				}
 			}
-			if (flag == 1) { // Àåº° - Á¦·Ã ½Ã½ºÅÛ ¼öÁ¤
+			if (flag == 1) { // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				pItem->SetX = cntx;
 				pItem->SetY = cnty;
 				pItem->ItemPosition = 0;
@@ -8126,14 +8305,14 @@ int CSmeltingItem::GetSmeltingCheckEmptyArea()
 
 	RECT	rect;
 	int		flag;
-	int StartX = 23;  //ÀÎº¥ ¹Ú½ºÀÇ ½ÃÀÛÁ¡ X
+	int StartX = 23;  //ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X
 	int StartY = 436; // Y
 
-	cx = (22 * INVENTORY_BOX_ROW) - 22; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - 22; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - 22; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Xï¿½ï¿½? 
+	cy = (22 * INVENTORY_BOX_COL) - 22; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Yï¿½ï¿½?
 
 	int count = 0;
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//ï¿½?? ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ 
 	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22) {
 			flag = 0;
@@ -8149,7 +8328,7 @@ int CSmeltingItem::GetSmeltingCheckEmptyArea()
 						flag++;
 				}
 			}
-			if (flag == 1) { // Àåº° - Á¦·Ã ½Ã½ºÅÛ ¼öÁ¤
+			if (flag == 1) { // ï¿½? - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				count++;
 			}
 		}
@@ -8160,23 +8339,23 @@ int CSmeltingItem::GetSmeltingCheckEmptyArea()
 		return 0;
 }
 
-// pluto ±¤¼®, ¼öÁ¤ Á¦·Ã ºñ¿ë
+// pluto ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 int CSmeltingItem::CheckSmeltingPrice()
-{						//±¤¼®	  ÄÉÀÌ¾Æ½º ÀÌÇÁ¸®¾Æ ÆæÅ¸³ª  ¹Ù·ç³ª µµ·ç³×¾Æ »çÆ¼Äí¾Æ ¸Þ·çÄ«¹Ù
+{						//ï¿½ï¿½ï¿½ï¿½	  ï¿½ï¿½ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½?? ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½
 	//int SmeltingPriceIndexOre[] = { 100000, 200000, 300000, 400000, 500000, 600000, 700000 };
 	int SmeltingPriceIndexOre = 25000;
 
-	//¼öÁ¤    ÄÉÀÌ¾Æ½º ÀÌÇÁ¸®¾Æ ÆæÅ¸³ª  ¹Ù·ç³ª µµ·ç³×¾Æ »çÆ¼Äí¾Æ ¸Þ·çÄ«¹Ù
+	//ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½?? ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½
 //int SmeltingPriceIndexCrystal[] = { 200000, 400000, 600000, 800000, 1000000, 1200000, 1400000 };
 	int SmeltingPriceIndexCrystal = 50000;
 
-	//	int SmeltingPriceIndexCrystal = 10000; // Àåº° - ÀÏº» ¿äÃ»À¸·Î ÀÓ½Ã·Î ¸¸¿ø
+	//	int SmeltingPriceIndexCrystal = 10000; // ï¿½? - ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 		//DWORD SmeltingCode[] = { sin01, sin02, sin03, sin04, sin05, sin06, sin07, sin08 };
 	m_SmeltingPrice = 0;
 	if (S_smeltingItem.SmeltingItem[0].Flag)
 	{
-		if ((S_smeltingItem.SmeltingItem[0].sItemInfo.CODE & sinITEM_MASK2) == sinPR1) // ±¤¼®
+		if ((S_smeltingItem.SmeltingItem[0].sItemInfo.CODE & sinITEM_MASK2) == sinPR1) // ï¿½ï¿½ï¿½ï¿½
 		{
 			/*
 			for( int i = 0; i < 7; i++ )
@@ -8193,7 +8372,7 @@ int CSmeltingItem::CheckSmeltingPrice()
 			ForceItemPrice2 = m_SmeltingPrice;
 			return TRUE;
 		}
-		else if ((S_smeltingItem.SmeltingItem[0].sItemInfo.CODE & sinITEM_MASK2) == sinPR2) // ¼öÁ¤
+		else if ((S_smeltingItem.SmeltingItem[0].sItemInfo.CODE & sinITEM_MASK2) == sinPR2) // ï¿½ï¿½ï¿½ï¿½
 		{
 			/*
 			for( int i = 0; i < 7; i++ )
@@ -8214,7 +8393,7 @@ int CSmeltingItem::CheckSmeltingPrice()
 	return TRUE;
 }
 
-// pluto Á¦ÀÛ Ãë¼Ò
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 int CManufacture::CancelManufactureItem()
 {
 
@@ -8233,31 +8412,31 @@ int CManufacture::CancelManufactureItem()
 	ManufactureItem.m_OpenFlag = 0;
 	m_ManufacturePrice = 0;
 	ForceItemPrice2 = 0;
-	memset(&g_sManufactureItem, 0, sizeof(SManufactureItem)); //¾ÆÀÌÅÛÀ» ´Ù ³¯·Á¹ö¸°´Ù 
-	ResetInvenItemCode();				//ÀÎº¥ ¾ÆÀÌÅÛ ÄÚµå ÃÊ±âÈ­
+	memset(&g_sManufactureItem, 0, sizeof(SManufactureItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+	ResetInvenItemCode();				//ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½?
 
-	memset(&g_sManufactureItem_Recv, 0, sizeof(SManufactureItem_Server)); //¹ÞÀº Á¦ÀÛ ±¸Á¶Ã¼ ÃÊ±âÈ­
-	memset(&g_sManufactureItem_Send, 0, sizeof(SManufactureItem_Server)); //º¸³½ Á¦ÀÛ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+	memset(&g_sManufactureItem_Recv, 0, sizeof(SManufactureItem_Server)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?
+	memset(&g_sManufactureItem_Send, 0, sizeof(SManufactureItem_Server)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
 	return TRUE;
 }
 
-// pluto Á¦ÀÛ ¾ÆÀÌÅÛ µé¾î°¥ ÀÚ¸® °Ë»ç
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½?ï¿½ ï¿½?ï¿½
 int CManufacture::SetManufactureItemAreaCheck(sITEM * pItem)
 {
-	////±¤¼®	  ÄÉÀÌ¾Æ½º ÀÌÇÁ¸®¾Æ ÆæÅ¸³ª  ¹Ù·ç³ª µµ·ç³×¾Æ »çÆ¼Äí¾Æ ¸Þ·çÄ«¹Ù
+	////ï¿½ï¿½ï¿½ï¿½	  ï¿½ï¿½ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½?? ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½
 	//int SmeltingPriceIndexOre[] = { 100000, 200000, 300000, 400000, 500000, 600000, 700000 };
 
-	////¼öÁ¤    ÄÉÀÌ¾Æ½º ÀÌÇÁ¸®¾Æ ÆæÅ¸³ª  ¹Ù·ç³ª µµ·ç³×¾Æ »çÆ¼Äí¾Æ ¸Þ·çÄ«¹Ù
+	////ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½?? ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½ï¿½
 	//int SmeltingPriceIndexCrystal[] = { 200000, 400000, 600000, 800000, 1000000, 1200000, 1400000 };
 	//DWORD SmeltingCode[] = { sin01, sin02, sin03, sin04, sin05, sin06, sin07 };
 
 	POINT ManufactureRuneXY[3] = { {240, 159},  {215, 190}, {265, 190} };
 
 	int i, j;
-	TradeColorIndex = 0; // ÃÊ±âÈ­
-	TradeCrashItemIndex[0] = 0; //Ãæµ¹µÈ ¾ÆÀÌÅÛ Index ÃÊ±âÈ­ 
-	cTrade.InitTradeColorRect(); //ÃÊ±âÈ­
+	TradeColorIndex = 0; // ï¿½?ï¿½?
+	TradeCrashItemIndex[0] = 0; //ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Index ï¿½?ï¿½? 
+	cTrade.InitTradeColorRect(); //ï¿½?ï¿½?
 
 	if ((pItem->CODE & sinITEM_MASK2) == sinPR3 || (pItem->CODE & sinITEM_MASK2) == sinPR4)
 	{
@@ -8272,24 +8451,24 @@ int CManufacture::SetManufactureItemAreaCheck(sITEM * pItem)
 		//	for( j=pItem->y+11 ; j<pItem->y+pItem->h ; j+=22)
 		//	{
 		//		if(TradeStartX <= i && TradeEndX > i && TradeStartY <=j && TradeEndY > j)
-		//		{ //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+		//		{ //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 		//			TradeColorRect.left =  TradeStartX +( ( ( i - TradeStartX) /22)*22) ; 
 		//			TradeColorRect.top  =  TradeStartY +( ( ( j - TradeStartY) /22)*22) ; 
 		//			TradeColorRect.right  = pItem->w;
 		//			TradeColorRect.bottom = pItem->h;
 		//			if(TradeEndX < (TradeColorRect.left + TradeColorRect.right)-11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom)-11)
 		//			{
-		//				cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+		//				cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 		//				return FALSE;
 		//			}
 
 		//			pItem->SetX = TradeColorRect.left;
 		//			pItem->SetY = TradeColorRect.top;
-		//			pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù 
-		//			TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+		//			pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ 
+		//			TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
 		//			if(TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect,0,5))
-		//			{  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+		//			{  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 		//				TradeColorIndex = NOT_SETTING_COLOR;
 		//				return FALSE;
 		//			}
@@ -8300,7 +8479,7 @@ int CManufacture::SetManufactureItemAreaCheck(sITEM * pItem)
 
 		//}
 
-		// Á¶ÇÕ °¡´ÉÇÑ ·é¸¸ ³õ´Â´Ù // Àåº° - ·é Ãß°¡ 11±îÁö // Àåº° - ´ëÀåÀåÀÌÀÇ È¥ 11->14
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? ï¿½ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ ï¿½?ï¿½ 11ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ? 11->14
 		int RuneItemIndex = 0;
 		DWORD RuneAray[MAX_RUNE] = { sin01, sin02, sin03, sin04 ,sin05, sin06, sin07, sin08, sin09, sin10, sin11, sin12, sin13, sin14 };
 		for (int q = 0; q < MAX_RUNE; q++)
@@ -8323,7 +8502,7 @@ int CManufacture::SetManufactureItemAreaCheck(sITEM * pItem)
 					{
 						if (g_sManufacture_Rune[r].NeedRuneIndex[p] == RuneItemIndex)
 						{
-							TradeStartX = ManufactureRuneXY[p].x;			// ÁÂÇ¥´Â °°¾Æ¼­ °Á ›§À½
+							TradeStartX = ManufactureRuneXY[p].x;			// ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 							TradeStartY = ManufactureRuneXY[p].y;
 							TradeEndX = TradeStartX + 22;
 							TradeEndY = TradeStartY + 22;
@@ -8332,25 +8511,25 @@ int CManufacture::SetManufactureItemAreaCheck(sITEM * pItem)
 								for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22)
 								{
 									if (TradeStartX <= i && TradeEndX > i && TradeStartY <= j && TradeEndY > j)
-									{ //ÀÎº¥Åä¸® ¹Ú½º¿¡ µé¾î°¬´ÂÁö¸¦ Ã¼Å© 
+									{ //ï¿½?ï¿½ï¿½? ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½? 
 										TradeColorRect.left = TradeStartX + (((i - TradeStartX) / 22) * 22);
 										TradeColorRect.top = TradeStartY + (((j - TradeStartY) / 22) * 22);
 										TradeColorRect.right = pItem->w;
 										TradeColorRect.bottom = pItem->h;
 										if (TradeEndX < (TradeColorRect.left + TradeColorRect.right) - 11 || TradeEndY < (TradeColorRect.top + TradeColorRect.bottom) - 11)
 										{
-											cTrade.InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º RECT ÃÊ±âÈ­ (ÄÃ·¯ ¹Ú½º RECTÁß ÇÏ³ª¶óµÎ 0 ÀÌ¸é ¼ÂÆÃÇÒ¼ö ¾ø´Ù 
+											cTrade.InitTradeColorRect(); //ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECT ï¿½?ï¿½? (ï¿½ï¿½ï¿½ ï¿½?ï¿½ RECTï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ 0 ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 											return FALSE;
 										}
 
 										pItem->SetX = TradeColorRect.left;
 										pItem->SetY = TradeColorRect.top;
-										pItem->ItemPosition = 0; //¹è¿­ÀÇ ÀÎµ¦½º¸¦ ÀúÀåÇÑ´Ù
+										pItem->ItemPosition = 0; //ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 
-										TradeColorIndex = SET_ITEM_CHECK_COLOR; //¼ÂÆÃÇÒ¿µ¿ª
+										TradeColorIndex = SET_ITEM_CHECK_COLOR; //ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½
 
 										if (TradeCrashItemIndex[0] = cTrade.CrashTradeItem(TradeColorRect, 0, 5))
-										{  //°ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ³ª Ã¼Å© 
+										{  //ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½? 
 											TradeColorIndex = NOT_SETTING_COLOR;
 											return FALSE;
 										}
@@ -8464,13 +8643,13 @@ bool CManufacture::GetEmptyArea(sITEM * pItem, POINT * Area)
 	return false;
 }
 
-// pluto Á¦ÀÛ ¾ÆÀÌÅÛ ³õ´Â´Ù
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 int CManufacture::LastSetManufactureItem(sITEM * pItem)
 {
 	CheckManufactureItem();
 	if ((pItem->CODE & sinITEM_MASK2) == sinPR3 || (pItem->CODE & sinITEM_MASK2) == sinPR4)
 	{
-		// ·éÀÏ °æ¿ì
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 		for (int j = 1; j < 4; j++)
 		{
 			if (!g_sManufactureItem.ManufactureItem[j].Flag)
@@ -8478,7 +8657,7 @@ int CManufacture::LastSetManufactureItem(sITEM * pItem)
 				memcpy(&g_sManufactureItem.ManufactureItem[j], pItem, sizeof(sITEM));
 				g_sManufactureItem.ManufactureItem[j].x = pItem->SetX;
 				g_sManufactureItem.ManufactureItem[j].y = pItem->SetY;
-				pItem->Flag = 0; //ÃÊ±âÈ­ 
+				pItem->Flag = 0; //ï¿½?ï¿½? 
 				sinPlaySound(g_sManufactureItem.ManufactureItem[j].SoundIndex);
 				ReFormManufactureItem();
 				return TRUE;
@@ -8492,7 +8671,7 @@ int CManufacture::LastSetManufactureItem(sITEM * pItem)
 			memcpy(&g_sManufactureItem.ManufactureItem[0], pItem, sizeof(sITEM));
 			g_sManufactureItem.ManufactureItem[0].x = pItem->SetX;
 			g_sManufactureItem.ManufactureItem[0].y = pItem->SetY;
-			pItem->Flag = 0; //ÃÊ±âÈ­ 
+			pItem->Flag = 0; //ï¿½?ï¿½? 
 			sinPlaySound(g_sManufactureItem.ManufactureItem[0].SoundIndex);
 			ReFormManufactureItem();
 			return TRUE;
@@ -8502,9 +8681,9 @@ int CManufacture::LastSetManufactureItem(sITEM * pItem)
 
 }
 
-// pluto Á¦ÀÛ
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CManufacture::CheckManufactureItem()
-{ //Ã¼Å©  
+{ //ï¿½?  
 	int TempCheckDataSum = 0;
 
 	for (int i = 0; i < 4; i++)
@@ -8520,10 +8699,10 @@ int CManufacture::CheckManufactureItem()
 	return TRUE;
 }
 
-// pluto Á¦ÀÛ
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CManufacture::ReFormManufactureItem()
 {
-	//ÀÎÁõ 
+	//ï¿½ï¿½ï¿½ï¿½ 
 	m_ManufactureItemCheckSum = 0;
 	for (int i = 0; i < 4; i++)
 	{
@@ -8542,7 +8721,7 @@ int CManufacture::ReFormManufactureItem()
 int CManufacture::PickUpManufactureItem(int x, int y, int PickUpFlag)
 {
 	int i = 0;
-	SelectTradeItemIndex = 0;    //ÁýÀ» ¾ÆÀÌÅÛ 
+	SelectTradeItemIndex = 0;    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 	for (i = 0; i < 4; i++)
 	{
@@ -8566,7 +8745,7 @@ int CManufacture::PickUpManufactureItem(int x, int y, int PickUpFlag)
 					CheckManufactureItem();
 					memcpy(&MouseItem, &g_sManufactureItem.ManufactureItem[i], sizeof(sITEM));
 					g_sManufactureItem.ManufactureItem[i].Flag = 0;
-					memset(&g_sManufactureItem.ManufactureItem[i], 0, sizeof(sITEM));  //¼­¹ö ÇØÅ· ¿¡·¯ ¶§¹®¿¡ ÀÓ½Ã ¹æÆíÀÌ´Ù.
+					memset(&g_sManufactureItem.ManufactureItem[i], 0, sizeof(sITEM));  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½.
 
 					sinPlaySound(g_sManufactureItem.ManufactureItem[i].SoundIndex);
 					TradeColorIndex = 0;
@@ -8588,7 +8767,7 @@ int CManufacture::PickUpManufactureItem(int x, int y, int PickUpFlag)
 }
 
 
-// pluto Á¦ÀÛ
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CManufacture::ManufactureCheckEmptyArea(sITEM * pItem)
 {
 	int cntx, cnty;
@@ -8596,13 +8775,13 @@ int CManufacture::ManufactureCheckEmptyArea(sITEM * pItem)
 
 	RECT	rect;
 	int		flag;
-	int StartX = 23;  //ÀÎº¥ ¹Ú½ºÀÇ ½ÃÀÛÁ¡ X
+	int StartX = 23;  //ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X
 	int StartY = 436; // Y
 
-	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - pItem->w; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Xï¿½ï¿½? 
+	cy = (22 * INVENTORY_BOX_COL) - pItem->h; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Yï¿½ï¿½?
 
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//ï¿½?? ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ 
 	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22) {
 			flag = 0;
@@ -8639,9 +8818,9 @@ int CManufacture::sinSendManufactureItem()
 
 	int i = 0;
 
-	//º¹»ç¸¦ Ã¼Å©ÇÏ±âÀ§ÇÑ ¹é¾÷º»À» ¸¸µç´Ù
+	//ï¿½ï¿½ï¿½? ï¿½?ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	memcpy(&g_sManufactureItemBackUp, &g_sManufactureItem, sizeof(SManufactureItem));
-	MixItemNoCopyFlag = 1; //¾ÆÀÌÅÛÀÌ º¹»çµÇ´Â°É ¹æÁöÇÏ±âÀ§ÇØ ÇÃ·ºÀ»ÁØ´Ù
+	MixItemNoCopyFlag = 1; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 	memset(&g_sManufactureItem_Send.DesManufactureItem, 0, sizeof(sITEM));
 
 	g_sManufactureItem_Send.Money = m_ManufacturePrice;
@@ -8661,102 +8840,102 @@ int CManufacture::sinSendManufactureItem()
 
 	CheckCraftMoney = g_sManufactureItem_Send.Money;
 
-	CraftItemSendServerIndex++; //ÀÎµ¦½º¸¦ º¸³½´Ù 
+	CraftItemSendServerIndex++; //ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	g_sManufactureItem_Send.Index = CraftItemSendServerIndex;
 
-	//ÀúÀåµÈ ±¸Á¶Ã¼¸¦ ¼­¹ö¿¡ º¸³½´Ù 
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	SendManufactureItemToServer(&g_sManufactureItem_Send);
 
 	return TRUE;
 }
 
-// pluto Á¦ÀÛ
+// pluto ï¿½ï¿½ï¿½ï¿½
 int CManufacture::sinRecvManufactureItem(SManufactureItem_Server * pManufactureItem_Server)
 {
 	memcpy(&g_sManufactureItem_Recv, pManufactureItem_Server, sizeof(SManufactureItem_Server));
 	return TRUE;
 }
 
-// pluto Á¦ÀÛ // Àåº° - Á¦ÀÛ
+// pluto ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½
 void CManufacture::RuneIndexInit()
 {
-	// pluto Á¦ÀÛ ÇÒ¶§ ÇÊ¿äÇÑ ·é º¸¿©ÁÖ´Â°Å
+	// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½
 	for (int i = 0; i < MAX_RECIPE_KIND; i++)
 	{
 		memset(&g_sManufacture_Rune[i], 0, sizeof(SManufacture_Rune));
 	}
 
-	g_sManufacture_Rune[0].RecipeCode = EXTREME_RECIPE; // ÀØÇôÁø ·¹½ÃÇÇ
+	g_sManufacture_Rune[0].RecipeCode = EXTREME_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[0].NeedRuneIndex[0] = 1;
 	g_sManufacture_Rune[0].NeedRuneIndex[1] = 2;
 	g_sManufacture_Rune[0].NeedRuneIndex[2] = 3;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[1].RecipeCode = ANCIENT_RECIPE; // °í´ëÀÇ ·¹½ÃÇÇ
+	g_sManufacture_Rune[1].RecipeCode = ANCIENT_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[1].NeedRuneIndex[0] = 2;
 	g_sManufacture_Rune[1].NeedRuneIndex[1] = 3;
 	g_sManufacture_Rune[1].NeedRuneIndex[2] = 4;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[2].RecipeCode = MINOTAUR_RECIPE; // ´ëÁöÀÇ ·¹½ÃÇÇ
+	g_sManufacture_Rune[2].RecipeCode = MINOTAUR_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[2].NeedRuneIndex[0] = 3;
 	g_sManufacture_Rune[2].NeedRuneIndex[1] = 4;
 	g_sManufacture_Rune[2].NeedRuneIndex[2] = 5;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[3].RecipeCode = DOOM_RECIPE; // ¾îµÒÀÇ ·¹½ÃÇÇ
+	g_sManufacture_Rune[3].RecipeCode = DOOM_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[3].NeedRuneIndex[0] = 3;
 	g_sManufacture_Rune[3].NeedRuneIndex[1] = 4;
 	g_sManufacture_Rune[3].NeedRuneIndex[2] = 5;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[4].RecipeCode = SALAMANDER_RECIPE; // È­¿°ÀÇ ·¹½ÃÇÇ
+	g_sManufacture_Rune[4].RecipeCode = SALAMANDER_RECIPE; // ?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[4].NeedRuneIndex[0] = 3;
 	g_sManufacture_Rune[4].NeedRuneIndex[1] = 4;
 	g_sManufacture_Rune[4].NeedRuneIndex[2] = 5;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[5].RecipeCode = WYVERN_RECIPE; // ¹Ù¶÷ÀÇ ·¹½ÃÇÇ
+	g_sManufacture_Rune[5].RecipeCode = WYVERN_RECIPE; // ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[5].NeedRuneIndex[0] = 3;
 	g_sManufacture_Rune[5].NeedRuneIndex[1] = 4;
 	g_sManufacture_Rune[5].NeedRuneIndex[2] = 5;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[6].RecipeCode = PHOENIX_RECIPE; // ÅÂ¾çÀÇ ·¹½ÃÇÇ
+	g_sManufacture_Rune[6].RecipeCode = PHOENIX_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[6].NeedRuneIndex[0] = 4;
 	g_sManufacture_Rune[6].NeedRuneIndex[1] = 5;
 	g_sManufacture_Rune[6].NeedRuneIndex[2] = 6;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[7].RecipeCode = FRENZY_RECIPE; // ±¤Æ÷ÇÑ ·¹½ÃÇÇ
+	g_sManufacture_Rune[7].RecipeCode = FRENZY_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[7].NeedRuneIndex[0] = 5;
 	g_sManufacture_Rune[7].NeedRuneIndex[1] = 6;
 	g_sManufacture_Rune[7].NeedRuneIndex[2] = 7;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[8].RecipeCode = HEAVENS_RECIPE; // Ãµ»óÀÇ ·¹½ÃÇÇ
+	g_sManufacture_Rune[8].RecipeCode = HEAVENS_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[8].NeedRuneIndex[0] = 6;
 	g_sManufacture_Rune[8].NeedRuneIndex[1] = 7;
 	g_sManufacture_Rune[8].NeedRuneIndex[2] = 8;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[9].RecipeCode = SNOW_RECIPE; // Æ÷¼³ÀÇ ·¹½ÃÇÇ // Àåº° - Á¦ÀÛ
+	g_sManufacture_Rune[9].RecipeCode = SNOW_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½
 	g_sManufacture_Rune[9].NeedRuneIndex[0] = 9;
 	g_sManufacture_Rune[9].NeedRuneIndex[1] = 10;
 	g_sManufacture_Rune[9].NeedRuneIndex[2] = 11;
 
 	////////////////////////////////////////////////////
 
-	g_sManufacture_Rune[10].RecipeCode = MEMORY_RECIPE; // ±â¾ïÀÇ ·¹½ÃÇÇ // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+	g_sManufacture_Rune[10].RecipeCode = MEMORY_RECIPE; // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 	g_sManufacture_Rune[10].NeedRuneIndex[0] = 12;
 	g_sManufacture_Rune[10].NeedRuneIndex[1] = 13;
 	g_sManufacture_Rune[10].NeedRuneIndex[2] = 14;
@@ -8764,7 +8943,7 @@ void CManufacture::RuneIndexInit()
 
 }
 
-// pluto Á¦ÀÛ ·¹½ÃÇÇ ÀÎµ¦½º´Ù ÇÊ¿äÇÑ ·é ±×¸² ¼ÂÆÃ ÇÒ¶ó±¸ // Àåº° - Á¦ÀÛ // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 int CManufacture::GetRecipeIndex(DWORD Code)
 {
 	int RecipeIndex = -1;
@@ -8800,11 +8979,11 @@ int CManufacture::GetRecipeIndex(DWORD Code)
 		break;
 
 	case sin10:
-		RecipeIndex = SNOW_RECIPE; // Àåº° - Á¦ÀÛ : Æ÷¼³ÀÇ Á¦ÀÛ¼­
+		RecipeIndex = SNOW_RECIPE; // ï¿½? - ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 		break;
 
 	case sin11:
-		RecipeIndex = MEMORY_RECIPE; //  ±â¾ïÀÇ Á¦ÀÛ¼­	// Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+		RecipeIndex = MEMORY_RECIPE; //  ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 		break;
 	}
 	/*
@@ -8836,17 +9015,17 @@ int CManufacture::GetRecipeIndex(DWORD Code)
 	return RecipeIndex;
 }
 
-// pluto Á¦ÀÛ °á°ú
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 int CManufacture::RecvManufactureItemResult(SManufactureItem_Server * pManufactureItem_Server)
 {
-	CheckMixItemCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º  
+	CheckMixItemCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½  
 	if (!ManufactureItem.m_OpenFlag)
 	{
-		MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
-		memset(&g_sManufactureItem, 0, sizeof(SManufactureItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&g_sManufactureItemBackUp, 0, sizeof(SManufactureItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&g_sManufactureItem_Recv, 0, sizeof(SManufactureItem_Server)); //¹ÞÀº Á¦ÀÛ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-		memset(&g_sManufactureItem_Send, 0, sizeof(SManufactureItem_Server)); //º¸³½ Á¦ÀÛ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+		MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
+		memset(&g_sManufactureItem, 0, sizeof(SManufactureItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&g_sManufactureItemBackUp, 0, sizeof(SManufactureItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&g_sManufactureItem_Recv, 0, sizeof(SManufactureItem_Server)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+		memset(&g_sManufactureItem_Send, 0, sizeof(SManufactureItem_Server)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 		MixCancelButtonDelayFlag = 0;
 		return FALSE;
 
@@ -8857,7 +9036,7 @@ int CManufacture::RecvManufactureItemResult(SManufactureItem_Server * pManufactu
 
 	if (pManufactureItem_Server->Result)
 	{
-		ShowItemManufactureMessageFlag = 1; // ¾ÆÀÌÅÛÀÌ Á¦ÀÛ‰çÀ»¶§ ¸Þ¼¼Áö¸¦ º¸¿©ÁØ´Ù
+		ShowItemManufactureMessageFlag = 1; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½
 
 		sITEM TempItem;
 		if (LoadItemImage(&pManufactureItem_Server->DesManufactureItem.sItemInfo, &TempItem))
@@ -8873,12 +9052,12 @@ int CManufacture::RecvManufactureItemResult(SManufactureItem_Server * pManufactu
 					LineCount++;
 				}
 			}
-			CraftItemMessageSize.x = 14;           //¹Ú½º »çÀÌÁî 
-			CraftItemMessageSize.y = ((LineCount) * 2) + 2;  //¹Ú½º »çÀÌÁî 
+			CraftItemMessageSize.x = 14;           //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+			CraftItemMessageSize.y = ((LineCount) * 2) + 2;  //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
 			if (cInvenTory.CheckRequireItemToSet(&TempItem))
 			{
-				//°ð¹Ù·Î ¼ÂÆÃµÉ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù  
+				//ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½?ï¿½  
 				if (!cInvenTory.AutoSetInvenItem(&TempItem, 1))
 				{
 					sinThrowItemToFeild(&pManufactureItem_Server->DesManufactureItem);
@@ -8887,24 +9066,24 @@ int CManufacture::RecvManufactureItemResult(SManufactureItem_Server * pManufactu
 
 		}
 
-		CheckCharForm(); //ÀÎÁõ 
+		CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½ 
 		sinMinusMoney(m_ManufacturePrice);
-		ReformCharForm(); //ÀçÀÎÁõ 
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
+		ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
 		SaveGameData();
-		ManufactureItem.m_OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù
+		ManufactureItem.m_OpenFlag = 0; //? ï¿½?ï¿½ï¿½
 	}
 	else
 	{
-		CheckCharForm(); //ÀÎÁõ 
+		CheckCharForm(); //ï¿½ï¿½ï¿½ï¿½ 
 		sinMinusMoney(m_ManufacturePrice);
-		ReformCharForm(); //ÀçÀÎÁõ 
-		SendSaveMoney(); //±Ý¾× Á¶ÀÛÀ» ¸øÇÏ°ÔÇÏ±âÀ§ÇØ È£ÃâÇÑ´Ù 
-		ManufactureItem.m_OpenFlag = 0; //Ã¢À» ´Ý´Â´Ù 
+		ReformCharForm(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+		SendSaveMoney(); //ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ï¿½?ï¿½ 
+		ManufactureItem.m_OpenFlag = 0; //? ï¿½?ï¿½ï¿½ 
 		cMessageBox.ShowMessage(MESSAGE_FAILD_MANUFACTURE_ITEM);
 	}
 
-	//º¹»ç°¡µÇ¾ú°Å³ªÇÑ ¾ÆÀÌÅÛÀ» Áö¿î´Ù
+	//ï¿½ï¿½ï¿½?ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (i = 0; i < 4; i++)
 	{
 		if (g_sManufactureItemBackUp.ManufactureItem[i].Flag)
@@ -8915,12 +9094,12 @@ int CManufacture::RecvManufactureItemResult(SManufactureItem_Server * pManufactu
 		}
 
 	}
-	memset(&g_sManufactureItem, 0, sizeof(SManufactureItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&g_sManufactureItemBackUp, 0, sizeof(SManufactureItem)); //±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&g_sManufactureItem_Recv, 0, sizeof(SManufactureItem_Server)); //¹ÞÀº Á¦ÀÛ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
-	memset(&g_sManufactureItem_Send, 0, sizeof(SManufactureItem_Server)); //º¸³½ Á¦ÀÛ ±¸Á¶Ã¼ ÃÊ±âÈ­ 
+	memset(&g_sManufactureItem, 0, sizeof(SManufactureItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&g_sManufactureItemBackUp, 0, sizeof(SManufactureItem)); //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&g_sManufactureItem_Recv, 0, sizeof(SManufactureItem_Server)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
+	memset(&g_sManufactureItem_Send, 0, sizeof(SManufactureItem_Server)); //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½? 
 
-	MixItemNoCopyFlag = 0; //º¹»ç¹æÁö ÇÃ·º ÃÊ±âÈ­
+	MixItemNoCopyFlag = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½?
 	MixCancelButtonDelayFlag = 0;
 	m_ManufacturePrice = 0;
 	ForceItemPrice2 = 0;
@@ -8934,14 +9113,14 @@ int CManufacture::GetManufactureCheckEmptyArea()
 
 	RECT	rect;
 	int		flag;
-	int StartX = 23;  //ÀÎº¥ ¹Ú½ºÀÇ ½ÃÀÛÁ¡ X
+	int StartX = 23;  //ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X
 	int StartY = 436; // Y
 
-	cx = (22 * INVENTORY_BOX_ROW) - 22; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ XÁÂÇ¥ 
-	cy = (22 * INVENTORY_BOX_COL) - 22; //¾ÆÀÌÅÛÀÌ µé¾î°¥¼öÀÖ´Â °¡Àå ³¡ YÁÂÇ¥
+	cx = (22 * INVENTORY_BOX_ROW) - 22; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Xï¿½ï¿½? 
+	cy = (22 * INVENTORY_BOX_COL) - 22; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Yï¿½ï¿½?
 
 	int count = 0;
-	//ÄÚµå°¡ °°Áö ¾Ê°Å³ª ¾ÆÀÌÅÛÀÌ ºñ¾îÀÖÁö ¾ÊÀº °÷¿¡ ¼ÂÆÃÇÒ¶§ °Ë»öÇØ¼­ À§Ä¡¸¦ Ã£¾Æ³½´Ù 
+	//ï¿½?? ï¿½ï¿½ï¿½ï¿½ ï¿½??ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ 
 	for (cntx = StartX; cntx <= StartX + cx; cntx += 22)
 	{
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22)
@@ -8973,7 +9152,7 @@ int CManufacture::GetManufactureCheckEmptyArea()
 		return 0;
 }
 
-// pluto Á¦·Ã È¸»ö ÀÌ¹ÌÁö ½©ÅÒ // Àåº° - Á¦·Ã // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+// pluto ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 int CSmeltingItem::GetSheltomIndex(DWORD SmeltingItemCode)
 {
 	DWORD SmeltingItemAray[] = { (sinPR1 | sin01), (sinPR1 | sin02), (sinPR1 | sin03), (sinPR1 | sin04), (sinPR1 | sin05), (sinPR1 | sin06), (sinPR1 | sin07), (sinPR1 | sin08),
@@ -8981,7 +9160,7 @@ int CSmeltingItem::GetSheltomIndex(DWORD SmeltingItemCode)
 								 (sinPR2 | sin09), (sinPR2 | sin10), (sinPR2 | sin11), (sinPR2 | sin12), (sinPR2 | sin13), (sinPR2 | sin14) };
 	int SheltomAray[] = { 6, 7, 8, 9, 10, 11, 12, 13,
 						  7, 8, 9, 10, 11, 12, 13, 14,
-							3, 4, 5, 3, 4, 5 }; // ±¤¼®ÀÌ³ª ¼öÁ¤ ¹øÈ£
+							3, 4, 5, 3, 4, 5 }; // ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?
 	for (int i = 0; i < 22; i++)
 	{
 		if (SmeltingItemCode == SmeltingItemAray[i])
@@ -8992,14 +9171,14 @@ int CSmeltingItem::GetSheltomIndex(DWORD SmeltingItemCode)
 	return FALSE;
 }
 
-// pluto Á¦ÀÛµÉ ¾ÆÀÌÅÛ ÄÚµå. ¹«°Ô °Ë»ç ÇÒ·Á°í // Àåº° - Á¦ÀÛ
-SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode, smCHAR_INFO * charInfo) // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+// pluto ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½?ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½
+SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode, smCHAR_INFO * charInfo) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 {
 	int RuneCnt = 0;
 	SManufacture_ResultItemInfo Result;
 	memset(&Result, 0, sizeof(SManufacture_ResultItemInfo));
-	DWORD Arm_Armor_Code[MAX_RECIPE_KIND] = { sin01, sin02, sin03, sin04, sin05, sin06, sin07, sin08, sin09, sin10, sin11 }; // ·¹½ÃÇÇ Á¾·ù // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
-	DWORD CheckRuneCode[MAX_HANDMADEITEM][8][3] = { {	{ (sinPR3 | sin01), (sinPR3 | sin02), (sinPR3 | sin03) },  // ·é Á¶ÇÕ½ÄÀÌ´Ù
+	DWORD Arm_Armor_Code[MAX_RECIPE_KIND] = { sin01, sin02, sin03, sin04, sin05, sin06, sin07, sin08, sin09, sin10, sin11 }; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
+	DWORD CheckRuneCode[MAX_HANDMADEITEM][8][3] = { {	{ (sinPR3 | sin01), (sinPR3 | sin02), (sinPR3 | sin03) },  // ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ï¿½?ï¿½
 										{ (sinPR3 | sin01), (sinPR3 | sin02), (sinPR4 | sin03) },
 										{ (sinPR3 | sin01), (sinPR4 | sin02), (sinPR3 | sin03) },
 										{ (sinPR3 | sin01), (sinPR4 | sin02), (sinPR4 | sin03) },
@@ -9007,7 +9186,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 										{ (sinPR4 | sin01), (sinPR3 | sin02), (sinPR4 | sin03) },
 										{ (sinPR4 | sin01), (sinPR4 | sin02), (sinPR3 | sin03) },
 										{ (sinPR4 | sin01), (sinPR4 | sin02), (sinPR4 | sin03) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	ÀØÇôÁø Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {  { (sinPR3 | sin02), (sinPR3 | sin03), (sinPR3 | sin04) },
 		{ (sinPR3 | sin02), (sinPR3 | sin03), (sinPR4 | sin04) },
 		{ (sinPR3 | sin02), (sinPR4 | sin03), (sinPR3 | sin04) },
@@ -9016,7 +9195,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin02), (sinPR3 | sin03), (sinPR4 | sin04) },
 		{ (sinPR4 | sin02), (sinPR4 | sin03), (sinPR3 | sin04) },
 		{ (sinPR4 | sin02), (sinPR4 | sin03), (sinPR4 | sin04) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	°í´ëÀÇ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {  { (sinPR3 | sin03), (sinPR3 | sin04), (sinPR3 | sin05) },
 		{ (sinPR3 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR3 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
@@ -9025,7 +9204,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR4 | sin05) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	´ëÁöÀÇ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {  { (sinPR3 | sin03), (sinPR3 | sin04), (sinPR3 | sin05) },
 		{ (sinPR3 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR3 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
@@ -9034,7 +9213,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR4 | sin05) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	¾îµÒÀÇ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {	{ (sinPR3 | sin03), (sinPR3 | sin04), (sinPR3 | sin05) },
 		{ (sinPR3 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR3 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
@@ -9043,7 +9222,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR4 | sin05) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	È­¿°ÀÇ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {  { (sinPR3 | sin03), (sinPR3 | sin04), (sinPR3 | sin05) },
 		{ (sinPR3 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR3 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
@@ -9052,7 +9231,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin03), (sinPR3 | sin04), (sinPR4 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR3 | sin05) },
 		{ (sinPR4 | sin03), (sinPR4 | sin04), (sinPR4 | sin05) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	¹Ù¶÷ÀÇ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {  { (sinPR3 | sin04), (sinPR3 | sin05), (sinPR3 | sin06) },
 		{ (sinPR3 | sin04), (sinPR3 | sin05), (sinPR4 | sin06) },
 		{ (sinPR3 | sin04), (sinPR4 | sin05), (sinPR3 | sin06) },
@@ -9061,7 +9240,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin04), (sinPR3 | sin05), (sinPR4 | sin06) },
 		{ (sinPR4 | sin04), (sinPR4 | sin05), (sinPR3 | sin06) },
 		{ (sinPR4 | sin04), (sinPR4 | sin05), (sinPR4 | sin06) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	ÅÂ¾çÀÇ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {  { (sinPR3 | sin05), (sinPR3 | sin06), (sinPR3 | sin07) },
 		{ (sinPR3 | sin05), (sinPR3 | sin06), (sinPR4 | sin07) },
 		{ (sinPR3 | sin05), (sinPR4 | sin06), (sinPR3 | sin07) },
@@ -9070,7 +9249,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin05), (sinPR3 | sin06), (sinPR4 | sin07) },
 		{ (sinPR4 | sin05), (sinPR4 | sin06), (sinPR3 | sin07) },
 		{ (sinPR4 | sin05), (sinPR4 | sin06), (sinPR4 | sin07) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	±¤Æ÷ÇÑ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 	 {  { (sinPR3 | sin06), (sinPR3 | sin07), (sinPR3 | sin08) },
 		{ (sinPR3 | sin06), (sinPR3 | sin07), (sinPR4 | sin08) },
 		{ (sinPR3 | sin06), (sinPR4 | sin07), (sinPR3 | sin08) },
@@ -9079,7 +9258,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ (sinPR4 | sin06), (sinPR3 | sin07), (sinPR4 | sin08) },
 		{ (sinPR4 | sin06), (sinPR4 | sin07), (sinPR3 | sin08) },
 		{ (sinPR4 | sin06), (sinPR4 | sin07), (sinPR4 | sin08) } },
-		////////////////////////////////////////////////////////////////////////////////////////////	Ãµ»óÀÇ Á¦ÀÛ¼­
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½
 
 	 {  { (sinPR3 | sin09), (sinPR4 | sin10), (sinPR3 | sin11) },
 		{ 0, 0, 0 },
@@ -9089,7 +9268,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 } },
-		////////////////////////////////////////////////////////////////////////////////////////////	Æ÷¼³ÀÇ Á¦ÀÛ¼­ //Àåº°
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ //ï¿½?
 
 		{  { (sinPR3 | sin12), (sinPR3 | sin13), (sinPR3 | sin14) },
 		{ 0, 0, 0 },
@@ -9099,59 +9278,59 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 		{ 0, 0, 0 },
 		{ 0, 0, 0 },
 		{ 0, 0, 0 } },
-		////////////////////////////////////////////////////////////////////////////////////////////	±â¾ïÀÇ Á¦ÀÛ¼­ // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+		////////////////////////////////////////////////////////////////////////////////////////////	ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½?ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 	};
 
-	// Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+	// ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 	DWORD	dwItem = 0;
 
-	// ÇÁ¸®½ºÆ¼½º ÀÏ °æ¿ì
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
 	if (charInfo->JOB_CODE == JOBCODE_PRIESTESS) dwItem = (sinDA2 | sin52);
-	// ¸ÞÁö¼Ç ÀÏ °æ¿ì
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
 	else if (charInfo->JOB_CODE == JOBCODE_MAGICIAN) dwItem = (sinDA2 | sin51);
-	// ¾ÆÃ³, ¾ÆÆ²¶õÅ¸ ÀÏ °æ¿ì
+	// ï¿½ï¿½ï¿½, ï¿½ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
 	else if (charInfo->JOB_CODE == JOBCODE_ARCHER || charInfo->JOB_CODE == JOBCODE_ATALANTA) dwItem = (sinDA1 | sin52);
-	// ÆÄÀÌÅÍ, ÆÄÀÌÅ©¸Ç, ¸ÞÄ«´Ï¼Ç, ³ªÀÌÆ® ÀÏ °æ¿ì
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½, ï¿½ï¿½?ï¿½?ï¿½, ï¿½ï¿½ï¿½ï¿½? ï¿½ï¿½ ï¿½ï¿½ï¿½
 	else dwItem = (sinDA1 | sin51);
 
 
-	// Àåº° ¹è¿­ ¼ýÀÚ [a][b][c] a = ¹«±¸ or °©ÁÖ / b = ·¹½ÃÇÇ Á¾·ù / c = »ý¼ºµÉ ¾ÆÀÌÅÛ Á¾·ù(°íÁ¤)
-	// ·¹½ÃÇÇ¿Í ·éÁ¶ÇÕ¿¡ ¸Â´Â ¹ß»ý ¾ÆÀÌÅÛ
-	DWORD CreateItemCode[2][MAX_HANDMADEITEM][8] = { {	{ (sinWA1 | sin14), (sinWC1 | sin14), (sinWH1 | sin15), (sinWP1 | sin15), (sinWS1 | sin16), (sinWS2 | sin17), (sinWT1 | sin15), (sinWM1 | sin15) }, // ÀØÇôÁø ·¹½ÃÇÇ ¹«±¸
-											{ (sinWA1 | sin15), (sinWC1 | sin15), (sinWH1 | sin16), (sinWP1 | sin16), (sinWS1 | sin17), (sinWS2 | sin18), (sinWT1 | sin16), (sinWM1 | sin16) }, // °í´ëÀÇ ·¹½ÃÇÇ ¹«±¸
-											{ (sinWA1 | sin16), (sinWC1 | sin16), (sinWH1 | sin17), (sinWP1 | sin17), (sinWS1 | sin18), (sinWS2 | sin19), (sinWT1 | sin17), (sinWM1 | sin17) }, // ´ëÁöÀÇ ¹«±¸
-											{ (sinWA1 | sin17), (sinWC1 | sin17), (sinWH1 | sin18), (sinWP1 | sin18), (sinWS1 | sin19), (sinWS2 | sin20), (sinWT1 | sin18), (sinWM1 | sin18) }, // ¾îµÒÀÇ ·¹½ÃÇÇ ¹«±¸
-											{ (sinWA1 | sin18), (sinWC1 | sin18), (sinWH1 | sin19), (sinWP1 | sin19), (sinWS1 | sin20), (sinWS2 | sin21), (sinWT1 | sin19), (sinWM1 | sin19) }, // È­¿°ÀÇ ·¹½ÃÇÇ ¹«±¸
-											{ (sinWA1 | sin19), (sinWC1 | sin19), (sinWH1 | sin20), (sinWP1 | sin20), (sinWS1 | sin21), (sinWS2 | sin22), (sinWT1 | sin20), (sinWM1 | sin20) }, // ¹Ù¶÷ÀÇ ·¹½ÃÇÇ ¹«±¸
-											{ (sinWA1 | sin21), (sinWC1 | sin21), (sinWH1 | sin22), (sinWP1 | sin22), (sinWS1 | sin23), (sinWS2 | sin24), (sinWT1 | sin22), (sinWM1 | sin22) }, // ÅÂ¾çÀÇ ·¹½ÃÇÇ ¹«±¸
-											{ (sinWA1 | sin22), (sinWC1 | sin22), (sinWH1 | sin23), (sinWP1 | sin23), (sinWS1 | sin24), (sinWS2 | sin25), (sinWT1 | sin23), (sinWM1 | sin23) }, // ±¤Æ÷ÇÑ ·¹½ÃÇÇ ¹«±¸
-											{ 0, 0, 0, 0, 0, 0, (sinWS1 | sin25), (sinWS1 | sin26) }, // Ãµ»óÀÇ ·¹½ÃÇÇ ¹«±¸
-											{ (sinWS1 | sin27), (sinWS1 | sin28), (sinWS1 | sin29), (sinWS1 | sin30), (sinWS1 | sin31), (sinWS1 | sin33), (sinWS1 | sin34), 0 }, // Æ÷¼³ÀÇ ·¹½ÃÇÇ // Àåº°
-											{ 0, 0, 0, 0, 0, 0, 0, 0 } }, // ±â¾ïÀÇ ·¹½ÃÇÇ // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+	// ï¿½? ï¿½? ï¿½ï¿½ï¿½ï¿½ [a][b][c] a = ï¿½ï¿½ï¿½ï¿½ or ï¿½ï¿½ï¿½ï¿½ / b = ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ / c = ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)
+	// ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	DWORD CreateItemCode[2][MAX_HANDMADEITEM][8] = { {	{ (sinWA1 | sin14), (sinWC1 | sin14), (sinWH1 | sin15), (sinWP1 | sin15), (sinWS1 | sin16), (sinWS2 | sin17), (sinWT1 | sin15), (sinWM1 | sin15) }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWA1 | sin15), (sinWC1 | sin15), (sinWH1 | sin16), (sinWP1 | sin16), (sinWS1 | sin17), (sinWS2 | sin18), (sinWT1 | sin16), (sinWM1 | sin16) }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWA1 | sin16), (sinWC1 | sin16), (sinWH1 | sin17), (sinWP1 | sin17), (sinWS1 | sin18), (sinWS2 | sin19), (sinWT1 | sin17), (sinWM1 | sin17) }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWA1 | sin17), (sinWC1 | sin17), (sinWH1 | sin18), (sinWP1 | sin18), (sinWS1 | sin19), (sinWS2 | sin20), (sinWT1 | sin18), (sinWM1 | sin18) }, // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWA1 | sin18), (sinWC1 | sin18), (sinWH1 | sin19), (sinWP1 | sin19), (sinWS1 | sin20), (sinWS2 | sin21), (sinWT1 | sin19), (sinWM1 | sin19) }, // ?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWA1 | sin19), (sinWC1 | sin19), (sinWH1 | sin20), (sinWP1 | sin20), (sinWS1 | sin21), (sinWS2 | sin22), (sinWT1 | sin20), (sinWM1 | sin20) }, // ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWA1 | sin21), (sinWC1 | sin21), (sinWH1 | sin22), (sinWP1 | sin22), (sinWS1 | sin23), (sinWS2 | sin24), (sinWT1 | sin22), (sinWM1 | sin22) }, // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWA1 | sin22), (sinWC1 | sin22), (sinWH1 | sin23), (sinWP1 | sin23), (sinWS1 | sin24), (sinWS2 | sin25), (sinWT1 | sin23), (sinWM1 | sin23) }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ 0, 0, 0, 0, 0, 0, (sinWS1 | sin25), (sinWS1 | sin26) }, // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinWS1 | sin27), (sinWS1 | sin28), (sinWS1 | sin29), (sinWS1 | sin30), (sinWS1 | sin31), (sinWS1 | sin33), (sinWS1 | sin34), 0 }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // ï¿½?
+											{ 0, 0, 0, 0, 0, 0, 0, 0 } }, // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-										{	{ (sinDA1 | sin16), (sinDA2 | sin16), (sinDS1 | sin14), (sinOM1 | sin15), (sinDG1 | sin14), (sinOA2 | sin14), (sinDB1 | sin14), 0 }, // ÀØÇôÁø ·¹½ÃÇÇ °©ÁÖ
-											{ (sinDA1 | sin17), (sinDA2 | sin17), (sinDS1 | sin15), (sinOM1 | sin16), (sinDG1 | sin15), (sinOA2 | sin15), (sinDB1 | sin15), 0 }, // °í´ëÀÇ ·¹½ÃÇÇ °©ÁÖ
-											{ (sinDA1 | sin18), (sinDA2 | sin18), (sinDS1 | sin16), (sinOM1 | sin17), (sinDG1 | sin16), (sinOA2 | sin16), (sinDB1 | sin16), 0 }, // ´ëÁöÀÇ ·¹½ÃÇÇ °©ÁÖ
-											{ (sinDA1 | sin19), (sinDA2 | sin19), (sinDS1 | sin17), (sinOM1 | sin18), (sinDG1 | sin17), (sinOA2 | sin17), (sinDB1 | sin17), 0 }, // ¾îµÒÀÇ ·¹½ÃÇÇ °©ÁÖ
-											{ (sinDA1 | sin20), (sinDA2 | sin20), (sinDS1 | sin18), (sinOM1 | sin19), (sinDG1 | sin18), (sinOA2 | sin18), (sinDB1 | sin18), 0 }, // È­¿°ÀÇ ·¹½ÃÇÇ °©ÁÖ
-											{ (sinDA1 | sin21), (sinDA2 | sin21), (sinDS1 | sin19), (sinOM1 | sin20), (sinDG1 | sin19), (sinOA2 | sin19), (sinDB1 | sin19), 0 }, // ¹Ù¶÷ÀÇ ·¹½ÃÇÇ °©ÁÖ
-											{ (sinDA1 | sin23), (sinDA2 | sin23), (sinDS1 | sin21), (sinOM1 | sin22), (sinDG1 | sin21), (sinOA2 | sin21), (sinDB1 | sin21), 0 }, // ÅÂ¾çÀÇ ·¹½ÃÇÇ °©ÁÖ
-											{ (sinDA1 | sin24), (sinDA2 | sin24), (sinDS1 | sin22), (sinOM1 | sin23), (sinDG1 | sin22), (sinOA2 | sin22), (sinDB1 | sin22), 0 }, // ±¤Æ÷ÇÑ ·¹½ÃÇÇ °©ÁÖ
-											{ 0, 0, 0, 0, 0, 0, 0, 0 } , // Ãµ»óÀÇ ·¹½ÃÇÇ °©ÁÖ
-											{ (sinOA1 | sin36), 0, 0, 0, 0, 0, 0, 0 } , // Æ÷¼³ÀÇ ·¹½ÃÇÇ //Àåº°
-											{ dwItem, 0, 0, 0, 0, 0, 0, 0 } } // ±â¾ïÀÇ ·¹½ÃÇÇ // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+										{	{ (sinDA1 | sin16), (sinDA2 | sin16), (sinDS1 | sin14), (sinOM1 | sin15), (sinDG1 | sin14), (sinOA2 | sin14), (sinDB1 | sin14), 0 }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinDA1 | sin17), (sinDA2 | sin17), (sinDS1 | sin15), (sinOM1 | sin16), (sinDG1 | sin15), (sinOA2 | sin15), (sinDB1 | sin15), 0 }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinDA1 | sin18), (sinDA2 | sin18), (sinDS1 | sin16), (sinOM1 | sin17), (sinDG1 | sin16), (sinOA2 | sin16), (sinDB1 | sin16), 0 }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinDA1 | sin19), (sinDA2 | sin19), (sinDS1 | sin17), (sinOM1 | sin18), (sinDG1 | sin17), (sinOA2 | sin17), (sinDB1 | sin17), 0 }, // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinDA1 | sin20), (sinDA2 | sin20), (sinDS1 | sin18), (sinOM1 | sin19), (sinDG1 | sin18), (sinOA2 | sin18), (sinDB1 | sin18), 0 }, // ?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinDA1 | sin21), (sinDA2 | sin21), (sinDS1 | sin19), (sinOM1 | sin20), (sinDG1 | sin19), (sinOA2 | sin19), (sinDB1 | sin19), 0 }, // ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinDA1 | sin23), (sinDA2 | sin23), (sinDS1 | sin21), (sinOM1 | sin22), (sinDG1 | sin21), (sinOA2 | sin21), (sinDB1 | sin21), 0 }, // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinDA1 | sin24), (sinDA2 | sin24), (sinDS1 | sin22), (sinOM1 | sin23), (sinDG1 | sin22), (sinOA2 | sin22), (sinDB1 | sin22), 0 }, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ 0, 0, 0, 0, 0, 0, 0, 0 } , // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+											{ (sinOA1 | sin36), 0, 0, 0, 0, 0, 0, 0 } , // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ //ï¿½?
+											{ dwItem, 0, 0, 0, 0, 0, 0, 0 } } // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 	};
 
-	if ((pItemCode[0].CODE & sinITEM_MASK2) == sinWR1)		// ¹«±¸
+	if ((pItemCode[0].CODE & sinITEM_MASK2) == sinWR1)		// ï¿½ï¿½ï¿½ï¿½
 	{
 		for (int i = 0; i < MAX_RECIPE_KIND; i++)
 		{
 			if (Arm_Armor_Code[i] == (pItemCode[0].CODE & sinITEM_MASK3))
 			{
-				for (int j = 0; j < MAX_RUNE; j++)   // ·é Á¶ÇÕ 
+				for (int j = 0; j < MAX_RUNE; j++)   // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 				{
 					RuneCnt = 0;
-					for (int x = 0; x < 3; x++) // ÇÊ¿äÇÑ ·é
+					for (int x = 0; x < 3; x++) // ï¿½?ï¿½ï¿½ï¿½ ï¿½ï¿½
 					{
 						for (int y = 0; y < 3; y++)
 						{
@@ -9163,7 +9342,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 						}
 						if (RuneCnt == 3)
 						{
-							for (int c = 0; c < MAX_HANDMADEITEM; c++) // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+							for (int c = 0; c < MAX_HANDMADEITEM; c++) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 							{
 								if (CreateItemCode[0][i][j] == g_Manufacture_ItemInfo[c].ItemCode)
 								{
@@ -9182,7 +9361,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 			}
 		}
 	}
-	else if ((pItemCode[0].CODE & sinITEM_MASK2) == sinDR1)		// °©ÁÖ
+	else if ((pItemCode[0].CODE & sinITEM_MASK2) == sinDR1)		// ï¿½ï¿½ï¿½ï¿½
 	{
 		for (int i = 0; i < MAX_RECIPE_KIND; i++)
 		{
@@ -9203,7 +9382,7 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 						}
 						if (RuneCnt == 3)
 						{
-							for (int c = 0; c < MAX_HANDMADEITEM; c++) // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+							for (int c = 0; c < MAX_HANDMADEITEM; c++) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 							{
 								if (CreateItemCode[1][i][j] == g_Manufacture_ItemInfo[c].ItemCode)
 								{
@@ -9217,12 +9396,12 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 							}
 							if (j == 7)
 							{
-								for (int c = 0; c < MAX_HANDMADEITEM; c++) // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+								for (int c = 0; c < MAX_HANDMADEITEM; c++) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 								{
 									if (CreateItemCode[1][i][0] == g_Manufacture_ItemInfo[c].ItemCode)
 									{
 										Result.ItemCode = g_Manufacture_ItemInfo[c].ItemCode;
-										lstrcpy(Result.ItemName, ManufacturingTitle);	//fuck pluto//ÇØ¿Ü
+										lstrcpy(Result.ItemName, ManufacturingTitle);	//fuck pluto//ï¿½?ï¿½
 										Result.Weight = g_Manufacture_ItemInfo[c].Weight;
 										Result.Price = g_Manufacture_ItemInfo[c].Price / 3;
 										ForceItemPrice2 = Result.Price;
@@ -9241,10 +9420,10 @@ SManufacture_ResultItemInfo CManufacture::ManufactureCheckItem(sITEM * pItemCode
 	return Result;
 }
 
-// pluto Á¦ÀÛ ¾ÆÀÌÅÛ ¹«°Ô, °¡°Ý Á¤º¸
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int ManufactureItemResultInfo(SManufacture_ResultItemInfo_Server * pResultItemInfo)
 {
-	for (int i = 0; i < MAX_HANDMADEITEM; i++) // Àåº° - Á¦ÀÛ MAX_HANDMADEITEM = Á¦ÀÛ ÇÒ ¼ö ÀÖ´Â ¾ÆÀÌÅÛ °¹¼ö(·¹½ÃÇÇ°¡ Ãß°¡µÇ¸é Áõ°¡) // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+	for (int i = 0; i < MAX_HANDMADEITEM; i++) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ MAX_HANDMADEITEM = ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ ï¿½?ï¿½ï¿½?ï¿½ ï¿½ï¿½ï¿½ï¿½) // ï¿½? - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?
 	{
 		g_Manufacture_ItemInfo[i].ItemCode = pResultItemInfo->ItemCode[i];
 		lstrcpy(g_Manufacture_ItemInfo[i].ItemName, pResultItemInfo->ItemName[i]);

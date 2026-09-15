@@ -77,16 +77,17 @@ item fora da regra (ex.: fora do nível), não o título da lista.
 - Centralizado na faixa do header (~50 px).
 - Preferir **imagem PNG** com fundo opaco `RGB(20,24,32)`. O header usa
   exatamente a mesma cor, sem emenda visível no DX9. Padrão aplicado em
-  Desafios, `EM ANDAMENTO`, Loja de Coins, Loja de Tempo, Ranking e
-  Lista de Mix; novos títulos seguem o mesmo acabamento.
+  Desafios, `EM ANDAMENTO`, Loja de Coins, Loja de Tempo, Ranking,
+  Lista de Mix e Armazém; novos títulos seguem o mesmo acabamento.
 - Acabamento do título: ouro antigo **fosco**, com textura/entalhes internos
   em bronze escuro. Sem halo, bloom, brilho branco ou ponto especular forte.
-- **Ícone + nome** na mesma placa de ouro (adotado nas janelas grandes):
+- **Ícone + nome** na mesma placa de ouro   (adotado nas janelas grandes):
   relevo metálico à esquerda, mesmo metal/bisel das letras, vão de
   cerca de uma letra, depois o título. O grupo inteiro fica
   centralizado. Ícone = silhueta simples na altura das maiúsculas
   (pergaminho = Desafios, engrenagem = Configurações, moedas = Loja
-  de Coins, ampulheta = Loja de Tempo, taça = Ranking, gema = Lista de Mix). Não é ícone
+  de Coins, ampulheta = Loja de Tempo, taça = Ranking, gema = Lista de Mix,
+  baú = Armazém). Não é ícone
   colorido separado nem cromado da janela.
 - **Canvas padrão de arte: 400×64 px** (adotado da Loja de Coins).
   Usar esta dimensão em Desafios, Configurações, Loja e **toda janela
@@ -97,13 +98,22 @@ item fora da regra (ex.: fora do nível), não o título da lista.
 - Sempre recortar o desenho **dentro** dos 400×64. Canvas enorme
   (ex.: 1274×832) com fundo vazio vira um selo ilegível — a escala
   usa a imagem **inteira**.
+- PNG de título: gerar no **Antigravity (Gemini)** e gravar no
+  **Cliente Full** (`C:\Cliente Full\game\images\...`). O Cursor não
+  cria esse arquivo. Mesmo nome que o C++ já procura.
+  Ao criar ou refatorar a janela, **escrever o prompt completo**
+  (`06-antigravity-brief.mdc`): bronze do login (`window`/`btl`/`bte`),
+  canvas 400×64 como `desafios.png`, ícone+nome na placa. Moldura da
+  janela continua no `ImDrawList` (`DrawPlayerWindowChrome`) — não vai
+  no prompt como PNG de painel.
 - Pasta no cliente: `game/images/<tela>/<nome>.png`
   (Loja: `game/images/shop/loja-de-coins.png`;
   Loja de Tempo: `game/images/shop/loja-de-tempo.png`;
   Desafios: `game/images/quest/desafios.png`;
   Configurações: `game/images/settings/configuracoes.png`;
   Ranking: `game/images/ranking/ranking.png`;
-  Lista de Mix: `game/images/mix/lista-de-mix.png`).
+  Lista de Mix: `game/images/mix/lista-de-mix.png`;
+  Armazém: `game/images/warehouse/armazem.png`).
   Se o arquivo faltar, cair no texto dourado (ex.: `DESAFIOS`).
 - Carregar com `D3DXCreateTextureFromFileExA` → `D3DFMT_A8R8G8B8`.
 - Fechar: **retângulo** (~28×22), cantos levemente arredondados
@@ -252,9 +262,11 @@ errado quebra o outro (ex.: minimapa `IlusÃµes`).
 
 1. Cromado local (`Push`/`Pop` com contagem igual). Sem
    `StyleColorArmageddon()`.
-2. Título PNG **400×64**, fundo opaco `RGB(20,24,32)`, em
+2. Título PNG **400×64**, gerado no Antigravity (Gemini), em
    `game/images/<tela>/<nome>.png` no cliente (`C:\Cliente Full`).
-   Sem arquivo: texto dourado de fallback.
+   Sem arquivo: texto dourado de fallback. O Cursor não cria o PNG —
+   entrega o **prompt** (`06-antigravity-brief.mdc` +
+   `docs/prompt-antigravity-TEMPLATE.md`).
 3. Fechar = retângulo geométrico (`DrawHeaderClose` / `DrawHeaderIcon`).
 4. Acentos: `U8_*` ou `ToUtf8()`. Não mexer em ImGui, `MapasWU8` nem
    helpers de encoding do client legado.

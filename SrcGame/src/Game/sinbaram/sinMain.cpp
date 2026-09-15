@@ -8,6 +8,7 @@
 
 #include "sinLinkHeader.h"
 #include "..\\Shop\\NewShop.h"
+#include "..\\HUD\\WarehouseWindow.h"
 #include "cSkinChanger.h"
 /*----------------------------------------------------------------------------*
 *					         ???? ????
@@ -160,6 +161,11 @@ void sinDraw()
 	cTrade.Draw();
 
 	cTrade.DrawTradeText();
+
+	// Por cima do HUD de pedra (mix/aging/trade). Sem isso o CraftItemMain.bmp
+	// (Item / Item +) cobre a janela ImGui do armazém.
+	ImGui::Render();
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 	dsDrawOffsetArray = dsARRAY_BOTTOM;
 
@@ -325,6 +331,9 @@ void sinProc(int Message)
 
 	case SINKEYDOWN:
 		if (NewShop::GetInstance()->openFlag && NewShop::GetInstance()->editingNick)
+			return;
+
+		if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard())
 			return;
 
 		if (sinGetKeyClick(VK_RETURN))

@@ -1,83 +1,84 @@
 /*----------------------------------------------------------------------------*
-*	∆ƒ¿œ∏Ì :  sinShop.cpp
-*	«œ¥¬¿œ :  ªÛ¡°¿ª ∞¸∏Æ«—¥Ÿ
-*	¿€º∫¿œ :  √÷¡ææ˜µ•¿Ã∆Æ 12ø˘
-*	¿˚º∫¿⁄ :  π⁄ªÛø≠
+*	????? :  sinShop.cpp
+*	????? :  ?????? ???????
+*	????? :  ??????????? 12??
+*	?????? :  ???
 *-----------------------------------------------------------------------------*/
 
 #include "sinLinkHeader.h"
 #include "..\\tjboy\\clanmenu\\tjclan.h"
 #include "..\\tjboy\\clanmenu\\clan_Enti.h"
-#include "..\\CurseFilter.h"		//IsCurse «‘ºˆ(«ÿø‹)
+#include "..\\CurseFilter.h"		//IsCurse ???(???)
 #include "GlobalsShared.h"
+#include "..\\HUD\\WarehouseWindow.h"
 
 /*----------------------------------------------------------------------------*
-*								¿¸ø™∫Øºˆ
+*								????????
 *-----------------------------------------------------------------------------*/
 cSHOP		cShop;
 cMYSHOP		cMyShop;
 cCHARSHOP	cCharShop;
-sMYSHOP     sMyShop;       //∫∏≥ª¥¬ MyShop ±∏¡∂√º
-sMYSHOP     sRecvMyShop;   //πﬁ¥¬ MyShop ±∏¡∂√º
+sMYSHOP     sMyShop;       //?????? MyShop ?????
+sMYSHOP     sRecvMyShop;   //??? MyShop ?????
 sMYSHOP_ITEM_SERVER sMyShop_Server;
 
 sITEMINFO   MyShopPotion;
 
 int CloseMyShopFlag = 0;
 int CloseCharShopFlag = 0;
-int SelectShopButtonPosi = 0;  //ªÛ¡°¿« πˆ∆∞ ¿ßƒ°∞™ 
+int SelectShopButtonPosi = 0;  //?????? ??? ????? 
 int MyShopItemIndex[100] = { 0, };
 
 
-int sinShopKind = 1;  //«ˆ¿Á ªÛ¡°¿« ¡æ∑˘  1  π´±‚ 2 πÊæÓ 3 π∞æ‡ (defalt ¥¬ ªÛ¡°)
+int sinShopKind = 1;  //???? ?????? ????  1  ???? 2 ??? 3 ???? (defalt ?? ????)
 
 int ShopArrowPosi = 0;
 
 RECT ShopItemRect = { 0,0,0,0 };
 
-int	GridRow, GridCol, StartGirdX, StartGirdY; //±◊∏ÆµÂ 
+int	GridRow, GridCol, StartGirdX, StartGirdY; //????? 
 
-int ShopItemPrice = 0;//π∞∞«∞°∞› 
-int ShowShopItemIndex = 0; //æ∆¿Ã≈€¿« ¿Œµ¶Ω∫∏¶ ¿˙¿Â«—¥Ÿ 
+int ShopItemPrice = 0;//??????? 
+int ShowShopItemIndex = 0; //???????? ???????? ??????? 
 bool bShowGoldbar = 0;
 
-int TalkNpcState = 0; //«ˆ¿Á ªÛ¡° NPCøÕ «‘≤≤ ¿÷¿ª∞ÊøÏ 
+int TalkNpcState = 0; //???? ???? NPC?? ??? ??????? 
 
 int haCharShopDelayFlag = 0;
 
-//¡¬«•∫∏¡§¿∏∑Œ «œ≥™¥ı∏∏µÎ
+//??????????? ?????????
 int ReStartButtonRect2[3][4] = {
-	{21,22,21 + 44,22 + 44},			//« µÂø°º≠ Ω√¿€ 
-	{72,22,72 + 44,22 + 44},			//∏∂¿ªø°º≠ Ω√¿€ 
-	{123,22,123 + 44,22 + 44},			//∞‘¿” ¡æ∑· 
+	{21,22,21 + 44,22 + 44},			//????? ???? 
+	{72,22,72 + 44,22 + 44},			//???????? ???? 
+	{123,22,123 + 44,22 + 44},			//???? ???? 
 
 };
 
 int ShopButtonPosi[9][4] = {
-	{269,278 + sinInterHeight2,269 + 28,278 + 28 + sinInterHeight2}, //¥Ÿ∞Ìƒ°±‚
-	{238,278 + sinInterHeight2,238 + 28,278 + 28 + sinInterHeight2}, //∞Ìƒ°±‚ 
-	{238,309 + sinInterHeight2,238 + 28,309 + 28 + sinInterHeight2}, //∆»±‚  
-	{269,309 + sinInterHeight2,269 + 28,309 + 28 + sinInterHeight2}, //ªÁ±‚ 
-	{279,182 + sinInterHeight2,279 + 20,182 + 20 + sinInterHeight2}, //ø¿∏•¬  »≠ªÏ«• 
-	{257,182 + sinInterHeight2,257 + 20,182 + 20 + sinInterHeight2}, //øﬁ¬  »≠ªÏ«• 
-	{304,314 + sinInterHeight2,304 + 20,314 + 20 + sinInterHeight2}, //≥™∞°±‚ 
-	{231,136 + sinInterHeight2,231 + 42,136 + 46 + sinInterHeight2}, //π´±‚≈«
-	{281,136 + sinInterHeight2,281 + 42,136 + 46 + sinInterHeight2}, //πÊæÓ≈«
+	{269,278 + sinInterHeight2,269 + 28,278 + 28 + sinInterHeight2}, //??????
+	{238,278 + sinInterHeight2,238 + 28,278 + 28 + sinInterHeight2}, //????? 
+	{238,309 + sinInterHeight2,238 + 28,309 + 28 + sinInterHeight2}, //???  
+	{269,309 + sinInterHeight2,269 + 28,309 + 28 + sinInterHeight2}, //??? 
+	{279,182 + sinInterHeight2,279 + 20,182 + 20 + sinInterHeight2}, //?????? ???? 
+	{257,182 + sinInterHeight2,257 + 20,182 + 20 + sinInterHeight2}, //???? ???? 
+	{304,314 + sinInterHeight2,304 + 20,314 + 20 + sinInterHeight2}, //?????? 
+	{231,136 + sinInterHeight2,231 + 42,136 + 46 + sinInterHeight2}, //??????
+	{281,136 + sinInterHeight2,281 + 42,136 + 46 + sinInterHeight2}, //?????
 
 };
 
-//±›æ◊¿« ¿ßƒ° 
+//????? ??? 
 int ShopGoldEdit[2][4] = {
-	{231,213 + 5 + sinInterHeight2,231 + 120,213 + 5 + 24 + sinInterHeight2}, //π∞∞« ∞°∞› 
-	{231,243 + 5 + sinInterHeight2,231 + 120,243 + 5 + 24 + sinInterHeight2}, //≥ªµ∑ 
+	{231,213 + 5 + sinInterHeight2,231 + 120,213 + 5 + 24 + sinInterHeight2}, //???? ???? 
+	{231,243 + 5 + sinInterHeight2,231 + 120,243 + 5 + 24 + sinInterHeight2}, //???? 
 
 };
 
-//////////ªÛ¡°ø° ∫∏ø©¡Ÿºˆ¿÷¥¬æ∆¿Ã≈€¿« «—∞Ëƒ° 
+//////////?????? ?????????????????? ???? 
 int ShowShopItemIndex2 = 0;
 
 int BuyItemServerFlag = 0;
-int BuyItemIndexCopy = 0; //ªÛ¡°ø°º≠ æ¯æÓ¡˙ æ∆¿Ã≈€¿« ¿Œµ¶Ω∫ 
+int BuyItemIndexCopy = 0; //???????? ?????? ???????? ?????? 
 
 int SelectMyShopButtonPosi = 0;
 int SelectMyShopItemIndex = 0;
@@ -96,7 +97,7 @@ int MyShopItemCancelIndex[2] = { 0,0 };
 
 
 /*----------------------------------------------------------------------------*
-*							≈¨∑°Ω∫ √ ±‚, ¡æ∑·
+*							????? ???, ????
 *-----------------------------------------------------------------------------*/
 cSHOP::cSHOP()
 {
@@ -107,7 +108,7 @@ cSHOP::~cSHOP()
 
 }
 /*----------------------------------------------------------------------------*
-*							     √ ±‚»≠
+*							     ????
 *-----------------------------------------------------------------------------*/
 void cSHOP::Init()
 {
@@ -121,7 +122,7 @@ void cSHOP::Init()
 
 }
 /*----------------------------------------------------------------------------*
-*						    Bmp∆ƒ¿œ¿ª ∑ŒµÂ«—¥Ÿ
+*						    Bmp?????? ???????
 *-----------------------------------------------------------------------------*/
 void cSHOP::Load()
 {
@@ -182,17 +183,17 @@ void cSHOP::Load()
 	lpTitle_Aging = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\Aging\\Aging_Title.bmp");
 	lpAging_Info = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\Aging\\ButtonInfo.bmp");
 
-	// pluto ¡¶∑√
+	// pluto ????
 	lpSmeltingItemMain = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\SmeltingItem\\SmeltingMain.bmp");
 	lpTitle_SmeltingItem = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\SmeltingItem\\SmeltingTitle.bmp");
 	lpSmeltingItemButtonInfo = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\SmeltingItem\\ButtonInfo.bmp");
 
-	// pluto ¡¶¿€
+	// pluto ????
 	lpManufactureItemMain = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\Manufacture\\ManufactureMain.bmp");
 	lpTitle_ManufactureItem = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\Manufacture\\ManufactureTitle.bmp");
 	lpManufactureItemButtonInfo = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\Manufacture\\ButtonInfo.bmp");
 
-	// ºÆ¡ˆøÎ - πÕΩ∫√ƒ ∏Æº¬¿ª ¿ß«— ¿ÃπÃ¡ˆ ∑Œµ˘ ( ¿ß¿« lpCraftItemButton(πˆ∆∞) ∫Øºˆ « ø‰«“µÌ )
+	// ?????? - ????? ?????? ???? ????? ???? ( ???? lpCraftItemButton(???) ???? ?????? )
 	lpMResetTitle = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\CraftItem\\MResetTitle.bmp");
 	lpMResetMain = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\CraftItem\\MResetMain.bmp");
 	lpMResetButton = LoadDibSurfaceOffscreen("Image\\SinImage\\Shopall\\CraftItem\\MResetButton.bmp");
@@ -383,7 +384,7 @@ void cSHOP::Release()
 		lpTitle_CraftItem = 0;
 	}
 
-	// pluto ¡¶∑√
+	// pluto ????
 	if (lpSmeltingItemMain)
 	{
 		lpSmeltingItemMain->Release();
@@ -402,7 +403,7 @@ void cSHOP::Release()
 		lpSmeltingItemButtonInfo = 0;
 	}
 
-	// pluto ¡¶¿€
+	// pluto ????
 	if (lpManufactureItemMain)
 	{
 		lpManufactureItemMain->Release();
@@ -419,7 +420,7 @@ void cSHOP::Release()
 		lpManufactureItemButtonInfo = 0;
 	}
 
-	// ºÆ¡ˆøÎ - πÕΩ∫√ƒ ∏Æº¬ «ÿ¡¶
+	// ?????? - ????? ???? ????
 	if (lpMResetTitle)
 	{
 		lpMResetTitle->Release();
@@ -449,12 +450,15 @@ void cSHOP::Draw()
 		DrawSprite(ReStartMainXY.x, ReStartMainXY.y, cInterFace.lpReStartMain, 0, 0, 188, 128);
 		if (ReStartIndex && RestartCheckExp) {
 			if (ReStartIndex != 1)
-				DrawSprite(ReStartMainXY.x + ReStartButtonRect2[ReStartIndex - 1][0], ReStartMainXY.y + ReStartButtonRect2[ReStartIndex - 1][1], cInterFace.lpReStartButton[ReStartIndex - 1], 0, 0, 44, 44); //¥ŸΩ√Ω√¿€ ∏ﬁ¿Œ 
+				DrawSprite(ReStartMainXY.x + ReStartButtonRect2[ReStartIndex - 1][0], ReStartMainXY.y + ReStartButtonRect2[ReStartIndex - 1][1], cInterFace.lpReStartButton[ReStartIndex - 1], 0, 0, 44, 44); //?????? ???? 
 		}
 		if (ReStartIndex == 1 && !RestartCheckExp) {
-			DrawSprite(ReStartMainXY.x + ReStartButtonRect2[ReStartIndex - 1][0], ReStartMainXY.y + ReStartButtonRect2[ReStartIndex - 1][1], cInterFace.lpReStartButton[ReStartIndex - 1], 0, 0, 44, 44); //¥ŸΩ√Ω√¿€ ∏ﬁ¿Œ 
+			DrawSprite(ReStartMainXY.x + ReStartButtonRect2[ReStartIndex - 1][0], ReStartMainXY.y + ReStartButtonRect2[ReStartIndex - 1][1], cInterFace.lpReStartButton[ReStartIndex - 1], 0, 0, 44, 44); //?????? ???? 
 		}
 	}
+
+	if (WarehouseWindow::GetInstance()->ShouldHideClassicPanels())
+		return;
 
 	int i = 0, j = 0;
 
@@ -505,20 +509,20 @@ void cSHOP::Draw()
 	DrawSprite(ShopButtonPosi[SINSELL - 1][0] - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopButtonPosi[SINSELL - 1][1], lpSell_D, 0, 0, 28, 28);
 	DrawSprite(ShopButtonPosi[SINBUY - 1][0] - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopButtonPosi[SINBUY - 1][1], lpBuy_D, 0, 0, 28, 28);
 
-	//DrawSprite(231-(256+128-sinMoveKindInter[SIN_SHOP]),213,lpGoldEdit,0,0,99,24); //µ∑¿Ã ≥ı¿œ ¿ßƒ° 
+	//DrawSprite(231-(256+128-sinMoveKindInter[SIN_SHOP]),213,lpGoldEdit,0,0,99,24); //???? ???? ??? 
 	DrawSprite(231 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), 243 + sinInterHeight2, lpGoldEdit, 0, 0, 99, 24);
 
-	DrawSprite(282 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), 182 + sinInterHeight2, lpRightArrow, 0, 0, 20, 20); //»≠ªÏ«• 
+	DrawSprite(282 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), 182 + sinInterHeight2, lpRightArrow, 0, 0, 20, 20); //???? 
 	DrawSprite(260 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), 182 + sinInterHeight2, lpLeftArrow, 0, 0, 20, 20);
 
-	//ªÛ¡° »≠ªÏ«• 
+	//???? ???? 
 	if (ShopArrowPosi == 0 || ShopArrowPosi == 3)
 		DrawSprite(260 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), 132, cInvenTory.lpInvenArrow[0], 0, 0, 20, 20);
 	if (ShopArrowPosi == 1 || ShopArrowPosi == 4)
 		DrawSprite(282 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), 132, cInvenTory.lpInvenArrow[1], 0, 0, 20, 20);
 
 
-	//∞≥¿ŒªÛ¡° 
+	//???????? 
 	DrawSprite(ShopButtonPosi[SINALLREPAIR - 1][0] - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]), ShopButtonPosi[SINALLREPAIR - 1][1], lpMyShopNoSale_, 0, 0, 28, 28);
 	DrawSprite(ShopButtonPosi[SINREPAIR - 1][0] - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]), ShopButtonPosi[SINREPAIR - 1][1], lpMyShopSale_, 0, 0, 28, 28);
 	//DrawSprite(ShopButtonPosi[SINBUY-1][0]-(256+128-sinMoveKindInter[SIN_MYSHOP]),ShopButtonPosi[SINBUY-1][1],lpMyShopExp_,0,0,28,28);		
@@ -526,14 +530,14 @@ void cSHOP::Draw()
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]), 47, lpTitle_MyShop, 0, 0, 111, 32);
 
 
-	//ƒ≥∏Ø≈Õ ªÛ¡°
+	//?????? ????
 	DrawSprite(ShopButtonPosi[SINBUY - 1][0] - (256 + 128 - sinMoveKindInter[SIN_CHARSHOP]), ShopButtonPosi[SINBUY - 1][1], lpBuy_D, 0, 0, 28, 28);
 	DrawSprite(238 - (256 + 128 - sinMoveKindInter[SIN_CHARSHOP]), 90, lpImage_MyShop, 0, 0, 53, 59);
 	DrawSprite(225 - (256 + 128 - sinMoveKindInter[SIN_CHARSHOP]), 47, lpTitle_MyShop, 0, 0, 111, 32);
 
 
 
-	//∞„ƒ°¥¬∞‘ æ∆∏ß¥‰¡ˆæ æ∆ ∂´ªß¿ª ªÏ¬¶«ÿ∫ª¥Ÿ «™«÷ -_-
+	//??????? ?????????? ?????? ???????? ??? -_-
 	HDC hdc = NULL;
 	char strBuff[128];
 	memset(strBuff, 0, sizeof(strBuff));
@@ -563,14 +567,14 @@ void cSHOP::Draw()
 
 		NumLineComa(cMyShop.GetLimitMoney(Money2), strBuff);
 		len3 = lstrlen(strBuff);
-		//wsprintf(strBuff,"%d",cMyShop.GetLimitMoney(Money2)); //º“¡ˆ∞°¥… ±›æ◊  
+		//wsprintf(strBuff,"%d",cMyShop.GetLimitMoney(Money2)); //???????? ???  
 		dsTextLineOut(hdc, CheckEditSize(ShopGoldEdit[1][0], ShopGoldEdit[1][2], strBuff) - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]) - (len3 / 2), ShopGoldEdit[1][1],
 			strBuff, lstrlen(strBuff));
 
 		memset(strBuff, 0, sizeof(strBuff));
 		NumLineComa(Money2, strBuff);
 		len3 = lstrlen(strBuff);
-		//wsprintf(strBuff,"%d",Money2 ); //∆«∏≈ √—æ◊ 
+		//wsprintf(strBuff,"%d",Money2 ); //??? ??? 
 		dsTextLineOut(hdc, CheckEditSize(ShopGoldEdit[0][0], ShopGoldEdit[0][2], strBuff) - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]) - (len3 / 2), ShopGoldEdit[0][1],
 			strBuff, lstrlen(strBuff));
 
@@ -579,7 +583,7 @@ void cSHOP::Draw()
 		memset(strBuff, 0, sizeof(strBuff));
 		NumLineComa(sinChar->Money, strBuff);
 		len3 = lstrlen(strBuff);
-		//wsprintf(strBuff,"%d",sinChar->Money); //º“¡ˆ∞°¥… ±›æ◊  
+		//wsprintf(strBuff,"%d",sinChar->Money); //???????? ???  
 		dsTextLineOut(hdc, CheckEditSize(ShopGoldEdit[1][0], ShopGoldEdit[1][2], strBuff) - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]) - (len3 / 2), ShopGoldEdit[1][1],
 			strBuff, lstrlen(strBuff));
 
@@ -600,7 +604,7 @@ void cSHOP::Draw()
 	}
 
 
-	//µÓ∑œ¿Ã µ«∏È æ∆¿Ãƒ‹¿ª »∞º∫»≠ Ω√ƒ—≥ı¥¬¥Ÿ
+	//????? ??? ???????? ???? ?????????
 	if (MyShopSendButton) {
 		DrawSprite(ShopButtonPosi[SINREPAIR - 1][0] - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]), ShopButtonPosi[SINREPAIR - 1][1], lpMyShopSale, 0, 0, 28, 28);
 	}
@@ -630,13 +634,13 @@ void cSHOP::Draw()
 
 	switch (SelectShopButtonPosi) {
 	case SINALLREPAIR:
-		if (sinShopKind != 3) { //π∞æ‡ ¿ÂªÁ∞° æ∆¥œ∏È ±◊∑¡¡ÿ¥Ÿ 
+		if (sinShopKind != 3) { //???? ???? ???? ?????? 
 			DrawSprite(ShopButtonPosi[SINALLREPAIR - 1][0] - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopButtonPosi[SINALLREPAIR - 1][1], lpAllRepair, 0, 0, 28, 28);
 			DrawSprite(ShopButtonPosi[SINALLREPAIR - 1][0] - 26 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopButtonPosi[SINALLREPAIR - 1][1] - 27, lpRepairAllInfo, 0, 0, 77, 27);
 		}
 		break;
 	case SINREPAIR:
-		if (sinShopKind != 3) { //π∞æ‡ ¿ÂªÁ∞° æ∆¥œ∏È ±◊∑¡¡ÿ¥Ÿ 
+		if (sinShopKind != 3) { //???? ???? ???? ?????? 
 			DrawSprite(ShopButtonPosi[SINREPAIR - 1][0] - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopButtonPosi[SINREPAIR - 1][1], lpRepair, 0, 0, 28, 28);
 			DrawSprite(ShopButtonPosi[SINREPAIR - 1][0] - 26 - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopButtonPosi[SINREPAIR - 1][1] - 27, lpRepairInfo, 0, 0, 77, 27);
 		}
@@ -667,13 +671,13 @@ void cSHOP::Draw()
 	/*
 	switch(SelectShopButtonPosi){
 		case SINALLREPAIR:
-			if(sinShopKind != 3){ //π∞æ‡ ¿ÂªÁ∞° æ∆¥œ∏È ±◊∑¡¡ÿ¥Ÿ
+			if(sinShopKind != 3){ //???? ???? ???? ??????
 				DrawSprite(264-(256+128-sinMoveKindInter[SIN_SHOP]),306+sinInterHeight2,lpAllRepair,0,0,28,28);
 				DrawSprite(264-26-(256+128-sinMoveKindInter[SIN_SHOP]),306-27+sinInterHeight2,lpRepairAllInfo,0,0,77,27);
 			}
 		break;
 		case SINREPAIR:
-			if(sinShopKind != 3){ //π∞æ‡ ¿ÂªÁ∞° æ∆¥œ∏È ±◊∑¡¡ÿ¥Ÿ
+			if(sinShopKind != 3){ //???? ???? ???? ??????
 				DrawSprite(231-(256+128-sinMoveKindInter[SIN_SHOP]),306+sinInterHeight2,lpRepair,0,0,28,28);
 				DrawSprite(231-26-(256+128-sinMoveKindInter[SIN_SHOP]),306-27+sinInterHeight2,lpRepairInfo,0,0,77,27);
 			}
@@ -701,10 +705,10 @@ void cSHOP::Draw()
 	}
 	*/
 
-	//ªÁøÎ«“ºˆæ¯¥¬ æ∆¿Ã≈€¿ª √º≈©«—¥Ÿ 
+	//?????????? ???????? ????? 
 	if (cShop.OpenFlag) {
 		for (int cnt = 0; cnt < 30; cnt++) {
-			if (ShowShopItem[cnt].Flag == 1) { //¿Œ∫•≈‰∏Æø° æ∆¿Ã≈€¿Ã ¿÷¿ª∂ß æ∆¿Ã≈€¿ª ±◊∏∞¥Ÿ 
+			if (ShowShopItem[cnt].Flag == 1) { //???????? ???????? ?????? ???????? ????? 
 				if (ShowShopItem[cnt].sItemInfo.NotUseFlag) {
 					dsDrawColorBox(sinInvenColor[2], ShowShopItem[cnt].x - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShowShopItem[cnt].y, ShowShopItem[cnt].w, ShowShopItem[cnt].h);
 				}
@@ -725,7 +729,7 @@ void cSHOP::Draw()
 
 	}
 
-	for (i = 0; i < 30; i++) //∫∏ø©¡Ÿºˆ¿÷¥¬ √÷¥Îƒ°¿« æ∆¿Ã≈€¿ª ∫∏ø©¡ÿ¥Ÿ  
+	for (i = 0; i < 30; i++) //?????????? ?????? ???????? ???????  
 		if (ShowShopItem[i].Flag) {
 			DrawSprite(ShowShopItem[i].x - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShowShopItem[i].y, ShowShopItem[i].lpItem, 0, 0, ShowShopItem[i].w, ShowShopItem[i].h);
 
@@ -733,7 +737,7 @@ void cSHOP::Draw()
 		}
 
 
-	//MyShopItem¿ª ±◊∏∞¥Ÿ
+	//MyShopItem?? ?????
 
 	if (SelectMyShopItemIndex) {
 		dsDrawColorBox(sinInvenColor[4], cMyShop.MyShopItem[SelectMyShopItemIndex - 1].x - (256 + 128 - sinMoveKindInter[SIN_MYSHOP]),
@@ -755,7 +759,7 @@ void cSHOP::Draw()
 	int x, y;
 	if (cMyShop.OpenFlag) {
 		if (MyShopMouseItem.Flag) {
-			if (!sMessageBox2[MESSAGE_MYSHOP_ITEM].Flag) { //∏ﬁºº¡ˆ π⁄Ω∫∞° ∂∞¿÷¿ª∞ÊøÏø°¥¬ ∂Áøˆ¡÷¡ˆæ ¥¬¥Ÿ(æﬂ∏≈ -_-)
+			if (!sMessageBox2[MESSAGE_MYSHOP_ITEM].Flag) { //????? ????? ???????????? ????????????(??? -_-)
 				x = pCursorPos.x - (MyShopMouseItem.w / 2);
 				y = pCursorPos.y - (MyShopMouseItem.h / 2);
 
@@ -774,7 +778,7 @@ void cSHOP::Draw()
 	}
 
 
-	//CharShop æ∆¿Ã≈€¿ª ±◊∏∞¥Ÿ
+	//CharShop ???????? ?????
 	if (cCharShop.OpenFlag) {
 		for (i = 0; i < 30; i++) {
 			if (cCharShop.CharShopItem[i].Flag) {
@@ -787,7 +791,7 @@ void cSHOP::Draw()
 	}
 
 
-	//ªÛ¡° πˆ∆∞
+	//???? ???
 	if (MyShopSendButton && !cMyShop.OpenFlag) {
 		//DrawSprite(50,200, lpMyShop_Button ,0,0, 93 , 79);
 		dsDrawTexImage(MatMyShop_Button, 10, 220, 70, 70, 255);
@@ -799,7 +803,7 @@ void cSHOP::Draw()
 	int BackUpButton3X, BackUpButton3Y = 0;
 
 
-	//»´∫∏∏ª¿ª ¿‘∑¬«—¥Ÿ
+	//??????? ??????
 	if (MyShopExpBox) {
 		BackUpButton2X = 35;
 		BackUpButton2Y = 157;
@@ -836,7 +840,7 @@ void cSHOP::Draw()
 
 }
 /*----------------------------------------------------------------------------*
-*							     ∏ﬁ¿Œ
+*							     ????
 *-----------------------------------------------------------------------------*/
 DWORD dwBuyItemServerTime = 0;
 int MyShopItemSellMoney2 = 0;
@@ -844,7 +848,7 @@ DWORD dwBuyCharShopTime = 0;
 void cSHOP::Main()
 {
 	int i = 0;
-	//∞≥¿ŒªÛ¡° ¿ÃøÎΩ√ 1√ µÙ∑π¿Ã∏¶ ¡ÿ¥Ÿ.
+	//???????? ???? 1???????? ???.
 	if (haCharShopDelayFlag) {
 		dwBuyCharShopTime++;
 		if (dwBuyCharShopTime >= 1 * 70) {
@@ -858,8 +862,8 @@ void cSHOP::Main()
 	MyShopExpBoxX = 300;
 	MyShopExpBoxY = 170;
 
-	CheckShopNpcState();      //NPCøÕ¿« «ÏæÓ¡¸¿ª √º≈©«—¥Ÿ 
-	SelectShopButtonPosi = 0; //√ ±‚»≠ 
+	CheckShopNpcState();      //NPC???? ??????? ????? 
+	SelectShopButtonPosi = 0; //???? 
 	ShowShopItemIndex = 0;
 	ShopItemPrice = 0;
 
@@ -869,7 +873,7 @@ void cSHOP::Main()
 
 	int BackUpPosX, BackUpPosY = 0;
 
-	//»´∫∏∏ª¿ª ¿‘∑¬«—¥Ÿ
+	//??????? ??????
 	MyShopExpButtonOK = 0;
 	MyShopExpButtonCancel = 0;
 
@@ -901,7 +905,7 @@ void cSHOP::Main()
 
 	}
 
-	/////////////∞≥¿Œ ªÛ¡°
+	/////////////???? ????
 	if (cMyShop.OpenFlag) {
 		if (pCursorPos.x >= DownTradePosi[T_CLOSE_POSI][0] && pCursorPos.x <= DownTradePosi[T_CLOSE_POSI][2] &&
 			pCursorPos.y >= DownTradePosi[T_CLOSE_POSI][1] && pCursorPos.y <= DownTradePosi[T_CLOSE_POSI][3]) {
@@ -909,7 +913,7 @@ void cSHOP::Main()
 		}
 	}
 
-	/////////////ƒ≥∏Ø≈Õ ªÛ¡°
+	/////////////?????? ????
 	if (cCharShop.OpenFlag) {
 		if (pCursorPos.x >= DownTradePosi[T_CLOSE_POSI][0] && pCursorPos.x <= DownTradePosi[T_CLOSE_POSI][2] &&
 			pCursorPos.y >= DownTradePosi[T_CLOSE_POSI][1] && pCursorPos.y <= DownTradePosi[T_CLOSE_POSI][3]) {
@@ -953,7 +957,7 @@ void cSHOP::Main()
 						BackUpY = cInvenTory.InvenItem[Index2 - 1].y;
 						cInvenTory.InvenItem[Index2 - 1].x = cMyShop.MyShopItem[i].x;
 						cInvenTory.InvenItem[Index2 - 1].y = cMyShop.MyShopItem[i].y;
-						sinShowItemInfoFlag = 1; //æ∆¿Ã≈€¿« ¡§∫∏∏¶ ∫∏ø©¡ÿ¥Ÿ 
+						sinShowItemInfoFlag = 1; //???????? ?????? ??????? 
 						MyShopItemSellMoney2 = cMyShop.MyShopItem[i].sItemInfo.Money;
 
 						GAMECOREHANDLE->pcItemInfoBox->PrepareShowItem(&cInvenTory.InvenItem[Index2 - 1], FALSE, TRUE, FALSE);
@@ -985,7 +989,7 @@ void cSHOP::Main()
 	}
 
 
-	//º≠πˆø°º≠ æ∆¿Ã≈€¿ª ªÏ∂ß ø¿∑˘πﬂª˝Ω√ 10√ »ƒ ¥ŸΩ√ √ ±‚»≠«ÿ¡ÿ¥Ÿ 
+	//???????? ???????? ??? ????????? 10???? ??? ????????? 
 	if (BuyItemServerFlag) {
 		dwBuyItemServerTime++;
 		if (dwBuyItemServerTime >= 10 * 70) {
@@ -1006,8 +1010,8 @@ void cSHOP::Main()
 	}
 	if (OpenFlag) {
 		for (i = 0; i < 30; i++) {
-			cInvenTory.CharOnlySetItem(&ShowShopItem[i]);		//ƒ≥∏Ø¿¸øÎ æ∆¿Ã≈€
-			cInvenTory.CheckRequireItemToSet(&ShowShopItem[i]); //¥…∑¬ƒ°ø° ∏¬¥¬ æ∆¿Ã≈€
+			cInvenTory.CharOnlySetItem(&ShowShopItem[i]);		//???????? ??????
+			cInvenTory.CheckRequireItemToSet(&ShowShopItem[i]); //?????? ???? ??????
 			if (ShowShopItem[i].x < pCursorPos.x && ShowShopItem[i].x + ShowShopItem[i].w > pCursorPos.x &&
 				ShowShopItem[i].y < pCursorPos.y && ShowShopItem[i].y + ShowShopItem[i].h > pCursorPos.y) {
 				if (ShowShopItem[i].Flag) {
@@ -1047,7 +1051,7 @@ void cSHOP::Main()
 	}
 }
 /*----------------------------------------------------------------------------*
-*							     ¡æ∑·
+*							     ????
 *-----------------------------------------------------------------------------*/
 void cSHOP::Close()
 {
@@ -1329,11 +1333,11 @@ void cSHOP::RButtonDown(int x, int y)
 	memset(&TempItem, 0, sizeof(sITEM));
 	if (cCharShop.OpenFlag) {
 		if (SelectMyShopItemIndex) {
-			cCharShop.BuyItem(SelectMyShopItemIndex - 1); //¿Œµ¶Ω∫∏¶ ª´»ƒø° ≥÷æÓ¡ÿ¥Ÿ
+			cCharShop.BuyItem(SelectMyShopItemIndex - 1); //???????? ?????? ??????
 		}
 	}
 
-	if (ShowShopItemIndex) { //ø¿∏•¬  πˆ∆∞¿∏∑Œ æ∆¿Ã≈€¿ª ªÍ¥Ÿ
+	if (ShowShopItemIndex) { //?????? ??????? ???????? ???
 		if (CursorClass == 1 || CursorClass == SIN_CURSOR_BUY) {
 			if (ShowShopItem[ShowShopItemIndex - 1].Class == ITEM_CLASS_POTION) {
 				pMessageItem = &ShowShopItem[ShowShopItemIndex - 1];
@@ -1362,7 +1366,7 @@ void cSHOP::RButtonUp(int x, int y)
 *-----------------------------------------------------------------------------*/
 void cSHOP::KeyDown()
 {
-	//ªÛ¡°æ∆¿Ã≈€¿ª √ ±‚»≠«—¥Ÿ
+	//???????????? ???????
 	DeleteShopItem();
 }
 /*----------------------------------------------------------------------------*
@@ -1381,17 +1385,17 @@ void cSHOP::CheckShopNpcState()
 
 }
 
-//º≠πˆø°º≠ πﬁæ∆ø¬ æ∆¿Ã≈€¿ª ∫∏ø©¡Ÿ æ∆¿Ã≈€¿∏∑Œ ∫πªÁ«—¥Ÿ 
+//???????? ???? ???????? ?????? ?????????? ??????? 
 void cSHOP::CopyShopItemToShow(int Index, int Kind)
 {
-	memset(ShowShopItem, 0, sizeof(sITEM) * 30); //∫∏ø©¡˙ æ∆¿Ã≈€¿ª √ ±‚»≠«—¥Ÿ 
+	memset(ShowShopItem, 0, sizeof(sITEM) * 30); //?????? ???????? ??????? 
 
 	for (int i = 0; i < 30 - Index; i++) {
-		if (GetShopItemXY(&ShopItem[i + Index + (Kind * 30)])) {//«—π¯ø° µÈæÓ∞•ºˆ¿÷¥¬ æ∆¿Ã≈€ 
+		if (GetShopItemXY(&ShopItem[i + Index + (Kind * 30)])) {//????? ???????? ?????? 
 			memcpy(&ShowShopItem[i], &ShopItem[i + Index + (Kind * 30)], sizeof(sITEM));
 
 		}
-		else {//µÈæÓ∞•ºˆæ¯¥¬ æ∆¿Ã≈€ 
+		else {//????????? ?????? 
 			ShowShopItemIndex2 = i + Index;
 			break;
 
@@ -1400,7 +1404,7 @@ void cSHOP::CopyShopItemToShow(int Index, int Kind)
 	}
 
 }
-//æ∆¿Ã≈€¿Ã º¬∆√µ… ¡¬«•∏¶ ±∏«ÿø¬¥Ÿ 
+//???????? ????? ????? ??????? 
 int cSHOP::GetShopItemXY(sITEM* pItem)
 {
 
@@ -1413,10 +1417,10 @@ int cSHOP::GetShopItemXY(sITEM* pItem)
 	int StartX = 21;
 	int StartY = 136 + sinInterHeight2;
 
-	cx = (22 * SHOP_ROW) - pItem->w; //æ∆¿Ã≈€¿Ã µÈæÓ∞•ºˆ¿÷¥¬ ∞°¿Â ≥° X¡¬«• 
-	cy = (22 * SHOP_COL) - pItem->h; //æ∆¿Ã≈€¿Ã µÈæÓ∞•ºˆ¿÷¥¬ ∞°¿Â ≥° Y¡¬«•
+	cx = (22 * SHOP_ROW) - pItem->w; //???????? ???????? ???? ?? X??? 
+	cy = (22 * SHOP_COL) - pItem->h; //???????? ???????? ???? ?? Y???
 
-	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {//ƒ⁄µÂ∞° ∞∞¡ˆ æ ∞≈≥™ æ∆¿Ã≈€¿Ã ∫ÒæÓ¿÷¡ˆ æ ¿∫ ∞˜ø° º¬∆√«“∂ß ∞Àªˆ«ÿº≠ ¿ßƒ°∏¶ √£æ∆≥Ω¥Ÿ 
+	for (cntx = StartX; cntx <= StartX + cx; cntx += 22) {//??? ???? ???? ???????? ??????? ???? ???? ??????? ?????? ????? ?????? 
 		for (cnty = StartY; cnty <= StartY + cy; cnty += 22) {
 			flag = 0;
 			for (int i = 0; i < 30; i++) {
@@ -1441,30 +1445,30 @@ int cSHOP::GetShopItemXY(sITEM* pItem)
 	return FALSE;
 }
 
-//æ∆¿Ã≈€¿ª º≠πˆø°º≠ ªÍ¥Ÿ 
+//???????? ???????? ??? 
 int cSHOP::SendBuyItemToServer(sITEM* pItem, int ItemCount)
 {
 	if (!cInvenTory.CheckSetEmptyArea(pItem)) {
-		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE); //∞¯∞£ √ ∞˙  
+		cMessageBox.ShowMessage(MESSAGE_OVER_SPACE); //???? ???  
 		return FALSE;
 	}
 	//--------------------------------------------------------------------------//
 #ifdef HASIEGE_MODE
-	//∞¯º∫¿¸ ºº¿≤¿˚øÎ æ∆¿Ã≈€ ±∏¿‘Ω√ µ∑√º≈©
+	//?????? ???????? ?????? ????? ????
 	if (cShop.haBuyMoneyCheck(pItem->sItemInfo.Price * ItemCount) == 0) {
 #else
 	if ((sinChar->Money - (pItem->sItemInfo.Price * ItemCount)) < 0) {
 #endif
 		//---------------------------------------------------------------------------//
-		cMessageBox.ShowMessage(MESSAGE_NOT_ENOUGH_MONEY); //µ∑∫Œ¡∑
+		cMessageBox.ShowMessage(MESSAGE_NOT_ENOUGH_MONEY); //??????
 		return FALSE;
 	}
 	if (pItem->sItemInfo.Weight + sinChar->Weight[0] > sinChar->Weight[1]) {
-		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);    //π´∞‘√ ∞˙ 
+		cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);    //??????? 
 		return FALSE;
 
 	}
-	BuyItemServerFlag = 1; //¡ﬂ∫π¿∏∑Œ º≠πˆø° ∏ﬁºº¡ˆ∏¶ ∫∏≥ª¡ˆ æ ±‚ ¿ß«ÿº≠ «√∑∫¿ª ¡ÿ¥Ÿ 
+	BuyItemServerFlag = 1; //??????? ?????? ??????? ?????? ??? ????? ?????? ??? 
 
 	TRANS_BUY_SHOPITEM	TransBuyShopItem;
 
@@ -1485,7 +1489,7 @@ int cSHOP::RecvBuyItemToServer(sITEM * pItem, int ItemCount)
 	BuyItemServerFlag = 0;
 	CheckCharForm();
 
-	// N„o desconta taxa do gold bar
+	// N?o desconta taxa do gold bar
 	if (pItem->sItemInfo.itemType == 3 || pItem->sItemInfo.itemType == 4 || pItem->sItemInfo.itemType == 5)
 		sinMinusMoney(pItem->sItemInfo.Price * ItemCount, 1, true);
 	else
@@ -1608,7 +1612,7 @@ int cSHOP::SellItemToShop(sITEM * pItem, int ItemCount)
 	return TRUE;
 }
 
-//ªÛ¡° ≈ÿΩ∫∆Æ∏¶ «•Ω√«—¥Ÿ 
+//???? ?????? ?????? 
 void cSHOP::DrawShopText()
 {
 
@@ -1622,7 +1626,7 @@ void cSHOP::DrawShopText()
 		//SetBkMode( hdc, TRANSPARENT ); 
 		SetFontTextColor(RGB(255, 255, 255));
 
-		if (ReStartIndex == 1 && RestartCheckExp) //∞Ê«Ëƒ°±‚ æ»µ«º≠ « µÂø°º≠ Ω√¿€«“ºˆæ¯¿ª ∞ÊøÏø°¥¬ ªˆ¿ª ∫”¿∫ªˆ¿∏∑Œ
+		if (ReStartIndex == 1 && RestartCheckExp) //??????? ???? ????? ??????????? ?????? ???? ??????????
 			SetFontTextColor(RGB(255, 0, 0));
 		else
 			SetFontTextColor(RGB(255, 255, 255));
@@ -1637,7 +1641,7 @@ void cSHOP::DrawShopText()
 
 	}
 
-	if (!sinMoveKindInter[SIN_SHOP] && !sinMoveKindInter[SIN_MYSHOP] && !sinMoveKindInter[SIN_CHARSHOP])return; //ªÛ¡°¿Ã ¥›«Ù¿÷¿∏∏È ∏Æ≈œ
+	if (!sinMoveKindInter[SIN_SHOP] && !sinMoveKindInter[SIN_MYSHOP] && !sinMoveKindInter[SIN_CHARSHOP])return; //?????? ?????????? ????
 
 	HDC hdc = NULL;
 	char strBuff[128];
@@ -1649,15 +1653,15 @@ void cSHOP::DrawShopText()
 
 	if (OpenFlag) {
 		NumLineComa(sinChar->Money, strBuff);
-		//wsprintf(strBuff,"%d",sinChar->Money); //≥ªµ∑ 
+		//wsprintf(strBuff,"%d",sinChar->Money); //???? 
 		dsTextLineOut(hdc, CheckEditSize(ShopGoldEdit[1][0], ShopGoldEdit[1][2], strBuff) - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopGoldEdit[1][1],
 			strBuff, lstrlen(strBuff));
 
-		// preÁo com imposto
+		// pre?o com imposto
 		if (ShopItemPrice)
 		{
 			memset(strBuff, 0, sizeof(strBuff));
-			////ªÛ¡° æ∆¿Ã≈€ ºº¿≤¿˚øÎµ» ∞°∞›¿ª «•Ω√«ÿ¡ÿ¥Ÿ.
+			////???? ?????? ????????? ?????? ????????.
 			//--------------------------------------------------------------------------//
 #ifdef HASIEGE_MODE
 
@@ -1670,7 +1674,7 @@ void cSHOP::DrawShopText()
 #endif
 			//---------------------------------------------------------------------------//
 
-			//wsprintf(strBuff,"%d",ShopItemPrice); //π∞∞« ∞°∞› 
+			//wsprintf(strBuff,"%d",ShopItemPrice); //???? ???? 
 			dsTextLineOut(hdc, CheckEditSize(ShopGoldEdit[0][0], ShopGoldEdit[0][2], strBuff) - (256 + 128 - sinMoveKindInter[SIN_SHOP]), ShopGoldEdit[0][1],
 				strBuff, lstrlen(strBuff));
 		}
@@ -1693,11 +1697,11 @@ void cSHOP::DrawShopText()
 			}
 		}
 		/*
-		wsprintf(strBuff,"%d",cMyShop.GetLimitMoney(Money2)); //º“¡ˆ∞°¥… ±›æ◊
+		wsprintf(strBuff,"%d",cMyShop.GetLimitMoney(Money2)); //???????? ???
 		dsTextLineOut(hdc,CheckEditSize(ShopGoldEdit[1][0],ShopGoldEdit[1][2], strBuff)-(256+128-sinMoveKindInter[SIN_MYSHOP]),ShopGoldEdit[1][1],
 					strBuff,lstrlen(strBuff));
 
-		wsprintf(strBuff,"%d",Money2 ); //∆«∏≈ √—æ◊
+		wsprintf(strBuff,"%d",Money2 ); //??? ???
 		dsTextLineOut(hdc,CheckEditSize(ShopGoldEdit[0][0],ShopGoldEdit[0][2], strBuff)-(256+128-sinMoveKindInter[SIN_MYSHOP]),ShopGoldEdit[0][1],
 					strBuff,lstrlen(strBuff));
 					*/
@@ -1721,11 +1725,11 @@ void cSHOP::DrawShopText()
 
 			}
 		}
-		wsprintf(strBuff,"%d",Money2); //≥ªµ∑
+		wsprintf(strBuff,"%d",Money2); //????
 		dsTextLineOut(hdc,CheckEditSize(ShopGoldEdit[1][0],ShopGoldEdit[1][2], strBuff)-(256+128-sinMoveKindInter[SIN_SHOP]),ShopGoldEdit[1][1],
 					strBuff,lstrlen(strBuff));
 
-		wsprintf(strBuff,"%d",cMyShop.GetLimitMoney(Money2)); //π∞∞« ∞°∞›
+		wsprintf(strBuff,"%d",cMyShop.GetLimitMoney(Money2)); //???? ????
 		dsTextLineOut(hdc,CheckEditSize(ShopGoldEdit[0][0],ShopGoldEdit[0][2], strBuff)-(256+128-sinMoveKindInter[SIN_SHOP]),ShopGoldEdit[0][1],
 					strBuff,lstrlen(strBuff));
 
@@ -1742,7 +1746,7 @@ void cSHOP::DrawShopText()
 			}
 		}
 		/*
-		wsprintf(strBuff,"%d",sinChar->Money); //º“¡ˆ∞°¥… ±›æ◊
+		wsprintf(strBuff,"%d",sinChar->Money); //???????? ???
 		dsTextLineOut(hdc,CheckEditSize(ShopGoldEdit[1][0],ShopGoldEdit[1][2], strBuff)-(256+128-sinMoveKindInter[SIN_MYSHOP]),ShopGoldEdit[1][1],
 					strBuff,lstrlen(strBuff));
 		*/
@@ -1779,11 +1783,11 @@ void cSHOP::DrawShopText()
 			memset(szBuff2, 0, sizeof(szBuff2));
 			while (1) {
 				if (cMyShop.szDoc[End] == NULL)break;
-				if (cMyShop.szDoc[End] & 0x80) { //«—±€¿Ã∏È..
+				if (cMyShop.szDoc[End] & 0x80) { //??????..
 					End += 2;
 					Conut += 2;
 				}
-				else { //øµπÆ¿Ã∏È..
+				else { //???????..
 					End++;
 					Conut++;
 				}
@@ -1791,7 +1795,7 @@ void cSHOP::DrawShopText()
 			}
 			memcpy(szBuff2, &cMyShop.szDoc[Start], End - Start);
 			/*
-			//«ÿø‹ ¡ﬂ±π(∞≥¿ŒªÛ¡°¿Ã∏ß∞¸∑√)
+			//??? ???(???????????????)
 			#ifdef _LANGUAGE_CHINESE
 						ConvertStringTHAI(szBuff2, lstrlen(szBuff2)+16);
 			#endif
@@ -1816,25 +1820,25 @@ void cSHOP::DrawShopText()
 	//lpDDSBack->ReleaseDC( hdc );
 	}
 
-//ªÛ¡°æ∆¿Ã≈€¿ª ¡ˆøÓ¥Ÿ 
+//???????????? ????? 
 void cSHOP::DeleteShopItem()
 {
 	if (!OpenFlag) {
 		if (cShop.ShopItem) {
-			memset(&cShop.ShopItem, 0, sizeof(sITEM) * 60); //æ∆¿Ã≈€ ¡§∫∏ √ ±‚»≠ 
+			memset(&cShop.ShopItem, 0, sizeof(sITEM) * 60); //?????? ???? ???? 
 		}
 		if (ShowShopItem) {
-			memset(&ShowShopItem, 0, sizeof(sITEM) * 30); //æ∆¿Ã≈€ ¡§∫∏ √ ±‚»≠ 
+			memset(&ShowShopItem, 0, sizeof(sITEM) * 30); //?????? ???? ???? 
 
 		}
 	}
 }
 
 
-//¡¡¿∫ æ∆¿Ã≈€¿∫ √º≈©∏¶ «ÿº≠ ∏ﬁºº¡ˆπ⁄Ω∫∏¶ ∂ÁøÓ¥Ÿ
+//???? ???????? ???? ??? ?????????? ????
 int cSHOP::CheckHighRankItem(sITEM * pItem)
 {
-	// pluto ±§ºÆ, ºˆ¡§, ∑È, ∑πΩ√«« √ﬂ∞°
+	// pluto ????, ????, ??, ?????? ???
 	DWORD Code[] = { sinOS1,sinQT1,sinSP1,sinGP1,sinQW1,sinGF1,sinMA1,sinMA2,sinSE1,sinBI1, sinBI2, sinWR1, sinDR1, sinPR1, sinPR2, sinPR3 };
 	int Cnt = 0;
 	while (1) {
@@ -1854,11 +1858,11 @@ int cSHOP::CheckHighRankItem(sITEM * pItem)
 int cMYSHOP::CanSellItem(sITEM * pItem)
 {
 	if ((pItem->CODE & sinITEM_MASK2) == sinPZ1 || (pItem->CODE & sinITEM_MASK2) == sinPZ2) {
-		cMessageBox.ShowMessageEvent("Este item n„o pode ser vendido.");
+		cMessageBox.ShowMessageEvent("Este item n?o pode ser vendido.");
 		return FALSE;
 	}
 
-	else if ((pItem->CODE & sinITEM_MASK2) == sinGF1)  // ¿Â∫∞ - ¡∂ªÁø¯¿ª √£æ∆∂Û æ∆πƒ∑ø
+	else if ((pItem->CODE & sinITEM_MASK2) == sinGF1)  // ?? - ??????? ???? ????
 	{
 		if ((pItem->CODE & sinITEM_MASK3) == sin07 || (pItem->CODE & sinITEM_MASK3) == sin08) {
 			return FALSE;
@@ -1919,7 +1923,7 @@ int cMYSHOP::GetEmptyArea(sITEM * pItem, POINT * EmptyPos)
 	return false;
 }
 
-//æ∆¿Ã≈€¿Ã º¬∆√µ… ∞¯∞£¿ª √£¥¬¥Ÿ 
+//???????? ????? ?????? ????? 
 int cMYSHOP::SetMyShopItem(sITEM * pItem)
 {
 	int i;
@@ -1932,7 +1936,7 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 	int MyShopEndY = MyShopStartY + (22 * 9);
 
 	if (MyShopStartX <= pItem->x + 11 && MyShopEndX > pItem->x &&
-		MyShopStartY <= pItem->y + 11 && MyShopEndY > pItem->y) { //¿Œ∫•≈‰∏Æ π⁄Ω∫ø° µÈæÓ∞¨¥¬¡ˆ∏¶ √º≈© 
+		MyShopStartY <= pItem->y + 11 && MyShopEndY > pItem->y) { //?????? ????? ????????? ?? 
 		SetFlag = 1;
 
 	}
@@ -1940,17 +1944,17 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 
 	if (!SetFlag)return FALSE;
 
-	//º¬∆√«ÿ¡ÿ¥Ÿ
+	//?????????
 	int cntx, cnty;
 	int cx, cy;
 
 	RECT	rect;
 	int		flag;
 
-	cx = (22 * 9) - pItem->w; //æ∆¿Ã≈€¿Ã µÈæÓ∞•ºˆ¿÷¥¬ ∞°¿Â ≥° X¡¬«• 
-	cy = (22 * 9) - pItem->h; //æ∆¿Ã≈€¿Ã µÈæÓ∞•ºˆ¿÷¥¬ ∞°¿Â ≥° Y¡¬«•
+	cx = (22 * 9) - pItem->w; //???????? ???????? ???? ?? X??? 
+	cy = (22 * 9) - pItem->h; //???????? ???????? ???? ?? Y???
 
-	//ƒ⁄µÂ∞° ∞∞¡ˆ æ ∞≈≥™ æ∆¿Ã≈€¿Ã ∫ÒæÓ¿÷¡ˆ æ ¿∫ ∞˜ø° º¬∆√«“∂ß ∞Àªˆ«ÿº≠ ¿ßƒ°∏¶ √£æ∆≥Ω¥Ÿ 
+	//??? ???? ???? ???????? ??????? ???? ???? ??????? ?????? ????? ?????? 
 	for (cntx = MyShopStartX; cntx <= MyShopStartX + cx; cntx += 22) {
 		for (cnty = MyShopStartY; cnty <= MyShopStartY + cy; cnty += 22) {
 			flag = 0;
@@ -1979,7 +1983,7 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 				}
 				else if ((pItem->CODE & sinITEM_MASK2) == sinDA1 || (pItem->CODE & sinITEM_MASK2) == sinDA2)
 				{
-					if ( //∆ƒ∆º∫π ƒ⁄Ω∫∆¨   //∆–≈∞¡ˆ ƒ≥Ω¨æ∆¿Ã≈€
+					if ( //????? ????   //????? ??????????
 						(pItem->CODE & sinITEM_MASK3) == sin31 || (pItem->CODE & sinITEM_MASK3) == sin32 || (pItem->CODE & sinITEM_MASK3) == sin33 ||
 						(pItem->CODE & sinITEM_MASK3) == sin34 ||
 						(pItem->CODE & sinITEM_MASK3) == sin35 || (pItem->CODE & sinITEM_MASK3) == sin36 || (pItem->CODE & sinITEM_MASK3) == sin37 ||
@@ -1988,34 +1992,34 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 						(pItem->CODE & sinITEM_MASK3) == sin42 ||
 						(pItem->CODE & sinITEM_MASK3) == sin43 || (pItem->CODE & sinITEM_MASK3) == sin44 || (pItem->CODE & sinITEM_MASK3) == sin45 ||
 						(pItem->CODE & sinITEM_MASK3) == sin46 ||
-						(pItem->CODE & sinITEM_MASK3) == sin54 || (pItem->CODE & sinITEM_MASK3) == sin55) // π⁄¿Áø¯ - ºˆøµ∫π ∫π¿Â √ﬂ∞° - ∞≥¿ŒªÛ¡° ±›¡ˆ
+						(pItem->CODE & sinITEM_MASK3) == sin54 || (pItem->CODE & sinITEM_MASK3) == sin55) // ????? - ?????? ???? ??? - ???????? ????
 					{
 						cMessageBox.ShowMessage(MESSAGE_NOT_MYSHOP_ITEM);
 						return TRUE;
 					}
 				}
-				else if ((pItem->CODE & sinITEM_MASK2) == sinOA2) // π⁄¿Áø¯ - Ω¥∆€ æœ∏¥(7¿œ, 30¿œ) √ﬂ∞°
+				else if ((pItem->CODE & sinITEM_MASK2) == sinOA2) // ????? - ???? ???(7??, 30??) ???
 				{
 					if ((pItem->CODE & sinITEM_MASK3) == sin31 || (pItem->CODE & sinITEM_MASK3) == sin32 ||
-						(pItem->CODE & sinITEM_MASK3) == sin33 ||	// ¿Â∫∞ - Ω¥∆€ æœ∏¥(1¿œ))
-						(pItem->CODE & sinITEM_MASK3) == sin34)	// ¿Â∫∞ - Ω¥∆€ æœ∏¥(1Ω√∞£)
+						(pItem->CODE & sinITEM_MASK3) == sin33 ||	// ?? - ???? ???(1??))
+						(pItem->CODE & sinITEM_MASK3) == sin34)	// ?? - ???? ???(1????)
 					{
 						cMessageBox.ShowMessage(MESSAGE_NOT_MYSHOP_ITEM);
 						return TRUE;
 					}
 				}
-				else if ((pItem->CODE & sinITEM_MASK2) == sinDB1)  // π⁄¿Áø¯ - Ω∫««µÂ ∫Œ√˜(7¿œ, 30¿œ) √ﬂ∞°
+				else if ((pItem->CODE & sinITEM_MASK2) == sinDB1)  // ????? - ????? ????(7??, 30??) ???
 				{
 					if ((pItem->CODE & sinITEM_MASK3) == sin31 || (pItem->CODE & sinITEM_MASK3) == sin32 ||
-						(pItem->CODE & sinITEM_MASK3) == sin33 || // ¿Â∫∞ - Ω∫««µÂ ∫Œ√˜(1¿œ) √ﬂ∞°
-						(pItem->CODE & sinITEM_MASK3) == sin34) // ¿Â∫∞ - Ω∫««µÂ ∫Œ√˜(1Ω√∞£) √ﬂ∞°
+						(pItem->CODE & sinITEM_MASK3) == sin33 || // ?? - ????? ????(1??) ???
+						(pItem->CODE & sinITEM_MASK3) == sin34) // ?? - ????? ????(1????) ???
 					{
 						cMessageBox.ShowMessage(MESSAGE_NOT_MYSHOP_ITEM);
 						return TRUE;
 					}
 				}
 
-				else if ((pItem->CODE & sinITEM_MASK2) == sinOR2)  // ¿Â∫∞ - «œ∆Æ∏µ(7¿œ) √ﬂ∞°
+				else if ((pItem->CODE & sinITEM_MASK2) == sinOR2)  // ?? - ?????(7??) ???
 				{
 					if ((pItem->CODE & sinITEM_MASK3) == sin33)
 					{
@@ -2025,7 +2029,7 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 				}
 
 
-				else if ((pItem->CODE & sinITEM_MASK2) == sinOA1)  // ¿Â∫∞ - ¥´∞·¡§ ∏Ò∞…¿Ã(7¿œ) √ﬂ∞°
+				else if ((pItem->CODE & sinITEM_MASK2) == sinOA1)  // ?? - ?????? ?????(7??) ???
 				{
 					if ((pItem->CODE & sinITEM_MASK3) == sin36)
 					{
@@ -2035,7 +2039,7 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 				}
 
 
-				else if ((pItem->CODE & sinITEM_MASK2) == sinOA1)  // ¿Â∫∞ - ƒµµµ•¿Ã¡Ó «œ∆Ææ∆πƒ∑ø(7¿œ) √ﬂ∞°
+				else if ((pItem->CODE & sinITEM_MASK2) == sinOA1)  // ?? - ??????? ???????(7??) ???
 				{
 					if ((pItem->CODE & sinITEM_MASK3) == sin37)
 					{
@@ -2044,7 +2048,7 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 					}
 				}
 
-				else if ((pItem->CODE & sinITEM_MASK2) == sinGF1)  // ¿Â∫∞ - ¡∂ªÁø¯¿ª √£æ∆∂Û æ∆πƒ∑ø
+				else if ((pItem->CODE & sinITEM_MASK2) == sinGF1)  // ?? - ??????? ???? ????
 				{
 					if ((pItem->CODE & sinITEM_MASK3) == sin07 || (pItem->CODE & sinITEM_MASK3) == sin08)
 					{
@@ -2064,10 +2068,10 @@ int cMYSHOP::SetMyShopItem(sITEM * pItem)
 	return FALSE;
 }
 
-//æ∆¿Ã≈€¿ª º¬∆√«—¥Ÿ
+//???????? ???????
 int cMYSHOP::LastSetMyShopItem(sITEM * pItem)
 {
-	//º¬∆√«ÿ¡ÿ¥Ÿ
+	//?????????
 	int cntx, cnty;
 	int cx, cy;
 	int MyShopStartX = 21;
@@ -2078,12 +2082,12 @@ int cMYSHOP::LastSetMyShopItem(sITEM * pItem)
 	RECT	rect;
 	int		flag;
 
-	cx = (22 * 9) - pItem->w; //æ∆¿Ã≈€¿Ã µÈæÓ∞•ºˆ¿÷¥¬ ∞°¿Â ≥° X¡¬«• 
-	cy = (22 * 9) - pItem->h; //æ∆¿Ã≈€¿Ã µÈæÓ∞•ºˆ¿÷¥¬ ∞°¿Â ≥° Y¡¬«•
+	cx = (22 * 9) - pItem->w; //???????? ???????? ???? ?? X??? 
+	cy = (22 * 9) - pItem->h; //???????? ???????? ???? ?? Y???
 
 
 
-	//ƒ⁄µÂ∞° ∞∞¡ˆ æ ∞≈≥™ æ∆¿Ã≈€¿Ã ∫ÒæÓ¿÷¡ˆ æ ¿∫ ∞˜ø° º¬∆√«“∂ß ∞Àªˆ«ÿº≠ ¿ßƒ°∏¶ √£æ∆≥Ω¥Ÿ 
+	//??? ???? ???? ???????? ??????? ???? ???? ??????? ?????? ????? ?????? 
 	for (cntx = MyShopStartX; cntx <= MyShopStartX + cx; cntx += 22) {
 		for (cnty = MyShopStartY; cnty <= MyShopStartY + cy; cnty += 22) {
 			flag = 0;
@@ -2116,7 +2120,7 @@ int cMYSHOP::LastSetMyShopItem(sITEM * pItem)
 	return FALSE;
 }
 
-//æ∆¿Ã≈€¿ª µÓ∑œ«—¥Ÿ
+//???????? ??????
 int cMYSHOP::SetShopItemToInven(sITEM * pItem)
 {
 	int i = 0, j = 0;
@@ -2125,7 +2129,7 @@ int cMYSHOP::SetShopItemToInven(sITEM * pItem)
 			if (i + 1 == pItem->sItemInfo.Index &&
 				cInvenTory.InvenItem[i].sItemInfo.ItemHeader.Head == pItem->sItemInfo.ItemHeader.Head &&
 				cInvenTory.InvenItem[i].sItemInfo.ItemHeader.dwChkSum == pItem->sItemInfo.ItemHeader.dwChkSum) {
-				MyShopItemIndex[i] = 1; //µÓ∑œµ» æ∆¿Ã≈€¿« πËø≠ø° 1¿ª º¬∆√ 
+				MyShopItemIndex[i] = 1; //???? ???????? ????? 1?? ???? 
 				return TRUE;
 			}
 		}
@@ -2133,7 +2137,7 @@ int cMYSHOP::SetShopItemToInven(sITEM * pItem)
 	return TRUE;
 }
 
-//ªÛ¡°ø° µÓ∑œµ«¿÷¥¬ æ∆¿Ã≈€¿ª ¿Œ∫•≈‰∏Æø°º≠ √£¥¬¥Ÿ
+//?????? ??????? ???????? ?????????? ?????
 int cMYSHOP::SearchShopItemToInven(sITEM * pItem)
 {
 	int i = 0, j = 0;
@@ -2150,13 +2154,13 @@ int cMYSHOP::SearchShopItemToInven(sITEM * pItem)
 	return FALSE;
 }
 
-//º≠πˆ∑Œ æ∆¿Ã≈€¿ª ∫∏≥Ω¥Ÿ 
+//?????? ???????? ?????? 
 int cMYSHOP::SendMyShopItem()
 {
 
 	int i = 0, j = 0, index = 0;
 
-	//√ ±‚»≠
+	//????
 	memset(&sMyShop, 0, sizeof(sMYSHOP));
 	for (i = 0; i < 30; i++) {
 		if (cMyShop.MyShopItem[i].Flag) {
@@ -2175,15 +2179,15 @@ int cMYSHOP::SendMyShopItem()
 		}
 	}
 
-	//æ∆¿Ã≈€¿ª º≠πˆø° ∫∏≥Ω¥Ÿ
-	sMyShop.CHAR_CODE = lpCurPlayer->dwObjectSerial; //ƒ≥∏Ø≈Õ ƒ⁄µÂ
+	//???????? ?????? ??????
+	sMyShop.CHAR_CODE = lpCurPlayer->dwObjectSerial; //?????? ???
 	SendOpenPersonalTrade(cMyShop.szSendDoc, &sMyShop);
 	//cCharShop.RecvShopItem(&sMyShop);
 
 	return TRUE;
 }
 
-//µÓ∑œµ» æ∆¿Ã≈€∞˙ º≠πˆø° ∫∏≥Ωæ∆¿Ã≈€¿Ã ∞∞¿∫∞°∏¶ √º≈©«—¥Ÿ
+//???? ??????? ?????? ???????????? ???????? ?????
 int SerchsMyShopItem(sITEM * pItem)
 {
 	int i = 0, j = 0;
@@ -2199,7 +2203,7 @@ int SerchsMyShopItem(sITEM * pItem)
 
 }
 
-//º≠πˆø°º≠ ±∏∏≈ø‰√ª¿Ã µÈæÓø¬ æ∆¿Ã≈€¿ª πﬁ¥¬¥Ÿ
+//???????? ???????? ???? ???????? ?????
 int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 {
 
@@ -2216,7 +2220,7 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 	int index5 = 0;
 
 	switch (lpShopItem->SendFlag) {
-	case 1:  //±∏∏≈ø‰√ª 
+	case 1:  //?????? 
 		if (MyShopSendButton) {
 			for (i = 0; i < 30; i++) {
 				if (cMyShop.MyShopItem[i].Flag) {
@@ -2226,17 +2230,17 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 							lpShopItem->Head == cInvenTory.InvenItem[index - 1].sItemInfo.ItemHeader.Head &&
 							lpShopItem->CODE == cInvenTory.InvenItem[index - 1].sItemInfo.CODE) {
 
-							ExitItemFlag = 1; //æ∆¿Ã≈€¿« ¡∏¿Áø©∫Œ
+							ExitItemFlag = 1; //???????? ???????
 
-						//º≠πˆ∑Œ∫∏≥Ω æ∆¿Ã≈€∞˙ «ˆ¡¶ µÓ∑œµ» æ∆¿Ã≈€¿ª √º≈©«—¥Ÿ
+						//?????????? ??????? ???? ???? ???????? ?????
 							index5 = SerchsMyShopItem(&cMyShop.MyShopItem[i]);
 							if (!index5) {
-								//¿Œ¿ß¿˚¿∏∑Œ µ•¿Ã≈∏¡∂¿€µ  
+								//?????????? ?????????? 
 								break;
 
 							}
 
-							//∞°∞›¿Ã ∏¬¡ˆæ ¿ª∞ÊøÏø°
+							//?????? ????????????
 							if (MASK_CODE == sinPM1 || MASK_CODE == sinPL1 || MASK_CODE == sinPS1) {
 								if (lpShopItem->Price != sMyShop.sMyShopItem[index5 - 1].Price * lpShopItem->sTime) {
 									memcpy(&sMyShop_Server, lpShopItem, sizeof(sMYSHOP_ITEM_SERVER));
@@ -2259,9 +2263,9 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 								}
 							}
 
-							lpChar = FindAutoPlayer(dwCharCode); //π∞∞«¿ª ªÁ∞£ ¿Ø¿˙∏¶ √£¥¬¥Ÿ
-							CheckCharForm();//¿Œ¡ı 	
-							//π∞æ‡
+							lpChar = FindAutoPlayer(dwCharCode); //?????? ?? ?????? ?????
+							CheckCharForm();//???? 	
+							//????
 							if (MASK_CODE == sinPM1 || MASK_CODE == sinPL1 || MASK_CODE == sinPS1) {
 								if (cInvenTory.InvenItem[index - 1].sItemInfo.PotionCount >= (int)lpShopItem->sTime) {
 									sinPlusMoney(lpShopItem->Price);
@@ -2270,13 +2274,13 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 									sMyShop.sMyShopItem[index5 - 1].sItem.PotionCount -= lpShopItem->sTime;
 									if (cMyShop.MyShopItem[i].sItemInfo.PotionCount == 0) {
 										cInvenTory.InvenItem[index - 1].Flag = 0;
-										cMyShop.MyShopItem[i].Flag = 0; //∫∏ø©¡ˆ¥¬ ∫Œ∫–√ ±‚»≠ 
-										memset(&sMyShop.sMyShopItem[index5 - 1], 0, sizeof(sMYSHOP_ITEM)); //º≠πˆø°∫∏≥ª¡˙∫Œ∫– √ ±‚»≠
+										cMyShop.MyShopItem[i].Flag = 0; //???????? ???????? 
+										memset(&sMyShop.sMyShopItem[index5 - 1], 0, sizeof(sMYSHOP_ITEM)); //???????????????? ????
 
 									}
 									if (lpChar)
 									{
-										CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "VocÍ vendeu o item %s (x%d) para o jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, cMyShop.MyShopItem[i].sItemInfo.PotionCount, lpChar->smCharInfo.szName, lpShopItem->Price);
+										CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "Voc? vendeu o item %s (x%d) para o jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, cMyShop.MyShopItem[i].sItemInfo.PotionCount, lpChar->smCharInfo.szName, lpShopItem->Price);
 									}
 
 									memcpy(&sMyShop_Server, lpShopItem, sizeof(sMYSHOP_ITEM_SERVER));
@@ -2284,7 +2288,7 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 
 								}
 								else {
-									//øπø‹√≥∏Æ
+									//???????
 									memcpy(&sMyShop_Server, lpShopItem, sizeof(sMYSHOP_ITEM_SERVER));
 									sMyShop_Server.sTime = cInvenTory.InvenItem[index - 1].sItemInfo.PotionCount;
 									cMyShop.MyShopItem[i].sItemInfo.PotionCount = cInvenTory.InvenItem[index - 1].sItemInfo.PotionCount;
@@ -2297,13 +2301,13 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 							else {
 								if (lpChar)
 								{
-									CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "VocÍ vendeu o item %s para o jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, lpChar->smCharInfo.szName, lpShopItem->Price);
+									CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "Voc? vendeu o item %s para o jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, lpChar->smCharInfo.szName, lpShopItem->Price);
 								}
 
 								sinPlusMoney(lpShopItem->Price);
 								cInvenTory.InvenItem[index - 1].Flag = 0;
-								cMyShop.MyShopItem[i].Flag = 0; //∫∏ø©¡ˆ¥¬ ∫Œ∫–√ ±‚»≠ 
-								memset(&sMyShop.sMyShopItem[index5 - 1], 0, sizeof(sMYSHOP_ITEM)); //º≠πˆø°∫∏≥ª¡˙∫Œ∫– √ ±‚»≠
+								cMyShop.MyShopItem[i].Flag = 0; //???????? ???????? 
+								memset(&sMyShop.sMyShopItem[index5 - 1], 0, sizeof(sMYSHOP_ITEM)); //???????????????? ????
 								memcpy(&sMyShop_Server, lpShopItem, sizeof(sMYSHOP_ITEM_SERVER));
 								sMyShop_Server.SendFlag = 2;
 
@@ -2311,7 +2315,7 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 							Send_PersonalShopItem(dwCharCode, &sMyShop_Server);
 							UpdateMyShopList(&sMyShop);
 							cInvenTory.ReFormInvenItem();
-							ReformCharForm();//¿Á¿Œ¡ı 
+							ReformCharForm();//?????? 
 							ResetInvenItemCode();
 							cInvenTory.ReFormPotionNum();
 							ResetPotion();
@@ -2322,7 +2326,7 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 					}
 				}
 			}
-			//æ∆¿Ã≈€¿Ã æ¯¿Ω 
+			//???????? ???? 
 			if (!ExitItemFlag) {
 				memcpy(&sMyShop_Server, lpShopItem, sizeof(sMYSHOP_ITEM_SERVER));
 				sMyShop_Server.SendFlag = 3;
@@ -2335,21 +2339,21 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 			Send_PersonalShopItem(sMyShop_Server.Buyer, &sMyShop_Server);
 		}
 		break;
-	case 2:	//º∫∞¯ 
-		//πﬁ¿∫∞… ≥ª≤¨∑Á ±◊∏Æ∞Ì µ∑ª´¥Ÿ
-		lpChar = FindAutoPlayer(dwCharCode); //π∞∞«¿ª ∆«∏≈«— ¿Ø¿˙∏¶ √£¥¬¥Ÿ
+	case 2:	//???? 
+		//?????? ?????? ????? ??????
+		lpChar = FindAutoPlayer(dwCharCode); //?????? ????? ?????? ?????
 		index = cCharShop.SearchMyShopItem(lpShopItem->CODE, lpShopItem->Head, lpShopItem->CkSum);
 		if (index) {
-			CheckCharForm();//¿Œ¡ı 				
-			//π∞æ‡
+			CheckCharForm();//???? 				
+			//????
 			if (MASK_CODE == sinPM1 || MASK_CODE == sinPL1 || MASK_CODE == sinPS1)
 			{
 				if (lpChar)
 				{
-					CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "VocÍ comprou o item %s (x%d) do jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, cMyShop.MyShopItem[i].sItemInfo.PotionCount, lpChar->smCharInfo.szName, lpShopItem->Price);
+					CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "Voc? comprou o item %s (x%d) do jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, cMyShop.MyShopItem[i].sItemInfo.PotionCount, lpChar->smCharInfo.szName, lpShopItem->Price);
 				}
 
-				//º¬∆√«“ ƒ´øÓ∆Æ ∞πºˆ 
+				//?????? ???? ???? 
 				sRecvMyShop.sMyShopItem[index - 1].sItem.PotionCount = lpShopItem->sTime;
 				cCharShop.CharShopItem[index - 1].sItemInfo.PotionCount -= lpShopItem->sTime;
 				sinMinusMoney(lpShopItem->Price);
@@ -2363,7 +2367,7 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 			{
 				if (lpChar)
 				{
-					CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "VocÍ comprou o item %s do jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, lpChar->smCharInfo.szName, lpShopItem->Price);
+					CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Notice, "Voc? comprou o item %s do jogador %s por %d gp", cInvenTory.InvenItem[index - 1].sItemInfo.ItemName, lpChar->smCharInfo.szName, lpShopItem->Price);
 				}
 
 				sinMinusMoney(lpShopItem->Price);
@@ -2373,28 +2377,28 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 
 			}
 			cInvenTory.ReFormInvenItem();
-			ReformCharForm();//¿Á¿Œ¡ı 
+			ReformCharForm();//?????? 
 			ResetInvenItemCode();
 			cInvenTory.ReFormPotionNum();
-			ResetPotion(); //ResetPotion2 ∞°¿Ã≥™∂Û ResetPotion¿∏∑Œ «ÿ¡ÿ¥Ÿ 
+			ResetPotion(); //ResetPotion2 ??????? ResetPotion???? ????? 
 			cInvenTory.CheckWeight();
 			SaveGameData();
 
 		}
 		break;
-	case 3: //ex) ∆»∏≤
+	case 3: //ex) ???
 		cMessageBox.ShowMessage(MESSAGE_MYSHOP_ITEM_DOWN);
 		break;
-	case 4: //±‚≈∏ µÓµÓ
+	case 4: //??? ???
 		cMessageBox.ShowMessage(MESSAGE_MYSHOP_CLOSE);
 		break;
-	case 5: //∆«∏≈¿⁄∏¶ √£¿ªºˆæ¯¿Ω
+	case 5: //?????? ?????????
 		cMessageBox.ShowMessage(MESSAGE_MYSHOP_NOT_SEARCH);
 		break;
-	case 6: //π∞æ‡∞πºˆ∞° ∏¬¡ˆæ ¿Ω
+	case 6: //???????? ????????
 		index = cCharShop.SearchMyShopItem(lpShopItem->CODE, lpShopItem->Head, lpShopItem->CkSum);
 		if (index) {
-			//π∞æ‡
+			//????
 			if (MASK_CODE == sinPM1 || MASK_CODE == sinPL1 || MASK_CODE == sinPS1) {
 				sRecvMyShop.sMyShopItem[index - 1].sItem.PotionCount = lpShopItem->sTime;
 				cCharShop.CharShopItem[index - 1].sItemInfo.PotionCount = lpShopItem->sTime;
@@ -2402,7 +2406,7 @@ int cMYSHOP::RecvMyShopItem(DWORD dwCharCode, sMYSHOP_ITEM_SERVER * lpShopItem)
 			}
 		}
 		break;
-	case 7: //∞°∞›∫Øµø
+	case 7: //???????
 		index = cCharShop.SearchMyShopItem(lpShopItem->CODE, lpShopItem->Head, lpShopItem->CkSum);
 		if (index) {
 			sRecvMyShop.sMyShopItem[index - 1].Price = lpShopItem->Price;
@@ -2422,27 +2426,27 @@ int cCHARSHOP::RecvShopItem(sMYSHOP * sMyShop)
 	char szFilePath[256];
 	sITEM TempItem;
 	for (int i = 0; i < 30; i++) {
-		if (sMyShop->sMyShopItem[i].Price) { //¿œ¥‹¿∫ ∞°∞›¿∏∑Œ √º≈©
+		if (sMyShop->sMyShopItem[i].Price) { //????? ???????? ??
 			for (int j = 0; j < MAX_ITEM; j++) {
 				if (sMyShop->sMyShopItem[i].sItem.CODE == sItem[j].CODE) {
 					wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
-					memcpy(&TempItem, &sItem[j], sizeof(sITEM));  //±∏¡∂√ºø° ¡§¿«µ» ¡§∫∏∏¶ ¿˙¿Â«—¥Ÿ 
+					memcpy(&TempItem, &sItem[j], sizeof(sITEM));  //??????? ????? ?????? ??????? 
 
 
-					//∫π¡÷ ∏”¥œ ∞¸∑√
+					//???? ??? ????
 					if ((sMyShop->sMyShopItem[i].sItem.CODE & sinITEM_MASK2) == sinPZ1 || (sMyShop->sMyShopItem[i].sItem.CODE & sinITEM_MASK2) == sinPZ2) {
 						if (sMyShop->sMyShopItem[i].sItem.PotionCount == 2) {
 							wsprintf(szFilePath, "Image\\sinImage\\Items\\%s\\it%s.bmp", sItem[j].ItemFilePath, sItem[j].LastCategory);
-							memcpy(&TempItem, &sItem[j], sizeof(sITEM));  //±∏¡∂√ºø° ¡§¿«µ» ¡§∫∏∏¶ ¿˙¿Â«—¥Ÿ 
-							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //¿ÃπÃ¡ˆ∏¶ ∏’¿˙¿–æÓ¡ÿ¥Ÿ
+							memcpy(&TempItem, &sItem[j], sizeof(sITEM));  //??????? ????? ?????? ??????? 
+							sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath); //??????? ???????????
 						}
 
 					}
 
-					memcpy(&TempItem.sItemInfo, &sMyShop->sMyShopItem[i].sItem, sizeof(sITEMINFO)); //¿œ¥‹ ≈€«¡ø° ¿˙¿Â«—¥Ÿ 
-					if (!sItem[j].lpTempItem) //¿ÃπÃ¡ˆ∞° æ¯¿∏∏È ∑ŒµÂ«—¥Ÿ
+					memcpy(&TempItem.sItemInfo, &sMyShop->sMyShopItem[i].sItem, sizeof(sITEMINFO)); //??? ?????? ??????? 
+					if (!sItem[j].lpTempItem) //??????? ?????? ???????
 						sItem[j].lpTempItem = LoadDibSurfaceOffscreen(szFilePath);
-					TempItem.lpItem = sItem[j].lpTempItem; //≈€«¡ø° ¿÷¥¯ ¿ÃπÃ¡ˆ ∆˜¿Œ≈Õ∏¶ ≥÷æÓ¡ÿ¥Ÿ 
+					TempItem.lpItem = sItem[j].lpTempItem; //?????? ??? ????? ??????? ?????? 
 					TempItem.x = sMyShop->sMyShopItem[i].Posi[0];
 					TempItem.y = sMyShop->sMyShopItem[i].Posi[1];
 					memcpy(&CharShopItem[i], &TempItem, sizeof(sITEM));
@@ -2459,7 +2463,7 @@ int cCHARSHOP::RecvShopItem(sMYSHOP * sMyShop)
 }
 
 
-//πﬁ¿∫ æ∆¿Ã≈€¿ª √£æ∆º≠ ¿Œµ¶Ω∫∏¶ ∏Æ≈œ«—¥Ÿ
+//???? ???????? ???? ???????? ???????
 int cCHARSHOP::SearchMyShopItem(DWORD CODE, DWORD Head, DWORD CheckSum)
 {
 	for (int i = 0; i < 30; i++) {
@@ -2474,12 +2478,12 @@ int cCHARSHOP::SearchMyShopItem(DWORD CODE, DWORD Head, DWORD CheckSum)
 
 }
 
-//∞≥¿ŒªÛ¡°ø°º≠ªÍ æ∆¿Ã≈€¿ª ¿Œ∫•≈‰∏Æ∑Œ º¬∆√«—¥Ÿ
+//?????????????? ???????? ???????? ???????
 int cCHARSHOP::SetCharShopItemToInven(sITEMINFO * pItem_Info)
 {
 	char szTestBuff2[256];
 	sITEM TempItem;
-	szTestBuff2[0] = 0; //πˆ∆€√ ±‚»≠  
+	szTestBuff2[0] = 0; //????????  
 	memset(&TempItem, 0, sizeof(sITEM));
 	for (int j = 0; j < MAX_ITEM; j++) {
 		if (pItem_Info->CODE == sItem[j].CODE) {
@@ -2492,14 +2496,14 @@ int cCHARSHOP::SetCharShopItemToInven(sITEMINFO * pItem_Info)
 			TempItem.Flag = 1;
 			cInvenTory.CheckRequireItemToSet(&TempItem);
 			cInvenTory.AutoSetInvenItem(&TempItem);
-			cInvenTory.ReFormInvenItem(); //æ∆¿Ã≈€¿« µ•¿Ã≈∏∏¶ º¬∆√«—¥Ÿ 
+			cInvenTory.ReFormInvenItem(); //???????? ??????? ??????? 
 			break;
 		}
 	}
 	return TRUE;
 }
 
-//æ∆æ∆≈€¿ª ªÍ¥Ÿ
+//??????? ???
 int cCHARSHOP::BuyItem(int Index)
 {
 
@@ -2517,13 +2521,13 @@ int cCHARSHOP::BuyItem(int Index)
 		sMyShop_Server.SendFlag = 1;
 		TempItem.CODE = sRecvMyShop.sMyShopItem[Index2 - 1].sItem.CODE;
 
-		//ø©±‚¥¬ ∆˜º«
+		//????? ????
 		MASK_CODE = (TempItem.CODE & sinITEM_MASK2);
 		if (MASK_CODE == sinPM1 || MASK_CODE == sinPL1 || MASK_CODE == sinPS1) {
 			if (cInvenTory.CheckInvenEmpty(&TempItem)) {
 				memcpy(&MyShopPotion, &sRecvMyShop.sMyShopItem[Index2 - 1].sItem, sizeof(sITEMINFO));
-				MyShopPotion.ItemHeader.dwVersion = sRecvMyShop.sMyShopItem[Index2 - 1].Price; //πˆ¿¸ø° ∞°∞›¿ª≥÷¥¬¥Ÿ
-				MyShopPotion.PotionCount = cCharShop.CharShopItem[Index].sItemInfo.PotionCount; //∫π¿‚«œ¥œ±Ó ∞«µÈ¡ˆ∏ª¿⁄
+				MyShopPotion.ItemHeader.dwVersion = sRecvMyShop.sMyShopItem[Index2 - 1].Price; //?????? ???????????
+				MyShopPotion.PotionCount = cCharShop.CharShopItem[Index].sItemInfo.PotionCount; //???????? ?????????
 				cMessageBox.ShowMessage2(MESSAGE_MYSHOP_POTION);
 				return TRUE;
 			}
@@ -2533,7 +2537,7 @@ int cCHARSHOP::BuyItem(int Index)
 			}
 		}
 
-		//ø©±‚¥¬ ¿œπ› æ∆¿Ã≈€ 
+		//????? ??? ?????? 
 		if ((sinChar->Money - (int)sMyShop_Server.Price) >= 0) {
 			if (cInvenTory.CheckInvenEmpty(&TempItem)) {
 				if (sinChar->Weight[0] + sRecvMyShop.sMyShopItem[Index2 - 1].sItem.Weight <= sinChar->Weight[1]) {
@@ -2598,20 +2602,20 @@ int cMYSHOP::AutoCloseShop()
 			}
 		}
 	}
-	//ªÛ¡°¿ª¥›¥¬¥Ÿ
+	//???????????
 	if (MyShopSendButton) {
 		if (CheckFlag == 1) {
 			cMyShop.OpenFlag = 0;
-			memset(cMyShop.MyShopItem, 0, sizeof(sITEM) * 30); //æ∆¿Ã≈€¿ª ¡ˆøˆ¡ÿ¥Ÿ
+			memset(cMyShop.MyShopItem, 0, sizeof(sITEM) * 30); //???????? ???????
 			memset(MyShopItemIndex, 0, sizeof(int) * 100);
-			MyShopSendButton = 0; //µÓ∑œπˆ∆∞ √ ±‚»≠
+			MyShopSendButton = 0; //????? ????
 			SendClosePersonalTrade();
 		}
 	}
 	return TRUE;
 }
 
-//∞≥¿ŒªÛ¡°¿« √—æ◊¿ª ±∏«ÿø¬¥Ÿ 
+//?????????? ????? ??????? 
 int cMYSHOP::GetTotalMyShopItemMoney()
 {
 	int TotalMoney = 0;
@@ -2630,12 +2634,12 @@ int cMYSHOP::GetTotalMyShopItemMoney()
 	return TotalMoney;
 }
 /*----------------------------------------------------------------------------*
-*	             ∞¯º∫¿¸ ºº¿≤∫Ø∞Êø° ¿««— «‘ºˆ
+*	             ?????? ???????? ???? ???
 *-----------------------------------------------------------------------------*/
-//<ha>π∞∞«¿ª ±∏¿‘«“ºˆ ¿÷¥¬¡ˆ √º≈©«—¥Ÿ.
+//<ha>?????? ??????? ????? ?????.
 int cSHOP::haBuyMoneyCheck(int BuyMoney)
 {
-	//ƒ≥∏Ø≈Õ ∏”¥œøÕ ªÁøÎµ… ∞°∞›¿ª ∫Ò±≥«—¥Ÿ.
+	//?????? ???? ???? ?????? ?????.
 	if (sinChar->Money - (BuyMoney + (BuyMoney * cSinSiege.GetTaxRate()) / 100) >= 0) {
 		return TRUE;
 	}

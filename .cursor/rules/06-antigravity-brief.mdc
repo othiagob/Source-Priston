@@ -1,0 +1,80 @@
+---
+description: Sempre que criar ou refatorar janela/interface, entregar prompt completo Antigravity (Gemini) com kit Fallen Tale
+alwaysApply: true
+---
+
+# Prompt de arte (Antigravity + Gemini)
+
+Quando a tarefa for **criar, abrir, remodelar ou refatorar** uma janela
+ou interface do jogo (ImGui **ou** HUD de pedra), o Cursor **nao gera**
+PNG/TGA/BMP. O ganho visual e a soma de duas coisas:
+
+1. **ImDrawList / C++** — moldura, fundo, filete dourado, X, split de
+   coluna, abas, botao geometrico. Contrato: `15-imgui-windows.mdc`
+   (`DrawPlayerWindowChrome`). Nao peca arte de janela inteira nem 9-slice
+   (revertido).
+2. **Antigravity (Gemini)** — so as pecas que o codigo **carrega de
+   arquivo**: titulo 400x64, botao BMP/TGA, painel de pedra, login.
+
+O Cursor **orienta** com um **prompt completo, copiavel**, preciso o
+bastante para o Gemini repetir o kit ja aprovado (login + char select).
+Grave o brief em `docs/prompt-antigravity-<tela>-ui.md` (modelos:
+`docs/prompt-antigravity-charselect-ui.md`,
+`docs/prompt-antigravity-armazem-ui.md`) e cole o bloco PROMPT no chat.
+
+Nao se aplica a: bug de uma linha sem visual, Server.exe (`16-desktop-tools`
+— sem ouro de jogador), pacote/SQL sem tela.
+
+## Kit visual (citar no prompt, com referencia concreta)
+
+Identidade **Fallen Tale**. Sempre amarrar a uma peca **ja no jogo**:
+
+| Peca | Referencia no cliente | O que copiar |
+|---|---|---|
+| Bronze / ouro antigo forjado | `C:\Cliente Full\game\images\login\` (`window.png`, `btl` Entrar, `bte` Sair) | Bevel, desgaste, metal oxidado. Nao “1px gold”, neon, vidro, glow. |
+| Texto centralizado no botao | `StartImage\login\CharSelect\Bt_select.tga` (Confirmar, 128x32) e familia Voltar/Sair | Rotulo no centro, mesma familia de metal; so muda o texto. |
+| Titulo ImGui | `game/images/quest/desafios.png` (e loja/ranking/mix) | Canvas **400x64**, recorte real, ouro fosco + icone a esquerda, fundo `RGB(20,24,32)`. |
+| HUD de pedra (inventario, mix, aging) | `Image\SinImage\Shopall\shop-1.bmp` | Pedra do HUD classico, **nao** o cromado ImGui. Armazem **nao** usa mais este BMP como janela (ADR 0006). |
+
+Prompt de identidade (obrigatorio no bloco):
+
+- Fantasia medieval sombria / premium
+- Pedra escura + metal oxidado (carvao, cinza muito escuro)
+- Molduras bronze / ouro antigo forjado (bevel, desgaste)
+- Tipografia serifada, dourado envelhecido ou branco com contorno escuro
+- Alpha real em overlay (sem xadrez, sem fundo preto/branco sobrando)
+- Sem vidro, neon, glow forte, plastico, sci-fi
+
+## O que vai em arte vs o que vai em codigo
+
+**Arte (Gemini):** titulo PNG; botoes com texto na textura (login, char
+select, BMP de pedra). Titulo do armazem e PNG 400x64, nao painel BMP.
+
+**Codigo (ImDrawList):** bezel da janela ImGui, header, X, split lista|
+detalhe, secao (`DrawSectionHeader`), botao ImGui de texto (VOLTAR /
+CONFIRMAR no cromado). Nao gerar PNG desses.
+
+## Conteudo minimo do prompt (bloco copiavel)
+
+O bloco que o usuario cola no Antigravity tem que ter **tudo** abaixo.
+Orientacao vaga ("deixe mais bonito", "estilo medieval") **nao serve**.
+
+1. Papel: "artista de UI do MMORPG Fallen Tale (base Priston Tale)".
+2. Identidade visual (kit acima) + **uma frase de referencia** do tipo:
+   "textura de bronze envelhecido igual `window.png` / `btl.png` do login";
+   "botoes 128x32 com texto centralizado igual `Bt_select.tga` da selecao
+   de personagem".
+3. Pasta destino no **Cliente Full** (path absoluto).
+4. Tabela arquivo a arquivo: nome **exato** que o C++ ja usa, tamanho
+   em px, texto na arte (se houver), idle vs hover (`btl` / `btl_`).
+5. Regras tecnicas: mesmo nome, mesmas dimensoes, layout no mesmo lugar,
+   BMP opaco vs PNG/TGA com alpha.
+6. O que **nao** redesenhar (ex.: nao gerar `shop-1.bmp` se e compartilhado;
+   nao redesenhar login se a tarefa e char select).
+7. Checklist de entrega.
+
+Depois do prompt: uma linha para o humano — "Cole no Antigravity (Gemini).
+Grave em `C:\Cliente Full\...`. O F5 le o cliente, nao a source."
+
+Paths e pipeline: `05-directories-and-art.mdc`. Cromado ImGui: `15`.
+Template: `docs/prompt-antigravity-TEMPLATE.md`.

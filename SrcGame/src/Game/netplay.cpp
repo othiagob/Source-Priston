@@ -36,6 +36,7 @@
 #include "CurseFilter.h"
 #include "HUD\\RestaureWindow.h"
 #include "HUD\\MixWindow.h"
+#include "HUD\\WarehouseWindow.h"
 #include "Shop\\NewShop.h"
 #include "Shop\\NewShopTime.h"
 #include "Montarias\\CMountHandler.h"
@@ -4681,14 +4682,53 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 		PARTYHANDLER->HandlePacket((PacketRequestRaid*)pData->Buff);
 		break;
 	case smTRANSCODE_WAREHOUSE:
-		//¾ÆÀÌÅÛ º¸°ü Ã¢°í µ¥ÀÌÅ¸ ÀÔ¼ö
-		//Ã¢°í °¡Á®¿À±â
-		if (!cWareHouse.OpenFlag && !cTrade.OpenFlag && !cMyShop.OpenFlag) {
-			if (LoadWareHouse((TRANS_WAREHOUSE*)pData->Buff, &sWareHouse) == TRUE) {
-				cWareHouse.LoadWareHouseItemIamge();
-				cWareHouse.BackUpInvenItem();
-				ResetInvenItemCode();
-				ResetInvenMoney();
+		{
+			TRANS_WAREHOUSE* lpWh = (TRANS_WAREHOUSE*)pData->Buff;
+			const int isV2 = (lpWh->wVersion[0] == WAREHOUSE_PACKET_VERSION);
+			int page = 0;
+			if (isV2)
+				page = (int)lpWh->dwTemp[0];
+			if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
+				page = 0;
+
+			if (cTrade.OpenFlag || cMyShop.OpenFlag)
+				break;
+
+			if (cWareHouse.OpenFlag) {
+				if (page != 0) {
+					sWAREHOUSE pageWh;
+					ZeroMemory(&pageWh, sizeof(pageWh));
+					pageWh.Money = sWareHouse.Money;
+					pageWh.Weight[0] = sWareHouse.Weight[0];
+					pageWh.Weight[1] = sWareHouse.Weight[1];
+					if (LoadWareHouse(lpWh, &pageWh, 1, page) == TRUE)
+						cWareHouse.ApplyLoadedPage(page, pageWh.WareHouseItem);
+				}
+				break;
+			}
+
+			if (page == 0) {
+				if (LoadWareHouse(lpWh, &sWareHouse, 0, 0) == TRUE) {
+					cWareHouse.BeginLoad();
+					cWareHouse.ApplyLoadedPage(0, sWareHouse.WareHouseItem);
+					cWareHouse.MarkPageReady(0);
+					if (!isV2)
+						cWareHouse.FillEmptyRemainingPages();
+					cWareHouse.TryFinishOpen();
+				}
+			}
+			else if (cWareHouse.IsLoadingPages()) {
+				sWAREHOUSE pageWh;
+				ZeroMemory(&pageWh, sizeof(pageWh));
+				pageWh.Money = sWareHouse.Money;
+				pageWh.Weight[0] = sWareHouse.Weight[0];
+				pageWh.Weight[1] = sWareHouse.Weight[1];
+				if (LoadWareHouse(lpWh, &pageWh, 1, page) == TRUE)
+					cWareHouse.ApplyLoadedPage(page, pageWh.WareHouseItem);
+				else
+					ZeroMemory(cWareHouse.Pages[page], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+				cWareHouse.MarkPageReady(page);
+				cWareHouse.TryFinishOpen();
 			}
 		}
 		break;
@@ -4715,6 +4755,7 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 		}
 
 		if (smWsockDataServer && !cWareHouse.OpenFlag && !cTrade.OpenFlag) {
+			WarehouseWindow::GetInstance()->ArmHideClassic();
 			smWsockDataServer->Send2((char*)lpTransCommand, lpTransCommand->size, TRUE);
 		}
 		break;
@@ -4736,6 +4777,9 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 	case smTRANSCODE_OPEN_MIXITEM:
 		//¾ÆÀÌÅÛ Á¶ÇÕÃ¢ ¿­±â
 		lpTransCommand = (smTRANS_COMMAND*)pData->Buff;
+
+		if (cWareHouse.OpenFlag)
+			break;
 
 		if (lpCurPlayer->smCharInfo.Weight[0] > lpCurPlayer->smCharInfo.Weight[1]) {
 			cMessageBox.ShowMessageEvent(mgWeightOver);		//¹«°èÃÊ°ú
@@ -4774,6 +4818,8 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 		break;
 
 	case smTRANSCODE_OPEN_AGING:
+		if (cWareHouse.OpenFlag)
+			break;
 		if (lpCurPlayer->smCharInfo.Weight[0] > lpCurPlayer->smCharInfo.Weight[1]) {
 			cMessageBox.ShowMessageEvent(mgWeightOver);
 			break;
@@ -5146,6 +5192,8 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 		break;
 
 	case smTRANSCODE_OPEN_SKINCHANGE:
+		if (cWareHouse.OpenFlag)
+			break;
 		cSkinChanger.Open();
 		break;
 
@@ -9888,7 +9936,7 @@ int GetTotalExp()
 }
 
 
-int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse)
+int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse, int page)
 {
 	TRANS_WAREHOUSE	TransWareHouse;
 	sWAREHOUSE	WareHouseCheck;
@@ -9897,6 +9945,9 @@ int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse)
 	DWORD	dwChkSum;
 	char* szComp1, * szComp2;
 	int	flag;
+
+	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
+		page = 0;
 
 	if (lpTransWareHouse) flag = 1;
 	else flag = 0;
@@ -9936,28 +9987,31 @@ int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse)
 		}
 	}
 
-	WareHouseSubMoney += (CompWareHouseMoney - lpWareHouse->Money);
-	CompWareHouseMoney = 0;
+	if (page == 0) {
+		WareHouseSubMoney += (CompWareHouseMoney - lpWareHouse->Money);
+		CompWareHouseMoney = 0;
+	}
 
 	TransWareHouse.code = smTRANSCODE_WAREHOUSE;
 	TransWareHouse.size = sizeof(TRANS_WAREHOUSE) - (sizeof(sWAREHOUSE) - CompSize);
 	TransWareHouse.DataSize = CompSize;
 	TransWareHouse.dwChkSum = dwChkSum;
-	TransWareHouse.wVersion[0] = Version_WareHouse;
+	TransWareHouse.wVersion[0] = WAREHOUSE_PACKET_VERSION;
 	TransWareHouse.wVersion[1] = 0;
 
-	if (!flag) {
+	if (!flag && page == 0) {
 		TransWareHouse.WareHouseMoney = lpWareHouse->Money ^ (dwChkSum ^ smTRANSCODE_WAREHOUSE);
 		TransWareHouse.UserMoney = lpCurPlayer->smCharInfo.Money ^ (dwChkSum ^ smTRANSCODE_WAREHOUSE);
 	}
 
-	TransWareHouse.dwTemp[0] = 0;
+	TransWareHouse.dwTemp[0] = (DWORD)page;
 	TransWareHouse.dwTemp[1] = 0;
 	TransWareHouse.dwTemp[2] = 0;
 	TransWareHouse.dwTemp[3] = 0;
 	TransWareHouse.dwTemp[4] = 0;
 
-	dwLastWareHouseChkSum = dwChkSum;
+	if (page == 0)
+		dwLastWareHouseChkSum = dwChkSum;
 
 	if (flag) {
 		memcpy(lpTransWareHouse, &TransWareHouse, sizeof(TRANS_WAREHOUSE));
@@ -9969,11 +10023,17 @@ int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse)
 	if (smWsockDataServer) {
 		smWsockDataServer->Send2((char*)&TransWareHouse, TransWareHouse.size, TRUE);
 
-		SaveGameData();
+		if (page == WAREHOUSE_PAGE_COUNT - 1)
+			SaveGameData();
 		return TRUE;
 	}
 
 	return FALSE;
+}
+
+int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse)
+{
+	return SaveWareHouse(lpWareHouse, lpTransWareHouse, 0);
 }
 
 int	SaveCaravan(sCARAVAN * lpCaravan, TRANS_CARAVAN * lpTransCaravan)
@@ -10067,7 +10127,12 @@ int	SaveCaravan(sCARAVAN * lpCaravan, TRANS_CARAVAN * lpTransCaravan)
 
 int	SaveWareHouse(sWAREHOUSE * lpWareHouse)
 {
-	return SaveWareHouse(lpWareHouse, 0);
+	return SaveWareHouse(lpWareHouse, 0, 0);
+}
+
+int	SaveWareHousePage(sWAREHOUSE * lpWareHouse, int page)
+{
+	return SaveWareHouse(lpWareHouse, 0, page);
 }
 
 int	SaveCaravan(sCARAVAN * lpCaravan)
@@ -10075,7 +10140,7 @@ int	SaveCaravan(sCARAVAN * lpCaravan)
 	return SaveCaravan(lpCaravan, 0);
 }
 
-int	LoadWareHouse(TRANS_WAREHOUSE * lpTransWareHouse, sWAREHOUSE * lpWareHouse, int flag)
+int	LoadWareHouse(TRANS_WAREHOUSE * lpTransWareHouse, sWAREHOUSE * lpWareHouse, int flag, int page)
 {
 	sWAREHOUSE	WareHouseCheck;
 	int cnt;
@@ -10083,11 +10148,19 @@ int	LoadWareHouse(TRANS_WAREHOUSE * lpTransWareHouse, sWAREHOUSE * lpWareHouse, 
 	char* szComp;
 	char	szMsgBuff[128];
 
+	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
+		page = 0;
+
 	if (lpTransWareHouse->DataSize == 0) {
-		ZeroMemory(lpWareHouse, sizeof(sWAREHOUSE));
-		lpWareHouse->Money = 2023;
-		lpWareHouse->Weight[0] = 197;
-		CompWareHouseMoney = lpWareHouse->Money;
+		if (page == 0) {
+			ZeroMemory(lpWareHouse, sizeof(sWAREHOUSE));
+			lpWareHouse->Money = 2023;
+			lpWareHouse->Weight[0] = 197;
+			CompWareHouseMoney = lpWareHouse->Money;
+		}
+		else {
+			ZeroMemory(lpWareHouse->WareHouseItem, sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+		}
 		return TRUE;
 	}
 
@@ -10102,13 +10175,17 @@ int	LoadWareHouse(TRANS_WAREHOUSE * lpTransWareHouse, sWAREHOUSE * lpWareHouse, 
 	}
 	if (dwChkSum == lpTransWareHouse->dwChkSum) {
 
-		if (!flag && dwLastWareHouseChkSum && dwLastWareHouseChkSum != lpTransWareHouse->dwChkSum && !smConfig.DebugMode) {
+		if (page == 0 && !flag && dwLastWareHouseChkSum && dwLastWareHouseChkSum != lpTransWareHouse->dwChkSum && !smConfig.DebugMode) {
 			return FALSE;
 		}
 
-		memcpy(lpWareHouse, &WareHouseCheck, sizeof(sWAREHOUSE));
-
-		CompWareHouseMoney = lpWareHouse->Money;
+		if (page == 0) {
+			memcpy(lpWareHouse, &WareHouseCheck, sizeof(sWAREHOUSE));
+			CompWareHouseMoney = lpWareHouse->Money;
+		}
+		else {
+			memcpy(lpWareHouse->WareHouseItem, WareHouseCheck.WareHouseItem, sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+		}
 
 		for (cnt = 0; cnt < 100; cnt++) {
 			if (lpWareHouse->WareHouseItem[cnt].Flag)
@@ -10125,14 +10202,13 @@ int	LoadWareHouse(TRANS_WAREHOUSE * lpTransWareHouse, sWAREHOUSE * lpWareHouse, 
 					if (lpWareHouse->WareHouseItem[cnt].sItemInfo.PotionCount > 1)	lpWareHouse->WareHouseItem[cnt].Flag = 0;
 				}
 
-				// Deleta item temporário do Baú
 				if (DeleteEventItem_TimeOut(&lpWareHouse->WareHouseItem[cnt].sItemInfo) == TRUE) {
 					lpWareHouse->WareHouseItem[cnt].Flag = 0;
 
 					CHATGAMEHANDLE->AddChatBoxTextEx(EChatColor::CHATCOLOR_Error, mgItemTimeOut, lpWareHouse->WareHouseItem[cnt].sItemInfo.ItemName);
 
-					// Fix: Baú não salvando quando o item de tempo é expirado dentro dele
-					SaveWareHouse(lpWareHouse);
+					if (page == 0)
+						SaveWareHouse(lpWareHouse);
 				}
 			}
 		}
@@ -10140,6 +10216,11 @@ int	LoadWareHouse(TRANS_WAREHOUSE * lpTransWareHouse, sWAREHOUSE * lpWareHouse, 
 	}
 
 	return FALSE;
+}
+
+int	LoadWareHouse(TRANS_WAREHOUSE * lpTransWareHouse, sWAREHOUSE * lpWareHouse, int flag)
+{
+	return LoadWareHouse(lpTransWareHouse, lpWareHouse, flag, 0);
 }
 
 

@@ -206,8 +206,8 @@ void cCHARSTATUS::Draw()
 	int TempLen = 0;
 	int TempCount2 = 0;
 
-	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+	// ImGui do jogador (armazém, loja, desafios…) é desenhado no sinDraw,
+	// depois do HUD de pedra, senão o CraftItemMain cobre o baú.
 
 	// Render 2d aqui
 	GAMECOREHANDLE->Render2D();

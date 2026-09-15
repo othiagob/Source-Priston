@@ -12,7 +12,7 @@ alwaysApply: false
 - UI de debug/ferramentas usa `imGui/` — HUD clássico (inventário, HP, skills)
   continua em `WinInt/`/`HUD/` com BMP até o usuário pedir para migrar.
   **Qualquer** janela de jogador nova ou remodelada (Desafios, Loja,
-  Configurações, Ranking, Party e as próximas) segue **somente**
+  Configurações, Ranking, Party, Armazém e as próximas) segue **somente**
   `.cursor/rules/15-imgui-windows.mdc` — leia o arquivo antes de
   desenhar. Modelo: `QuestWindow.cpp` (layout) + `Settings.cpp`
   (cromado). Não chame `StyleColorArmageddon()`. Só atualize a regra
@@ -27,7 +27,10 @@ alwaysApply: false
 - Cliente full nesta máquina: `C:\Cliente Full`. O F5 do Visual Studio
   deve usar esse diretório (`game.vcxproj.user` →
   `LocalDebuggerWorkingDirectory`). Imagens de item e PNG de título
-  são lidos daí, não da pasta da source.
+  são lidos daí, não da pasta da source. Artes PNG/TGA novas saem do
+  **Antigravity (Gemini)** e vão para o Cliente Full — ver
+  `05-directories-and-art.mdc` e o **prompt obrigatório**
+  `06-antigravity-brief.mdc`. Não invente path; não gere o PNG aqui.
 - Ícone de item: `image\sinImage\Items\<Weapon|Defense|Accessory|Premium|Event>\itCODIGO.bmp`.
   SQL (`ShopItems.ItemCode`) só identifica o item. Arquivo ausente =
   `NO IMAGE` + “A imagem do item não está pronta” (trava o clique).

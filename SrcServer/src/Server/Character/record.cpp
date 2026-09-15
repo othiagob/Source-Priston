@@ -19,9 +19,12 @@
 #include "TextMessage.h"
 #include "srcserver\\onserver.h"
 
+static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE* pages, int maxPages);
+static int WriteWareHouseFilePages(const char* szFileName, TRANS_WAREHOUSE* pages, int nPages);
+static void MakeEmptyWareHousePacket(TRANS_WAREHOUSE* pkt, int page);
 
-char	*szRecordHeader = "RC 1.50";			//저장 구조체
-DWORD	dwRecordVersion = 150;					//기록 구조체 버전
+char	*szRecordHeader = "RC 1.50";			//???? ?????
+DWORD	dwRecordVersion = 150;					//??? ????? ????
 
 char	*szRecordUserDataDir = "userdata";
 char	*szRecordUserBackupDataDir = "userdata_backup";
@@ -31,7 +34,7 @@ char* szRecordCaravanDir = "caravan";
 char	*szRecordDeleteDir = "deleted";
 char	*szPostBoxDir = "Data\\PostBox";
 
-sLAST_QUEST_INFO	RecordLastQuestInfo;			//지난 퀘스트 정보
+sLAST_QUEST_INFO	RecordLastQuestInfo;			//???? ????? ????
 
 //#define	CHAR_NAME_MAXLEN	(18+6)
 #define	CHAR_NAME_MAXLEN	(16+2)
@@ -39,23 +42,23 @@ sLAST_QUEST_INFO	RecordLastQuestInfo;			//지난 퀘스트 정보
 int	Permit_CheckMoney = TOTAL_CHECK_MONEY_MAX;
 int	Permit_CheckExp = TOTAL_CHECK_EXP_MAX;
 
-extern rsSERVER_CONFIG		rsServerConfig;				//서버 설정 구조
-extern DWORD				dwPlayServTime;				//서버 시간
-extern time_t				tServerTime;				//서버의 시간 ( 빌링 처리용 )
-extern int					Server_DebugCount;						//디버그 처리 카운터
+extern rsSERVER_CONFIG		rsServerConfig;				//???? ???? ????
+extern DWORD				dwPlayServTime;				//???? ????
+extern time_t				tServerTime;				//?????? ???? ( ???? ????? )
+extern int					Server_DebugCount;						//????? ??? ?????
 
-//캐릭터 고유 코드를 생성
+//?????? ???? ??? ????
 DWORD GetNewObjectSerial();
-//해킹 시도 기록 파일로 남김
+//??? ??? ??? ????? ????
 int RecordHackLogFile( rsPLAYINFO *lpPlayInfo , void *lpTransCommand );
-//물약 거래정보 확인
+//???? ??????? ???
 int	rsGetTradePotionInfo( rsPLAYINFO *lpPlayInfo , DWORD dwCode );
-//포인트 티켓 아이템 특정 유저의 인벤토리보냄
+//????? ??? ?????? ??? ?????? ??????????
 int rsPutItem_PointTicket( rsPLAYINFO *lpPlayInfo , int Price );
 
 
 /*
-//아이템 비교
+//?????? ??
 #define ITEM_CODER_MAX		1000000
 #define COPY_ITEM_MAX		1000
 
@@ -105,21 +108,21 @@ HANDLE			hRecThread =0;
 DWORD			dwRecThreadId;
 DWORD			dwLastRecDataTime = 0;
 
-//크리티컬 섹션
-CRITICAL_SECTION	cRecDataSection;				//저장 동기용 크리티컬섹션
-CRITICAL_SECTION	cSaveDataSection;				//저장중인 크리티컬섹션
+//?????? ????
+CRITICAL_SECTION	cRecDataSection;				//???? ????? ?????????
+CRITICAL_SECTION	cSaveDataSection;				//???????? ?????????
 
-//서버DB에 데이타 저장요구
+//????DB?? ????? ?????
 int rsSaveRecData( TRANS_RECORD_DATA *lpTransRecordData , rsPLAYINFO *lpPlayInfo , 
 				  char *szFileName , char *szBackupFileName );
-//저장 대기중인 데이타 있는지 확인
+//???? ??????? ????? ????? ???
 int CheckRecWaitData( char *szName );
 
-//별 포인트 이벤트 티켓 발생 설정
+//?? ????? ???? ??? ??? ????
 int	OpenStarPointEvent( rsPLAYINFO *lpPlayInfo , smCHAR_INFO *lpCharInfo );
-//별 포인트 이벤트 티켓 발생 저장
+//?? ????? ???? ??? ??? ????
 int	CloseStarPointEvent( rsPLAYINFO *lpPlayInfo , smCHAR_INFO *lpCharInfo );
-//별 포인트 이벤트 티켓 발생 설정
+//?? ????? ???? ??? ??? ????
 int	OpenStarPointTicket( rsPLAYINFO *lpPlayInfo );
 
 
@@ -163,13 +166,13 @@ static int GetUserCode( char *szName )
 
 	ch = 0;
 	/*
-		if ( ch>='a' && ch<='z' ) {//대문자 소문자로
+		if ( ch>='a' && ch<='z' ) {//????? ??????
 			Sum2 += (ch-0x20)*(cnt+1);
 	*/
 
 	for(cnt=0;cnt<len;cnt++) {
 		if ( lpData[cnt]>='a' && lpData[cnt]<='z' ) {
-			ch += ( lpData[cnt]-0x20 );				//소문자 대문자로 계산
+			ch += ( lpData[cnt]-0x20 );				//????? ?????? ???
 		}
 		else
 			ch += lpData[cnt];
@@ -179,7 +182,7 @@ static int GetUserCode( char *szName )
 }
 
 
-//우편함 파일 경로 구하기
+//?????? ???? ??? ?????
 int GetPostBoxFile( char *szID , char *szFileName )
 {
 
@@ -187,7 +190,7 @@ int GetPostBoxFile( char *szID , char *szFileName )
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='m' || szID[2]=='M')) || 
 		((szID[0]=='l' || szID[0]=='L') && (szID[1]=='p' || szID[1]=='P') && (szID[2]=='t' || szID[2]=='T')) ) 
 		) {
- 		wsprintf( szFileName , "%s\\%d\\＃%s.dat" , szPostBoxDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "%s\\%d\\??%s.dat" , szPostBoxDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -195,7 +198,7 @@ int GetPostBoxFile( char *szID , char *szFileName )
 		((szID[0]=='p' || szID[0]=='P') && (szID[1]=='r' || szID[1]=='R') && (szID[2]=='n' || szID[2]=='N')) ||
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='n' || szID[2]=='N')) 
 		) {
- 		wsprintf( szFileName , "%s\\%d\\＃%s.dat" , szPostBoxDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "%s\\%d\\??%s.dat" , szPostBoxDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -213,7 +216,7 @@ int GetUserInfoFile( char *szID , char *szFileName )
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='m' || szID[2]=='M')) || 
 		((szID[0]=='l' || szID[0]=='L') && (szID[1]=='p' || szID[1]=='P') && (szID[2]=='t' || szID[2]=='T')) ) 
 		) {
- 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\＃%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\??%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -221,7 +224,7 @@ int GetUserInfoFile( char *szID , char *szFileName )
 		((szID[0]=='p' || szID[0]=='P') && (szID[1]=='r' || szID[1]=='R') && (szID[2]=='n' || szID[2]=='N')) ||
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='n' || szID[2]=='N')) 
 		) {
- 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\＃%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\??%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -273,7 +276,7 @@ int GetRealID( char *szID , char *szRealID )
 	return FALSE;
 }
 
-//서버ID 구하기
+//????ID ?????
 int SetServerID( char *szID , char *szServerID )
 {
 	char szFile[64];
@@ -309,7 +312,7 @@ static int GetUserInfoFile2( char *szID , char *szFileName , char *szServerID )
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='m' || szID[2]=='M')) || 
 		((szID[0]=='l' || szID[0]=='L') && (szID[1]=='p' || szID[1]=='P') && (szID[2]=='t' || szID[2]=='T')) ) 
 		) {
- 		wsprintf( szFileName , "%s\\Data\\DataServer\\%s\\%d\\＃%s.dat" , szTTServerPath, szRecordUserInfoDir , GetUserCode(szRealID) , szRealID );
+ 		wsprintf( szFileName , "%s\\Data\\DataServer\\%s\\%d\\??%s.dat" , szTTServerPath, szRecordUserInfoDir , GetUserCode(szRealID) , szRealID );
 		return TRUE;
 	}
 
@@ -317,7 +320,7 @@ static int GetUserInfoFile2( char *szID , char *szFileName , char *szServerID )
 		((szID[0]=='p' || szID[0]=='P') && (szID[1]=='r' || szID[1]=='R') && (szID[2]=='n' || szID[2]=='N')) ||
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='n' || szID[2]=='N')) 
 		) {
- 		wsprintf( szFileName , "%s\\Data\\DataServer\\%s\\%d\\＃%s.dat" , szTTServerPath,szRecordUserInfoDir , GetUserCode(szRealID) , szRealID );
+ 		wsprintf( szFileName , "%s\\Data\\DataServer\\%s\\%d\\??%s.dat" , szTTServerPath,szRecordUserInfoDir , GetUserCode(szRealID) , szRealID );
 		return TRUE;
 	}
 
@@ -373,7 +376,7 @@ static int GetWareHouseFile( char *szName , char *szFileName )
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='m' || szID[2]=='M')) || 
 		((szID[0]=='l' || szID[0]=='L') && (szID[1]=='p' || szID[1]=='P') && (szID[2]=='t' || szID[2]=='T')) ) 
 		) {
- 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\＃%s.dat" , szRecordWareHouseDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\??%s.dat" , szRecordWareHouseDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -381,7 +384,7 @@ static int GetWareHouseFile( char *szName , char *szFileName )
 		((szID[0]=='p' || szID[0]=='P') && (szID[1]=='r' || szID[1]=='R') && (szID[2]=='n' || szID[2]=='N')) ||
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='n' || szID[2]=='N')) 
 		) {
- 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\＃%s.dat" , szRecordWareHouseDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "Data\\DataServer\\%s\\%d\\??%s.dat" , szRecordWareHouseDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -398,7 +401,7 @@ static int GetCaravanFile(char* szName, char* szFileName)
 		((szID[0] == 'c' || szID[0] == 'C') && (szID[1] == 'o' || szID[1] == 'O') && (szID[2] == 'm' || szID[2] == 'M')) ||
 		((szID[0] == 'l' || szID[0] == 'L') && (szID[1] == 'p' || szID[1] == 'P') && (szID[2] == 't' || szID[2] == 'T')))
 		) {
-		wsprintf(szFileName, "Data\\DataServer\\%s\\%d\\＃%s.dat", szRecordCaravanDir, GetUserCode(szID), szID);
+		wsprintf(szFileName, "Data\\DataServer\\%s\\%d\\??%s.dat", szRecordCaravanDir, GetUserCode(szID), szID);
 		return TRUE;
 	}
 
@@ -406,7 +409,7 @@ static int GetCaravanFile(char* szName, char* szFileName)
 		((szID[0] == 'p' || szID[0] == 'P') && (szID[1] == 'r' || szID[1] == 'R') && (szID[2] == 'n' || szID[2] == 'N')) ||
 		((szID[0] == 'c' || szID[0] == 'C') && (szID[1] == 'o' || szID[1] == 'O') && (szID[2] == 'n' || szID[2] == 'N'))
 		) {
-		wsprintf(szFileName, "Data\\DataServer\\%s\\%d\\＃%s.dat", szRecordCaravanDir, GetUserCode(szID), szID);
+		wsprintf(szFileName, "Data\\DataServer\\%s\\%d\\??%s.dat", szRecordCaravanDir, GetUserCode(szID), szID);
 		return TRUE;
 	}
 
@@ -436,7 +439,7 @@ static int GetWareHouseFile_Backup( char *szName , char *szFileName , int Day )
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='m' || szID[2]=='M')) || 
 		((szID[0]=='l' || szID[0]=='L') && (szID[1]=='p' || szID[1]=='P') && (szID[2]=='t' || szID[2]=='T')) ) 
 		) {
- 		wsprintf( szFileName , "%s\\%s\\%d\\＃%s.dat" , szBuff, szRecordWareHouseDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "%s\\%s\\%d\\??%s.dat" , szBuff, szRecordWareHouseDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -444,7 +447,7 @@ static int GetWareHouseFile_Backup( char *szName , char *szFileName , int Day )
 		((szID[0]=='p' || szID[0]=='P') && (szID[1]=='r' || szID[1]=='R') && (szID[2]=='n' || szID[2]=='N')) ||
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='n' || szID[2]=='N')) 
 		) {
- 		wsprintf( szFileName , "%s\\%s\\%d\\＃%s.dat" , szBuff, szRecordWareHouseDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "%s\\%s\\%d\\??%s.dat" , szBuff, szRecordWareHouseDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -465,7 +468,7 @@ static int GetCaravanFile_Backup(char* szName, char* szFileName, int Day)
 		((szID[0] == 'c' || szID[0] == 'C') && (szID[1] == 'o' || szID[1] == 'O') && (szID[2] == 'm' || szID[2] == 'M')) ||
 		((szID[0] == 'l' || szID[0] == 'L') && (szID[1] == 'p' || szID[1] == 'P') && (szID[2] == 't' || szID[2] == 'T')))
 		) {
-		wsprintf(szFileName, "%s\\%s\\%d\\＃%s.dat", szBuff, szRecordCaravanDir, GetUserCode(szID), szID);
+		wsprintf(szFileName, "%s\\%s\\%d\\??%s.dat", szBuff, szRecordCaravanDir, GetUserCode(szID), szID);
 		return TRUE;
 	}
 
@@ -473,7 +476,7 @@ static int GetCaravanFile_Backup(char* szName, char* szFileName, int Day)
 		((szID[0] == 'p' || szID[0] == 'P') && (szID[1] == 'r' || szID[1] == 'R') && (szID[2] == 'n' || szID[2] == 'N')) ||
 		((szID[0] == 'c' || szID[0] == 'C') && (szID[1] == 'o' || szID[1] == 'O') && (szID[2] == 'n' || szID[2] == 'N'))
 		) {
-		wsprintf(szFileName, "%s\\%s\\%d\\＃%s.dat", szBuff, szRecordCaravanDir, GetUserCode(szID), szID);
+		wsprintf(szFileName, "%s\\%s\\%d\\??%s.dat", szBuff, szRecordCaravanDir, GetUserCode(szID), szID);
 		return TRUE;
 	}
 
@@ -483,48 +486,48 @@ static int GetCaravanFile_Backup(char* szName, char* szFileName, int Day)
 }
 
 
-//데이타 저장서버 디렉토리 생성
+//????? ?????? ???? ????
 int CreateDataServerDirectory()
 {
 	int cnt;
 	char szBuff[256];
 
-	CreateDirectory( "Data\\DataServer" , NULL );				//디렉토리 생성
+	CreateDirectory( "Data\\DataServer" , NULL );				//???? ????
 	
 	wsprintf( szBuff , "Data\\DataServer\\%s" , szRecordUserInfoDir );
-	CreateDirectory( szBuff , NULL );				//디렉토리 생성
+	CreateDirectory( szBuff , NULL );				//???? ????
 	wsprintf( szBuff , "Data\\DataServer\\%s" , szRecordUserDataDir );
-	CreateDirectory( szBuff , NULL );				//디렉토리 생성
+	CreateDirectory( szBuff , NULL );				//???? ????
 	wsprintf( szBuff , "Data\\DataServer\\%s" , szRecordWareHouseDir );
-	CreateDirectory( szBuff , NULL );				//디렉토리 생성
+	CreateDirectory( szBuff , NULL );				//???? ????
 	wsprintf( szBuff , "Data\\DataServer\\%s" , szRecordUserBackupDataDir );
-	CreateDirectory( szBuff , NULL );				//디렉토리 생성
+	CreateDirectory( szBuff , NULL );				//???? ????
 	wsprintf( szBuff , "Data\\DataServer\\%s" , szRecordDeleteDir );
-	CreateDirectory( szBuff , NULL );				//디렉토리 생성
+	CreateDirectory( szBuff , NULL );				//???? ????
 
 
 	for( cnt=0;cnt<256;cnt++ ) {
 		wsprintf( szBuff , "Data\\DataServer\\%s\\%d" , szRecordUserInfoDir , cnt );
-		CreateDirectory( szBuff , NULL );			//디렉토리 생성
+		CreateDirectory( szBuff , NULL );			//???? ????
 	}
 	for( cnt=0;cnt<256;cnt++ ) {
 		wsprintf( szBuff , "Data\\DataServer\\%s\\%d" , szRecordUserDataDir , cnt );
-		CreateDirectory( szBuff , NULL );			//디렉토리 생성
+		CreateDirectory( szBuff , NULL );			//???? ????
 	}
 	for( cnt=0;cnt<256;cnt++ ) {
 		wsprintf( szBuff , "Data\\DataServer\\%s\\%d" , szRecordWareHouseDir , cnt );
-		CreateDirectory( szBuff , NULL );			//디렉토리 생성
+		CreateDirectory( szBuff , NULL );			//???? ????
 	}
 	for( cnt=0;cnt<256;cnt++ ) {
 		wsprintf( szBuff , "Data\\DataServer\\%s\\%d" , szRecordUserBackupDataDir , cnt );
-		CreateDirectory( szBuff , NULL );			//디렉토리 생성
+		CreateDirectory( szBuff , NULL );			//???? ????
 	}
 
-	//우편함 디렉토리 만들기
-	if ( CreateDirectory( szPostBoxDir , NULL ) ) {			//디렉토리 생성
+	//?????? ???? ?????
+	if ( CreateDirectory( szPostBoxDir , NULL ) ) {			//???? ????
 		for( cnt=0;cnt<256;cnt++ ) {
 			wsprintf( szBuff , "%s\\%d" , szPostBoxDir , cnt );
-			CreateDirectory( szBuff , NULL );				//디렉토리 생성
+			CreateDirectory( szBuff , NULL );				//???? ????
 		}
 	}
 
@@ -533,7 +536,7 @@ int CreateDataServerDirectory()
 
 
 
-//캐릭터 정보 저장 코드 구하기
+//?????? ???? ???? ??? ?????
 DWORD	GetCharInfoCode( smCHAR_INFO *lpCharInfo )
 {
 	int cnt;
@@ -562,63 +565,63 @@ DWORD	GetCharInfoCode( smCHAR_INFO *lpCharInfo )
 
 //sUSESKILL sinSkill;
 /*
-/////////////스킬 테이블 구조체 
+/////////////??? ????? ????? 
 struct sSKILL{  
-	char	sSkillName[32];			//스킬 이름 
-	DWORD	CODE;					//스킬 코드 
-	char    FileName[32];			//스킬 파일 이름 
-	int     Flag;					//사용가능 플랙 
-	int     Use;					//포인트 할당가능 플랙 
-	int     Point;					//스킬에 할당된 포인트 
-	int     ShortKey;				//펑션 키 
-	int     MousePosi;				//스킬 마우스 포지션 
+	char	sSkillName[32];			//??? ??? 
+	DWORD	CODE;					//??? ??? 
+	char    FileName[32];			//??? ???? ??? 
+	int     Flag;					//???N?? ???? 
+	int     Use;					//????? ?????? ???? 
+	int     Point;					//????? ???? ????? 
+	int     ShortKey;				//??? ? 
+	int     MousePosi;				//??? ????J ?????? 
 	int     Position;				
-	int     UseTime;				//사용 시간 
-	int     CheckTime;				//사용시간을 체크한다 
-	int     GageLength;				//마스터리 게이지 길이 
-	float     GageLength2;			//마스터리 게이지 길이 
-	float   Mastery;				//마스터리 증가 수치 
-	int     UseSkillCount;			//스킬사용 수치 
-	float	UseSkillMastery;		//사용시 올라가는 수치 
-	int     UseSkillMasteryGage;	//사용시 올라가는 게이지 
-	int     UseSkillFlag;			//1은 사용 0의 사용불가 
-	int     PlusState[5];			//플러스 
+	int     UseTime;				//??? ???? 
+	int     CheckTime;				//???????? ????? 
+	int     GageLength;				//??????? ?????? ???? 
+	float     GageLength2;			//??????? ?????? ???? 
+	float   Mastery;				//??????? ???? ??? 
+	int     UseSkillCount;			//?????? ??? 
+	float	UseSkillMastery;		//???? ???? ??? 
+	int     UseSkillMasteryGage;	//???? ???? ?????? 
+	int     UseSkillFlag;			//1?? ??? 0?? ????? 
+	int     PlusState[5];			//?????? 
 	sSKILL_INFO Skill_Info;
 };
 
-/////////////현재 사용되고있는 스킬 구조체 
+/////////////???? ???????? ??? ????? 
 struct sUSESKILL{
-	sSKILL UseSkill[SIN_MAX_USE_SKILL]; //사용할수있는 스킬 
+	sSKILL UseSkill[SIN_MAX_USE_SKILL]; //????????? ??? 
 	sSKILLBOX SkillBox[SIN_MAX_USE_SKILL];
-	sSKILL *pLeftSkill;		//마우스 왼쪽 버튼에 할당된 스킬				
-	sSKILL *pRightSkill;	//마우스 오른쪽에 할당된 스킬 
+	sSKILL *pLeftSkill;		//????J ???? ????? ???? ???				
+	sSKILL *pRightSkill;	//????J ??????? ???? ??? 
 	int   SkillPoint;
 
 };
-//저장될 스킬 구조
+//????? ??? ????
 struct	RECORD_SKILL {
-	BYTE	bSkillPoint[SIN_MAX_USE_SKILL];			//스킬 포인트
-	WORD	wSkillMastery[SIN_MAX_USE_SKILL];		//스킬 숙련도
-	BYTE	bShortKey[SIN_MAX_USE_SKILL];			//펑션 키
-	WORD	wSelectSkill[2];						//선택된 스킬
+	BYTE	bSkillPoint[SIN_MAX_USE_SKILL];			//??? ?????
+	WORD	wSkillMastery[SIN_MAX_USE_SKILL];		//??? ?????
+	BYTE	bShortKey[SIN_MAX_USE_SKILL];			//??? ?
+	WORD	wSelectSkill[2];						//????? ???
 	//int		RemainPoint;
 };
 
 */
 
-//스킬 저장
+//??? ????
 int	RecordSkill( RECORD_SKILL *lpRecordSkill )
 {
 	int cnt;
 	int mcnt;
 
 	for(cnt=0;cnt<SIN_MAX_USE_SKILL;cnt++) {
-		mcnt = cnt&15;							//스킬 저장 영역 강제로 보정 ( 배열을 16개만 잡아놔서 16번 배열은 0에 저장 )
+		mcnt = cnt&15;							//??? ???? ???? ?????? ???? ( ????? 16???? ?????? 16?? ????? 0?? ???? )
 
 		lpRecordSkill->bSkillPoint[mcnt] = sinSkill.UseSkill[cnt].Point;
 		if ( sinSkill.UseSkill[cnt].Point>255 ) lpRecordSkill->bSkillPoint[mcnt]=255;
 
-		if ( sinSkill.UseSkill[cnt].UseSkillCount<10000 )		//스킬숙련도 최고치
+		if ( sinSkill.UseSkill[cnt].UseSkillCount<10000 )		//???????? ????
 			lpRecordSkill->wSkillMastery[mcnt] = sinSkill.UseSkill[cnt].UseSkillCount;
 		else
 			lpRecordSkill->wSkillMastery[mcnt] = 10000;
@@ -641,7 +644,7 @@ int	RecordSkill( RECORD_SKILL *lpRecordSkill )
 
 
 
-//퀘스트로 획득한 스킬 포인트
+//??????? ????? ??? ?????
 int GetSkillPoint_LevelQuest( int Level , DWORD dwLevelQuestLog )
 {
 	int Point = 0;
@@ -662,7 +665,7 @@ int GetSkillPoint_LevelQuest( int Level , DWORD dwLevelQuestLog )
 	return Point;
 }
 
-//퀘스트로 획득한 스텟 포인트
+//??????? ????? ???? ?????
 int GetStatePoint_LevelQuest( int Level , DWORD dwLevelQuestLog )
 {
 	int Point = 0;
@@ -680,11 +683,11 @@ int GetStatePoint_LevelQuest( int Level , DWORD dwLevelQuestLog )
 		Point += 5;
 	}
 
-	if ( dwLevelQuestLog&QUESTBIT_LEVEL_80_2 && Level>=80 ) {		//80렙 이상 스텟7씩 준다 (+2)
+	if ( dwLevelQuestLog&QUESTBIT_LEVEL_80_2 && Level>=80 ) {		//80?? ??? ????7?? ??? (+2)
 		Point += (Level-79)*2;
 	}
 
-	if ( dwLevelQuestLog&QUESTBIT_LEVEL_90_2 && Level>=90 ) {		//90렙 이상 스텟10씩 준다 (+2+3)
+	if ( dwLevelQuestLog&QUESTBIT_LEVEL_90_2 && Level>=90 ) {		//90?? ??? ????10?? ??? (+2+3)
 		Point += (Level-89)*3;
 	}
 
@@ -692,7 +695,7 @@ int GetStatePoint_LevelQuest( int Level , DWORD dwLevelQuestLog )
 }
 
 
-//스킬 복구
+//??? ????
 int	RestoreSkill( RECORD_SKILL *lpRecordSkill , DWORD dwLevelQuestLog )
 {
 	int cnt,mcnt;
@@ -708,9 +711,9 @@ int	RestoreSkill( RECORD_SKILL *lpRecordSkill , DWORD dwLevelQuestLog )
 	}
 
 	for(cnt=0;cnt<SIN_MAX_USE_SKILL;cnt++) {
-		mcnt = cnt&15;							//스킬 저장 영역 강제로 보정 ( 배열을 16개만 잡아놔서 16번 배열은 0에 저장 )
+		mcnt = cnt&15;							//??? ???? ???? ?????? ???? ( ????? 16???? ?????? 16?? ????? 0?? ???? )
 
-		if ( cnt>0 ) {	//주먹은 제외
+		if ( cnt>0 ) {	//????? ????
 			sinSkill.UseSkill[cnt].Point = lpRecordSkill->bSkillPoint[mcnt];
 			sinSkill.UseSkill[cnt].UseSkillCount = lpRecordSkill->wSkillMastery[mcnt];
 			sinSkill.UseSkill[cnt].ShortKey = lpRecordSkill->bShortKey[mcnt]&0xF;
@@ -738,10 +741,10 @@ int	RestoreSkill( RECORD_SKILL *lpRecordSkill , DWORD dwLevelQuestLog )
 
 	if ( lpCurPlayer->smCharInfo.Level>=10 ) {
 		sinSkill.SkillPoint = ((lpCurPlayer->smCharInfo.Level-8)/2)-Point;
-		sinSkill.SkillPoint += GetSkillPoint_LevelQuest(lpCurPlayer->smCharInfo.Level,dwLevelQuestLog);		//퀘스트로 얻은 포인트
+		sinSkill.SkillPoint += GetSkillPoint_LevelQuest(lpCurPlayer->smCharInfo.Level,dwLevelQuestLog);		//??????? ???? ?????
 
 		if ( sinSkill.SkillPoint<0 ) {
-			//스킬 포인트 오류 ( 스킬 초기화 )
+			//??? ????? ???? ( ??? ???? )
 			for(cnt=0;cnt<13;cnt++) {
 				sinSkill.UseSkill[cnt].Point = 0;
 				sinSkill.UseSkill[cnt].UseSkillCount = 0;
@@ -758,7 +761,7 @@ int	RestoreSkill( RECORD_SKILL *lpRecordSkill , DWORD dwLevelQuestLog )
 		sinSkill.SkillPoint4 = ((lpCurPlayer->smCharInfo.Level-58)/2)-EPoint;
 
 		if ( sinSkill.SkillPoint4<0 ) {
-			//스킬 포인트 오류 ( 스킬 초기화 )
+			//??? ????? ???? ( ??? ???? )
 			for(cnt=13;cnt<SIN_MAX_USE_SKILL;cnt++) {
 				sinSkill.UseSkill[cnt].Point = 0;
 				sinSkill.UseSkill[cnt].UseSkillCount = 0;
@@ -778,7 +781,7 @@ int	RestoreSkill( RECORD_SKILL *lpRecordSkill , DWORD dwLevelQuestLog )
 }
 
 
-//스킬 첵크
+//??? ??
 int	CheckSkillPoint( int Level , RECORD_SKILL *lpRecordSkill , int *spTotal , DWORD dwLevelQuestLog )
 {
 	int cnt,mcnt;
@@ -805,10 +808,10 @@ int	CheckSkillPoint( int Level , RECORD_SKILL *lpRecordSkill , int *spTotal , DW
 
 	if ( Level>=10 ) {
 		SkillPoint = ((Level-8)/2)-Point;
-		SkillPoint += GetSkillPoint_LevelQuest( Level , dwLevelQuestLog );		//퀘스트로 획득한 스킬 포인트
+		SkillPoint += GetSkillPoint_LevelQuest( Level , dwLevelQuestLog );		//??????? ????? ??? ?????
 
 		if ( SkillPoint<0 ) {
-			//스킬 포인트 오류 ( 스킬 초기화 )
+			//??? ????? ???? ( ??? ???? )
 			return FALSE;
 		}
 	}
@@ -819,7 +822,7 @@ int	CheckSkillPoint( int Level , RECORD_SKILL *lpRecordSkill , int *spTotal , DW
 	if ( Level>=60 ) {
 		ExtraPoint = ((Level-58)/2)-EPoint;
 		if ( ExtraPoint<0 ) {
-			//확장스킬 포인트 오류 ( 스킬 초기화 )
+			//???? ????? ???? ( ??? ???? )
 			return FALSE;
 		}
 	}
@@ -832,7 +835,7 @@ int	CheckSkillPoint( int Level , RECORD_SKILL *lpRecordSkill , int *spTotal , DW
 
 
 //99
-//캐릭터 스테이트 값을 새롭게 보정한다
+//?????? ??????? ???? ????? ???????
 int ReformCharStatePoint( smCHAR_INFO *lpCharInfo , DWORD dwLevelQuestLog )
 {
 	int Total;
@@ -845,14 +848,14 @@ int ReformCharStatePoint( smCHAR_INFO *lpCharInfo , DWORD dwLevelQuestLog )
 			abs(lpCharInfo->Talent) +
 			abs(lpCharInfo->StatePoint);
 
-	//99가 기본치
+	//99?? ???
 	NewState = 99+((lpCharInfo->Level-1)*5);
-	NewState += GetStatePoint_LevelQuest( lpCharInfo->Level , dwLevelQuestLog );		//퀘스트로 획득한 스텟 포인트
+	NewState += GetStatePoint_LevelQuest( lpCharInfo->Level , dwLevelQuestLog );		//??????? ????? ???? ?????
 
 	lpCharInfo->StatePoint += (NewState-Total);
 
 	if ( lpCharInfo->StatePoint<=-10 ) {
-		//캐릭터 능력치 문제 발생
+		//?????? ???? ???? ???
 		lpCharInfo->Strength = 1; 
 		lpCharInfo->Spirit = 8;
 		lpCharInfo->Dexterity = 1;
@@ -868,13 +871,13 @@ int ReformCharStatePoint( smCHAR_INFO *lpCharInfo , DWORD dwLevelQuestLog )
 }
 
 
-//게임 진행 데이타 기록
+//???? ???? ????? ???
 int RecordGameData(sGAME_SAVE_INFO* lpGameSaveInfo) { return TRUE; }
 
-//게임 진행 데이타 기록
+//???? ???? ????? ???
 int RestoreGameData( sGAME_SAVE_INFO *lpGameSaveInfo ) { return TRUE; }
 
-//종료된 퀘스트 기록 추가
+//????? ????? ??? ???
 int Record_LastQuest( WORD	wQuestCode )
 {
 	int cnt;
@@ -886,7 +889,7 @@ int Record_LastQuest( WORD	wQuestCode )
 	return TRUE;
 }
 
-//지난 퀘스트 검사
+//???? ????? ???
 int FindLastQuestCode( WORD wQuestCode )
 {
 	int cnt,mcnt,start;
@@ -899,7 +902,7 @@ int FindLastQuestCode( WORD wQuestCode )
 	for(cnt=start;cnt<RecordLastQuestInfo.LastQuestCount;cnt++) {
 		mcnt = cnt&LAST_QUEST_MASK;
 		if ( RecordLastQuestInfo.wLastQuest[mcnt]==wQuestCode ) {
-			return TRUE;		//퀘스트 찾았다
+			return TRUE;		//????? ????
 		}
 	}
 	return FALSE;
@@ -914,7 +917,7 @@ struct	sLAST_QUEST_INFO {
 	int	LastQuestCount;
 }
 */
-//기록 데이타 아이템 이상 유무 확인
+//??? ????? ?????? ??? ???? ???
 int CheckRecordDataItem( TRANS_RECORD_DATA *lpRecordData )
 {
 	int DataSize , size;
@@ -945,7 +948,7 @@ int CheckRecordDataItem( TRANS_RECORD_DATA *lpRecordData )
 	return FALSE;
 }
 /*
-//저장된 아이템 데이타를 150 포맷으로 인증변환
+//????? ?????? ??????? 150 ???????? ???????
 int	ConvertItem_Server150(TRANS_RECORD_DATA *lpTransRecordData )
 {
 	BYTE	*lpRecItem;
@@ -957,9 +960,9 @@ int	ConvertItem_Server150(TRANS_RECORD_DATA *lpTransRecordData )
 	lpRecItem = (BYTE *)lpTransRecordData->Data;
 
 	for( cnt=0;cnt<lpTransRecordData->ItemCount;cnt++ ) {
-		//압축 데이타 해독 ( Z/NZ 방식 )
+		//???? ????? ??? ( Z/NZ ??? )
 		DecodeCompress( (BYTE *)lpRecItem , (BYTE *)&sRecordItem[cnt] );
-		rsReformItem_Server( &sRecordItem[cnt].sItemInfo );					//아이템 신규 인증
+		rsReformItem_Server( &sRecordItem[cnt].sItemInfo );					//?????? ??? ????
 		lpRecItem += ((int *)lpRecItem)[0];
 	}
 
@@ -967,7 +970,7 @@ int	ConvertItem_Server150(TRANS_RECORD_DATA *lpTransRecordData )
 	lpRecItem = (BYTE *)lpTransRecordData->Data;
 
 	for( cnt=0;cnt<lpTransRecordData->ItemCount;cnt++ ) {
-		//데이타 압축 ( Z/NZ 방식 )
+		//????? ???? ( Z/NZ ??? )
 		CompSize = EecodeCompress( (BYTE *)&sRecordItem[cnt] , (BYTE *)lpRecItem , sizeof(sRECORD_ITEM) );
 		lpRecItem += CompSize;
 		lpTransRecordData->DataSize += CompSize;
@@ -981,7 +984,7 @@ int	ConvertItem_Server150(TRANS_RECORD_DATA *lpTransRecordData )
 
 
 
-//저장할 데이타를 정리하여 제작
+//?????? ??????? ??????? ????
 int rsRECORD_DBASE::MakeRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems , sITEM *lpItems2 , sITEM *lpMouseItem )
 {
 	int cnt;
@@ -1001,7 +1004,7 @@ int rsRECORD_DBASE::MakeRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems , s
 	TransRecordData.ThrowItemCount = 0;
 
 	RecordGameData( &TransRecordData.GameSaveInfo );
-	//캐릭터 정보 코드 저장
+	//?????? ???? ??? ????
 	TransRecordData.GameSaveInfo.dwChkSum_CharInfo = GetCharInfoCode( lpCharInfo );
 
 	TransRecordData.ItemCount = 0; 
@@ -1021,7 +1024,7 @@ int rsRECORD_DBASE::MakeRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems , s
 				sRecordItem.ItemPosition = lpItems[cnt].ItemPosition;
 				memcpy( &sRecordItem.sItemInfo , &lpItems[cnt].sItemInfo , sizeof( sITEMINFO ) );
 
-				//데이타 압축 ( Z/NZ 방식 )
+				//????? ???? ( Z/NZ ??? )
 				CompSize = EecodeCompress( (BYTE *)&sRecordItem , (BYTE *)lpRecItem , sizeof(sRECORD_ITEM) );
 
 				lpRecItem += CompSize;
@@ -1047,7 +1050,7 @@ int rsRECORD_DBASE::MakeRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems , s
 			sRecordItem.ItemPosition = lpItems2[cnt].ItemPosition;
 			memcpy( &sRecordItem.sItemInfo , &lpItems2[cnt].sItemInfo , sizeof( sITEMINFO ) );
 
-			//데이타 압축 ( Z/NZ 방식 )
+			//????? ???? ( Z/NZ ??? )
 			CompSize = EecodeCompress( (BYTE *)&sRecordItem , (BYTE *)lpRecItem , sizeof(sRECORD_ITEM) );
 
 			lpRecItem += CompSize;
@@ -1058,14 +1061,14 @@ int rsRECORD_DBASE::MakeRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems , s
 	}
 
 	if ( lpMouseItem && lpMouseItem->Flag ) {
-		//마우스에 아이템일 잡고 있는 경우
+		//????J?? ???????? ??? ??? ???
 		sRecordItem.ItemCount=0;
 		sRecordItem.x = 0;
 		sRecordItem.y = 0;
 		sRecordItem.ItemPosition = -1;
 		memcpy( &sRecordItem.sItemInfo , &lpMouseItem->sItemInfo , sizeof( sITEMINFO ) );
 
-		//데이타 압축 ( Z/NZ 방식 )
+		//????? ???? ( Z/NZ ??? )
 		CompSize = EecodeCompress( (BYTE *)&sRecordItem , (BYTE *)lpRecItem , sizeof(sRECORD_ITEM) );
 
 		lpRecItem += CompSize;
@@ -1102,7 +1105,7 @@ int ResetClientRecordPotion( sGAME_SAVE_INFO *lpGameSaveInfo )
 	return TRUE;
 }
 
-//물약 검사용
+//???? ????
 int AddRecordPotion( DWORD dwPotionCode , int PotionCount )
 {
 	int Count=PotionCount;
@@ -1112,42 +1115,42 @@ int AddRecordPotion( DWORD dwPotionCode , int PotionCount )
 	if ( ClientRecordPotionFlag==0 ) return 0;
 
 	switch( dwPotionCode ) {
-		case (sinPL1|sin01):		//생명(소)
+		case (sinPL1|sin01):		//????(??)
 			x=0;y=0;
 			break;
-		case (sinPL1|sin02):		//생명(중)
+		case (sinPL1|sin02):		//????(??)
 			x=0;y=1;
 			break;
-		case (sinPL1|sin03):		//생명(대)
+		case (sinPL1|sin03):		//????(??)
 			x=0;y=2;
 			break;
-		case (sinPL1|sin04):		//생명(신)
+		case (sinPL1|sin04):		//????(??)
 			x=0;y=3;
 			break;
 
-		case (sinPM1|sin01):		//기력(소)
+		case (sinPM1|sin01):		//???(??)
 			x=1;y=0;
 			break;
-		case (sinPM1|sin02):		//기력(중)
+		case (sinPM1|sin02):		//???(??)
 			x=1;y=1;
 			break;
-		case (sinPM1|sin03):		//기력(대)
+		case (sinPM1|sin03):		//???(??)
 			x=1;y=2;
 			break;
-		case (sinPM1|sin04):		//기력(신)
+		case (sinPM1|sin04):		//???(??)
 			x=1;y=3;
 			break;
 
-		case (sinPS1|sin01):		//근력(소)
+		case (sinPS1|sin01):		//???(??)
 			x=2;y=0;
 			break;
-		case (sinPS1|sin02):		//근력(중)
+		case (sinPS1|sin02):		//???(??)
 			x=2;y=1;
 			break;
-		case (sinPS1|sin03):		//근력(대)
+		case (sinPS1|sin03):		//???(??)
 			x=2;y=2;
 			break;
-		case (sinPS1|sin04):		//근력(신)
+		case (sinPS1|sin04):		//???(??)
 			x=2;y=3;
 			break;
 	}
@@ -1162,7 +1165,7 @@ int AddRecordPotion( DWORD dwPotionCode , int PotionCount )
 
 
 
-//불러온 데이타 정보를 해당 위치에 설정
+//????? ????? ?????? ??? ????? ????
 int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems , sITEM *lpItems2 , sITEM *lpMouseItem )
 {
 	int cnt;
@@ -1194,18 +1197,18 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 	//HANDLE	hLoadRes;
 	//sCOPYITEM	*lpCopyItems=0;
 
-	//캐릭터 정보 인증 확인
+	//?????? ???? ???? ???
 	CheckCharForm();
 
 	memcpy( lpCharInfo , &TransRecordData.smCharInfo , sizeof( smCHAR_INFO ) );
 	lpCharInfo->bUpdateInfo[0] = 0;
 
-	//게임 포션 기록
+	//???? ???? ???
 	ResetClientRecordPotion( &TransRecordData.GameSaveInfo );
 
-	//캐릭터 정보 인증 확인
+	//?????? ???? ???? ???
 	CheckCharForm();
-	//크랙 첵크
+	//??? ??
 	CheckCracker();
 /*
 	hResource = FindResource( hinst , MAKEINTRESOURCE(IDR_GOODITEM1), "GOODITEM" );
@@ -1213,7 +1216,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 	lpCopyItems = (sCOPYITEM *)LockResource( hLoadRes );
 */
 	if ( smConfig.DebugMode && smConfig.szFile_Player[0] ) {
-		//운영자는 스킨 바꾸기 가능
+		//????? ??? ???? ????
 		lstrcpy( lpCharInfo->szModelName ,  smConfig.szFile_Player );
 		lpCharInfo->szModelName[0] = 0;
 	}
@@ -1230,16 +1233,16 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 /*
 	if ( lpCharInfo->Weight[0]<0 || lpCharInfo->Weight[0]>lpCharInfo->Weight[1] ) {
 		WeightError = TRUE;
-		//해킹 시도한 유저 자동 신고
+		//??? ????? ???? ??? ???
 		SendSetHackUser2( 1900 , lpCharInfo->Weight[0] );
 	}
 */
-	// pluto 마이트 오브 아웰  캐쉬템 소지량 증가
+	// pluto ????? ???? ????  ?????? ?????? ????
 	if( TransRecordData.GameSaveInfo.dwTime_PrimeItem_MightofAwell )
 	{
 		if( lpCharInfo->Weight[0]<0 || lpCharInfo->Weight[0]>lpCharInfo->Weight[1] + 300 ) {
 			WeightError = TRUE;
-			//해킹 시도한 유저 자동 신고
+			//??? ????? ???? ??? ???
 			SendSetHackUser2( 1900 , lpCharInfo->Weight[0] );
 		}
 	}
@@ -1247,7 +1250,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 	{
 		if( lpCharInfo->Weight[0]<0 || lpCharInfo->Weight[0]>lpCharInfo->Weight[1] + 500 ) {
 			WeightError = TRUE;
-			//해킹 시도한 유저 자동 신고
+			//??? ????? ???? ??? ???
 			SendSetHackUser2( 1900 , lpCharInfo->Weight[0] );
 		}
 	}
@@ -1255,7 +1258,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 	{
 		if( lpCharInfo->Weight[0]<0 || lpCharInfo->Weight[0]>lpCharInfo->Weight[1] ) {
 		WeightError = TRUE;
-		//해킹 시도한 유저 자동 신고
+		//??? ????? ???? ??? ???
 		SendSetHackUser2( 1900 , lpCharInfo->Weight[0] );
 		}
 	}
@@ -1263,10 +1266,10 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 	for( cnt=0;cnt<TransRecordData.ItemCount;cnt++ ) {
 
 		lpsItemInfo = 0;
-		//압축 데이타 해독 ( Z/NZ 방식 )
+		//???? ????? ??? ( Z/NZ ??? )
 		DecodeCompress( (BYTE *)lpRecItem , (BYTE *)&sRecordItem );
 /*
-		//데이타 압축 ( Z/NZ 방식 )
+		//????? ???? ( Z/NZ ??? )
 		EecodeCompress( (BYTE *)&sRecordItem , (BYTE *)szTestBuff , sizeof(sRECORD_ITEM) );
 
 		if ( ((int *)szTestBuff)[0]!=((int *)lpRecItem)[0] ) {
@@ -1277,7 +1280,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		SetFlag = TRUE;
 		dwItemCode = sRecordItem.sItemInfo.CODE&sinITEM_MASK2;
 
-		//버려진 아이템 제거
+		//?????? ?????? ????
 		for( cnt2=0;cnt2<TransRecordData.ThrowItemCount;cnt2++) {
 			if ( TransRecordData.ThrowItemInfo[cnt2].dwCode==sRecordItem.sItemInfo.CODE &&
 				TransRecordData.ThrowItemInfo[cnt2].dwKey==sRecordItem.sItemInfo.ItemHeader.Head &&
@@ -1306,40 +1309,40 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		if ( sRecordItem.ItemPosition>3 ) {
 			dwCode = sRecordItem.sItemInfo.CODE>>24;
 			if ( dwCode==1 ) {
-				PostionError++;				//무기 있음
+				PostionError++;				//???? ????
 			}
 			dwCode = sRecordItem.sItemInfo.CODE>>16;
 			if ( dwCode==0x0201 || dwCode==0x0204 ) {
-				PostionError++;				//갑옷 , 방패
+				PostionError++;				//???? , ????
 			}
 		}
 
 
 /*
-		///////////////// 소마의 링아머 제거 ////////////////////////
+		///////////////// ????? ????? ???? ////////////////////////
 		if ( sRecordItem.sItemInfo.CODE==33622016 && 
 			sRecordItem.sItemInfo.ItemHeader.Head==2242593061 && 
 			sRecordItem.sItemInfo.ItemHeader.dwChkSum==4294914487 ) {
 
-			//복사 아이템 제거
+			//???? ?????? ????
 			SetFlag = FALSE;
-			//해킹 시도한 유저 자동 신고
+			//??? ????? ???? ??? ???
 			SendSetHackUser2( 1960 , sRecordItem.sItemInfo.CODE );
 		}
 */
 
 		if ( sRecordItem.ItemPosition!=2 && CheckItemForm( &sRecordItem.sItemInfo )==FALSE ) {
-			//잘못된 아이템 제거
+			//????? ?????? ????
 			SetFlag = FALSE;
-			//해킹 시도한 유저 자동 신고
+			//??? ????? ???? ??? ???
 			SendSetHackUser2( 1950 , 0 );
 		}
 
-		//아이템 인증번호가 0 인경우 제거 ( 껍데기 아이템 제외 )
+		//?????? ????????? 0 ???? ???? ( ?????? ?????? ???? )
 		if ( !sRecordItem.sItemInfo.ItemHeader.Head || !sRecordItem.sItemInfo.ItemHeader.dwChkSum ) {
 			if ( sRecordItem.sItemInfo.ItemName[0] ) {
 				SetFlag = FALSE;
-				//해킹 시도한 유저 자동 신고
+				//??? ????? ???? ??? ???
 				SendSetHackUser2( 1950 , 0 );
 			}
 		}
@@ -1351,17 +1354,17 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		}
 
 
-		//포션 0 짜리 제거
+		//???? 0 ??? ????
 		if ( (sRecordItem.sItemInfo.CODE&sinITEM_MASK1)==(sinPM1&sinITEM_MASK1) ) {
 			if ( sRecordItem.sItemInfo.PotionCount<=0 ) {
 				SetFlag = FALSE;
 			}
 			else {
-				//물약 검사용
+				//???? ????
 				PotionCnt = AddRecordPotion( sRecordItem.sItemInfo.CODE , -sRecordItem.sItemInfo.PotionCount );
 				if ( PotionCnt<0 ) {
 					sRecordItem.sItemInfo.PotionCount+=PotionCnt;
-					SvrPotionError -= PotionCnt;		//오류난 갯수 기록
+					SvrPotionError -= PotionCnt;		//?????? ???? ???
 
 					if ( sRecordItem.sItemInfo.PotionCount<=0 ) {
 						SetFlag = FALSE;
@@ -1391,23 +1394,23 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 			AddChatBuff( szMsgBuff , 0 );
 		
 			if ( sRecordItem.sItemInfo.CODE==(sinOR2|sin01) ||
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin06) || sRecordItem.sItemInfo.CODE==(sinOR2|sin07) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin08) || sRecordItem.sItemInfo.CODE==(sinOR2|sin09) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin10) || sRecordItem.sItemInfo.CODE==(sinOR2|sin11) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin12) || sRecordItem.sItemInfo.CODE==(sinOR2|sin13) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin14) || sRecordItem.sItemInfo.CODE==(sinOR2|sin15) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin16) || sRecordItem.sItemInfo.CODE==(sinOR2|sin17) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin18) || sRecordItem.sItemInfo.CODE==(sinOR2|sin19) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin20) || sRecordItem.sItemInfo.CODE==(sinOR2|sin21) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin22) || sRecordItem.sItemInfo.CODE==(sinOR2|sin23) || //클랜치프링 
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin24) || sRecordItem.sItemInfo.CODE==(sinOR2|sin25) || //클랜치프링
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin31) || sRecordItem.sItemInfo.CODE==(sinOR2|sin32) || // 박재원 - 보스 몬스터 링 추가(바벨, 퓨리)
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin27) || sRecordItem.sItemInfo.CODE==(sinOA1|sin32) || //박재원 - 산타링, 산타아뮬렛 추가
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin28) || sRecordItem.sItemInfo.CODE==(sinOA1|sin33) || //박재원 - 이벤트 링, 이벤트 아뮬렛 추가(7일)
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin29) || sRecordItem.sItemInfo.CODE==(sinOA1|sin34) || //박재원 - 이벤트 링, 이벤트 아뮬렛 추가(1시간)
-				 sRecordItem.sItemInfo.CODE==(sinOR2|sin30) || sRecordItem.sItemInfo.CODE==(sinOA1|sin35) || //박재원 - 이벤트 링, 이벤트 아뮬렛 추가(1일)
-				 sRecordItem.sItemInfo.CODE==(sinOA1|sin36) || sRecordItem.sItemInfo.CODE==(sinOA1|sin37) || // 장별 - 눈꽃 목걸이, 하트 아뮬렛
-				  sRecordItem.sItemInfo.CODE==(sinOR2|sin33) ||																		// 장별 - 하트링
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin06) || sRecordItem.sItemInfo.CODE==(sinOR2|sin07) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin08) || sRecordItem.sItemInfo.CODE==(sinOR2|sin09) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin10) || sRecordItem.sItemInfo.CODE==(sinOR2|sin11) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin12) || sRecordItem.sItemInfo.CODE==(sinOR2|sin13) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin14) || sRecordItem.sItemInfo.CODE==(sinOR2|sin15) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin16) || sRecordItem.sItemInfo.CODE==(sinOR2|sin17) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin18) || sRecordItem.sItemInfo.CODE==(sinOR2|sin19) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin20) || sRecordItem.sItemInfo.CODE==(sinOR2|sin21) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin22) || sRecordItem.sItemInfo.CODE==(sinOR2|sin23) || //???????? 
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin24) || sRecordItem.sItemInfo.CODE==(sinOR2|sin25) || //????????
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin31) || sRecordItem.sItemInfo.CODE==(sinOR2|sin32) || // ????? - ???? ???? ?? ???(???, ???)
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin27) || sRecordItem.sItemInfo.CODE==(sinOA1|sin32) || //????? - ?????, ??????? ???
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin28) || sRecordItem.sItemInfo.CODE==(sinOA1|sin33) || //????? - ???? ??, ???? ???? ???(7??)
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin29) || sRecordItem.sItemInfo.CODE==(sinOA1|sin34) || //????? - ???? ??, ???? ???? ???(1????)
+				 sRecordItem.sItemInfo.CODE==(sinOR2|sin30) || sRecordItem.sItemInfo.CODE==(sinOA1|sin35) || //????? - ???? ??, ???? ???? ???(1??)
+				 sRecordItem.sItemInfo.CODE==(sinOA1|sin36) || sRecordItem.sItemInfo.CODE==(sinOA1|sin37) || // ?? - ???? ?????, ??? ????
+				  sRecordItem.sItemInfo.CODE==(sinOR2|sin33) ||																		// ?? - ?????
 
 				 
 				 sRecordItem.sItemInfo.CODE==(sinDA1|sin32) || sRecordItem.sItemInfo.CODE==(sinDA2|sin32) ||
@@ -1472,7 +1475,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 				cnt3 = ChkCnt;
 			}
 
-			//2차 보안 값
+			//2?? ???? ??
 			if ( !sRecordItem.sItemInfo.Temp0 )
 				sRecordItem.sItemInfo.Temp0 = sRecordItem.sItemInfo.ItemHeader.dwChkSum+sRecordItem.sItemInfo.CODE;
 
@@ -1485,7 +1488,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 
 
 				if( sRecordItem.ItemPosition==-1 ) {
-					//마우스에 들고 있는 아이템
+					//????J?? ??? ??? ??????
 					if ( lpMouseItem ) 
 						lpSaveItem = lpMouseItem;
 					else
@@ -1507,7 +1510,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 /*
 			if ( ReformItemCount<5 && lpsItemInfo ) {
 			//if ( ReformItemCount<100 && lpsItemInfo ) {
-				//아이템을 서버에 보내서 확인
+				//???????? ?????? ?????? ???
 				if ( lpsItemInfo->ItemName[0] ) {
 					dwLastCheckItemTime = 0;
 					SendCheckItemToServer( lpsItemInfo );
@@ -1518,47 +1521,47 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		lpRecItem += ((int *)lpRecItem)[0];
 	}
 
-	//게임 진행 데이타 기록
+	//???? ???? ????? ???
 	RestoreGameData( &TransRecordData.GameSaveInfo );
 
-	//저장 안된 돈 복구
+	//???? ??? ?? ????
 	if ( TransRecordData.GameSaveInfo.LastMoeny>0 ) {
-		CheckCharForm();	//캐릭터 정보 인증 확인
+		CheckCharForm();	//?????? ???? ???? ???
 		lpCharInfo->Money = TransRecordData.GameSaveInfo.LastMoeny-1;
-		ReformCharForm();	//캐릭터 정보 인증 받기
+		ReformCharForm();	//?????? ???? ???? ???
 	}
 /*
-	//보유할수 있는돈
+	//??????? ????
 	cnt = lpCharInfo->Level*5-40;
 	if ( cnt<10 ) cnt=10;
 	cnt *= 10000;
 	if ( lpCharInfo->Money>cnt ) {
-		SendSetHackUser2( 1960, lpCharInfo->Money );			//돈 한도 초과
-		CheckCharForm();	//캐릭터 정보 인증 확인
+		SendSetHackUser2( 1960, lpCharInfo->Money );			//?? ??? ???
+		CheckCharForm();	//?????? ???? ???? ???
 		lpCharInfo->Money = cnt;
-		ReformCharForm();	//캐릭터 정보 인증 받기
+		ReformCharForm();	//?????? ???? ???? ???
 		SendSaveMoney();
 	}
 */
 
 	if ( CopyItemCount ) {
-		//복사 아이템을 소지한 사람 신고 
+		//???? ???????? ?????? ??? ??? 
 		SendCopyItemUser( CopyItemCount );
 	}
 	if ( BadItemCount ) {
-		//금지된 아이템을 소지한 사람 신고
+		//?????? ???????? ?????? ??? ???
 		SendCopyItemUser( BadItemCount+10000 );
 	}
 	if ( PostionError ) {
 		PostionError += 10000;
-		SendSetHackUser2( 1900,PostionError );		//무계오류에 값을 삽입
-		SendSetHackUser2( 99,0 );					//무계오류에 값을 삽입
+		SendSetHackUser2( 1900,PostionError );		//????????? ???? ????
+		SendSetHackUser2( 99,0 );					//????????? ???? ????
 	}
 
 	if ( SvrPotionError ) {
 		SvrPotionError += 20000;
-		SendSetHackUser2( 1900,SvrPotionError );	//무계오류에 값을 삽입
-		SendSetHackUser2( 99,0 );					//무계오류에 값을 삽입
+		SendSetHackUser2( 1900,SvrPotionError );	//????????? ???? ????
+		SendSetHackUser2( 99,0 );					//????????? ???? ????
 	}
 
 
@@ -1568,35 +1571,35 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 	cInvenTory.LoadItemInfo();
 	CheckCharForm();
 
-	//스킬 복구
+	//??? ????
 	RestoreSkill( &TransRecordData.GameSaveInfo.SkillInfo , TransRecordData.GameSaveInfo.dwLevelQuestLog );
-	//기본공격 단축기 복구
+	//?????? ????? ????
 	sinSkill.UseSkill[0].ShortKey = TransRecordData.GameSaveInfo.ShortKey_NormalAttack&0xF;
 	sinSkill.UseSkill[0].MousePosi = TransRecordData.GameSaveInfo.ShortKey_NormalAttack>>4;
 	
-	// 박재원 - 부스터 아이템(생명력) 복구
+	// ????? - ?????? ??????(??????) ????
 	if ( TransRecordData.GameSaveInfo.wLifeBoosterUsing[0] && TransRecordData.GameSaveInfo.wLifeBoosterUsing[1] ) {
 		cSkill.SetBoosterItem( sinBC1+TransRecordData.GameSaveInfo.wLifeBoosterUsing[0] , TransRecordData.GameSaveInfo.wLifeBoosterUsing[1]*60 );
 
-		lpCurPlayer->dwLifeBoosterCode = sinBC1+TransRecordData.GameSaveInfo.wLifeBoosterUsing[0];	// 부스터 적용 코드
-		lpCurPlayer->dwLifeBoosterTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wLifeBoosterUsing[1]*1000; // 부스터 사용 후 남은 시간 복구
+		lpCurPlayer->dwLifeBoosterCode = sinBC1+TransRecordData.GameSaveInfo.wLifeBoosterUsing[0];	// ?????? ???? ???
+		lpCurPlayer->dwLifeBoosterTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wLifeBoosterUsing[1]*1000; // ?????? ??? ?? ???? ???? ????
 	}
-	// 박재원 - 부스터 아이템(기력) 복구
+	// ????? - ?????? ??????(???) ????
 	if ( TransRecordData.GameSaveInfo.wManaBoosterUsing[0] && TransRecordData.GameSaveInfo.wManaBoosterUsing[1] ) {
 		cSkill.SetBoosterItem( sinBC1+TransRecordData.GameSaveInfo.wManaBoosterUsing[0] , TransRecordData.GameSaveInfo.wManaBoosterUsing[1]*60 );
 
-		lpCurPlayer->dwManaBoosterCode = sinBC1+TransRecordData.GameSaveInfo.wManaBoosterUsing[0];	// 부스터 적용 코드
-		lpCurPlayer->dwManaBoosterTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wManaBoosterUsing[1]*1000; // 부스터 사용 후 남은 시간 복구
+		lpCurPlayer->dwManaBoosterCode = sinBC1+TransRecordData.GameSaveInfo.wManaBoosterUsing[0];	// ?????? ???? ???
+		lpCurPlayer->dwManaBoosterTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wManaBoosterUsing[1]*1000; // ?????? ??? ?? ???? ???? ????
 	}
-	// 박재원 - 부스터 아이템(근력) 복구
+	// ????? - ?????? ??????(???) ????
 	if ( TransRecordData.GameSaveInfo.wStaminaBoosterUsing[0] && TransRecordData.GameSaveInfo.wStaminaBoosterUsing[1] ) {
 		cSkill.SetBoosterItem( sinBC1+TransRecordData.GameSaveInfo.wStaminaBoosterUsing[0] , TransRecordData.GameSaveInfo.wStaminaBoosterUsing[1]*60 );
 
-		lpCurPlayer->dwStaminaBoosterCode = sinBC1+TransRecordData.GameSaveInfo.wStaminaBoosterUsing[0];	// 부스터 적용 코드
-		lpCurPlayer->dwStaminaBoosterTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wStaminaBoosterUsing[1]*1000; // 부스터 사용 후 남은 시간 복구
+		lpCurPlayer->dwStaminaBoosterCode = sinBC1+TransRecordData.GameSaveInfo.wStaminaBoosterUsing[0];	// ?????? ???? ???
+		lpCurPlayer->dwStaminaBoosterTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wStaminaBoosterUsing[1]*1000; // ?????? ??? ?? ???? ???? ????
 	}
 
-	// 장별 - 스킬 딜레이
+	// ?? - ??? ??????
 	if ( TransRecordData.GameSaveInfo.wSkillDelayUsing[0] && TransRecordData.GameSaveInfo.wSkillDelayUsing[1] ) {
 		cSkill.SetSkillDelayItem( sinBC1+TransRecordData.GameSaveInfo.wSkillDelayUsing[0] , TransRecordData.GameSaveInfo.wSkillDelayUsing[1]*60 );
 
@@ -1604,27 +1607,27 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		lpCurPlayer->dwSkillDelayTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wSkillDelayUsing[1]*1000;
 	}
 
-	//포스 오브 복구
+	//???? ???? ????
 	if ( TransRecordData.GameSaveInfo.wForceOrbUsing[0] && TransRecordData.GameSaveInfo.wForceOrbUsing[1] ) {
-		// 박재원 - 빌링 매직 포스 추가 
-		if( TransRecordData.GameSaveInfo.wForceOrbUsing[0]>=sin01 && TransRecordData.GameSaveInfo.wForceOrbUsing[0]<=sin16 ) // 일반 포스
+		// ????? - ???? ???? ???? ??? 
+		if( TransRecordData.GameSaveInfo.wForceOrbUsing[0]>=sin01 && TransRecordData.GameSaveInfo.wForceOrbUsing[0]<=sin16 ) // ??? ????
 		{
 			cInvenTory.SetForceOrb( sinFO1+TransRecordData.GameSaveInfo.wForceOrbUsing[0] , TransRecordData.GameSaveInfo.wForceOrbUsing[1] );
 		}
-		else if( TransRecordData.GameSaveInfo.wForceOrbUsing[0]>=sin21 && TransRecordData.GameSaveInfo.wForceOrbUsing[0]<=sin32 ) // 매직 포스
+		else if( TransRecordData.GameSaveInfo.wForceOrbUsing[0]>=sin21 && TransRecordData.GameSaveInfo.wForceOrbUsing[0]<=sin32 ) // ???? ????
 		{
 			cInvenTory.SetMagicForceOrb( sinFO1+TransRecordData.GameSaveInfo.wForceOrbUsing[0] , TransRecordData.GameSaveInfo.wForceOrbUsing[1] );
 		}
-		else if( TransRecordData.GameSaveInfo.wForceOrbUsing[0]>=sin35 && TransRecordData.GameSaveInfo.wForceOrbUsing[0]<=sin37 ) // 빌링 매직 포스
+		else if( TransRecordData.GameSaveInfo.wForceOrbUsing[0]>=sin35 && TransRecordData.GameSaveInfo.wForceOrbUsing[0]<=sin37 ) // ???? ???? ????
 		{
 			cInvenTory.SetBillingMagicForceOrb( sinFO1+TransRecordData.GameSaveInfo.wForceOrbUsing[0] , TransRecordData.GameSaveInfo.wForceOrbUsing[1] );
 		}
 
-		lpCurPlayer->dwForceOrbCode = sinFO1+TransRecordData.GameSaveInfo.wForceOrbUsing[0];		//포스오브 적용 코드
+		lpCurPlayer->dwForceOrbCode = sinFO1+TransRecordData.GameSaveInfo.wForceOrbUsing[0];		//???????? ???? ???
 		lpCurPlayer->dwForceOrbTime = dwPlayTime + (DWORD)TransRecordData.GameSaveInfo.wForceOrbUsing[1]*1000;
 	}
 
-	//프리미엄 아이템 사용시간 표시
+	//??????? ?????? ?????? ???
 	int	PrimeItem_Time;
 	if ( TransRecordData.GameSaveInfo.dwTime_PrimeItem_X2 ) {
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_X2;
@@ -1643,10 +1646,10 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 				case PRIME_ITEM_PACKAGE_GOLD:
 					chaPremiumitem.SetUpKeepItem(nsPremiumItem::THIRD_EYES,chaPremiumitem.m_ThirdEyesTime,true,UpKeepItemName[0],40);
 				break;
-				case PRIME_ITEM_PACKAGE_ULTRA:	// pluto 슈페리어 패키지
+				case PRIME_ITEM_PACKAGE_ULTRA:	// pluto ?????? ?????
 					chaPremiumitem.SetUpKeepItem(nsPremiumItem::THIRD_EYES,chaPremiumitem.m_ThirdEyesTime,true,UpKeepItemName[0],50);
 				break;
-				default:	// 박재원 - 경험치증가 포션(50%)아이템과 중복 사용할 경우(PRIME_ITEM_PACKAGE_NONE_50_EXPUP , PRIME_ITEM_PACKAGE_NONE_100_EXPUP)
+				default:	// ????? - ????????? ????(50%)??????? ??? ????? ???(PRIME_ITEM_PACKAGE_NONE_50_EXPUP , PRIME_ITEM_PACKAGE_NONE_100_EXPUP)
 					chaPremiumitem.SetUpKeepItem(nsPremiumItem::THIRD_EYES,chaPremiumitem.m_ThirdEyesTime,true,UpKeepItemName[0],50);
 				break;
 			}
@@ -1670,7 +1673,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION,chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],30);
 				break;
 #ifdef _LANGUAGE_VEITNAM
-			case PRIME_ITEM_PACKAGE_ULTRA:	//베트남요청
+			case PRIME_ITEM_PACKAGE_ULTRA:	//????????
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION, chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],50);
 				break;
 #else
@@ -1679,22 +1682,22 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 				break;
 #endif
 
-			case PRIME_ITEM_PACKAGE_BRONZE2:	// pluto 브론즈 패키지2
+			case PRIME_ITEM_PACKAGE_BRONZE2:	// pluto ????? ?????2
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION,chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],10);
 				break;
-			case PRIME_ITEM_PACKAGE_SILVER2:	// pluto 실버 패키지2
+			case PRIME_ITEM_PACKAGE_SILVER2:	// pluto ??? ?????2
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION,chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],20);
 				break;
-			case PRIME_ITEM_PACKAGE_GOLD2:	// pluto 골드 패키지2
+			case PRIME_ITEM_PACKAGE_GOLD2:	// pluto ??? ?????2
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION,chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],30);
 				break;
-			case PRIME_ITEM_PACKAGE_ULTRA2: // pluto 슈페리어 패키지2
+			case PRIME_ITEM_PACKAGE_ULTRA2: // pluto ?????? ?????2
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION, chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],40);
 				break;
-			case PRIME_ITEM_PACKAGE_NONE_50_EXPUP: // 박재원 - 경험치증가 포션(50%) 아이템 전용 
+			case PRIME_ITEM_PACKAGE_NONE_50_EXPUP: // ????? - ????????? ????(50%) ?????? ???? 
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION, chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],50);
 				break;
-			case PRIME_ITEM_PACKAGE_NONE_100_EXPUP: // 박재원 - 경험치증가 포션(100%) 아이템 전용 
+			case PRIME_ITEM_PACKAGE_NONE_100_EXPUP: // ????? - ????????? ????(100%) ?????? ???? 
 				chaPremiumitem.SetUpKeepItem(nsPremiumItem::EXPUP_POTION, chaPremiumitem.m_ExpUpPotionTime,true,UpKeepItemName[1],100);
 				break;
 			}
@@ -1716,7 +1719,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		}
 	}
 
-	// 장별 - 뱀피릭 커스핏 EX
+	// ?? - ????? ?????? EX
 	if ( TransRecordData.GameSaveInfo.dwTime_PrimeItem_VampCuspid_EX ) {
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_VampCuspid_EX;
 		if ( PrimeItem_Time>0 ){
@@ -1739,7 +1742,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 	}
 	*/
 
-	// pluto 마나 리듀스 포션
+	// pluto ???? ???? ????
 	if( TransRecordData.GameSaveInfo.dwTime_PrimeItem_ManaReduce )
 	{
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_ManaReduce;
@@ -1749,33 +1752,33 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 			switch( TransRecordData.GameSaveInfo.dwPrimeItem_PackageCode )
 			{
 				case PRIME_ITEM_PACKAGE_NONE:
-					chaPremiumitem.SetManaReducePotionValue( 30 );	// pluto 마나 리듀스 포션 30% 감소
+					chaPremiumitem.SetManaReducePotionValue( 30 );	// pluto ???? ???? ???? 30% ????
 					chaPremiumitem.SetUpKeepItem( nsPremiumItem::MANA_REDUCE_P, chaPremiumitem.m_ManaReducePotiontime, true, UpKeepItemName[5], 30);
 					break;
 				case PRIME_ITEM_PACKAGE_BRONZE2:
-					chaPremiumitem.SetManaReducePotionValue( 10 );	// pluto 마나 리듀스 포션 10% 감소
+					chaPremiumitem.SetManaReducePotionValue( 10 );	// pluto ???? ???? ???? 10% ????
 					chaPremiumitem.SetUpKeepItem( nsPremiumItem::MANA_REDUCE_P, chaPremiumitem.m_ManaReducePotiontime, true, UpKeepItemName[5], 10);
 					break;
 				case PRIME_ITEM_PACKAGE_SILVER2:
-					chaPremiumitem.SetManaReducePotionValue( 20 );	// pluto 마나 리듀스 포션 20% 감소
+					chaPremiumitem.SetManaReducePotionValue( 20 );	// pluto ???? ???? ???? 20% ????
 					chaPremiumitem.SetUpKeepItem( nsPremiumItem::MANA_REDUCE_P, chaPremiumitem.m_ManaReducePotiontime, true, UpKeepItemName[5], 20);
 					break;
 				case PRIME_ITEM_PACKAGE_GOLD2:
-					chaPremiumitem.SetManaReducePotionValue( 30 );	// pluto 마나 리듀스 포션 30% 감소
+					chaPremiumitem.SetManaReducePotionValue( 30 );	// pluto ???? ???? ???? 30% ????
 					chaPremiumitem.SetUpKeepItem( nsPremiumItem::MANA_REDUCE_P, chaPremiumitem.m_ManaReducePotiontime, true, UpKeepItemName[5], 30);
 					break;
 				case PRIME_ITEM_PACKAGE_ULTRA2:
-					chaPremiumitem.SetManaReducePotionValue( 40 );	// pluto 마나 리듀스 포션 40% 감소
+					chaPremiumitem.SetManaReducePotionValue( 40 );	// pluto ???? ???? ???? 40% ????
 					chaPremiumitem.SetUpKeepItem( nsPremiumItem::MANA_REDUCE_P, chaPremiumitem.m_ManaReducePotiontime, true, UpKeepItemName[5], 40);
 					break;
-				default:	// 땜빵
-					chaPremiumitem.SetManaReducePotionValue( 30 );	// pluto 마나 리듀스 포션 30% 감소
+				default:	// ????
+					chaPremiumitem.SetManaReducePotionValue( 30 );	// pluto ???? ???? ???? 30% ????
 					chaPremiumitem.SetUpKeepItem( nsPremiumItem::MANA_REDUCE_P, chaPremiumitem.m_ManaReducePotiontime, true, UpKeepItemName[5], 30);
 					break;
 			}
 		}
 	}
-	// pluto 마이트 오브 아웰
+	// pluto ????? ???? ????
 	if( TransRecordData.GameSaveInfo.dwTime_PrimeItem_MightofAwell )
 	{
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_MightofAwell;
@@ -1804,7 +1807,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 			//}
 		}
 	}
-	// pluto 마이트 오브 아웰2
+	// pluto ????? ???? ????2
 	if( TransRecordData.GameSaveInfo.dwTime_PrimeItem_MightofAwell2 )
 	{
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_MightofAwell2;
@@ -1834,7 +1837,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		}
 	}
 
-	// pluto 펫(해외)
+	// pluto ??(???)
 	if( TransRecordData.GameSaveInfo.dwTime_PrimeItem_PhenixPet )
 	{
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_PhenixPet;
@@ -1849,7 +1852,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		}
 	}
 
-	// 박재원 - 빌링 도우미 펫 추가
+	// ????? - ???? ????? ?? ???
 	if( TransRecordData.GameSaveInfo.dwTime_PrimeItem_HelpPet )
 	{
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_HelpPet;
@@ -1878,14 +1881,14 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 		lpCharInfo->GravityScroolCheck[1] = 0;
 	}
 
-	// 박재원 - 근력 리듀스 포션
+	// ????? - ??? ???? ????
 	if( TransRecordData.GameSaveInfo.dwTime_PrimeItem_StaminaReduce )
 	{
 		PrimeItem_Time = TransRecordData.GameSaveInfo.dwTime_PrimeItem_StaminaReduce;
 		if( PrimeItem_Time > 0 )
 		{
 			chaPremiumitem.SetStaminaReducePotionTime( PrimeItem_Time );
-			chaPremiumitem.SetStaminaReducePotionValue( 30 );	// 박재원 - 근력 리듀스 포션 30% 감소
+			chaPremiumitem.SetStaminaReducePotionValue( 30 );	// ????? - ??? ???? ???? 30% ????
 			chaPremiumitem.SetUpKeepItem( nsPremiumItem::STAMINA_REDUCE_P, chaPremiumitem.m_StaminaReducePotiontime, true, UpKeepItemName[12], 30);
 
 		}
@@ -1895,7 +1898,7 @@ int rsRECORD_DBASE::ResotrRecordData( smCHAR_INFO *lpCharInfo , sITEM *lpItems ,
 }
 
 
-//저장할 데이타를 분할하여 서버로 전송
+//?????? ??????? ??????? ?????? ????
 int rsRECORD_DBASE::SendRecordDataToServer( smWINSOCK *lpsmSock  )
 {
 	int cnt;
@@ -1987,17 +1990,17 @@ int rsRECORD_DBASE::SendRecordDataToClient( rsPLAYINFO *lpPlayInfo , char *szNam
 
 /*
 	if ( Mode==TRUE ) {
-		//지운파일 불러오기
+		//???????? ???????
 		GetDeleteDataFile( szName , szFile );
 	}
 	else {
-		//파일불러오기
+		//??????????
 		GetUserDataFile( szName , szFile );
 	}
 */
 	if ( sRecDataBuff ) EnterCriticalSection( &cSaveDataSection );
 
-	//저장 대기중인 데이타 있는지 확인
+	//???? ??????? ????? ????? ???
 	if ( CheckRecWaitData( szName )==TRUE ) return FALSE;
 
 	lpTransRecord->code = 0;
@@ -2016,27 +2019,27 @@ int rsRECORD_DBASE::SendRecordDataToClient( rsPLAYINFO *lpPlayInfo , char *szNam
 
 
 	if ( lpTransRecord->code==0 && lpTransRecord->size==0 ) 
-		return FALSE;			//임시 저장 데이타 이므로 실패 ( 신규 캐릭을 만든경우임 )
+		return FALSE;			//??? ???? ????? ???? ???? ( ??? ?????? ???????? )
 
 	if ( lpTransRecord->size<0 || lpTransRecord->size>sizeof(TRANS_RECORD_DATA) )
-		return FALSE;			//오류 데이타
+		return FALSE;			//???? ?????
 
 /*
-	//상위 32비트 경험치 초기화
+	//???? 32??? ????? ????
 	if ( lpTransRecord->smCharInfo.Level<80 && lpTransRecord->smCharInfo.Exp_High ) {
 		lpTransRecord->smCharInfo.Exp_High = 0;
 	}
 */
 
 	exp64 = GetExp64( &lpTransRecord->smCharInfo );
-	if ( exp64<0 ) {	//경험치 오류 0보다 작다
+	if ( exp64<0 ) {	//????? ???? 0???? ???
 		exp64 = 0;
 		SetExp64( &lpTransRecord->smCharInfo , exp64 );
 	}
 
-	//레벨과 경험치가 맞는지 확인
+	//?????? ??????? ?????? ???
 	if ( CheckLevelExp( lpTransRecord->smCharInfo.Level , exp64 )==FALSE ) {
-		//경험치로 레벨 추산
+		//??????? ???? ???
 		lpTransRecord->smCharInfo.Level = GetLevelFromExp( exp64 );
 	}
 
@@ -2048,7 +2051,7 @@ int rsRECORD_DBASE::SendRecordDataToClient( rsPLAYINFO *lpPlayInfo , char *szNam
 		smTransCommand.EParam = 0;
 		RecordHackLogFile( lpPlayInfo , &smTransCommand );
 
-		//레벨 1 로 다운
+		//???? 1 ?? ???
 		lpTransRecord->smCharInfo.Level = 1;
 		lpTransRecord->smCharInfo.Exp = 0;
 		lpTransRecord->smCharInfo.Exp_High = 0;
@@ -2184,7 +2187,7 @@ int rsRECORD_DBASE::SendRecordDataToClient( rsPLAYINFO *lpPlayInfo , char *szNam
 
 #define	RECORD_ITEM_INFO_HEAD_SIZE		44
 
-//불러온 아이템 목록을 유저정보에 저장
+//????? ?????? ????? ?????????? ????
 int rsRECORD_DBASE::MakeRecordItemList( rsPLAYINFO *lpPlayInfo )
 {
 	int cnt,cnt2;
@@ -2195,8 +2198,8 @@ int rsRECORD_DBASE::MakeRecordItemList( rsPLAYINFO *lpPlayInfo )
 	int		BuffSize;
 	smTRANS_COMMAND_EX	smTransCommand;
 
-	sTHROW_ITEM_INFO	ThrowItemInfo[THROW_ITEM_INFO_MAX];			//버려진 아이템 정보
-	int					ThrowItemCount;								//버려진 아이템 카운터
+	sTHROW_ITEM_INFO	ThrowItemInfo[THROW_ITEM_INFO_MAX];			//?????? ?????? ????
+	int					ThrowItemCount;								//?????? ?????? ?????
 
 	lpRecItem = (BYTE *)&TransRecordData.Data;
 	BuffSize = 0;
@@ -2211,11 +2214,11 @@ int rsRECORD_DBASE::MakeRecordItemList( rsPLAYINFO *lpPlayInfo )
 		if ( cnt>=(INVENTORY_MAXITEM*2) ) break;
 
 		if ( rsServerConfig.PotionMonitor ) {
-			//압축데이타 서버 아이템 해독용 ( Z/NZ 방식 ) - 물약 계열 아이템을 확인하여 수량 파악
+			//??????? ???? ?????? ????? ( Z/NZ ??? ) - ???? ??? ???????? ?????? ???? ???
 			DecodeCompress_ItemPotion( lpPlayInfo , (BYTE *)lpRecItem , (BYTE *)&sRecordItem , RECORD_ITEM_INFO_HEAD_SIZE , &TransRecordData );
 		}
 		else {
-			//압축 데이타 해독 ( Z/NZ 방식 )
+			//???? ????? ??? ( Z/NZ ??? )
 			DecodeCompress( (BYTE *)lpRecItem , (BYTE *)&sRecordItem , RECORD_ITEM_INFO_HEAD_SIZE );
 		}
 
@@ -2223,14 +2226,14 @@ int rsRECORD_DBASE::MakeRecordItemList( rsPLAYINFO *lpPlayInfo )
 			sRecordItem.sItemInfo.ItemHeader.dwChkSum &&
 			(sRecordItem.sItemInfo.CODE&sinITEM_MASK1)!=(sinPM1&sinITEM_MASK1) ) {
 
-			//버려진 아이템 확인
+			//?????? ?????? ???
 			for( cnt2=0;cnt2<TransRecordData.ThrowItemCount;cnt2++ ) {
 				if ( TransRecordData.ThrowItemInfo[cnt2].dwCode==sRecordItem.sItemInfo.CODE &&
 					TransRecordData.ThrowItemInfo[cnt2].dwKey==sRecordItem.sItemInfo.ItemHeader.Head &&
 					TransRecordData.ThrowItemInfo[cnt2].dwSum==sRecordItem.sItemInfo.ItemHeader.dwChkSum ) {
 
 						if ( ThrowItemCount<THROW_ITEM_INFO_MAX ) {
-							//실제로 존재하는 아이템 확인 ( 던져진 아이템 목록 정리 )
+							//?????? ??????? ?????? ??? ( ?????? ?????? ??? ???? )
 							memcpy( &ThrowItemInfo[ThrowItemCount++] , &TransRecordData.ThrowItemInfo[cnt2] ,sizeof(sTHROW_ITEM_INFO) );
 						}
 						break;
@@ -2239,13 +2242,13 @@ int rsRECORD_DBASE::MakeRecordItemList( rsPLAYINFO *lpPlayInfo )
 
 			if ( cnt2>=TransRecordData.ThrowItemCount ) {
 				for( cnt2=0;cnt2<cnt;cnt2++ ) {
-					//복사아이템 검사
+					//????????? ???
 					if ( lpPlayInfo->InvenItemInfo[cnt2].dwCode && 
 						lpPlayInfo->InvenItemInfo[cnt2].dwCode==sRecordItem.sItemInfo.CODE &&
 						lpPlayInfo->InvenItemInfo[cnt2].dwKey==sRecordItem.sItemInfo.ItemHeader.Head &&
 						lpPlayInfo->InvenItemInfo[cnt2].dwSum==sRecordItem.sItemInfo.ItemHeader.dwChkSum ) {
 
-							//로그에 기록
+							//????? ???
 							smTransCommand.WParam = 8070;
 							smTransCommand.WxParam = 1;
 							smTransCommand.LxParam = (int)"*INVENTORY";
@@ -2267,7 +2270,7 @@ int rsRECORD_DBASE::MakeRecordItemList( rsPLAYINFO *lpPlayInfo )
 		size = ((int *)lpRecItem)[0];
 		BuffSize += size;
 		lpRecItem += size;
-		if ( BuffSize>=(sizeof(sRECORD_ITEM)*RECORD_ITEM_MAX) ) break;			//버퍼 크기 초과시
+		if ( BuffSize>=(sizeof(sRECORD_ITEM)*RECORD_ITEM_MAX) ) break;			//???? ??? ?????
 	}
 
 
@@ -2279,7 +2282,7 @@ int rsRECORD_DBASE::MakeRecordItemList( rsPLAYINFO *lpPlayInfo )
 }
 
 
-//저장할 데이타를 분할하여 받음
+//?????? ??????? ??????? ????
 int rsRECORD_DBASE::RecvRecordDataFromServer( TRANS_RECORD_DATAS *lpTransRecord )
 {
 
@@ -2295,7 +2298,7 @@ int rsRECORD_DBASE::RecvRecordDataFromServer( TRANS_RECORD_DATAS *lpTransRecord 
 		if ( !TransDataBlock[cnt] ) break;
 
 	if ( cnt==lpTransRecord->Total && TransRecordData.code==smTRANSCODE_RECORDDATA ) {
-		//수신 완료
+		//???? ???
 		TransRecordData.code=0;
 		return TRUE;
 	}
@@ -2303,11 +2306,11 @@ int rsRECORD_DBASE::RecvRecordDataFromServer( TRANS_RECORD_DATAS *lpTransRecord 
 /*
 	if ( lpTransRecord->Count>0 ) {
 		if ( TransLastPartCount!=lpTransRecord->Count-1 ) 
-			return FALSE;		//수신 오류
+			return FALSE;		//???? ????
 	}
 
 	if ( lpTransRecord->Count>=lpTransRecord->Total-1 && TransRecordData.code==smTRANSCODE_RECORDDATA ) {
-		//수신 완료
+		//???? ???
 		TransRecordData.code=0;
 		return TRUE;
 	}
@@ -2662,7 +2665,7 @@ int rsRECORD_DBASE::RecvRecordDataFromClient( TRANS_RECORD_DATAS *lpTransRecord 
 
 extern void Utils_Log( DWORD type, char* msg, ... );
 
-//메모리 버퍼를 파일로 저장
+//??? ????? ????? ????
 int rsRecordMemoryBuffToFile( rsPLAYINFO *lpPlayInfo , char *szName ,  char *lpRecordMemBuff )
 {
 	char szFile[256];
@@ -2719,7 +2722,7 @@ int rsSaveThrowData(rsPLAYINFO* lpPlayInfo)
 	lpTransRecordData->ThrowItemCount = cnt;
 
 	if (lpPlayInfo->UnsaveMoney >= 0 && lpTransRecordData->smCharInfo.Money > lpPlayInfo->UnsaveMoney)
-		lpTransRecordData->GameSaveInfo.LastMoeny = lpPlayInfo->UnsaveMoney + 1;			//돈 기록
+		lpTransRecordData->GameSaveInfo.LastMoeny = lpPlayInfo->UnsaveMoney + 1;			//?? ???
 
 	lpPlayInfo->ThrowItemCount = 0;
 	lpPlayInfo->UnsaveMoney = -1;
@@ -2728,7 +2731,7 @@ int rsSaveThrowData(rsPLAYINFO* lpPlayInfo)
 }
 
 
-//저장할 메모리버퍼의 아이템이 올바른지 전부 확인
+//?????? ???????? ???????? ?????? ???? ???
 int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 {
 
@@ -2741,8 +2744,8 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 	int	size,BuffSize;
 	int	flag;
 
-	sTHROW_ITEM_INFO	ThrowItemInfo[THROW_ITEM_INFO_MAX];			//버려진 아이템 정보
-	int				ThrowItemCount =0;											//버려진 아이템 카운터
+	sTHROW_ITEM_INFO	ThrowItemInfo[THROW_ITEM_INFO_MAX];			//?????? ?????? ????
+	int				ThrowItemCount =0;											//?????? ?????? ?????
 
 
 	if ( !lpPlayInfo->lpRecordDataBuff )	return FALSE;
@@ -2760,7 +2763,7 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 	for( cnt=0;cnt<lpTransRecordData->ItemCount;cnt++ ) {
 		if ( cnt>=(INVENTORY_MAXITEM*2) ) break;
 
-		//압축 데이타 해독 ( Z/NZ 방식 )
+		//???? ????? ??? ( Z/NZ ??? )
 		DecodeCompress( (BYTE *)lpRecItem , (BYTE *)&sRecordItem , RECORD_ITEM_INFO_HEAD_SIZE );
 
 
@@ -2770,9 +2773,9 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 			flag = 0;
 
 			if ( (sRecordItem.sItemInfo.CODE&sinITEM_MASK1)==(sinPM1&sinITEM_MASK1) ) {
-				//아이템 [ 물약 ]
+				//?????? [ ???? ]
 				if ( lpPlayInfo->TradePotionInfoCount>0 ) {
-					//거래 물약 제거 (거래직후 게임이 저장되지 않은 경우 , 거래했던 물약과 같은 종류 모두 제거 )
+					//??? ???? ???? (??????? ?????? ??????? ???? ??? , ?????? ????? ???? ???? ??? ???? )
 					if ( rsGetTradePotionInfo( lpPlayInfo , sRecordItem.sItemInfo.CODE )==TRUE ) {
 						flag = 0;
 					}
@@ -2782,9 +2785,9 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 				}
 			}
 			else {
-				//일반 아이템의 경우
+				//??? ???????? ???
 
-				//인벤토리 검사
+				//?????? ???
 				for( cnt2=0;cnt2<INVEN_ITEM_INFO_MAX;cnt2++ ) {
 					if ( lpPlayInfo->InvenItemInfo[cnt2].dwCode &&
 						lpPlayInfo->InvenItemInfo[cnt2].dwCode==sRecordItem.sItemInfo.CODE &&
@@ -2795,10 +2798,10 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 						}
 				}
 
-				//창고 검사
+				//??? ???
 				if ( lpPlayInfo->OpenWarehouseInfoFlag ) 
 				{
-					for( cnt2=0;cnt2<100;cnt2++ ) {
+					for( cnt2=0;cnt2<WAREHOUSE_TOTAL_SLOTS;cnt2++ ) {
 						if ( lpPlayInfo->WareHouseItemInfo[cnt2].dwCode &&
 							lpPlayInfo->WareHouseItemInfo[cnt2].dwCode==sRecordItem.sItemInfo.CODE &&
 							lpPlayInfo->WareHouseItemInfo[cnt2].dwKey==sRecordItem.sItemInfo.ItemHeader.Head &&
@@ -2853,7 +2856,7 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 				}
 
 				if ( cnt2>=lpTransRecordData->ThrowItemCount ) {
-					//로그에 기록
+					//????? ???
 					smTransCommand.WParam = 8000;
 					smTransCommand.WxParam = 1;
 					smTransCommand.LxParam = (int)"*RECORD ITEM";
@@ -2865,7 +2868,7 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 			}
 			else {
 				if ( flag>0 ) {
-					//아이템이 존재 하지만 버려진 코드에 있는지 재확인( 제거 시킴 )
+					//???????? ???? ?????? ?????? ??? ????? ?????( ???? ??? )
 					for( cnt2=0;cnt2<lpTransRecordData->ThrowItemCount;cnt2++ ) {
 						if ( lpTransRecordData->ThrowItemInfo[cnt2].dwCode==sRecordItem.sItemInfo.CODE &&
 							lpTransRecordData->ThrowItemInfo[cnt2].dwKey==sRecordItem.sItemInfo.ItemHeader.Head &&
@@ -2884,9 +2887,9 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 			}
 
 			if ( flag>1 ) {
-				//복사아이템 발견 처리
+				//????????? ??? ???
 
-				//로그에 기록
+				//????? ???
 				smTransCommand.WParam = 8000;
 				smTransCommand.WxParam = flag;
 				smTransCommand.LxParam = (int)"*RECORD COPIED ITEM";
@@ -2900,17 +2903,19 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 		size = ((int *)lpRecItem)[0];
 		BuffSize += size;
 		lpRecItem += size;
-		if ( BuffSize>=(sizeof(sRECORD_ITEM)*RECORD_ITEM_MAX) ) break;			//버퍼 크기 초과시
+		if ( BuffSize>=(sizeof(sRECORD_ITEM)*RECORD_ITEM_MAX) ) break;			//???? ??? ?????
 	}
 	if ( ThrowItemCount>0 ) {
 		memcpy( lpTransRecordData->ThrowItemInfo , ThrowItemInfo, sizeof(sTHROW_ITEM_INFO)*ThrowItemCount );
 		lpTransRecordData->ThrowItemCount = ThrowItemCount;
 	}
 
-	//창고를 연적이 있으면 창고도 검사
+	//????? ?????? ?????? ????? ???
 
 	sWAREHOUSE WareHouseCheck;
 	TRANS_WAREHOUSE	TransWareHouse;
+	TRANS_WAREHOUSE whPages[WAREHOUSE_PAGE_COUNT];
+	int nWhPages = 0;
 	int	WareHouseFixFlag = 0;
 	char szFileName[128];
 	char szItemName[64];
@@ -2927,7 +2932,8 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 
 		fp = fopen( szFileName , "rb" );
 		if ( fp ) {
-			fread( &TransWareHouse , sizeof(TRANS_WAREHOUSE), 1 , fp );
+			nWhPages = ReadWareHouseFilePages(fp, whPages, WAREHOUSE_PAGE_COUNT);
+			memcpy(&TransWareHouse, &whPages[0], sizeof(TRANS_WAREHOUSE));
 			fclose(fp);
 		}
 		else {
@@ -2957,7 +2963,7 @@ skip_caravan:
 	{
 		DecodeCompress((BYTE*)TransCaravan.Data, (BYTE*)&CaravanCheck, sizeof(sCARAVAN));
 
-		//오류난 창고 확인
+		//?????? ??? ???
 		DWORD	dwChkSum = 0;
 		char* szComp = (char*)&CaravanCheck;
 
@@ -3042,10 +3048,10 @@ skip_Warehouse:
 
 	if ( lpPlayInfo->OpenWarehouseInfoFlag ) {
 
-		//창고 압축 풀어서 아이템 검사하여 설정
+		//??? ???? ??? ?????? ?????? ????
 		DecodeCompress( (BYTE *)TransWareHouse.Data , (BYTE *)&WareHouseCheck , sizeof(sWAREHOUSE) );
 
-			//오류난 창고 확인
+			//?????? ??? ???
 			DWORD	dwChkSum = 0;
 			char	*szComp = (char *)&WareHouseCheck;
 
@@ -3073,7 +3079,7 @@ skip_Warehouse:
 						}
 				}
 
-				for( cnt2=0;cnt2<100;cnt2++ ) {
+				for( cnt2=0;cnt2<WAREHOUSE_TOTAL_SLOTS;cnt2++ ) {
 					if ( lpPlayInfo->WareHouseItemInfo[cnt2].dwCode &&
 						lpPlayInfo->WareHouseItemInfo[cnt2].dwCode==WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE &&
 						lpPlayInfo->WareHouseItemInfo[cnt2].dwKey==WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head &&
@@ -3090,11 +3096,11 @@ skip_Warehouse:
 					WareHouseFixFlag ++;
 
 
-					//데이타 오류날 수 있기 때문에 버퍼에 이동후 로그 기록
+					//????? ?????? ?? ??? ?????? ????? ????? ???? ???
 					memcpy( szItemName , WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemName , 32 );
 					szItemName[31] = 0;
 
-					//로그에 기록
+					//????? ???
 					smTransCommand.WParam = 8000;
 					smTransCommand.WxParam = 3;
 					smTransCommand.LxParam = (int)szItemName;
@@ -3106,7 +3112,7 @@ skip_Warehouse:
 				}
 
 				if ( flag>1 ) {
-					//로그에 기록
+					//????? ???
 					smTransCommand.WParam = 8000;
 					smTransCommand.WxParam = flag;
 					smTransCommand.LxParam = (int)"*RECORD COPIED ITEM IN WAREHOUSE";
@@ -3124,7 +3130,7 @@ skip_Warehouse:
 			money += lpPlayInfo->WareHouseMoney;
 
 			if( lpTransRecordData->smCharInfo.Money<0 ) {
-				//캐릭 주머니의 돈이 - 인경우 창고의 돈으로 보정
+				//???? ?????? ???? - ???? ????? ?????? ????
 				lpTransRecordData->smCharInfo.Money = 0;
 				money = lpPlayInfo->WareHouseMoney;
 			}
@@ -3137,7 +3143,7 @@ skip_Warehouse:
 
 
 		if ( money>lpPlayInfo->ServerMoney ) {
-			//로그에 기록
+			//????? ???
 			smTransCommand.WParam = 8010;
 			smTransCommand.LParam = 2;
 			smTransCommand.SParam = lpPlayInfo->ServerMoney;
@@ -3161,10 +3167,15 @@ skip_Warehouse:
 
 		if ( WareHouseFixFlag && !Mode ) {
 
-			//창고 저장
 			if ( SaveWareHouse( &WareHouseCheck , &TransWareHouse )==TRUE ) {
-				//창고 데이타 저장
-				rsSaveWareHouseData( lpPlayInfo->szID , &TransWareHouse );
+				if (nWhPages >= WAREHOUSE_PAGE_COUNT) {
+					GetWareHouseFile(lpPlayInfo->szID, szFileName);
+					memcpy(&whPages[0], &TransWareHouse, sizeof(TRANS_WAREHOUSE));
+					WriteWareHouseFilePages(szFileName, whPages, WAREHOUSE_PAGE_COUNT);
+				}
+				else {
+					rsSaveWareHouseData( lpPlayInfo->szID , &TransWareHouse , lpPlayInfo );
+				}
 			}
 		}
 	}
@@ -3172,10 +3183,10 @@ skip_Warehouse:
 	//if ( WareHouseCheck.Money ) 
 	//			lpPlayInfo->ServerMoney += WareHouseCheck.Money-2023;
 
-		//돈 수치 검사하여 보정
+		//?? ??? ?????? ????
 		if ( lpTransRecordData->smCharInfo.Money>lpPlayInfo->ServerMoney ) {
 
-			//로그에 기록
+			//????? ???
 			smTransCommand.WParam = 8010;
 			smTransCommand.LParam = 1;
 			smTransCommand.SParam = lpPlayInfo->ServerMoney;
@@ -3191,7 +3202,7 @@ skip_Warehouse:
 
 		if ( money &&  (money-1)>lpPlayInfo->ServerMoney ) {
 
-			//로그에 기록
+			//????? ???
 			smTransCommand.WParam = 8010;
 			smTransCommand.LParam = 3;
 			smTransCommand.SParam = lpPlayInfo->ServerMoney;
@@ -3210,10 +3221,10 @@ skip_Warehouse:
 }
 
 
-//캐릭터 제거 기록 파일로 남김
+//?????? ???? ??? ????? ????
 int RecordDeleteCharacterError( char *szID , char *szName );
 
-//해당 ID에 해당하는 캐릭터 데이타를 클라이언트로 전송함
+//??? ID?? ?????? ?????? ??????? ????????? ??????
 int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , char *szServerID )
 {
 	char	szFile[256];
@@ -3231,7 +3242,7 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 	int		LevelMax = 0;
 	int		CharNameMax = CHAR_NAME_MAXLEN;
 
-	//파일불러오기
+	//??????????
 	//wsprintf( szFileInfo , "userInfo\\%s.dat" , szID );
 
 	if ( rsServerConfig.TT_DataServer_Count )
@@ -3246,9 +3257,9 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 
 	if ( hFind==INVALID_HANDLE_VALUE ) {
 
-		//CreateDirectory( szRecordUserInfoDir , NULL );			//디렉토리 생성
+		//CreateDirectory( szRecordUserInfoDir , NULL );			//???? ????
 
-		//파일이 없을때 신규 생성
+		//?????? ?????? ??? ????
 		ZeroMemory( &sPlayUserData , sizeof( sPLAY_USER_DATA ) );
 		lstrcpy( sPlayUserData.szID , szID );
 		lstrcpy( sPlayUserData.szHeader , "PS_TAILID 1.10" );
@@ -3267,7 +3278,7 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 		fclose(fp);
 
 		if ( lstrcmpi( sPlayUserData.szID , szID )!=0 ) {
-			//파일이 없을때 신규 생성
+			//?????? ?????? ??? ????
 			ZeroMemory( &sPlayUserData , sizeof( sPLAY_USER_DATA ) );
 			lstrcpy( sPlayUserData.szID , szID );
 			lstrcpy( sPlayUserData.szHeader , "PS_TAILID 1.10" );
@@ -3288,7 +3299,7 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 
 	for( cnt=0;cnt<sPLAY_CHAR_MAX;cnt++) {
 		if ( sPlayUserData.szCharName[cnt][0] ) {
-			//캐릭터 파일에서 데이타 입수 
+			//?????? ??????? ????? ??? 
 
 			//wsprintf( szFile , "userdata\\%s.dat" , sPlayUserData.szCharName[cnt] );
 			GetUserDataFile( sPlayUserData.szCharName[cnt] , szFile );
@@ -3316,7 +3327,7 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 					lpCharInfo->Level = TransRecordData.smCharInfo.Level;
 
 					if ( rsServerConfig.FixedStartField )
-						lpCharInfo->StartField =rsServerConfig.FixedStartField;				//시작필드 강제 지정
+						lpCharInfo->StartField =rsServerConfig.FixedStartField;				//??????? ???? ????
 					else
 						lpCharInfo->StartField =TransRecordData.GameSaveInfo.PlayStageNum;
 
@@ -3329,7 +3340,7 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 					}
 
 					//if ( TransRecordData.smCharInfo.wPlayerKilling[0]>0 ) {
-					//	//감옥에 갇혀있는 상태
+					//	//?????? ??????? ????
 					//	lpCharInfo->PosX = PrisonX;
 					//	lpCharInfo->PosZ = PrisonZ;
 					//}
@@ -3344,7 +3355,7 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 				}
 				else {
 					if ( TransRecordData.size ) {
-						//오류캐릭파일 백업
+						//???????????? ???
 						GetDeleteDataFile( sPlayUserData.szCharName[cnt] , szFile2 );
 						CopyFile( szFile , szFile2 , FALSE );
 
@@ -3353,25 +3364,25 @@ int rsRECORD_DBASE::SendUserDataToClient( char *szID , smWINSOCK *lpsmSock , cha
 
 					DeleteFile( szFile );
 
-					//오류난 이름 삭제
+					//?????? ??? ????
 					sPlayUserData.szCharName[cnt][0] = 0;
 					DeleteCnt++;
 				}
 			}
 			else {
-				//오류난 이름 삭제
+				//?????? ??? ????
 				sPlayUserData.szCharName[cnt][0] = 0;
 				DeleteCnt++;
 			}
 		}
 	}
 
-	//클라이언트로 전송
+	//????????? ????
 	TransUserCharInfo.PlayUserCount = FindCnt;
 	lpsmSock->Send( (char *)&TransUserCharInfo , TransUserCharInfo.size , TRUE );
 
 
-	//오류난 데이타 복구시 다시 저정
+	//?????? ????? ?????? ??? ????
 	if ( DeleteCnt ) {
 		fp = fopen( szFileInfo , "wb" );
 		if ( fp ) {
@@ -3431,7 +3442,7 @@ int rsRECORD_DBASE::InsertCharData( char *szID , char *szName , int Mode )
 }
 
 
-//캐릭터 데이타 삭제
+//?????? ????? ????
 int rsRECORD_DBASE::DeleteCharData( char *szID , char *szName )
 {
 	char szFile[256];
@@ -3453,7 +3464,7 @@ int rsRECORD_DBASE::DeleteCharData( char *szID , char *szName )
 		fclose( fp );
 	}
 
-	//파일불러오기
+	//??????????
 //	wsprintf( szFile , "userInfo\\%s.dat" , szID );
 	GetUserInfoFile( szID , szFile );
 
@@ -3474,7 +3485,7 @@ int rsRECORD_DBASE::DeleteCharData( char *szID , char *szName )
 				fwrite( &sPlayUserData , sizeof( sPLAY_USER_DATA ) , 1, fp );
 				fclose(fp);
 				if ( TransRecordData.smCharInfo.Level>=10 ) {
-					//레벨 10이상의 캐릭터는 백업 받음
+					//???? 10????? ??????? ??? ????
 					GetDeleteDataFile( szName , szDelBackupFile );
 					if ( TransRecordData.smCharInfo.Level>=20 )
 						CopyFile( szDelFile , szDelBackupFile , TRUE );
@@ -3491,24 +3502,24 @@ int rsRECORD_DBASE::DeleteCharData( char *szID , char *szName )
 	return TRUE;
 }
 
-#include	"checkname.h"		//지병훈 제작
+#include	"checkname.h"		//?????? ????
 
-//캐릭터가 존재 하는지 파일을 검사하여 확인
+//??????? ???? ????? ?????? ?????? ???
 int rsRECORD_DBASE::IsData( char *szName )
 {
 	char	szFile[256];
 	WIN32_FIND_DATA		ffd;
 	HANDLE				hFind;
 
-	//파일불러오기
+	//??????????
 	//wsprintf( szFile , "userdata\\%s.dat" , szName );
 
-	//CreateDirectory( szRecordUserDataDir , NULL );			//디렉토리 생성
-	//CreateDirectory( szRecordUserBackupDataDir , NULL );			//디렉토리 생성
+	//CreateDirectory( szRecordUserDataDir , NULL );			//???? ????
+	//CreateDirectory( szRecordUserBackupDataDir , NULL );			//???? ????
 
 	if ( lstrlen(szName)>=CHAR_NAME_MAXLEN  ) return TRUE;
 
-	if(!c_CheckName(".\\CharacterNameList",szName)) return TRUE;    // <--- 요거 추가 함 됨니다.(지병훈)
+	if(!c_CheckName(".\\CharacterNameList",szName)) return TRUE;    // <--- ??? ??? ?? ????.(??????)
 
 	GetUserDataFile( szName , szFile );
 
@@ -3525,7 +3536,7 @@ int rsRECORD_DBASE::IsData( char *szName )
 
 
 
-//버려진 아이템 데이타 저장 
+//?????? ?????? ????? ???? 
 int rsRECORD_DBASE::SaveThrowData( char *szName , sTHROW_ITEM_INFO *lpThrowItemList , int Count , int SaveMoney )
 {
 	char szFile[256];
@@ -3545,9 +3556,9 @@ int rsRECORD_DBASE::SaveThrowData( char *szName , sTHROW_ITEM_INFO *lpThrowItemL
 	memcpy( &TransRecordData.ThrowItemInfo , lpThrowItemList , sizeof(sTHROW_ITEM_INFO)*Count );
 	TransRecordData.ThrowItemCount = Count;
 
-	//버려진 돈기록 ( 원래 저장된값보다 작은경우만 저장 - 복사방지 )
+	//?????? ????? ( ???? ?????????? ???????I ???? - ??????? )
 	if ( SaveMoney>=0 && TransRecordData.smCharInfo.Money>SaveMoney ) 
-		TransRecordData.GameSaveInfo.LastMoeny = SaveMoney+1;			//돈 기록
+		TransRecordData.GameSaveInfo.LastMoeny = SaveMoney+1;			//?? ???
 
 
 	fp = fopen( szFile , "wb" );
@@ -3561,18 +3572,197 @@ int rsRECORD_DBASE::SaveThrowData( char *szName , sTHROW_ITEM_INFO *lpThrowItemL
 
 
 
-int rsSaveWareHouseData( char *szID , TRANS_WAREHOUSE *lpTransWareHouse )
+static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE* pages, int maxPages)
+{
+	ZeroMemory(pages, sizeof(TRANS_WAREHOUSE) * maxPages);
+	DWORD magic = 0;
+	if (fread(&magic, sizeof(DWORD), 1, fp) == 1 && magic == WAREHOUSE_FILE_MAGIC) {
+		int nPages = 0;
+		fread(&nPages, sizeof(int), 1, fp);
+		if (nPages < 1)
+			nPages = 1;
+		if (nPages > maxPages)
+			nPages = maxPages;
+		for (int i = 0; i < nPages; i++) {
+			int pktSize = 0;
+			if (fread(&pktSize, sizeof(int), 1, fp) != 1)
+				return i;
+			if (pktSize < 32 || pktSize > (int)sizeof(TRANS_WAREHOUSE))
+				return i;
+			if (fread(&pages[i], pktSize, 1, fp) != 1)
+				return i;
+			pages[i].size = pktSize;
+		}
+		return nPages;
+	}
+	fseek(fp, 0, SEEK_SET);
+	fread(&pages[0], sizeof(TRANS_WAREHOUSE), 1, fp);
+	return 1;
+}
+
+static int WriteWareHouseFilePages(const char* szFileName, TRANS_WAREHOUSE* pages, int nPages)
+{
+	char szTempName[160];
+	sprintf_s(szTempName, "%s.tmp", szFileName);
+
+	FILE* fp = fopen(szTempName, "wb");
+	if (!fp)
+		return FALSE;
+	DWORD magic = WAREHOUSE_FILE_MAGIC;
+	fwrite(&magic, sizeof(DWORD), 1, fp);
+	fwrite(&nPages, sizeof(int), 1, fp);
+	for (int i = 0; i < nPages; i++) {
+		int pktSize = pages[i].size;
+		if (pktSize < 32)
+			pktSize = 32;
+		if (pktSize > (int)sizeof(TRANS_WAREHOUSE))
+			pktSize = sizeof(TRANS_WAREHOUSE);
+		fwrite(&pktSize, sizeof(int), 1, fp);
+		fwrite(&pages[i], pktSize, 1, fp);
+	}
+	fclose(fp);
+
+	if (MoveFileExA(szTempName, szFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+		return TRUE;
+	if (MoveFileExA(szTempName, szFileName, MOVEFILE_REPLACE_EXISTING))
+		return TRUE;
+	DeleteFileA(szTempName);
+	return FALSE;
+}
+
+static void MakeEmptyWareHousePacket(TRANS_WAREHOUSE* pkt, int page)
+{
+	ZeroMemory(pkt, sizeof(TRANS_WAREHOUSE));
+	pkt->code = smTRANSCODE_WAREHOUSE;
+	pkt->size = sizeof(TRANS_WAREHOUSE) - sizeof(sWAREHOUSE);
+	pkt->DataSize = 0;
+	pkt->wVersion[0] = WAREHOUSE_PACKET_VERSION;
+	pkt->wVersion[1] = 0;
+	pkt->dwTemp[0] = (DWORD)page;
+}
+
+static void CopyWareHousePacket(TRANS_WAREHOUSE* dest, TRANS_WAREHOUSE* src)
+{
+	int copy = src->size;
+	if (copy < 32)
+		copy = 32;
+	if (copy > (int)sizeof(TRANS_WAREHOUSE))
+		copy = sizeof(TRANS_WAREHOUSE);
+	memcpy(dest, src, copy);
+	dest->size = copy;
+}
+
+static int DecodeWareHousePacket(TRANS_WAREHOUSE* pkt, sWAREHOUSE* out)
+{
+	ZeroMemory(out, sizeof(sWAREHOUSE));
+	if (!pkt || !pkt->DataSize)
+		return TRUE;
+
+	DecodeCompress((BYTE*)pkt->Data, (BYTE*)out, sizeof(sWAREHOUSE));
+
+	DWORD dwChkSum = 0;
+	char* szComp = (char*)out;
+	for (int cnt = 0; cnt < (int)sizeof(sWAREHOUSE); cnt++)
+		dwChkSum += szComp[cnt] * (cnt + 1);
+	return dwChkSum == pkt->dwChkSum;
+}
+
+static void RebuildWareHouseItemInfo(rsPLAYINFO* lpPlayInfo, TRANS_WAREHOUSE* pages)
+{
+	if (!lpPlayInfo || !pages)
+		return;
+
+	ZeroMemory(lpPlayInfo->WareHouseItemInfo, sizeof(sTHROW_ITEM_INFO) * WAREHOUSE_TOTAL_SLOTS);
+
+	sWAREHOUSE check;
+	int infoIndex = 0;
+	for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
+		if (!DecodeWareHousePacket(&pages[p], &check))
+			continue;
+		for (int cnt = 0; cnt < WAREHOUSE_PAGE_SLOTS; cnt++) {
+			if (!check.WareHouseItem[cnt].Flag)
+				continue;
+			if (infoIndex >= WAREHOUSE_TOTAL_SLOTS)
+				return;
+			lpPlayInfo->WareHouseItemInfo[infoIndex].dwCode = check.WareHouseItem[cnt].sItemInfo.CODE;
+			lpPlayInfo->WareHouseItemInfo[infoIndex].dwKey = check.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
+			lpPlayInfo->WareHouseItemInfo[infoIndex].dwSum = check.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
+			infoIndex++;
+		}
+	}
+}
+
+int rsSaveWareHouseData( char *szID , TRANS_WAREHOUSE *lpTransWareHouse , rsPLAYINFO *lpPlayInfo )
 {
 	char szFileName[128];
 	FILE	*fp;
 
+	if (!szID || !szID[0] || !lpTransWareHouse)
+		return FALSE;
+
 	GetWareHouseFile( szID , szFileName );
 
-	fp = fopen( szFileName , "wb" );
-	if ( !fp ) return FALSE;
-	fwrite( lpTransWareHouse , lpTransWareHouse->size , 1 , fp );
-	fclose(fp);
+	int page = 0;
+	if (lpTransWareHouse->wVersion[0] == WAREHOUSE_PACKET_VERSION)
+		page = (int)lpTransWareHouse->dwTemp[0];
+	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
+		page = 0;
 
+	if (lpTransWareHouse->wVersion[0] != WAREHOUSE_PACKET_VERSION) {
+		fp = fopen( szFileName , "wb" );
+		if ( !fp ) return FALSE;
+		fwrite( lpTransWareHouse , lpTransWareHouse->size , 1 , fp );
+		fclose(fp);
+
+		if (lpPlayInfo) {
+			TRANS_WAREHOUSE pages[WAREHOUSE_PAGE_COUNT];
+			ZeroMemory(pages, sizeof(pages));
+			CopyWareHousePacket(&pages[0], lpTransWareHouse);
+			for (int p = 1; p < WAREHOUSE_PAGE_COUNT; p++)
+				MakeEmptyWareHousePacket(&pages[p], p);
+			RebuildWareHouseItemInfo(lpPlayInfo, pages);
+		}
+		return TRUE;
+	}
+
+	sWAREHOUSE incoming;
+	if (!DecodeWareHousePacket(lpTransWareHouse, &incoming)) {
+		if (page == 0) {
+			if (lpPlayInfo)
+				lpPlayInfo->dwDataError |= rsDATA_ERROR_WAREHOUSE;
+			return FALSE;
+		}
+		return TRUE;
+	}
+
+	TRANS_WAREHOUSE pages[WAREHOUSE_PAGE_COUNT];
+	ZeroMemory(pages, sizeof(pages));
+	int nPages = 0;
+	fp = fopen(szFileName, "rb");
+	if (fp) {
+		nPages = ReadWareHouseFilePages(fp, pages, WAREHOUSE_PAGE_COUNT);
+		fclose(fp);
+	}
+	if (nPages < 1) {
+		MakeEmptyWareHousePacket(&pages[0], 0);
+		nPages = 1;
+	}
+	for (int p = nPages; p < WAREHOUSE_PAGE_COUNT; p++)
+		MakeEmptyWareHousePacket(&pages[p], p);
+
+	CopyWareHousePacket(&pages[page], lpTransWareHouse);
+	pages[page].wVersion[0] = WAREHOUSE_PACKET_VERSION;
+	pages[page].wVersion[1] = 0;
+	pages[page].dwTemp[0] = (DWORD)page;
+	if (page != 0) {
+		pages[page].WareHouseMoney = 0;
+		pages[page].UserMoney = 0;
+	}
+
+	if (!WriteWareHouseFilePages(szFileName, pages, WAREHOUSE_PAGE_COUNT))
+		return FALSE;
+
+	RebuildWareHouseItemInfo(lpPlayInfo, pages);
 	return TRUE;
 }
 
@@ -3594,13 +3784,10 @@ int rsSaveCaravanData(char* szID, TRANS_CARAVAN* lpTransWareHouse)
 int rsLoadWareHouseData( rsPLAYINFO *lpPlayInfo )
 {
 	char szFileName[128];
-	TRANS_WAREHOUSE TransWareHouse;
 	sWAREHOUSE	WareHouseCheck;
 	FILE	*fp;
 	smTRANS_COMMAND_EX	smTransCommand;
 	int	CopiedItemFlag;
-
-	//int cnt;
 
 	WIN32_FIND_DATA		ffd;
 	HANDLE				hFind;
@@ -3610,38 +3797,43 @@ int rsLoadWareHouseData( rsPLAYINFO *lpPlayInfo )
 
 	GetWareHouseFile( lpPlayInfo->szID , szFileName );
 
+	TRANS_WAREHOUSE whPages[WAREHOUSE_PAGE_COUNT];
+	int nPages = 0;
+	ZeroMemory(whPages, sizeof(whPages));
+
  	hFind = FindFirstFile( szFileName , &ffd );
 	FindClose( hFind );
 	if ( hFind!=INVALID_HANDLE_VALUE ) {
 		fp = fopen( szFileName , "rb" );
 		if ( fp ) {
-			fread( &TransWareHouse , sizeof(TRANS_WAREHOUSE), 1 , fp );
+			nPages = ReadWareHouseFilePages(fp, whPages, WAREHOUSE_PAGE_COUNT);
 			fclose(fp);
 		}
 	}
-	else {
-		TransWareHouse.code = smTRANSCODE_WAREHOUSE;
-		TransWareHouse.size = sizeof(TRANS_WAREHOUSE)-sizeof(sWAREHOUSE);
-		TransWareHouse.DataSize = 0;
-		TransWareHouse.dwChkSum = 0;
-		TransWareHouse.wVersion[0] = Version_WareHouse;
-		TransWareHouse.wVersion[1] = 0;
-		TransWareHouse.WareHouseMoney = 0;
-		TransWareHouse.UserMoney = 0;
-		TransWareHouse.dwTemp[0] = 0;
-		TransWareHouse.dwTemp[1] = 0;
-		TransWareHouse.dwTemp[2] = 0;
-		TransWareHouse.dwTemp[3] = 0;
-		TransWareHouse.dwTemp[4] = 0;
 
+	if (nPages < 1) {
+		MakeEmptyWareHousePacket(&whPages[0], 0);
+		nPages = 1;
 	}
 
-	if ( TransWareHouse.size>=smSOCKBUFF_SIZE ) TransWareHouse.size = smSOCKBUFF_SIZE;
+	for (int p = nPages; p < WAREHOUSE_PAGE_COUNT; p++)
+		MakeEmptyWareHousePacket(&whPages[p], p);
 
-	Money = TransWareHouse.WareHouseMoney;
+	for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
+		if (whPages[p].size >= smSOCKBUFF_SIZE)
+			whPages[p].size = smSOCKBUFF_SIZE;
+		whPages[p].wVersion[0] = WAREHOUSE_PACKET_VERSION;
+		whPages[p].wVersion[1] = 0;
+		whPages[p].dwTemp[0] = (DWORD)p;
+		if (p != 0) {
+			whPages[p].WareHouseMoney = 0;
+			whPages[p].UserMoney = 0;
+		}
+	}
 
-	TransWareHouse.WareHouseMoney = 0;
-	TransWareHouse.UserMoney = 0;
+	Money = whPages[0].WareHouseMoney;
+	whPages[0].WareHouseMoney = 0;
+	whPages[0].UserMoney = 0;
 	CopiedItemFlag = 0;
 
 
@@ -3653,11 +3845,14 @@ int rsLoadWareHouseData( rsPLAYINFO *lpPlayInfo )
 		Server_DebugCount = 510;
 
 		lpPlayInfo->OpenWarehouseInfoFlag = TRUE;
-		ZeroMemory( lpPlayInfo->WareHouseItemInfo , sizeof(sTHROW_ITEM_INFO)*100 );
+		ZeroMemory( lpPlayInfo->WareHouseItemInfo , sizeof(sTHROW_ITEM_INFO)*WAREHOUSE_TOTAL_SLOTS );
 
-		if ( TransWareHouse.DataSize ) {
+		int infoIndex = 0;
+		for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
+			if (!whPages[p].DataSize)
+				continue;
 
-			DecodeCompress( (BYTE *)TransWareHouse.Data , (BYTE *)&WareHouseCheck , sizeof(sWAREHOUSE) );
+			DecodeCompress( (BYTE *)whPages[p].Data , (BYTE *)&WareHouseCheck , sizeof(sWAREHOUSE) );
 
 			DWORD	dwChkSum = 0;
 			char	*szComp = (char *)&WareHouseCheck;
@@ -3665,14 +3860,16 @@ int rsLoadWareHouseData( rsPLAYINFO *lpPlayInfo )
 			for( cnt=0;cnt<sizeof(sWAREHOUSE);cnt++ ) {
 				dwChkSum += szComp[cnt]*(cnt+1);
 			}
-			if ( dwChkSum!=TransWareHouse.dwChkSum ) {
-				lpPlayInfo->OpenWarehouseInfoFlag = FALSE;
-				lpPlayInfo->dwDataError |= rsDATA_ERROR_WAREHOUSE;
-				return 0;
+			if ( dwChkSum!=whPages[p].dwChkSum ) {
+				if (p == 0) {
+					lpPlayInfo->OpenWarehouseInfoFlag = FALSE;
+					lpPlayInfo->dwDataError |= rsDATA_ERROR_WAREHOUSE;
+					return 0;
+				}
+				continue;
 			}
 
-
-			for( cnt=0;cnt<100;cnt++ ) {
+			for( cnt=0;cnt<WAREHOUSE_PAGE_SLOTS;cnt++ ) {
 				if ( WareHouseCheck.WareHouseItem[cnt].Flag ) {
 
 					for(cnt2=0;cnt2<INVEN_ITEM_INFO_MAX;cnt2++) {
@@ -3696,23 +3893,26 @@ int rsLoadWareHouseData( rsPLAYINFO *lpPlayInfo )
 							}
 					}
 
-					if ( cnt2>=INVEN_ITEM_INFO_MAX ) {
-						lpPlayInfo->WareHouseItemInfo[cnt].dwCode = WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE;
-						lpPlayInfo->WareHouseItemInfo[cnt].dwKey = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
-						lpPlayInfo->WareHouseItemInfo[cnt].dwSum = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
+					if ( cnt2>=INVEN_ITEM_INFO_MAX && infoIndex < WAREHOUSE_TOTAL_SLOTS ) {
+						lpPlayInfo->WareHouseItemInfo[infoIndex].dwCode = WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE;
+						lpPlayInfo->WareHouseItemInfo[infoIndex].dwKey = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
+						lpPlayInfo->WareHouseItemInfo[infoIndex].dwSum = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
+						infoIndex++;
 					}
 				}
 			}
 
-			if ( WareHouseCheck.Money ) 
+			if ( p == 0 && WareHouseCheck.Money ) 
 				lpPlayInfo->AddServerMoney( WareHouseCheck.Money-2023 , WHERE_OPEN_WAREHOUES );
 		}
 		Server_DebugCount = 520;
 	}
 
 	if ( !CopiedItemFlag ) {
-		if ( lpPlayInfo->lpsmSock )
-			lpPlayInfo->lpsmSock->Send( (char *)&TransWareHouse , TransWareHouse.size , TRUE );
+		if ( lpPlayInfo->lpsmSock ) {
+			for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++)
+				lpPlayInfo->lpsmSock->Send( (char *)&whPages[p] , whPages[p].size , TRUE );
+		}
 	}
 	else {
 		smTransCommand.code = smTRANSCODE_CLOSECLIENT;
@@ -3877,7 +4077,6 @@ int rsLoadCaravanData(rsPLAYINFO* lpPlayInfo)
 int rsLoadWareHouseData_Admin( rsPLAYINFO *lpPlayInfo , char *szID , int Day )
 {
 	char szFileName[128];
-	TRANS_WAREHOUSE TransWareHouse;
 	FILE	*fp;
 
 	WIN32_FIND_DATA		ffd;
@@ -3894,22 +4093,31 @@ int rsLoadWareHouseData_Admin( rsPLAYINFO *lpPlayInfo , char *szID , int Day )
 	if ( hFind!=INVALID_HANDLE_VALUE ) {
 		fp = fopen( szFileName , "rb" );
 		if ( fp ) {
-			fread( &TransWareHouse , sizeof(TRANS_WAREHOUSE), 1 , fp );
+			TRANS_WAREHOUSE whPages[WAREHOUSE_PAGE_COUNT];
+			int nPages = ReadWareHouseFilePages(fp, whPages, WAREHOUSE_PAGE_COUNT);
 			fclose(fp);
+			if (nPages < 1)
+				return FALSE;
+			for (int p = nPages; p < WAREHOUSE_PAGE_COUNT; p++)
+				MakeEmptyWareHousePacket(&whPages[p], p);
+			lpPlayInfo->OpenWarehouseInfoFlag = 0;
+			if (lpPlayInfo->lpsmSock) {
+				for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
+					if (whPages[p].size >= smSOCKBUFF_SIZE)
+						whPages[p].size = smSOCKBUFF_SIZE;
+					whPages[p].wVersion[0] = WAREHOUSE_PACKET_VERSION;
+					whPages[p].dwTemp[0] = (DWORD)p;
+					lpPlayInfo->lpsmSock->Send((char*)&whPages[p], whPages[p].size, TRUE);
+				}
+			}
+			return TRUE;
 		}
 	}
 	else {
 		return FALSE;
 	}
 
-	if ( TransWareHouse.size>=smSOCKBUFF_SIZE ) TransWareHouse.size = smSOCKBUFF_SIZE;
-
-	lpPlayInfo->OpenWarehouseInfoFlag = 0;
-
-	if ( lpPlayInfo->lpsmSock )
-		lpPlayInfo->lpsmSock->Send( (char *)&TransWareHouse , TransWareHouse.size , TRUE );
-
-	return TRUE;
+	return FALSE;
 }
 
 int rsCaravanData_Admin(rsPLAYINFO* lpPlayInfo, char* szID, int Day)
@@ -3950,7 +4158,7 @@ int rsCaravanData_Admin(rsPLAYINFO* lpPlayInfo, char* szID, int Day)
 }
 
 
-//해당 ID에 해당 캐릭터이 존재하는지 확인
+//??? ID?? ??? ???????? ????????? ???
 int rsCheckAccountChar( char *szID , char *szName )
 {
 	char	szFileInfo[128];
@@ -3980,21 +4188,21 @@ int rsCheckAccountChar( char *szID , char *szName )
 	return FALSE;
 }
 
-//포스오브 사용 설정
+//???????? ??? ????
 int rsLoadServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo )
 {
 	int cnt;
-	int cnt2; // 박재원 - 부스터 아이템(생명력, 기력, 근력)
+	int cnt2; // ????? - ?????? ??????(??????, ???, ???)
 
 	if ( lpGameSaveInfo->wForceOrbUsing[0] && lpGameSaveInfo->wForceOrbUsing[1] ) {
-		// 박재원 - 빌링 매직 포스 추가
+		// ????? - ???? ???? ???? ???
 		cnt = lpGameSaveInfo->wForceOrbUsing[0]>>8;
 		if(lpGameSaveInfo->wForceOrbUsing[0]>=sin26)
 		{
 			cnt -= 16;
 		}
 		cnt --;
-		if(cnt>=0 && cnt<16 )  // 박재원 : 빌링 포스 추가로 포스 갯수 12로 연장 // 일반 포스
+		if(cnt>=0 && cnt<16 )  // ????? : ???? ???? ????? ???? ???? 12?? ???? // ??? ????
 		{
 			if (lpGameSaveInfo->wForceOrbUsing[1]<=ForceOrbUseTime[cnt]) {
 				lpPlayInfo->dwForceOrb_SaveCode = sinFO1+lpGameSaveInfo->wForceOrbUsing[0];
@@ -4002,7 +4210,7 @@ int rsLoadServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 				lpPlayInfo->dwForceOrb_SaveDamage = ForceOrbDamage[cnt];
 			}
 		}
-		else if( cnt>=20 && cnt < 32) // 매직 포스
+		else if( cnt>=20 && cnt < 32) // ???? ????
 		{
 			if (lpGameSaveInfo->wForceOrbUsing[1]<=MagicForceOrbUseTime[cnt-20]) {
 				lpPlayInfo->dwForceOrb_SaveCode = sinFO1+lpGameSaveInfo->wForceOrbUsing[0];
@@ -4010,7 +4218,7 @@ int rsLoadServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 				lpPlayInfo->dwForceOrb_SaveDamage = MagicForceOrbDamage[cnt-20];
 			}
 		}
-		else if( cnt>=34 && cnt < 37) // 빌링 매직 포스
+		else if( cnt>=34 && cnt < 37) // ???? ???? ????
 		{
 			if (lpGameSaveInfo->wForceOrbUsing[1]<=BillingMagicForceOrbUseTime[cnt-34]) {
 				lpPlayInfo->dwForceOrb_SaveCode = sinFO1+lpGameSaveInfo->wForceOrbUsing[0];
@@ -4020,56 +4228,56 @@ int rsLoadServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 		}	
 	}
 
-	// 박재원 - 부스터 아이템(생명력) 사용 설정
+	// ????? - ?????? ??????(??????) ??? ????
 	if ( lpGameSaveInfo->wLifeBoosterUsing[0] && lpGameSaveInfo->wLifeBoosterUsing[1] ) 
 	{
 		cnt2 = lpGameSaveInfo->wLifeBoosterUsing[0]>>8; // sin21 -> 21 / sin22 -> 22 / sin23 -> 23
 		cnt2 -= 21;
 		if (lpGameSaveInfo->wLifeBoosterUsing[1]<=BoosterItem_UseTime[cnt2]/60) 
 		{ 
-			lpPlayInfo->dwLifeBooster_SaveCode = sinBC1+lpGameSaveInfo->wLifeBoosterUsing[0]; // 데미지 부스터 코드
-			lpPlayInfo->dwLifeBooster_SaveTime = dwPlayServTime+lpGameSaveInfo->wLifeBoosterUsing[1]*60*1000; // 데미지 부스터 사용후 남은 시간 복구
-			lpPlayInfo->dwLifeBooster_SaveData = BoosterItem_DataPercent[0]; // 부스터 아이템 가중퍼센트
+			lpPlayInfo->dwLifeBooster_SaveCode = sinBC1+lpGameSaveInfo->wLifeBoosterUsing[0]; // ?????? ?????? ???
+			lpPlayInfo->dwLifeBooster_SaveTime = dwPlayServTime+lpGameSaveInfo->wLifeBoosterUsing[1]*60*1000; // ?????? ?????? ????? ???? ???? ????
+			lpPlayInfo->dwLifeBooster_SaveData = BoosterItem_DataPercent[0]; // ?????? ?????? ????????
 		}
 	}
-	// 박재원 - 부스터 아이템(기력) 사용 설정
+	// ????? - ?????? ??????(???) ??? ????
 	if ( lpGameSaveInfo->wManaBoosterUsing[0] && lpGameSaveInfo->wManaBoosterUsing[1] ) 
 	{
 		cnt2 = lpGameSaveInfo->wManaBoosterUsing[0]>>8; // sin24 -> 24 / sin25 -> 25 / sin26 -> 26
-		if(lpGameSaveInfo->wManaBoosterUsing[0]>=sin26) // sin26부터는  -16을 빼줘야 옳바른 정수가 나온다.
+		if(lpGameSaveInfo->wManaBoosterUsing[0]>=sin26) // sin26?????  -16?? ????? ???? ?????? ??????.
 		{
 			cnt2 -= 16;
 		}
 		cnt2 -= 24;
 		if (lpGameSaveInfo->wManaBoosterUsing[1]<=BoosterItem_UseTime[cnt2]/60) 
 		{ 
-			lpPlayInfo->dwManaBooster_SaveCode = sinBC1+lpGameSaveInfo->wManaBoosterUsing[0]; // 데미지 부스터 코드
-			lpPlayInfo->dwManaBooster_SaveTime = dwPlayServTime+lpGameSaveInfo->wManaBoosterUsing[1]*60*1000; // 데미지 부스터 사용후 남은 시간 복구
-			lpPlayInfo->dwManaBooster_SaveData = BoosterItem_DataPercent[1]; // 부스터 아이템 가중퍼센트
+			lpPlayInfo->dwManaBooster_SaveCode = sinBC1+lpGameSaveInfo->wManaBoosterUsing[0]; // ?????? ?????? ???
+			lpPlayInfo->dwManaBooster_SaveTime = dwPlayServTime+lpGameSaveInfo->wManaBoosterUsing[1]*60*1000; // ?????? ?????? ????? ???? ???? ????
+			lpPlayInfo->dwManaBooster_SaveData = BoosterItem_DataPercent[1]; // ?????? ?????? ????????
 		}
 	}
-	// 박재원 - 부스터 아이템(근력) 사용 설정
+	// ????? - ?????? ??????(???) ??? ????
 	if ( lpGameSaveInfo->wStaminaBoosterUsing[0] && lpGameSaveInfo->wStaminaBoosterUsing[1] ) 
 	{
 		cnt2 = lpGameSaveInfo->wStaminaBoosterUsing[0]>>8; // sin27 -> 27 / sin28 -> 28 / sin29 -> 29
-		if(lpGameSaveInfo->wStaminaBoosterUsing[0]>=sin26) // sin26부터는  -16을 빼줘야 옳바른 정수가 나온다.
+		if(lpGameSaveInfo->wStaminaBoosterUsing[0]>=sin26) // sin26?????  -16?? ????? ???? ?????? ??????.
 		{
 			cnt2 -= 16;
 		}
 		cnt2 -= 27;
 		if (lpGameSaveInfo->wStaminaBoosterUsing[1]<=BoosterItem_UseTime[cnt2]/60) 
 		{ 
-			lpPlayInfo->dwStaminaBooster_SaveCode = sinBC1+lpGameSaveInfo->wStaminaBoosterUsing[0]; // 데미지 부스터 코드
-			lpPlayInfo->dwStaminaBooster_SaveTime = dwPlayServTime+lpGameSaveInfo->wStaminaBoosterUsing[1]*60*1000; // 데미지 부스터 사용후 남은 시간 복구
-			lpPlayInfo->dwStaminaBooster_SaveData = BoosterItem_DataPercent[2]; // 부스터 아이템 가중퍼센트
+			lpPlayInfo->dwStaminaBooster_SaveCode = sinBC1+lpGameSaveInfo->wStaminaBoosterUsing[0]; // ?????? ?????? ???
+			lpPlayInfo->dwStaminaBooster_SaveTime = dwPlayServTime+lpGameSaveInfo->wStaminaBoosterUsing[1]*60*1000; // ?????? ?????? ????? ???? ???? ????
+			lpPlayInfo->dwStaminaBooster_SaveData = BoosterItem_DataPercent[2]; // ?????? ?????? ????????
 		}
 	}
 
-	// 장별 - 스킬 딜레이
+	// ?? - ??? ??????
 	if ( lpGameSaveInfo->wSkillDelayUsing[0] && lpGameSaveInfo->wSkillDelayUsing[1] ) 
 	{
 		cnt2 = lpGameSaveInfo->wSkillDelayUsing[0]>>8; // sin27 -> 27 / sin28 -> 28 / sin29 -> 29
-		if(lpGameSaveInfo->wSkillDelayUsing[0]>=sin26) // sin26부터는  -16을 빼줘야 옳바른 정수가 나온다.
+		if(lpGameSaveInfo->wSkillDelayUsing[0]>=sin26) // sin26?????  -16?? ????? ???? ?????? ??????.
 		{
 			cnt2 -= 16;
 		}
@@ -4198,23 +4406,23 @@ int rsLoadServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 
 }
 
-//포스오브 사용 저장
+//???????? ??? ????
 int rsSaveServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo )
 {
 	int sec;
-	int LifeBooster_sec; // 박재원 - 부스터 아이템(생명력)
-	int ManaBooster_sec; // 박재원 - 부스터 아이템(기력)
-	int StaminaBooster_sec; // 박재원 - 부스터 아이템(근력)
-	int nSkillDelay_sec; // 장별 - 스킬 딜레이
+	int LifeBooster_sec; // ????? - ?????? ??????(??????)
+	int ManaBooster_sec; // ????? - ?????? ??????(???)
+	int StaminaBooster_sec; // ????? - ?????? ??????(???)
+	int nSkillDelay_sec; // ?? - ??? ??????
 
 	sec = (lpPlayInfo->dwForceOrb_SaveTime-dwPlayServTime)/1000;
 
-	LifeBooster_sec = (lpPlayInfo->dwLifeBooster_SaveTime - dwPlayServTime)/1000/60; // 박재원 - 부스터 아이템(생명력)사용 후 남은 시간 저장 
-	ManaBooster_sec = (lpPlayInfo->dwManaBooster_SaveTime - dwPlayServTime)/1000/60; // 박재원 - 부스터 아이템(기력)사용 후 남은 시간 저장 
-	StaminaBooster_sec = (lpPlayInfo->dwStaminaBooster_SaveTime - dwPlayServTime)/1000/60; // 박재원 - 부스터 아이템(근력)사용 후 남은 시간 저장 
-	nSkillDelay_sec = (lpPlayInfo->dwSkillDelay_SaveTime - dwPlayServTime)/1000/60; // 장별 - 스킬 딜레이
+	LifeBooster_sec = (lpPlayInfo->dwLifeBooster_SaveTime - dwPlayServTime)/1000/60; // ????? - ?????? ??????(??????)??? ?? ???? ???? ???? 
+	ManaBooster_sec = (lpPlayInfo->dwManaBooster_SaveTime - dwPlayServTime)/1000/60; // ????? - ?????? ??????(???)??? ?? ???? ???? ???? 
+	StaminaBooster_sec = (lpPlayInfo->dwStaminaBooster_SaveTime - dwPlayServTime)/1000/60; // ????? - ?????? ??????(???)??? ?? ???? ???? ???? 
+	nSkillDelay_sec = (lpPlayInfo->dwSkillDelay_SaveTime - dwPlayServTime)/1000/60; // ?? - ??? ??????
 
-	//포스 저장
+	//???? ????
 	if ( lpPlayInfo->dwForceOrb_SaveTime && lpPlayInfo->dwForceOrb_SaveTime>dwPlayServTime ) {
 		lpGameSaveInfo->wForceOrbUsing[0] = (WORD)(lpPlayInfo->dwForceOrb_SaveCode&sinITEM_MASK3);
 		lpGameSaveInfo->wForceOrbUsing[1] = (WORD)sec;
@@ -4224,7 +4432,7 @@ int rsSaveServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 		lpGameSaveInfo->wForceOrbUsing[1] = 0;
 	}
 
-	// 박재원 - 부스터 아이템(생명력) 사용 후 남은 시간 저장
+	// ????? - ?????? ??????(??????) ??? ?? ???? ???? ????
 	if ( lpPlayInfo->dwLifeBooster_SaveTime && lpPlayInfo->dwLifeBooster_SaveTime>dwPlayServTime ) 
 	{
 		lpGameSaveInfo->wLifeBoosterUsing[0] = (WORD)(lpPlayInfo->dwLifeBooster_SaveCode&sinITEM_MASK3);
@@ -4234,7 +4442,7 @@ int rsSaveServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 		lpGameSaveInfo->wLifeBoosterUsing[0] = 0;
 		lpGameSaveInfo->wLifeBoosterUsing[1] = 0;
 	}
-	// 박재원 - 부스터 아이템(기력) 사용 후 남은 시간 저장
+	// ????? - ?????? ??????(???) ??? ?? ???? ???? ????
 	if ( lpPlayInfo->dwManaBooster_SaveTime && lpPlayInfo->dwManaBooster_SaveTime>dwPlayServTime ) 
 	{
 		lpGameSaveInfo->wManaBoosterUsing[0] = (WORD)(lpPlayInfo->dwManaBooster_SaveCode&sinITEM_MASK3);
@@ -4244,7 +4452,7 @@ int rsSaveServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 		lpGameSaveInfo->wManaBoosterUsing[0] = 0;
 		lpGameSaveInfo->wManaBoosterUsing[1] = 0;
 	}
-	// 박재원 - 부스터 아이템(근력) 사용 후 남은 시간 저장
+	// ????? - ?????? ??????(???) ??? ?? ???? ???? ????
 	if ( lpPlayInfo->dwStaminaBooster_SaveTime && lpPlayInfo->dwStaminaBooster_SaveTime>dwPlayServTime ) 
 	{
 		lpGameSaveInfo->wStaminaBoosterUsing[0] = (WORD)(lpPlayInfo->dwStaminaBooster_SaveCode&sinITEM_MASK3);
@@ -4255,7 +4463,7 @@ int rsSaveServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 		lpGameSaveInfo->wStaminaBoosterUsing[1] = 0;
 	}
 
-	// 장별 - 스킬 딜레이
+	// ?? - ??? ??????
 	if ( lpPlayInfo->dwSkillDelay_SaveTime && lpPlayInfo->dwSkillDelay_SaveTime>dwPlayServTime ) 
 	{
 		lpGameSaveInfo->wSkillDelayUsing[0] = (WORD)(lpPlayInfo->dwSkillDelay_SaveCode&sinITEM_MASK3);
@@ -4381,7 +4589,7 @@ int rsSaveServerForce( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo 
 	return TRUE;
 
 }
-//서버 포션 저장
+//???? ???? ????
 int rsSaveServerPotion( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo )
 {
 	int cnt1,cnt2;
@@ -4405,7 +4613,7 @@ int rsSaveServerPotion( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo
 }
 
 
-//물약 보유량 비교
+//???? ?????? ??
 int rsCompareServerPotion( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveInfo )
 {
 	int cnt1,cnt2,pot;
@@ -4433,14 +4641,14 @@ int rsCompareServerPotion( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveI
 		}
 
 		if ( ErrFlag ) {
-			//오류 처리
+			//???? ???
 			smTransCommand.WParam = 8800;
 			smTransCommand.LParam = OverPotion2[0];
 			smTransCommand.SParam = OverPotion2[1];
 			smTransCommand.EParam = OverPotion2[2];
 			RecordHackLogFile( lpPlayInfo , &smTransCommand );
 
-			//물약갯수 다시 보정 ( 복사방지 )
+			//?????? ??? ???? ( ??????? )
 			for(cnt1=0;cnt1<3;cnt1++) {
 				for(cnt2=0;cnt2<4;cnt2++) {
 					lpPlayInfo->ServerPotion[cnt1][cnt2] = lpGameSaveInfo->sPotionCount[cnt1][cnt2];
@@ -4454,7 +4662,7 @@ int rsCompareServerPotion( rsPLAYINFO *lpPlayInfo , sGAME_SAVE_INFO *lpGameSaveI
 }
 
 
-//다른 서버에서 파일을 불러와 저장
+//??? ???????? ?????? ????? ????
 int ImportTTServerUser( char *szID , char *szServerID )
 {
 	char szRealID[32];
@@ -4482,7 +4690,7 @@ int ImportTTServerUser( char *szID , char *szServerID )
 
 	for( cnt=0;cnt<sPLAY_CHAR_MAX;cnt++) {
 		if ( sPlayUserData.szCharName[cnt][0] ) {
-			//캐릭터 파일에서 데이타 입수 
+			//?????? ??????? ????? ??? 
 
 			GetUserDataFile2( sPlayUserData.szCharName[cnt] , szFile2 , szServerID );
 
@@ -4526,10 +4734,10 @@ int ImportTTServerUser( char *szID , char *szServerID )
 }
 
 
-////////////////////////// 쓰레드를 통한 저장 ////////////////////////
+////////////////////////// ?????? ???? ???? ////////////////////////
 
 
-//게임 데이타를 저장시키는 쓰레드
+//???? ??????? ???????? ??????
 DWORD WINAPI RecDataThreadProc( void *pInfo )
 {
 	HANDLE	hThread;
@@ -4553,32 +4761,32 @@ DWORD WINAPI RecDataThreadProc( void *pInfo )
 			continue;
 		}
 
-		//저장할 데이타가 있는 메모리 블럭을 복사해 온다
-		//크리티칼 섹션 선언
+		//?????? ??????? ??? ??? ?????? ?????? ????
+		//????? ???? ????
 		EnterCriticalSection( &cRecDataSection );
 		recDataBuffCount = sRecDataBuffCount;
 		memcpy( recDataBuff , sRecDataBuff , sizeof(sREC_DATABUFF)*sRecDataBuffCount );
 		sRecDataBuffCount = 0;
 		dwLastRecDataTime = GetCurrentTime();
-		//크리티칼 섹션 해제
+		//????? ???? ????
 		LeaveCriticalSection( &cRecDataSection );
 
-		//복사된 데이타를 하드디스크에 저장한다
-		//크리티칼 섹션 선언
+		//????? ??????? ??????? ???????
+		//????? ???? ????
 		EnterCriticalSection( &cSaveDataSection );
 		for( cnt=0;cnt<recDataBuffCount;cnt++ ) {
-			//저장할 길이 보정
+			//?????? ???? ????
 			size = recDataBuff[cnt].TransRecData.size;
 			if ( size<16000 ) size=16000;
 
-			CopyFile( recDataBuff[cnt].szFileName , recDataBuff[cnt].szBackupFileName , FALSE );		//파일백업
+			CopyFile( recDataBuff[cnt].szFileName , recDataBuff[cnt].szBackupFileName , FALSE );		//??????
 			fp = fopen( recDataBuff[cnt].szFileName , "wb" );
 			if ( fp ) {
 				fwrite( &recDataBuff[cnt].TransRecData , size , 1, fp );
 				fclose( fp );
 			}
 		}
-		//크리티칼 섹션 해제
+		//????? ???? ????
 		LeaveCriticalSection( &cSaveDataSection );
 	}
 
@@ -4586,12 +4794,12 @@ DWORD WINAPI RecDataThreadProc( void *pInfo )
 	return TRUE;
 }
 
-//서버DB함수 초기화
+//????DB??? ????
 int rsInitDataBase()
 {
-	//크리티칼 섹션 초기화
+	//????? ???? ????
 	InitializeCriticalSection( &cRecDataSection );
-	//크리티칼 섹션 초기화
+	//????? ???? ????
 	InitializeCriticalSection( &cSaveDataSection );
 
 	if ( !sRecDataBuff ) {
@@ -4612,7 +4820,7 @@ int rsInitDataBase()
 	return TRUE;
 }
 
-//서버DB함수 말기화
+//????DB??? ?????
 int rsCloseDataBase()
 {
 	if ( sRecDataBuff ) {
@@ -4623,7 +4831,7 @@ int rsCloseDataBase()
 	return TRUE;
 }
 
-//서버DB에 데이타 저장요구
+//????DB?? ????? ?????
 int rsSaveRecData( TRANS_RECORD_DATA *lpTransRecordData , rsPLAYINFO *lpPlayInfo , 
 				  char *szFileName , char *szBackupFileName )
 {
@@ -4632,7 +4840,7 @@ int rsSaveRecData( TRANS_RECORD_DATA *lpTransRecordData , rsPLAYINFO *lpPlayInfo
 		if ( sRecDataBuffCount>=REC_DATABUFF_MAX ) return FALSE;
 		if ( sRecDataBuffCount>=REC_DATABUFF_LIMIT ) ResumeThread( hRecThread );
 
-		EnterCriticalSection( &cRecDataSection );				//크리티칼 섹션 선언
+		EnterCriticalSection( &cRecDataSection );				//????? ???? ????
 
 		sRecDataBuff[sRecDataBuffCount].lpPlayInfo = lpPlayInfo;
 		if ( lpPlayInfo ) {
@@ -4649,14 +4857,14 @@ int rsSaveRecData( TRANS_RECORD_DATA *lpTransRecordData , rsPLAYINFO *lpPlayInfo
 		memcpy( &sRecDataBuff[sRecDataBuffCount].TransRecData , lpTransRecordData , lpTransRecordData->size );
 		sRecDataBuffCount++;
 
-		LeaveCriticalSection( &cRecDataSection );				//크리티칼 섹션 해제
+		LeaveCriticalSection( &cRecDataSection );				//????? ???? ????
 		return TRUE;
 	}
 
 	return FALSE;
 }
 
-//저장 대기중인 데이타 있는지 확인
+//???? ??????? ????? ????? ???
 int CheckRecWaitData( char *szName )
 {
 
@@ -4664,15 +4872,15 @@ int CheckRecWaitData( char *szName )
 	return FALSE;
 }
 
-//시간 확인하여 저장시도
+//???? ?????? ??????
 int rsTimeRecData()
 {
 	DWORD dwTime;
 
 	dwTime = GetCurrentTime();
 
-	if ( hRecThread && (dwTime-dwLastRecDataTime)>5000 ) {			//저장시도한지 5초 지남
-		ResumeThread( hRecThread );						//저장 쓰레드 활성화
+	if ( hRecThread && (dwTime-dwLastRecDataTime)>5000 ) {			//?????????? 5?? ????
+		ResumeThread( hRecThread );						//???? ?????? ????
 		return TRUE;
 	}
 
@@ -4714,7 +4922,7 @@ int	rsLoadPostBox( rsPLAYINFO	*lpPlayInfo )
 
 	lpPostBox = lpPlayInfo->lpPostBoxItem;
 
-	while( !feof( fp ) )//  feof: file end까지 읽어라 
+	while( !feof( fp ) )//  feof: file end???? ????? 
 	{
 		if( fgets( szLine, 500, fp ) == NULL)	break;
 		if ( lpPostBox->ItemCounter>=POST_ITEM_MAX ) break;
@@ -4726,21 +4934,21 @@ int	rsLoadPostBox( rsPLAYINFO	*lpPlayInfo )
 		if ( szLine[0] ) {
 			p = szLine;
 
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//받을 캐릭터 이름
+			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//???? ?????? ???
 			if ( strBuff[0] ) {
 				strBuff[31] = 0;
 				lstrcpy( lpPostItem->szCharName , strBuff );
 			}
 
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//아이템 코드
+			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//?????? ???
 			if ( strBuff[0] ) {
 				strBuff[31] = 0;
 				lstrcpy( lpPostItem->szItemCode , strBuff );
 
-				if ( lstrcmpi( strBuff , "MONEY" )==0 ) {		//돈
+				if ( lstrcmpi( strBuff , "MONEY" )==0 ) {		//??
 					lpPostItem->dwItemCode = sinGG1|sin01;
 				}
-				if ( lstrcmpi( strBuff , "EXP" )==0 ) {			//경험치
+				if ( lstrcmpi( strBuff , "EXP" )==0 ) {			//?????
 					lpPostItem->dwItemCode = sinGG1|sin02;
 				}
 
@@ -4754,27 +4962,27 @@ int	rsLoadPostBox( rsPLAYINFO	*lpPlayInfo )
 				}
 			}
 
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//특화 코드 ( 직업 코드 )
+			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//?? ??? ( ???? ??? )
 			if ( strBuff[0] ) {
 				strBuff[31] = 0;
 				strcpy_s( lpPostItem->szSpeJob , strBuff );
 				lpPostItem->dwJobCode = atoi( strBuff );
 			}
 
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//설명
+			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//????
 			if ( strBuff[0] ) {
 				strBuff[127] = 0;
 				strcpy_s( lpPostItem->szDoc , strBuff );
 			}
 
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//인증코드
+			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//???????
 			if ( strBuff[0] ) {
 				strBuff[63] = 0;
 				strcpy_s( lpPostItem->szFormCode , strBuff );
 				lpPostItem->dwFormCode = atoi(strBuff);
 			}
 
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//암호코드
+			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//??????
 			if ( strBuff[0] ) {
 				strBuff[16] = 0;
 				strcpy_s( lpPostItem->szPassCode , strBuff );
@@ -4910,7 +5118,7 @@ int	rsAddPostBox_EventoInvasao(char* id, char* name, char* ItemName, int iQuanti
 	return TRUE;
 }
 
-//아이템선물 우편 저장
+//????????? ???? ????
 int	rsAddPostBox_Present( rsPLAYINFO *lpPlayInfo )
 {
 	char	szFileName[64];
@@ -4953,7 +5161,7 @@ int	rsAddPostBox_Present( rsPLAYINFO *lpPlayInfo )
 }
 
 
-//별 포인트 이벤트 티켓 발생 설정
+//?? ????? ???? ??? ??? ????
 int	OpenStarPointEvent( rsPLAYINFO *lpPlayInfo , smCHAR_INFO *lpCharInfo )
 {
 	int cnt;
@@ -4975,9 +5183,9 @@ int	OpenStarPointEvent( rsPLAYINFO *lpPlayInfo , smCHAR_INFO *lpCharInfo )
 	}
 
 
-	//별 상품권 발생시키기
+	//?? ????? ????????
 	if ( lpPlayInfo->CharLevelMax<rsServerConfig.Event_StarPointTicket &&
-		lpCharInfo->Level>=lpPlayInfo->CharLevelMax ) {		//최대 레벨이 확인하여 적용
+		lpCharInfo->Level>=lpPlayInfo->CharLevelMax ) {		//??? ?????? ?????? ????
 
 		if ( lpCharInfo->sEventParam[0]==CHAR_EVENT_STARPOINT ) {
 
@@ -5062,7 +5270,7 @@ int SaveCloseUserRecord( char *szUserName , int Level , int Exp , int Money  )
 
 	wsprintf( szFileName , "UserRecord.txt"  );
 
-	wsprintf( szBuff , "%s		레벨(%d)	경험치(%d)	돈(%d)\r\n",szUserName , Level , Exp , Money );
+	wsprintf( szBuff , "%s		????(%d)	?????(%d)	??(%d)\r\n",szUserName , Level , Exp , Money );
 
 	hFile = CreateFile( szFileName , GENERIC_WRITE , FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_ALWAYS , FILE_ATTRIBUTE_NORMAL , NULL );
 	if ( hFile==INVALID_HANDLE_VALUE ) return FALSE;
@@ -5087,7 +5295,7 @@ int SaveWareHouseRecord( char *szUserName , int Money , int Weight1,int Weight2 
 
 	wsprintf( szFileName , "UserRecord.txt"  );
 
-	wsprintf( szBuff , "ID( %s )	창고돈(%d)	무게( %d/%d )\r\n",szUserName , Money  , Weight1 ,Weight2 );
+	wsprintf( szBuff , "ID( %s )	?????(%d)	????( %d/%d )\r\n",szUserName , Money  , Weight1 ,Weight2 );
 
 	hFile = CreateFile( szFileName , GENERIC_WRITE , FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_ALWAYS , FILE_ATTRIBUTE_NORMAL , NULL );
 	if ( hFile==INVALID_HANDLE_VALUE ) return FALSE;
@@ -5196,7 +5404,7 @@ int CheckUserDataFull()
 
 		wsprintf( szFindPath , "Data\\DataServer\\UserData\\%d\\*.dat" ,UserCnt );
 
-		wsprintf( szMsgBuff , "캐릭터 확인중 ( %d/255 ) - %d", UserCnt,CharCount );
+		wsprintf( szMsgBuff , "?????? ????? ( %d/255 ) - %d", UserCnt,CharCount );
 		SetWindowText(GetDlgItem( hDialog , IDC_EDIT1 ) , szMsgBuff );
 
 
@@ -5216,9 +5424,9 @@ int CheckUserDataFull()
 				CheckUserData( szUserName );
 				CharCount++;
 
-				PeekMonMsg();		//메세지 중간 처리
+				PeekMonMsg();		//????? ??? ???
 
-				//다음 파일 찾음
+				//???? ???? ???
 				if ( FindNextFile( hFindHandle , &fd )==FALSE ) break;
 				if ( MonQuit ) break;
 			}
@@ -5246,7 +5454,7 @@ int CheckWareHouseDataFull()
 
 		wsprintf( szFindPath , "Data\\DataServer\\WareHouse\\%d\\*.war",UserCnt );
 
-		wsprintf( szMsgBuff , "아이템보관소 확인중 ( %d/255 ) - %d", UserCnt , CharCount );
+		wsprintf( szMsgBuff , "??????????? ????? ( %d/255 ) - %d", UserCnt , CharCount );
 		SetWindowText(GetDlgItem( hDialog , IDC_EDIT1 ) , szMsgBuff );
 
 		hFindHandle = FindFirstFile( szFindPath , &fd );
@@ -5266,9 +5474,9 @@ int CheckWareHouseDataFull()
 				CheckWareHouseData( szUserPath );
 
 				CharCount++;
-				PeekMonMsg();		//메세지 중간 처리
+				PeekMonMsg();		//????? ??? ???
 
-				//다음 파일 찾음
+				//???? ???? ???
 				if ( FindNextFile( hFindHandle , &fd )==FALSE ) break;
 				if ( MonQuit ) break;
 			}
@@ -5279,10 +5487,10 @@ int CheckWareHouseDataFull()
 	return TRUE;
 }
 
-// 파일 수신창 창 만듬
+// ???? ????? ? ????
 HWND CreateDialogWnd();
 
-//서버에 기록된 전체 데이타를 확인하여 의심가는 유저를 찾는다
+//?????? ???? ??? ??????? ?????? ?????? ?????? ?????
 int	CheckServerRecordData()
 {
 	DeleteFile( "UserRecord.txt" );
@@ -5296,7 +5504,7 @@ int	CheckServerRecordData()
 }
 
 
-// 파일 수신창 창 만듬
+// ???? ????? ? ????
 HWND CreateDialogWnd()
 {
 
@@ -5304,7 +5512,7 @@ HWND CreateDialogWnd()
 	return NULL;
 }
 
-//메신저 업그레이드 파일 받는창 프로시저
+//????? ???????? ???? ???? ????????
 LONG APIENTRY DialogProc( HWND hWnd,UINT messg,WPARAM wParam,LPARAM lParam )
 {
 
@@ -5380,7 +5588,7 @@ int PeekMonMsg()
 
 
 
-///////////////////// 캐릭터 백업 데이타로 복구 //////////////////////
+///////////////////// ?????? ??? ??????? ???? //////////////////////
 
 
 static char decode[512];
@@ -5389,7 +5597,7 @@ static char line[512];
 static char *GetWord(char *q , char *p)
 {
 
-		while ( (*p == 32) || (*p == 9) ) // SPACE or TAB or ':'는 제외 시킴
+		while ( (*p == 32) || (*p == 9) ) // SPACE or TAB or ':'?? ???? ???
 		{
 			p++;
 		}
@@ -5423,7 +5631,7 @@ static int GetUserInfoFile( char *szID , char *szFileName )
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='m' || szID[2]=='M')) || 
 		((szID[0]=='l' || szID[0]=='L') && (szID[1]=='p' || szID[1]=='P') && (szID[2]=='t' || szID[2]=='T')) ) 
 		) {
- 		wsprintf( szFileName , "Data\\DataServer\\＃%s\\%d\\%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "Data\\DataServer\\??%s\\%d\\%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -5431,7 +5639,7 @@ static int GetUserInfoFile( char *szID , char *szFileName )
 		((szID[0]=='p' || szID[0]=='P') && (szID[1]=='r' || szID[1]=='R') && (szID[2]=='n' || szID[2]=='N')) ||
 		((szID[0]=='c' || szID[0]=='C') && (szID[1]=='o' || szID[1]=='O') && (szID[2]=='n' || szID[2]=='N')) 
 		) {
- 		wsprintf( szFileName , "Data\\DataServer\\＃%s\\%d\\%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
+ 		wsprintf( szFileName , "Data\\DataServer\\??%s\\%d\\%s.dat" , szRecordUserInfoDir , GetUserCode(szID) , szID );
 		return TRUE;
 	}
 
@@ -5450,7 +5658,7 @@ static int GetUserDataFile( char *szName , char *szFileName )
 */
 
 
-//캐릭터 정보 파일에서 해독하여 설정한다
+//?????? ???? ??????? ?????? ???????
 int RestoreBackupData( char *szListFile , char *BackupPath )
 {
 
@@ -5480,19 +5688,19 @@ int RestoreBackupData( char *szListFile , char *BackupPath )
 
 	CreateDirectory( "BackupUser" , 0 );
 
-	while( !feof( fp ) )//  feof: file end까지 읽어라 
+	while( !feof( fp ) )//  feof: file end???? ????? 
 	{
 		if( fgets( line, 255, fp ) == NULL)	break;
 
 		p = GetWord( decode , line);
 
-		///////////////// 이름 ///////////////////////
+		///////////////// ??? ///////////////////////
 		if ( decode[0] ) {
 			p=GetWord(strBuff,p);
 
 			if ( strBuff[0] ) {
 
-				///////////////// 경로 설정 ///////////////////
+				///////////////// ??? ???? ///////////////////
 				GetUserInfoFile( decode , szInfoFile );
 				GetUserDataFile( strBuff , szDestDataFile );
 				lstrcpy( szSrcDataFile , BackupPath );
@@ -5504,7 +5712,7 @@ int RestoreBackupData( char *szListFile , char *BackupPath )
 			 	hFind = FindFirstFile( szSrcDataFile , &ffd );
 				FindClose( hFind );
 				if ( hFind!=INVALID_HANDLE_VALUE ) {
-					//소스 데이타 파일 존재
+					//??? ????? ???? ????
 					fp2 = fopen( szInfoFile , "rb" );
 					if ( fp2 ) {
 						fread( &sPlayUserData , sizeof( sPLAY_USER_DATA ) , 1, fp2 );
@@ -5519,11 +5727,11 @@ int RestoreBackupData( char *szListFile , char *BackupPath )
 						}
 
 						if ( cnt>=sPLAY_CHAR_MAX ) {
-							//계정안에 캐릭이 없다
+							//??????? ?????? ????
 						 	hFind = FindFirstFile( szDestDataFile , &ffd );
 							FindClose( hFind );
 							if ( hFind==INVALID_HANDLE_VALUE ) {
-								//만들 캐릭이 존재 하지 않는다 . 계정에 캐릭 삽입
+								//???? ?????? ???? ???? ????? . ?????? ???? ????
 								for( cnt=0;cnt<sPLAY_CHAR_MAX;cnt++) {
 									if ( !sPlayUserData.szCharName[cnt][0] ) {
 										lstrcpy( sPlayUserData.szCharName[cnt] , strBuff );
@@ -5538,30 +5746,30 @@ int RestoreBackupData( char *szListFile , char *BackupPath )
 							}
 							else {
 								flag = FALSE;
-								wsprintf( szLogBuff , "%s (%s) -> 실패 ( 신규캐릭이존재 )\r\n", decode , strBuff );
+								wsprintf( szLogBuff , "%s (%s) -> ???? ( ????????????? )\r\n", decode , strBuff );
 								fwrite( szLogBuff , lstrlen( szLogBuff ) , 1, fp3 );
 							}
 						}
 
 						if ( flag ) {
-							//파일 복사
+							//???? ????
 
 							wsprintf( szFile , "BackupUser\\%s.dat" ,strBuff );
 							CopyFile( szDestDataFile , szFile , TRUE );
 
 							CopyFile( szSrcDataFile , szDestDataFile , FALSE );
 
-							wsprintf( szLogBuff , "%s (%s) -> 성공\r\n", decode , strBuff );
+							wsprintf( szLogBuff , "%s (%s) -> ????\r\n", decode , strBuff );
 							fwrite( szLogBuff , lstrlen( szLogBuff ) , 1, fp3 );
 						}
 					}
 					else {
-						wsprintf( szLogBuff , "%s (%s) -> 실패 ( 계정이없음 )\r\n", decode , strBuff );
+						wsprintf( szLogBuff , "%s (%s) -> ???? ( ????????? )\r\n", decode , strBuff );
 						fwrite( szLogBuff , lstrlen( szLogBuff ) , 1, fp3 );
 					}
 				}
 				else {
-					wsprintf( szLogBuff , "%s (%s) -> 실패 ( 소스파일없음 )\r\n", decode , strBuff );
+					wsprintf( szLogBuff , "%s (%s) -> ???? ( ?????????? )\r\n", decode , strBuff );
 					fwrite( szLogBuff , lstrlen( szLogBuff ) , 1, fp3 );
 				}
 			}
@@ -5587,7 +5795,7 @@ int RestoreBackupData( char *szListFile , char *BackupPath )
 #endif
 #endif
 
-//중국
+//???
 #ifdef _LANGUAGE_CHINESE
 #define	LOGIN_SERVER_KEY		0x512234a5
 #define	LOGIN_SERVER_SHIFT		6
@@ -5598,7 +5806,7 @@ int RestoreBackupData( char *szListFile , char *BackupPath )
 #define	LOGIN_SERVER_SHIFT		5
 #endif
 
-#ifdef _LANGUAGE_ARGENTINA		//아르헨티나 (브라질 세팅값 임시 적용)
+#ifdef _LANGUAGE_ARGENTINA		//???????? (????? ?????? ??? ????)
 #define	LOGIN_SERVER_KEY		0x532254a5
 #define	LOGIN_SERVER_SHIFT		5
 #endif

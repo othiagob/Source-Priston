@@ -256,7 +256,7 @@ int rsRecordMemoryBuffToFile( rsPLAYINFO *lpPlayInfo , char *szName ,  char *lpR
 int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode=0 );
 //버려진 아이템 메모리버퍼 데이타에 저장 
 int rsSaveThrowData( rsPLAYINFO *lpPlayInfo );
-int rsSaveWareHouseData( char *szID , TRANS_WAREHOUSE *lpTransWareHouse );
+int rsSaveWareHouseData( char *szID , TRANS_WAREHOUSE *lpTransWareHouse , rsPLAYINFO *lpPlayInfo = 0 );
 int rsSaveCaravanData(char* szID, TRANS_CARAVAN* lpTransWareHouse);
 int rsLoadWareHouseData( rsPLAYINFO *lpPlayInfo );
 int rsLoadCaravanData(rsPLAYINFO* lpPlayInfo);

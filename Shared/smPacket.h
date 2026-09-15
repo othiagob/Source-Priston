@@ -1140,7 +1140,7 @@ public:
 	sTHROW_ITEM_INFO	ThrowItemInfo[THROW_ITEM_INFO_MAX];			//¹ö·ÁÁø ¾ÆÀÌÅÛ Á¤º¸
 
 	sTHROW_ITEM_INFO	InvenItemInfo[INVEN_ITEM_INFO_MAX+16];			//ÀÎº¥Åä¸® ¾ÆÀÌÅÛ Á¤º¸
-	sTHROW_ITEM_INFO	WareHouseItemInfo[120];		
+	sTHROW_ITEM_INFO	WareHouseItemInfo[300];
 	sTHROW_ITEM_INFO	CaravanItemInfo[120];
 			//Ã¢°í ¾ÆÀÌÅÛ Á¤º¸
 	int				OpenWarehouseInfoFlag;			
@@ -2380,7 +2380,12 @@ struct	rsCLAN_INFOMATION {
 };
 
 
-//Ã¢°í ÀúÀå ±¸Á¶ 
+#define WAREHOUSE_PAGE_COUNT		3
+#define WAREHOUSE_PAGE_SLOTS		100
+#define WAREHOUSE_TOTAL_SLOTS		(WAREHOUSE_PAGE_COUNT * WAREHOUSE_PAGE_SLOTS)
+#define WAREHOUSE_PACKET_VERSION	2
+#define WAREHOUSE_FILE_MAGIC		0x32304857
+
 struct	TRANS_WAREHOUSE {
 	int size,code;
 

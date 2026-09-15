@@ -16,7 +16,7 @@
 #define T_COIN_TEXT_POSI		8
 
 #define MAX_SHELTOM				19
-#define MAX_AGING				20 // Nível do Aging aqui máximo
+#define MAX_AGING				20 // NÃ­vel do Aging aqui mÃ¡ximo
 #define MAX_RUNE				14
 #define MAX_RECIPE_KIND			11
 #define MAX_RECIPE_ITEM			60
@@ -34,8 +34,16 @@ struct sTRADE{
 	int CheckMoney;
 };
 
+#ifndef WAREHOUSE_PAGE_COUNT
+#define WAREHOUSE_PAGE_COUNT		3
+#define WAREHOUSE_PAGE_SLOTS		100
+#define WAREHOUSE_TOTAL_SLOTS		(WAREHOUSE_PAGE_COUNT * WAREHOUSE_PAGE_SLOTS)
+#define WAREHOUSE_PACKET_VERSION	2
+#define WAREHOUSE_FILE_MAGIC		0x32304857
+#endif
+
 struct sWAREHOUSE{
-	sITEM WareHouseItem[100]; 
+	sITEM WareHouseItem[WAREHOUSE_PAGE_SLOTS];
 	int Money;
 	short Weight[2];
 	int BuyAreaCount;
@@ -134,11 +142,11 @@ struct sAGINGITEM {
 };
 
 struct sAGINGITEM_INFO {
-	DWORD MainItemCode;		//Á¶ÇÕÇÒ ¾ÆÀÌÅÛ ÄÚµå 
-	int PlusElementCode[8];	//Ãß°¡µÉ ¿äÀÎ 
-	float AddElement[8];	//Ãß°¡µÈ ¼öÄ¡ 
-	int ElementKind[8];		//¼öÄ¡ÀÇ ±âÁØ (+ % ¼Ò¼ö)
-	char Doc[128];			//¼³¸í 
+	DWORD MainItemCode;		//ÃÂ¶Ã‡Ã•Ã‡Ã’ Â¾Ã†Ã€ÃŒÃ…Ã› Ã„ÃšÂµÃ¥ 
+	int PlusElementCode[8];	//ÃƒÃŸÂ°Â¡ÂµÃ‰ Â¿Ã¤Ã€Ã 
+	float AddElement[8];	//ÃƒÃŸÂ°Â¡ÂµÃˆ Â¼Ã¶Ã„Â¡ 
+	int ElementKind[8];		//Â¼Ã¶Ã„Â¡Ã€Ã‡ Â±Ã¢ÃÃ˜ (+ % Â¼Ã’Â¼Ã¶)
+	char Doc[128];			//Â¼Â³Â¸Ã­ 
 
 	sAGINGITEM_INFO()
 	{
@@ -153,8 +161,8 @@ struct sAGINGITEM_INFO {
 
 ///// MakeItem
 struct sMAKEITEM_INFO {
-	DWORD CODE[15];			//Á¶ÇÕµÇ´Â ¾ÆÀÌÅÛÀÇ ÄÚµå
-	DWORD Result_CODE;		//Á¶ÇÕµÈ ¾ÆÀÌÅÛ ÄÚµå 
+	DWORD CODE[15];			//ÃÂ¶Ã‡Ã•ÂµÃ‡Â´Ã‚ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Ã‡ Ã„ÃšÂµÃ¥
+	DWORD Result_CODE;		//ÃÂ¶Ã‡Ã•ÂµÃˆ Â¾Ã†Ã€ÃŒÃ…Ã› Ã„ÃšÂµÃ¥ 
 
 };
 
@@ -169,22 +177,22 @@ struct sPOSTBOX_ITEM {
 	}
 };
 
-//¾ÆÀÌÅÛ Àç±¸¼º ±¸Á¶Ã¼
+//Â¾Ã†Ã€ÃŒÃ…Ã› Ã€Ã§Â±Â¸Â¼Âº Â±Â¸ÃÂ¶ÃƒÂ¼
 struct sRECON_ITEM{
 	DWORD  dwCODE;    //..
 	int	   iLevel[2]; //min~max
-	int	   iCount;    //ÇÊ¿ä ¼ö·®
-	int    iPrice;    //°¡°İ?
+	int	   iCount;    //Ã‡ÃŠÂ¿Ã¤ Â¼Ã¶Â·Â®
+	int    iPrice;    //Â°Â¡Â°Ã?
 };
 
-// pluto Á¦·Ã
+// pluto ÃÂ¦Â·Ãƒ
 struct SSmeltingItem
 {
-	sITEM SmeltingItem[5];	//Á¶ÇÕµÉ ¾ÆÀÌÅÛ 
+	sITEM SmeltingItem[5];	//ÃÂ¶Ã‡Ã•ÂµÃ‰ Â¾Ã†Ã€ÃŒÃ…Ã› 
 	int   SheltomIndex[12];
 };
 
-// pluto Á¦·Ã
+// pluto ÃÂ¦Â·Ãƒ
 struct sSMELTINGITEM_SERVER
 {
 	int size, code;
@@ -202,14 +210,14 @@ struct sSMELTINGITEM_SERVER
 	DWORD A_StoneCheckSum;
 };
 
-// pluto Á¦ÀÛ
+// pluto ÃÂ¦Ã€Ã›
 struct SManufactureItem
 {
 	sITEM	ManufactureItem[4];
 	int		RuneIndex[12];
 };
 
-// pluto Á¦ÀÛ
+// pluto ÃÂ¦Ã€Ã›
 struct SManufactureItem_Server
 {
 	int size, code;
@@ -227,14 +235,14 @@ struct SManufactureItem_Server
 	DWORD A_StoneCheckSum;
 };
 
-// pluto Á¦ÀÛ
+// pluto ÃÂ¦Ã€Ã›
 struct SManufacture_Rune
 {
 	int RecipeCode;
 	int NeedRuneIndex[3];
 };
 
-// pluto Á¦ÀÛ ·é Á¶ÇÕ °ø½Ä ¸ÂÀ¸¸é ÇØ´ç ¾ÆÀÌÅÛ ÄÚµå ¹ß»ı
+// pluto ÃÂ¦Ã€Ã› Â·Ã© ÃÂ¶Ã‡Ã• Â°Ã¸Â½Ã„ Â¸Ã‚Ã€Â¸Â¸Ã© Ã‡Ã˜Â´Ã§ Â¾Ã†Ã€ÃŒÃ…Ã› Ã„ÃšÂµÃ¥ Â¹ÃŸÂ»Ã½
 struct SManufacture_CreateItemCode
 {
 	DWORD RecipeKind[2];
@@ -242,7 +250,7 @@ struct SManufacture_CreateItemCode
 	DWORD CreateItemCode[2][8];
 };
 
-// pluto Á¦ÀÛ ¾ÆÀÌÅÛ ¹«°Ô, °¡°İ Á¤º¸
+// pluto ÃÂ¦Ã€Ã› Â¾Ã†Ã€ÃŒÃ…Ã› Â¹Â«Â°Ã”, Â°Â¡Â°Ã ÃÂ¤ÂºÂ¸
 struct SManufacture_ResultItemInfo
 {
 	DWORD ItemCode;
@@ -251,7 +259,7 @@ struct SManufacture_ResultItemInfo
 	char ItemName[32];
 };
 
-// pluto Á¦ÀÛ ¾ÆÀÌÅÛ ¹«°Ô, °¡°İ Á¤º¸  // Àåº° - Á¦ÀÛ 160(144) // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+// pluto ÃÂ¦Ã€Ã› Â¾Ã†Ã€ÃŒÃ…Ã› Â¹Â«Â°Ã”, Â°Â¡Â°Ã ÃÂ¤ÂºÂ¸  // Ã€Ã¥ÂºÂ° - ÃÂ¦Ã€Ã› 160(144) // Ã€Ã¥ÂºÂ° - Â´Ã«Ã€Ã¥Ã€Ã¥Ã€ÃŒÃ€Ã‡ ÃˆÂ¥
 struct SManufacture_ResultItemInfo_Server
 {
 	smTRANS_COMMAND		smTransCommand;
@@ -261,7 +269,7 @@ struct SManufacture_ResultItemInfo_Server
 	char ItemName[MAX_HANDMADEITEM][32];
 };
 /*----------------------------------------------------------------------------*
-*							¿¡ÀÌÂ¡  ¾ÆÀÌÅÛ Å¬·¡½º 
+*							Â¿Â¡Ã€ÃŒÃ‚Â¡  Â¾Ã†Ã€ÃŒÃ…Ã› Ã…Â¬Â·Â¡Â½Âº 
 *-----------------------------------------------------------------------------*/
 class cAGING{
 public:
@@ -271,25 +279,25 @@ public:
 	void*	lpGraySheltom[MAX_SHELTOM];
 
 public:
-	//¿¡ÀÌÂ¡ ¿¡ »ç¿ëµÅ´Â Á¾·ù   //1.¿¡ÀÌÂ¡½ºÅæ 
-	int  AginStoneKind;         //2.ÄÚÆÛ ¿À¾î
-								//¹ÚÀç¿ø - 3.¿¤´õ ÄÚÆÛ ¿À¾î
-								//¹ÚÀç¿ø - 4.½´ÆÛ ¿¡ÀÌÂ¡ ½ºÅæ
-                                //Â÷ÈÄ Ãß°¡µÊ
+	//Â¿Â¡Ã€ÃŒÃ‚Â¡ Â¿Â¡ Â»Ã§Â¿Ã«ÂµÃ…Â´Ã‚ ÃÂ¾Â·Ã¹   //1.Â¿Â¡Ã€ÃŒÃ‚Â¡Â½ÂºÃ…Ã¦ 
+	int  AginStoneKind;         //2.Ã„ÃšÃ†Ã› Â¿Ã€Â¾Ã®
+								//Â¹ÃšÃ€Ã§Â¿Ã¸ - 3.Â¿Â¤Â´Ãµ Ã„ÃšÃ†Ã› Â¿Ã€Â¾Ã®
+								//Â¹ÃšÃ€Ã§Â¿Ã¸ - 4.Â½Â´Ã†Ã› Â¿Â¡Ã€ÃŒÃ‚Â¡ Â½ÂºÃ…Ã¦
+                                //Ã‚Ã·ÃˆÃ„ ÃƒÃŸÂ°Â¡ÂµÃŠ
 	
 public:
 
-	int  AgingItem(int MakeItemFlag =0);		//¾ÆÀÌÅÛÀ» ¿¡ÀÌÂ¡ÇÑ´Ù 
-	int  CancelAgingItem(int Flag=0);	//¿¡ÀÌÂ¡ ¾ÆÀÌÅÛÀ» Äµ½½ÇÑ´Ù 
-	int  CheckItem(sITEM *pItem);		//¿¡ÀÌÂ¡ÇÒ ¾ÆÀÌÅÛÀ» Ã¼Å©ÇÑ´Ù 
-	int  CheckAgingItemOk(); //¿¡ÀÌÂ¡À» ÇÒ¼öÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù 
+	int  AgingItem(int MakeItemFlag =0);		//Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¿Â¡Ã€ÃŒÃ‚Â¡Ã‡Ã‘Â´Ã™ 
+	int  CancelAgingItem(int Flag=0);	//Â¿Â¡Ã€ÃŒÃ‚Â¡ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Ã„ÂµÂ½Â½Ã‡Ã‘Â´Ã™ 
+	int  CheckItem(sITEM *pItem);		//Â¿Â¡Ã€ÃŒÃ‚Â¡Ã‡Ã’ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™ 
+	int  CheckAgingItemOk(); //Â¿Â¡Ã€ÃŒÃ‚Â¡Ã€Â» Ã‡Ã’Â¼Ã¶Ã€Ã–Â´Ã‚ÃÃ¶Â¸Â¦ ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™ 
 
-	int  SetAgingItemAreaCheck(sITEM *pItem );	//¿¡ÀÌÂ¡ ¾ÆÀÌÅÛÀÌ ¼ÂÆÃµÉ °ø°£À» Ã¼Å©ÇÑ´Ù 
+	int  SetAgingItemAreaCheck(sITEM *pItem );	//Â¿Â¡Ã€ÃŒÃ‚Â¡ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Â¼Ã‚Ã†ÃƒÂµÃ‰ Â°Ã¸Â°Â£Ã€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™ 
 	
-	///////////// ¿¡ÀÌÂ¡ µ¥ÀÌÅÍÀÇ Á¶ÀÛ¿©ºÎ¸¦ °¡¸°´Ù 
+	///////////// Â¿Â¡Ã€ÃŒÃ‚Â¡ ÂµÂ¥Ã€ÃŒÃ…ÃÃ€Ã‡ ÃÂ¶Ã€Ã›Â¿Â©ÂºÃÂ¸Â¦ Â°Â¡Â¸Â°Â´Ã™ 
 	int  CheckAgingData();
 
-	/////////// ¼­¹ö¿¡¼­ ¾ÆÀÌÅÛÀ» ¿¡ÀÌÂ¡ÇÑ´Ù
+	/////////// Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¿Â¡Ã€ÃŒÃ‚Â¡Ã‡Ã‘Â´Ã™
 	int sinSendAgingItem();
 	int sinRecvAgingItem(sCRAFTITEM_SERVER *pCraftItem_Server);
 	int sinRecvAgingItemResult(sCRAFTITEM_SERVER *pCraftItem_Server);
@@ -297,24 +305,24 @@ public:
 };
 
 /*----------------------------------------------------------------------------*
-*						¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â Å¬·¡½º 
+*						Â¼Â®ÃÃ¶Â¿Ã« - Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Ã…Â¬Â·Â¡Â½Âº 
 *-----------------------------------------------------------------------------*/
 class cMIXTURERESET
 {
 public:
 
-	int	OpenFlag;					// ¿­·ÁÀÖ´Â°¡?
-	int	MixtureResetItemCheckSum;	// °Ë»ç¿ë
-	int	HaveMixtureResetStone;		// ¹Í½ºÃÄ ¸®¼Â ½ºÅæÀÌ ÀÖ´Â°¡?
+	int	OpenFlag;					// Â¿Â­Â·ÃÃ€Ã–Â´Ã‚Â°Â¡?
+	int	MixtureResetItemCheckSum;	// Â°Ã‹Â»Ã§Â¿Ã«
+	int	HaveMixtureResetStone;		// Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â½ÂºÃ…Ã¦Ã€ÃŒ Ã€Ã–Â´Ã‚Â°Â¡?
 
 public:
 
-	int	SetMixtureItemResetAreaCheck(sITEM *pItem);		// ¹Í½ºÃÄ ¸®¼ÂµÉ ¾ÆÀÌÅÛÀÇ ¿µ¿ªÀ» Ã¼Å©ÇÑ´Ù.
-	int PickUpMixtureResetItem( int x, int y, int PickUpFlag = 0, int Kind = 0 );	// ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛÀ» ¼±ÅÃÇÑ´Ù.
-	int LastSetMixtureResetItem( sITEM *pItem, int kind );	// ¹Í½ºÃÄ ¸®¼Â¿¡ ÇÊ¿äÇÑ ¾ÆÀÌÅÛ ³õ´Â´Ù
-	int	CancelMixtureItemReset(int Flag=0);		// ¹Í½ºÃÄ ¸®¼ÂÀ» Ãë¼ÒÇÏ¸ç Ã¢À» ´İ´Â´Ù.
-	int	CheckMixtureResetItemForm();	// ¾ÆÀÌÅÛ Ã¼Å©?
-	int	ReformMixtureResetItem();		// ¾ÆÀÌÅÛ ´Ù½Ã Ã¼Å©?
+	int	SetMixtureItemResetAreaCheck(sITEM *pItem);		// Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ÂµÃ‰ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Ã‡ Â¿ÂµÂ¿ÂªÃ€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™.
+	int PickUpMixtureResetItem( int x, int y, int PickUpFlag = 0, int Kind = 0 );	// Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¼Â±Ã…ÃƒÃ‡Ã‘Â´Ã™.
+	int LastSetMixtureResetItem( sITEM *pItem, int kind );	// Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚Â¿Â¡ Ã‡ÃŠÂ¿Ã¤Ã‡Ã‘ Â¾Ã†Ã€ÃŒÃ…Ã› Â³ÃµÂ´Ã‚Â´Ã™
+	int	CancelMixtureItemReset(int Flag=0);		// Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚Ã€Â» ÃƒÃ«Â¼Ã’Ã‡ÃÂ¸Ã§ ÃƒÂ¢Ã€Â» Â´ÃÂ´Ã‚Â´Ã™.
+	int	CheckMixtureResetItemForm();	// Â¾Ã†Ã€ÃŒÃ…Ã› ÃƒÂ¼Ã…Â©?
+	int	ReformMixtureResetItem();		// Â¾Ã†Ã€ÃŒÃ…Ã› Â´Ã™Â½Ãƒ ÃƒÂ¼Ã…Â©?
 
 
 
@@ -325,14 +333,14 @@ public:
 
 
 
-	int	sinSendMixtureItemReset();			// ¼­¹ö·Î ¹Í½ºÃÄ¸®¼ÂÇÒ ¾ÆÀÌÅÛÀ» Àü¼Û
-	int	sinRecvMixtureItemReset(sMIXTURE_RESET_ITEM_SERVER *pMixtureResetItem);		// ¹Í½ºÃÄ ¸®¼ÂµÈ ¾ÆÀÌÅÛÀ» Recv¿ë º¯¼ö·Î º¹»ç
+	int	sinSendMixtureItemReset();			// Â¼Â­Â¹Ã¶Â·Ã Â¹ÃÂ½ÂºÃƒÃ„Â¸Â®Â¼Ã‚Ã‡Ã’ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Ã€Ã¼Â¼Ã›
+	int	sinRecvMixtureItemReset(sMIXTURE_RESET_ITEM_SERVER *pMixtureResetItem);		// Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ÂµÃˆ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» RecvÂ¿Ã« ÂºÂ¯Â¼Ã¶Â·Ã ÂºÂ¹Â»Ã§
 	int	sinRecvMixtureItemResetResult(sMIXTURE_RESET_ITEM_SERVER *pMixtureResetItem_Server);
 };
 
 // pluto
 /*----------------------------------------------------------------------------*
-*								¾ÆÀÌÅÛ Á¦·Ã Å¬·¡½º 
+*								Â¾Ã†Ã€ÃŒÃ…Ã› ÃÂ¦Â·Ãƒ Ã…Â¬Â·Â¡Â½Âº 
 *-----------------------------------------------------------------------------*/
 class CSmeltingItem
 {
@@ -347,17 +355,17 @@ public:
 	int CheckSmeltingItemForm();
 	int ReFormSmeltingItem();
 	int PickUpSmeltingItem( int x, int y, int PickUpFlag = 0, int Kind = 0 );
-	int sinSendSmeltingItem(); // ¼­¹ö¿¡ Á¦·Ã ¾ÆÀÌÅÛ º¸³½´Ù
-	int sinRecvSmeltingItem( sSMELTINGITEM_SERVER *pSmeltingItem_Server ); // Á¦·Ã ¾ÆÀÌÅÛ ¹Ş´Â´Ù
+	int sinSendSmeltingItem(); // Â¼Â­Â¹Ã¶Â¿Â¡ ÃÂ¦Â·Ãƒ Â¾Ã†Ã€ÃŒÃ…Ã› ÂºÂ¸Â³Â½Â´Ã™
+	int sinRecvSmeltingItem( sSMELTINGITEM_SERVER *pSmeltingItem_Server ); // ÃÂ¦Â·Ãƒ Â¾Ã†Ã€ÃŒÃ…Ã› Â¹ÃÂ´Ã‚Â´Ã™
 	int sinRecvSmeltingItemResult( sSMELTINGITEM_SERVER *pSmeltingItem_Server );
 	int SmeltingCheckEmptyArea( sITEM *pItem );
 	int GetSmeltingCheckEmptyArea();
-	int CheckSmeltingPrice();		// Á¦·Ã ºñ¿ë °Ë»ç
-	int GetSheltomIndex( DWORD SmeltingItemCode ); // Á¦·Ã È¸»ö ÀÌ¹ÌÁö ½©ÅÒ
+	int CheckSmeltingPrice();		// ÃÂ¦Â·Ãƒ ÂºÃ±Â¿Ã« Â°Ã‹Â»Ã§
+	int GetSheltomIndex( DWORD SmeltingItemCode ); // ÃÂ¦Â·Ãƒ ÃˆÂ¸Â»Ã¶ Ã€ÃŒÂ¹ÃŒÃÃ¶ Â½Â©Ã…Ã’
 };
 
 /*----------------------------------------------------------------------------*
-* pluto							¾ÆÀÌÅÛ Á¦ÀÛ Å¬·¡½º 
+* pluto							Â¾Ã†Ã€ÃŒÃ…Ã› ÃÂ¦Ã€Ã› Ã…Â¬Â·Â¡Â½Âº 
 *-----------------------------------------------------------------------------*/
 
 class CManufacture
@@ -368,24 +376,24 @@ public:
 	int m_ManufacturePrice;
 	void* m_lpGrayRune[MAX_SHELTOM];
 public:
-	void RuneIndexInit();	// ÇÊ¿äÇÑ ·é È¸»ö ÀÌ¹ÌÁö
-	int CancelManufactureItem(); // Á¦ÀÛ Ãë¼Ò
-	int SetManufactureItemAreaCheck( sITEM *pItem ); // Á¦ÀÛ ¾ÆÀÌÅÛ µé¾î°¥ ÀÚ¸® °Ë»ç
-	int LastSetManufactureItem( sITEM *pItem );		// Á¦ÀÛ ¾ÆÀÌÅÛ ³õ´Â´Ù
+	void RuneIndexInit();	// Ã‡ÃŠÂ¿Ã¤Ã‡Ã‘ Â·Ã© ÃˆÂ¸Â»Ã¶ Ã€ÃŒÂ¹ÃŒÃÃ¶
+	int CancelManufactureItem(); // ÃÂ¦Ã€Ã› ÃƒÃ«Â¼Ã’
+	int SetManufactureItemAreaCheck( sITEM *pItem ); // ÃÂ¦Ã€Ã› Â¾Ã†Ã€ÃŒÃ…Ã› ÂµÃ©Â¾Ã®Â°Â¥ Ã€ÃšÂ¸Â® Â°Ã‹Â»Ã§
+	int LastSetManufactureItem( sITEM *pItem );		// ÃÂ¦Ã€Ã› Â¾Ã†Ã€ÃŒÃ…Ã› Â³ÃµÂ´Ã‚Â´Ã™
 	int CheckManufactureItem();
 	int ReFormManufactureItem();
 	int PickUpManufactureItem( int x, int y, int PickUpFlag = 0 );
-	int sinSendManufactureItem();	// ¼­¹ö·Î º¸³½´Ù
+	int sinSendManufactureItem();	// Â¼Â­Â¹Ã¶Â·Ã ÂºÂ¸Â³Â½Â´Ã™
 	int sinRecvManufactureItem( SManufactureItem_Server *pManufactureItem_Server );
-	int RecvManufactureItemResult( SManufactureItem_Server *pManufactureItem_Server ); // ¼­¹ö¿¡¼­ ¹ŞÀº °á°ú
+	int RecvManufactureItemResult( SManufactureItem_Server *pManufactureItem_Server ); // Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÃ€Âº Â°Ã¡Â°Ãº
 	int ManufactureCheckEmptyArea( sITEM *pItem );
-	int GetRecipeIndex( DWORD Code ); // ·¹½ÃÇÇ ÀÎµ¦½º¸¦ °¡Á®¿Â´Ù
+	int GetRecipeIndex( DWORD Code ); // Â·Â¹Â½ÃƒÃ‡Ã‡ Ã€ÃÂµÂ¦Â½ÂºÂ¸Â¦ Â°Â¡ÃÂ®Â¿Ã‚Â´Ã™
 	int GetManufactureCheckEmptyArea();
-	SManufacture_ResultItemInfo ManufactureCheckItem( sITEM *pItemCode, smCHAR_INFO *charInfo );	// Á¦ÀÛµÉ ¾ÆÀÌÅÛ ÄÚµå. ¹«°Ô °Ë»ç ÇÒ·Á°í // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+	SManufacture_ResultItemInfo ManufactureCheckItem( sITEM *pItemCode, smCHAR_INFO *charInfo );	// ÃÂ¦Ã€Ã›ÂµÃ‰ Â¾Ã†Ã€ÃŒÃ…Ã› Ã„ÃšÂµÃ¥. Â¹Â«Â°Ã” Â°Ã‹Â»Ã§ Ã‡Ã’Â·ÃÂ°Ã­ // Ã€Ã¥ÂºÂ° - Â´Ã«Ã€Ã¥Ã€Ã¥Ã€ÃŒÃ€Ã‡ ÃˆÂ¥
 };
 
 /*----------------------------------------------------------------------------*
-*							Å©·¡ÇÁÆ® ¾ÆÀÌÅÛ Å¬·¡½º 
+*							Ã…Â©Â·Â¡Ã‡ÃÃ†Â® Â¾Ã†Ã€ÃŒÃ…Ã› Ã…Â¬Â·Â¡Â½Âº 
 *-----------------------------------------------------------------------------*/
 class cCRAFTITEM{
 public:
@@ -396,40 +404,40 @@ public:
 	int iReconItemFlag;
 public:
 
-	int SetCraftItemAreaCheck(sITEM *pItem,int Kind=0); //¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
+	int SetCraftItemAreaCheck(sITEM *pItem,int Kind=0); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¼Ã‚Ã†ÃƒÃ‡Ã‘Â´Ã™ 
 	int LastSetCraftItem(sITEM *pItem,int Kind=0);
-	int PickUpCraftItem(int x , int y , int PickUpFlag=0,int Kind=0); //¾ÆÀÌÅÛÀ» Áı°Å³ª Á¤º¸¸¦ º¸¿©ÁØ´Ù 
+	int PickUpCraftItem(int x , int y , int PickUpFlag=0,int Kind=0); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃÃ½Â°Ã…Â³Âª ÃÂ¤ÂºÂ¸Â¸Â¦ ÂºÂ¸Â¿Â©ÃÃ˜Â´Ã™ 
 
-	//¾ÆÀÌÅÛÀ» Á¶ÇÕÇÑ´Ù 
+	//Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃÂ¶Ã‡Ã•Ã‡Ã‘Â´Ã™ 
 	int MixingItem();
 
-	//¾ÆÀÌÅÛ °ø°£À» Ã¼Å©ÇÑ´Ù 
+	//Â¾Ã†Ã€ÃŒÃ…Ã› Â°Ã¸Â°Â£Ã€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™ 
 	int CraftCheckEmptyArea(sITEM *pItem);
-	int CancelMixItem(); //¹Í½ºÃÄ ¾ÆÀÌÅÛÀ» Ãë¼ÒÇÑ´Ù 
+	int CancelMixItem(); //Â¹ÃÂ½ÂºÃƒÃ„ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃƒÃ«Â¼Ã’Ã‡Ã‘Â´Ã™ 
 
-	int CheckHackCraftItem(); //Å©·¡ÇÁÆ® ¾ÆÀÌÅÛ Á¶ÀÛ ¹æÁö
-	int CheckCraftItemForm(); //Á¶ÀÛÇÏ´Â »ó³ğÀÇ ÀÚ½ÄµéÀ» Á×¿©¹ö¸®ÀÚ Æ¡!!
-	int ReFormCraftItem();    //Á¶ÀÛÇÏ´Â »ó³ğÀÇ ÀÚ½ÄµéÀ» Á×¿©¹ö¸®ÀÚ Æ¡!!
+	int CheckHackCraftItem(); //Ã…Â©Â·Â¡Ã‡ÃÃ†Â® Â¾Ã†Ã€ÃŒÃ…Ã› ÃÂ¶Ã€Ã› Â¹Ã¦ÃÃ¶
+	int CheckCraftItemForm(); //ÃÂ¶Ã€Ã›Ã‡ÃÂ´Ã‚ Â»Ã³Â³Ã°Ã€Ã‡ Ã€ÃšÂ½Ã„ÂµÃ©Ã€Â» ÃÃ—Â¿Â©Â¹Ã¶Â¸Â®Ã€Ãš Ã†Â¡!!
+	int ReFormCraftItem();    //ÃÂ¶Ã€Ã›Ã‡ÃÂ´Ã‚ Â»Ã³Â³Ã°Ã€Ã‡ Ã€ÃšÂ½Ã„ÂµÃ©Ã€Â» ÃÃ—Â¿Â©Â¹Ã¶Â¸Â®Ã€Ãš Ã†Â¡!!
 
-	int sinSendCraftItem();	  //¼­¹ö¿¡ ¹Í½ºÇÒ ¾ÆÀÌÅÛÀ» º¸³½´Ù 	
-	int sinRecvCraftItem(sCRAFTITEM_SERVER *pCraftItem_Server);   //¼­¹ö¿¡¼­ ¹Í½ºÇÒ ¾ÆÀÌÅÛÀ» ¹Ş´Â´Ù 
+	int sinSendCraftItem();	  //Â¼Â­Â¹Ã¶Â¿Â¡ Â¹ÃÂ½ÂºÃ‡Ã’ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÂºÂ¸Â³Â½Â´Ã™ 	
+	int sinRecvCraftItem(sCRAFTITEM_SERVER *pCraftItem_Server);   //Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÂ½ÂºÃ‡Ã’ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¹ÃÂ´Ã‚Â´Ã™ 
 
-	//¹Í½ºµÈ °á°ú¹°À» ¹Ş´Â´Ù 
+	//Â¹ÃÂ½ÂºÂµÃˆ Â°Ã¡Â°ÃºÂ¹Â°Ã€Â» Â¹ÃÂ´Ã‚Â´Ã™ 
 	int sinRecvCraftItemResult(sCRAFTITEM_SERVER *pCraftItem_Server);
 
-	//Force Orb ¾ÆÀÌÅÛÀÇ °¡°İÀ» Ã¼Å©ÇÑ´Ù
+	//Force Orb Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Ã‡ Â°Â¡Â°ÃÃ€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™
 	int CheckForceOrbPrice();
 	int CheckForceOrbPrice(sITEM *pItem);
 
-	//¾ÆÀÌÅÛ Àç±¸¼º ½Ã½ºÅÛ
-	int haCheckReconItem(); //¾ÆÀÌÅÛ Àç±¸¼º 
-	int haSendReconItem();  //¾ÆÀÌÅÛ Àç±¸¼º À» ¼­¹ö·Î º¸³½´Ù.
+	//Â¾Ã†Ã€ÃŒÃ…Ã› Ã€Ã§Â±Â¸Â¼Âº Â½ÃƒÂ½ÂºÃ…Ã›
+	int haCheckReconItem(); //Â¾Ã†Ã€ÃŒÃ…Ã› Ã€Ã§Â±Â¸Â¼Âº 
+	int haSendReconItem();  //Â¾Ã†Ã€ÃŒÃ…Ã› Ã€Ã§Â±Â¸Â¼Âº Ã€Â» Â¼Â­Â¹Ã¶Â·Ã ÂºÂ¸Â³Â½Â´Ã™.
 	/*----------------------------------------------------------------------------*
-	* ÀÛ¼ºÀÚ : ÇÏ´ë¿ë  			
-	* Desc   : Ãß°¡µÅ´Â ÇÔ¼öµé  		
+	* Ã€Ã›Â¼ÂºÃ€Ãš : Ã‡ÃÂ´Ã«Â¿Ã«  			
+	* Desc   : ÃƒÃŸÂ°Â¡ÂµÃ…Â´Ã‚ Ã‡Ã”Â¼Ã¶ÂµÃ©  		
 	*-----------------------------------------------------------------------------*/
 
-	//ÀÎº£Åä¸® ºó°÷À» Ã¼Å©ÇÑ´Ù.
+	//Ã€ÃÂºÂ£Ã…Ã¤Â¸Â® ÂºÃ³Â°Ã·Ã€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™.
 	int GetCraftCheckEmptyArea();
 	//sorting function
 	int haCraftSortItem(sCRAFTITEM *pCraftItem);
@@ -438,48 +446,48 @@ public:
 
 
 /*----------------------------------------------------------------------------*
-*								Ã¢°í Å¬·¡½º 
+*								ÃƒÂ¢Â°Ã­ Ã…Â¬Â·Â¡Â½Âº 
 *-----------------------------------------------------------------------------*/
 
 class cWAREHOUSE{
 public:
-	int OpenFlag;	//ÇÔ¼öÀÇ °ø¿ëÈ­¸¦ À§ÇØ ¾îÂ¿¼ö ¾øÀÌ Å¬·¡½º »ı¼º 
+	int OpenFlag;	//Ã‡Ã”Â¼Ã¶Ã€Ã‡ Â°Ã¸Â¿Ã«ÃˆÂ­Â¸Â¦ Ã€Â§Ã‡Ã˜ Â¾Ã®Ã‚Â¿Â¼Ã¶ Â¾Ã¸Ã€ÃŒ Ã…Â¬Â·Â¡Â½Âº Â»Ã½Â¼Âº 
 	int WareHouseCheckSum;
 
 public:
 
-	int SetWareHouseItemAreaCheck(sITEM *pItem); //°ø°£À» Ã¼Å©ÇÑ´Ù 
-	int CrashWareHouseItem(RECT &desRect, int PassItemIndex=0); //¾ÆÀÌÅÛÀÌ °ãÃÄÁ³´ÂÁö¸¦ Ã£´Â´Ù 
-	int ChangeWareHouseItem(sITEM *pItem); //°ãÃÄÁø ¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
-	int LastSetWareHouseItem(sITEM *pItem); //¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
-	int PickUpWareHouseItem(int x , int y , int PickUpFlag=0); //¾ÆÀÌÅÛÀ» Áı°Å³ª Á¤º¸¸¦ º¸¿©ÁØ´Ù 
+	int SetWareHouseItemAreaCheck(sITEM *pItem); //Â°Ã¸Â°Â£Ã€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™ 
+	int CrashWareHouseItem(RECT &desRect, int PassItemIndex=0); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Â°Ã£ÃƒÃ„ÃÂ³Â´Ã‚ÃÃ¶Â¸Â¦ ÃƒÂ£Â´Ã‚Â´Ã™ 
+	int ChangeWareHouseItem(sITEM *pItem); //Â°Ã£ÃƒÃ„ÃÃ¸ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¼Ã‚Ã†ÃƒÃ‡Ã‘Â´Ã™ 
+	int LastSetWareHouseItem(sITEM *pItem); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¼Ã‚Ã†ÃƒÃ‡Ã‘Â´Ã™ 
+	int PickUpWareHouseItem(int x , int y , int PickUpFlag=0); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃÃ½Â°Ã…Â³Âª ÃÂ¤ÂºÂ¸Â¸Â¦ ÂºÂ¸Â¿Â©ÃÃ˜Â´Ã™ 
 
-	//¹«°Ô¸¦ ±¸ÇÑ´Ù 
+	//Â¹Â«Â°Ã”Â¸Â¦ Â±Â¸Ã‡Ã‘Â´Ã™ 
 	int GetWeight();
 
-	//¾ÆÀÌÅÛ ÀÌ¹ÌÁö¸¦ ·ÎµåÇÑ´Ù
+	//Â¾Ã†Ã€ÃŒÃ…Ã› Ã€ÃŒÂ¹ÃŒÃÃ¶Â¸Â¦ Â·ÃÂµÃ¥Ã‡Ã‘Â´Ã™
 	int LoadWareHouseItemIamge();	
 	
-	//ÀÎº¥Åä¸® ¾ÆÀÌÅÛÀ» Àá½Ã ¹é¾÷ÇÑ´Ù 
+	//Ã€ÃÂºÂ¥Ã…Ã¤Â¸Â® Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Ã€Ã¡Â½Ãƒ Â¹Ã©Â¾Ã·Ã‡Ã‘Â´Ã™ 
 	int BackUpInvenItem();
-	//¾ÆÀÌÅÛÀ» º¹±¸ÇØÁØ´Ù 
+	//Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÂºÂ¹Â±Â¸Ã‡Ã˜ÃÃ˜Â´Ã™ 
 	int RestoreInvenItem(); 
-	//Ã¢°í¸¦ ´İ´Â´Ù 
+	//ÃƒÂ¢Â°Ã­Â¸Â¦ Â´ÃÂ´Ã‚Â´Ã™ 
 	int CloseWareHouse();
 
-	//////////////////Á¶ÀÛ ¹æÁö 
+	//////////////////ÃÂ¶Ã€Ã› Â¹Ã¦ÃÃ¶ 
 	int ReFormWareHouse();
 	int CheckWareHouseForm();
 
-	//////////////////º¹»ç ¾ÆÀÌÅÛ¿¡ °üÇÑ Ã³¸® (¾ÆÀÌÅÛÀ» ÁıÀ»¼ö¾ø´Ù)
+	//////////////////ÂºÂ¹Â»Ã§ Â¾Ã†Ã€ÃŒÃ…Ã›Â¿Â¡ Â°Ã¼Ã‡Ã‘ ÃƒÂ³Â¸Â® (Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃÃ½Ã€Â»Â¼Ã¶Â¾Ã¸Â´Ã™)
 	int CopyItemNotPickUp(sITEM *pItem,int JumpIndex);
-	int CheckCopyItem(); //º¹»çµÈ ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö¸¦ Ã¼Å©ÇÑ´Ù 
-	int DeleteCopyItem(); //º¹»ç ¾ÆÀÌÅÛÀ» ¾ø¾ÖÁØ´Ù (¼­¹ö ÀÌ»óÀ¸·Î Ã¢°í¿¡ º¹»ç¾ÆÀÌÅÛÀÌ ¸¹ÀÌ »ı°åÀ½)
+	int CheckCopyItem(); //ÂºÂ¹Â»Ã§ÂµÃˆ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Ã€Ã–Â´Ã‚ÃÃ¶Â¸Â¦ ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™ 
+	int DeleteCopyItem(); //ÂºÂ¹Â»Ã§ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¾Ã¸Â¾Ã–ÃÃ˜Â´Ã™ (Â¼Â­Â¹Ã¶ Ã€ÃŒÂ»Ã³Ã€Â¸Â·Ã ÃƒÂ¢Â°Ã­Â¿Â¡ ÂºÂ¹Â»Ã§Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Â¸Â¹Ã€ÃŒ Â»Ã½Â°Ã¥Ã€Â½)
 
 };
 
 /*----------------------------------------------------------------------------*
-*								½ºÅ³ Å¬·¡½º 
+*								Â½ÂºÃ…Â³ Ã…Â¬Â·Â¡Â½Âº 
 *-----------------------------------------------------------------------------*/
 class cTRADE{
 
@@ -487,7 +495,7 @@ public:
 
 	int OpenFlag;
 	int MatTrade[4];
-	int MatWareHouse[3]; //Ã¢°í (ÀÌ¹ÌÁöÇÏ³ª´Â »óÁ¡¿¡¼­ °¡Á®¿Â´Ù)
+	int MatWareHouse[3]; //ÃƒÂ¢Â°Ã­ (Ã€ÃŒÂ¹ÃŒÃÃ¶Ã‡ÃÂ³ÂªÂ´Ã‚ Â»Ã³ÃÂ¡Â¿Â¡Â¼Â­ Â°Â¡ÃÂ®Â¿Ã‚Â´Ã™)
 	int MatTradebuttonMain;
 	int MatTradebuttonCancel;
 
@@ -507,7 +515,7 @@ public:
 	sITEM CheckItem[100];
 	sITEM CheckRecvItem[MAX_TRADE_ITEM];
 
-	////»ç¿ë º¯¼ö 
+	////Â»Ã§Â¿Ã« ÂºÂ¯Â¼Ã¶ 
 	int   TradeRequestFlag;
 	DWORD TradeCharCode;
 	char  szTradeCharName[64];
@@ -520,11 +528,11 @@ public:
 	cTRADE();
 	~cTRADE();
 
-	void Init(); //Å¬·¡½º ÃÊ±âÈ­
+	void Init(); //Ã…Â¬Â·Â¡Â½Âº ÃƒÃŠÂ±Ã¢ÃˆÂ­
 	void Load();
 	void Release();
 	void Draw();
-	void Close();//Å¬·¡½º Á¾·á 
+	void Close();//Ã…Â¬Â·Â¡Â½Âº ÃÂ¾Â·Ã¡ 
 	void Main();
 	void LButtonDown(int x , int y);
 	void LButtonUp(int x , int y);
@@ -532,92 +540,92 @@ public:
 	void RButtonUp(int x, int y);
 	void KeyDown(); 
 
-	void DrawTradeText(); //ÅØ½º¸¦ Âï¾îÁØ´Ù 
+	void DrawTradeText(); //Ã…Ã˜Â½ÂºÂ¸Â¦ Ã‚Ã¯Â¾Ã®ÃÃ˜Â´Ã™ 
 
-	///////////// Æ®·¹ÀÌµå ÇÔ¼ö 
-	int SetTradeItemAreaCheck(sITEM *pItem); //°ø°£À» Ã¼Å©ÇÑ´Ù 
-	int CrashTradeItem(RECT &desRect, int PassItemIndex=0 , int Kind=0); //¾ÆÀÌÅÛÀÌ °ãÃÄÁ³´ÂÁö¸¦ Ã£´Â´Ù 
-	int InitTradeColorRect(); //ÄÃ·¯ ¹Ú½º ÃÊ±âÈ­ 
-	int ChangeTradeItem(sITEM *pItem); //°ãÃÄÁø ¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
-	int LastSetTradeItem(sITEM *pItem); //¾ÆÀÌÅÛÀ» ¼ÂÆÃÇÑ´Ù 
-	int PickUpTradeItem(int x , int y , int PickUpFlag=0); //¾ÆÀÌÅÛÀ» Áı°Å³ª Á¤º¸¸¦ º¸¿©ÁØ´Ù 
+	///////////// Ã†Â®Â·Â¹Ã€ÃŒÂµÃ¥ Ã‡Ã”Â¼Ã¶ 
+	int SetTradeItemAreaCheck(sITEM *pItem); //Â°Ã¸Â°Â£Ã€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™ 
+	int CrashTradeItem(RECT &desRect, int PassItemIndex=0 , int Kind=0); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Â°Ã£ÃƒÃ„ÃÂ³Â´Ã‚ÃÃ¶Â¸Â¦ ÃƒÂ£Â´Ã‚Â´Ã™ 
+	int InitTradeColorRect(); //Ã„ÃƒÂ·Â¯ Â¹ÃšÂ½Âº ÃƒÃŠÂ±Ã¢ÃˆÂ­ 
+	int ChangeTradeItem(sITEM *pItem); //Â°Ã£ÃƒÃ„ÃÃ¸ Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¼Ã‚Ã†ÃƒÃ‡Ã‘Â´Ã™ 
+	int LastSetTradeItem(sITEM *pItem); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Â¼Ã‚Ã†ÃƒÃ‡Ã‘Â´Ã™ 
+	int PickUpTradeItem(int x , int y , int PickUpFlag=0); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃÃ½Â°Ã…Â³Âª ÃÂ¤ÂºÂ¸Â¸Â¦ ÂºÂ¸Â¿Â©ÃÃ˜Â´Ã™ 
 
-	//¾ÆÀÌÅÛÀÌ ¼ÂÆÃ°¡´ÉÇÑÁö ¾Ë¾Æº»´Ù 
-	int CheckTradeItemSet(); //¼ÂÆÃ Ã¼Å© ¸ŞÀÎ(¹«°Ô¸¦ Ã¼Å©ÇÏ°í ³ª¸ÓÁö ÇÔ¼ö¸¦ È£ÃâÇÑ´Ù)
-	int TradeCheckEmptyArea(sITEM *pItem); //¾ÆÀÌÅÛÀÌ ¼ÂÆÃµÉ¼öÀÖ´ÂÁö Ã¼Å©ÇÑ´Ù
-	int ChecketInvenItem(sITEM *pItem); //¾ÆÀÌÅÛÀ» ÀÓ½Ã·Î ¼ÂÆÃÇÑ´Ù 
+	//Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Â¼Ã‚Ã†ÃƒÂ°Â¡Â´Ã‰Ã‡Ã‘ÃÃ¶ Â¾Ã‹Â¾Ã†ÂºÂ»Â´Ã™ 
+	int CheckTradeItemSet(); //Â¼Ã‚Ã†Ãƒ ÃƒÂ¼Ã…Â© Â¸ÃÃ€Ã(Â¹Â«Â°Ã”Â¸Â¦ ÃƒÂ¼Ã…Â©Ã‡ÃÂ°Ã­ Â³ÂªÂ¸Ã“ÃÃ¶ Ã‡Ã”Â¼Ã¶Â¸Â¦ ÃˆÂ£ÃƒÃ¢Ã‡Ã‘Â´Ã™)
+	int TradeCheckEmptyArea(sITEM *pItem); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Â¼Ã‚Ã†ÃƒÂµÃ‰Â¼Ã¶Ã€Ã–Â´Ã‚ÃÃ¶ ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™
+	int ChecketInvenItem(sITEM *pItem); //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Ã€Ã“Â½ÃƒÂ·Ã Â¼Ã‚Ã†ÃƒÃ‡Ã‘Â´Ã™ 
 
-	//¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®·Î ¼ÂÆÃÇÑ´Ù 
-	int CheckOkTradeItem();			//Æ®·¹ÀÌµå È®ÀÎ 
-	int CancelTradeItem();			//Æ®·¹ÀÌµå Ãë¼Ò 
-	int LoadTradeItemIamge();		//¾ÆÀÌÅÛ ÀÌ¹ÌÁö¸¦ ·ÎµåÇÑ´Ù
+	//Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» Ã€ÃÂºÂ¥Ã…Ã¤Â¸Â®Â·Ã Â¼Ã‚Ã†ÃƒÃ‡Ã‘Â´Ã™ 
+	int CheckOkTradeItem();			//Ã†Â®Â·Â¹Ã€ÃŒÂµÃ¥ ÃˆÂ®Ã€Ã 
+	int CancelTradeItem();			//Ã†Â®Â·Â¹Ã€ÃŒÂµÃ¥ ÃƒÃ«Â¼Ã’ 
+	int LoadTradeItemIamge();		//Â¾Ã†Ã€ÃŒÃ…Ã› Ã€ÃŒÂ¹ÃŒÃÃ¶Â¸Â¦ Â·ÃÂµÃ¥Ã‡Ã‘Â´Ã™
 
-	//½ÂÀÎ °ü·Ã 
-	int CheckTradeButtonOk();		//¼­¹ö¿¡ ½ÂÀÎÀ» ¾ò´Â´Ù 
+	//Â½Ã‚Ã€Ã Â°Ã¼Â·Ãƒ 
+	int CheckTradeButtonOk();		//Â¼Â­Â¹Ã¶Â¿Â¡ Â½Ã‚Ã€ÃÃ€Â» Â¾Ã²Â´Ã‚Â´Ã™ 
 
-	//¹«°Ô¸¦ ±¸ÇÑ´Ù 
+	//Â¹Â«Â°Ã”Â¸Â¦ Â±Â¸Ã‡Ã‘Â´Ã™ 
 	int GetWeight();
 
-	////////////////////¾ÆÀÌÅÛÀ» Á¶ÀÛÇÏ´Â »ó³ğÀÇ ÀÚ½ÄµéÀ» Á×¿©¹ö¸°´Ù Æ¡!!
-	int CheckTradeItemForm();	//°Ë»ç 
-	int ReFormTradeItem();		//ÀÎÁõ 
+	////////////////////Â¾Ã†Ã€ÃŒÃ…Ã›Ã€Â» ÃÂ¶Ã€Ã›Ã‡ÃÂ´Ã‚ Â»Ã³Â³Ã°Ã€Ã‡ Ã€ÃšÂ½Ã„ÂµÃ©Ã€Â» ÃÃ—Â¿Â©Â¹Ã¶Â¸Â°Â´Ã™ Ã†Â¡!!
+	int CheckTradeItemForm();	//Â°Ã‹Â»Ã§ 
+	int ReFormTradeItem();		//Ã€ÃÃÃµ 
 
 
 };
-// pluto Á¦ÀÛ ¾ÆÀÌÅÛ ¹«°Ô, °¡°İ
+// pluto ÃÂ¦Ã€Ã› Â¾Ã†Ã€ÃŒÃ…Ã› Â¹Â«Â°Ã”, Â°Â¡Â°Ã
 int ManufactureItemResultInfo( SManufacture_ResultItemInfo_Server *pResultItemInfo );
-///////////// ÇÔ¼ö
+///////////// Ã‡Ã”Â¼Ã¶
 int CopyMixItemCheckDelete(sITEM *pItem);
-int sinMakeItemCheck(); //MakeItemÀ» Ã¼Å©ÇÑ´Ù
-int sinPosBoxNpc();     //PostBox NpcÇÑÅ×¼­ ¸Ş¼¼Áö¸¦ ¹Ş´Â´Ù 
-extern SManufacture_ResultItemInfo g_Manufacture_ItemInfo[MAX_HANDMADEITEM]; // Àåº° - Á¦ÀÛ // Àåº° - ´ëÀåÀåÀÌÀÇ È¥
+int sinMakeItemCheck(); //MakeItemÃ€Â» ÃƒÂ¼Ã…Â©Ã‡Ã‘Â´Ã™
+int sinPosBoxNpc();     //PostBox NpcÃ‡Ã‘Ã…Ã—Â¼Â­ Â¸ÃÂ¼Â¼ÃÃ¶Â¸Â¦ Â¹ÃÂ´Ã‚Â´Ã™ 
+extern SManufacture_ResultItemInfo g_Manufacture_ItemInfo[MAX_HANDMADEITEM]; // Ã€Ã¥ÂºÂ° - ÃÂ¦Ã€Ã› // Ã€Ã¥ÂºÂ° - Â´Ã«Ã€Ã¥Ã€Ã¥Ã€ÃŒÃ€Ã‡ ÃˆÂ¥
 extern cTRADE cTrade;
 extern sTRADE sTrade;
 extern sTRADE sTradeRecv;
 
-extern int RequestTradeButtonFlag; //°Å·¡¿ä±¸ ¹öÆ° Å¬¸¯ 
+extern int RequestTradeButtonFlag; //Â°Ã…Â·Â¡Â¿Ã¤Â±Â¸ Â¹Ã¶Ã†Â° Ã…Â¬Â¸Â¯ 
 	   
-extern cWAREHOUSE cWareHouse; //Ã¢°í Å¬·¡½º 
-extern sWAREHOUSE sWareHouse; //Ã¢°í ±¸Á¶Ã¼ 
-extern sITEM *BackUpInvenItem2; //ÀÎº¥¾ÆÀÌÅÛ ÀÓ½Ã ¹é¾÷ 
+extern cWAREHOUSE cWareHouse; //ÃƒÂ¢Â°Ã­ Ã…Â¬Â·Â¡Â½Âº 
+extern sWAREHOUSE sWareHouse; //ÃƒÂ¢Â°Ã­ Â±Â¸ÃÂ¶ÃƒÂ¼ 
+extern sITEM *BackUpInvenItem2; //Ã€ÃÂºÂ¥Â¾Ã†Ã€ÃŒÃ…Ã› Ã€Ã“Â½Ãƒ Â¹Ã©Â¾Ã· 
 
 
-extern cCRAFTITEM cCraftItem;	//¾ÆÀÌÅÛ Á¶ÇÕ 
+extern cCRAFTITEM cCraftItem;	//Â¾Ã†Ã€ÃŒÃ…Ã› ÃÂ¶Ã‡Ã• 
 
-extern CSmeltingItem SmeltingItem; // pluto Á¦·Ã
-extern SSmeltingItem S_smeltingItem; // pluto Á¦·Ã
-extern sSMELTINGITEM_SERVER sSmeltingItem_Send; // pluto Á¦·Ã ¼­¹ö·Î º¸³¿
-extern sSMELTINGITEM_SERVER sSmeltingItem_Recv; // pluto Á¦·Ã ¼­¹ö¿¡¼­ ¹ŞÀ½
+extern CSmeltingItem SmeltingItem; // pluto ÃÂ¦Â·Ãƒ
+extern SSmeltingItem S_smeltingItem; // pluto ÃÂ¦Â·Ãƒ
+extern sSMELTINGITEM_SERVER sSmeltingItem_Send; // pluto ÃÂ¦Â·Ãƒ Â¼Â­Â¹Ã¶Â·Ã ÂºÂ¸Â³Â¿
+extern sSMELTINGITEM_SERVER sSmeltingItem_Recv; // pluto ÃÂ¦Â·Ãƒ Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÃ€Â½
 
-extern CManufacture ManufactureItem; // pluto Á¦ÀÛ
-extern SManufactureItem g_sManufactureItem; // pluto Á¦ÀÛ
-extern SManufactureItem_Server g_sManufactureItem_Send; // pluto Á¦·Ã ¼­¹ö·Î º¸³¿
-extern SManufactureItem_Server g_sManufactureItem_Recv; // pluto Á¦·Ã ¼­¹ö¿¡¼­ ¹ŞÀ½
+extern CManufacture ManufactureItem; // pluto ÃÂ¦Ã€Ã›
+extern SManufactureItem g_sManufactureItem; // pluto ÃÂ¦Ã€Ã›
+extern SManufactureItem_Server g_sManufactureItem_Send; // pluto ÃÂ¦Â·Ãƒ Â¼Â­Â¹Ã¶Â·Ã ÂºÂ¸Â³Â¿
+extern SManufactureItem_Server g_sManufactureItem_Recv; // pluto ÃÂ¦Â·Ãƒ Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÃ€Â½
 extern SManufacture_Rune g_sManufacture_Rune[MAX_RECIPE_KIND];
 //extern SManufacture_ResultItemInfo_Server g_Item_Recv;
 extern sCRAFTITEM sCraftItem;
-extern sCRAFTITEM_INFO sCraftItem_Info[MAX_CRAFTITEM_INFO]; //¾ÆÀÌÅÛ Á¶ÇÕ °ø½Ä
+extern sCRAFTITEM_INFO sCraftItem_Info[MAX_CRAFTITEM_INFO]; //Â¾Ã†Ã€ÃŒÃ…Ã› ÃÂ¶Ã‡Ã• Â°Ã¸Â½Ã„
 
-extern sCRAFTITEM_SERVER sCraftItem_Send; //¼­¹ö·Î º¸³»Áú ¾ÆÀÌÅÛ 
-extern sCRAFTITEM_SERVER sCraftItem_Recv; //¼­¹ö¿¡¼­ ¹ŞÀ» ¾ÆÀÌÅÛ
+extern sCRAFTITEM_SERVER sCraftItem_Send; //Â¼Â­Â¹Ã¶Â·Ã ÂºÂ¸Â³Â»ÃÃº Â¾Ã†Ã€ÃŒÃ…Ã› 
+extern sCRAFTITEM_SERVER sCraftItem_Recv; //Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÃ€Â» Â¾Ã†Ã€ÃŒÃ…Ã›
 
-extern sCRAFTITEM_SERVER sAging_Send; //¼­¹ö·Î º¸³»Áú ¾ÆÀÌÅÛ 
-extern sCRAFTITEM_SERVER sAging_Recv; //¼­¹ö¿¡¼­ ¹ŞÀ» ¾ÆÀÌÅÛ 
+extern sCRAFTITEM_SERVER sAging_Send; //Â¼Â­Â¹Ã¶Â·Ã ÂºÂ¸Â³Â»ÃÃº Â¾Ã†Ã€ÃŒÃ…Ã› 
+extern sCRAFTITEM_SERVER sAging_Recv; //Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÃ€Â» Â¾Ã†Ã€ÃŒÃ…Ã› 
 
 
-extern int ShowItemCraftMessageFlag; //Á¶ÇÕµÈ ¾ÆÀÌÅÛ ÀÎÀÚ¸¦ º¸¿©ÁØ´Ù 
-extern int ShowItemAgingMessageFlag; //¾ÆÀÌÅÛÀÌ ¿¡ÀÌÂ¡‰çÀ»¶§ ¸Ş¼¼Áö¸¦ º¸¿©ÁØ´Ù 
-extern int ShowItemSmeltingMessageFlag; // pluto ¾ÆÀÌÅÛÀÌ Á¦·Ã ‰çÀ»¶§
-extern int ShowItemManufactureMessageFlag; // pluto ¾ÆÀÌÅÛÀÌ Á¦ÀÛ ‰çÀ»¶§
-extern int ShowItemOverSpace;	// pluto °ø°£ºÎÁ·
+extern int ShowItemCraftMessageFlag; //ÃÂ¶Ã‡Ã•ÂµÃˆ Â¾Ã†Ã€ÃŒÃ…Ã› Ã€ÃÃ€ÃšÂ¸Â¦ ÂºÂ¸Â¿Â©ÃÃ˜Â´Ã™ 
+extern int ShowItemAgingMessageFlag; //Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ Â¿Â¡Ã€ÃŒÃ‚Â¡Â‰Ã§Ã€Â»Â¶Â§ Â¸ÃÂ¼Â¼ÃÃ¶Â¸Â¦ ÂºÂ¸Â¿Â©ÃÃ˜Â´Ã™ 
+extern int ShowItemSmeltingMessageFlag; // pluto Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ ÃÂ¦Â·Ãƒ Â‰Ã§Ã€Â»Â¶Â§
+extern int ShowItemManufactureMessageFlag; // pluto Â¾Ã†Ã€ÃŒÃ…Ã›Ã€ÃŒ ÃÂ¦Ã€Ã› Â‰Ã§Ã€Â»Â¶Â§
+extern int ShowItemOverSpace;	// pluto Â°Ã¸Â°Â£ÂºÃÃÂ·
 
-extern int TempShowMoney;	  //º¸¿©Áö±â¸¸ ÇÏ´Â µ· 
+extern int TempShowMoney;	  //ÂºÂ¸Â¿Â©ÃÃ¶Â±Ã¢Â¸Â¸ Ã‡ÃÂ´Ã‚ ÂµÂ· 
 extern int TempShowCoin;
-extern int ItemPickUpFlag;	  //»ç±â¹æÁö¸¦ À§ÇØ¼­ µô·¹ÀÌ¸¦ ÁØ´Ù 	
+extern int ItemPickUpFlag;	  //Â»Ã§Â±Ã¢Â¹Ã¦ÃÃ¶Â¸Â¦ Ã€Â§Ã‡Ã˜Â¼Â­ ÂµÃ´Â·Â¹Ã€ÃŒÂ¸Â¦ ÃÃ˜Â´Ã™ 	
 extern int WareHouseSaveFlag;
 
 
-extern cAGING	cAging;		  //¿¡ÀÌÂ¡ 
+extern cAGING	cAging;		  //Â¿Â¡Ã€ÃŒÃ‚Â¡ 
 extern sAGINGITEM sAgingItem;
 extern sAGINGITEM_INFO sAgingItem_Info[MAX_AGINGITEM_INFO];
 
@@ -627,34 +635,34 @@ extern int AgingLevelCritical[20];
 extern char szAgingItemBuff[128];
 extern POINT CraftItemMessageSize;
 
-extern int AgingCheckSheltomFlag; //¿¡ÀÌÂ¡ °¡´É ÇÃ·¢ ÃÊ±âÈ­ 
+extern int AgingCheckSheltomFlag; //Â¿Â¡Ã€ÃŒÃ‚Â¡ Â°Â¡Â´Ã‰ Ã‡ÃƒÂ·Â¢ ÃƒÃŠÂ±Ã¢ÃˆÂ­ 
 extern int AgingSheltomCnt2;
 extern int MixItemNoCopyFlag;
 extern int CheckMixItemCopyFlag;
 extern sMAKEITEM_INFO sMakeItem_Info[MAX_MAKEITEM_INFO];
 
-// ¹Í½ºÃÄ ¸®¼Â °´Ã¼ ¹× º¯¼öµé Àü¿ªÈ­ ÇÏ±â
-extern cMIXTURERESET cMixtureReset;						// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â °´Ã¼
-extern sMIXTURE_RESET_ITEM	sMixtureResetItem;			// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛ Á¤º¸ ±¸Á¶Ã¼
-extern sMIXTURE_RESET_ITEM sMixtureResetItemBackUp;		// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛ Á¤º¸ ±¸Á¶Ã¼ ¹é¾÷
-extern int	MixtureResetCheckFlag;						// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼ÂÀÌ °¡´ÉÇÑ°¡?
-extern sMIXTURE_RESET_ITEM_SERVER	sMixtureReset_Send;	// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¼­¹ö·Î Àü¼ÛÇÒ ±¸Á¶Ã¼
-extern sMIXTURE_RESET_ITEM_SERVER	sMixtureReset_Recv;	// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¼­¹ö¿¡¼­ ¹ŞÀ» ±¸Á¶Ã¼
+// Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â°Â´ÃƒÂ¼ Â¹Ã— ÂºÂ¯Â¼Ã¶ÂµÃ© Ã€Ã¼Â¿ÂªÃˆÂ­ Ã‡ÃÂ±Ã¢
+extern cMIXTURERESET cMixtureReset;						// Â¼Â®ÃÃ¶Â¿Ã« - Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â°Â´ÃƒÂ¼
+extern sMIXTURE_RESET_ITEM	sMixtureResetItem;			// Â¼Â®ÃÃ¶Â¿Ã« - Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â¾Ã†Ã€ÃŒÃ…Ã› ÃÂ¤ÂºÂ¸ Â±Â¸ÃÂ¶ÃƒÂ¼
+extern sMIXTURE_RESET_ITEM sMixtureResetItemBackUp;		// Â¼Â®ÃÃ¶Â¿Ã« - Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â¾Ã†Ã€ÃŒÃ…Ã› ÃÂ¤ÂºÂ¸ Â±Â¸ÃÂ¶ÃƒÂ¼ Â¹Ã©Â¾Ã·
+extern int	MixtureResetCheckFlag;						// Â¼Â®ÃÃ¶Â¿Ã« - Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚Ã€ÃŒ Â°Â¡Â´Ã‰Ã‡Ã‘Â°Â¡?
+extern sMIXTURE_RESET_ITEM_SERVER	sMixtureReset_Send;	// Â¼Â®ÃÃ¶Â¿Ã« - Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â¼Â­Â¹Ã¶Â·Ã Ã€Ã¼Â¼Ã›Ã‡Ã’ Â±Â¸ÃÂ¶ÃƒÂ¼
+extern sMIXTURE_RESET_ITEM_SERVER	sMixtureReset_Recv;	// Â¼Â®ÃÃ¶Â¿Ã« - Â¹ÃÂ½ÂºÃƒÃ„ Â¸Â®Â¼Ã‚ Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÃ€Â» Â±Â¸ÃÂ¶ÃƒÂ¼
 
 extern char *PostBoxDocFilePath[];
 
 extern sPOSTBOX_ITEM sPostbox_Item[50];
 extern int PostBoxIndexCnt;
 extern DWORD ExpressItemCode;
-extern char  szExpressItemName[64]; //¹ŞÀ» ¾ÆÀÌÅÛ ÀÌ¸§ 
+extern char  szExpressItemName[64]; //Â¹ÃÃ€Â» Â¾Ã†Ã€ÃŒÃ…Ã› Ã€ÃŒÂ¸Â§ 
 
-extern sCRAFTITEM_SERVER sWingItem_Send; //¼­¹ö·Î º¸³»Áú À®¾ÆÀÌÅÛ
-extern sCRAFTITEM_SERVER sWingItem_Recv; //¼­¹ö¿¡¼­ ¹ŞÀ» ¾ÆÀÌÅÛ (Çè ÇÊ¿äÇÑ°¡ ¸Ö°Ú³×)
+extern sCRAFTITEM_SERVER sWingItem_Send; //Â¼Â­Â¹Ã¶Â·Ã ÂºÂ¸Â³Â»ÃÃº Ã€Â®Â¾Ã†Ã€ÃŒÃ…Ã›
+extern sCRAFTITEM_SERVER sWingItem_Recv; //Â¼Â­Â¹Ã¶Â¿Â¡Â¼Â­ Â¹ÃÃ€Â» Â¾Ã†Ã€ÃŒÃ…Ã› (Ã‡Ã¨ Ã‡ÃŠÂ¿Ã¤Ã‡Ã‘Â°Â¡ Â¸Ã–Â°ÃšÂ³Ã—)
 
 extern int DownTradePosi[6][4];
 extern DWORD SheltomCode2[];
-extern DWORD MagicSheltomCode[]; // ¹ÚÀç¿ø - ¸ÅÁ÷ Æ÷½º Ãß°¡
-extern DWORD BillingMagicSheltomCode[]; // ¹ÚÀç¿ø - ºô¸µ ¸ÅÁ÷ Æ÷½º Ãß°¡
+extern DWORD MagicSheltomCode[]; // Â¹ÃšÃ€Ã§Â¿Ã¸ - Â¸Ã…ÃÃ· Ã†Ã·Â½Âº ÃƒÃŸÂ°Â¡
+extern DWORD BillingMagicSheltomCode[]; // Â¹ÃšÃ€Ã§Â¿Ã¸ - ÂºÃ´Â¸Âµ Â¸Ã…ÃÃ· Ã†Ã·Â½Âº ÃƒÃŸÂ°Â¡
 extern int ForceItemPrice2;
-extern sRECON_ITEM sReconItem[MAX_SEEL_COUNT]; // ¹ÚÀç¿ø - Å×ÀÌ¿ÍÁî ¾Á Ãß°¡
-extern int		MixCancelButtonDelayFlag; // pluto ¿ÜºÎ º¯¼ö·Î ¹Ù²å´Ù -_-
+extern sRECON_ITEM sReconItem[MAX_SEEL_COUNT]; // Â¹ÃšÃ€Ã§Â¿Ã¸ - Ã…Ã—Ã€ÃŒÂ¿ÃÃÃ® Â¾Ã ÃƒÃŸÂ°Â¡
+extern int		MixCancelButtonDelayFlag; // pluto Â¿ÃœÂºÃ ÂºÂ¯Â¼Ã¶Â·Ã Â¹Ã™Â²Ã¥Â´Ã™ -_-

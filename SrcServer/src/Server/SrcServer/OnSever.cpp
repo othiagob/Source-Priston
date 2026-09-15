@@ -12093,7 +12093,7 @@ int	rsFindInvenItem(rsPLAYINFO* lpPlayInfo, DWORD dwCode, DWORD dwHead, DWORD dw
 
 
 	if (lpPlayInfo->OpenWarehouseInfoFlag) {
-		for (cnt = 0; cnt < 100; cnt++) {
+		for (cnt = 0; cnt < WAREHOUSE_TOTAL_SLOTS; cnt++) {
 			if (lpPlayInfo->WareHouseItemInfo[cnt].dwCode &&
 				lpPlayInfo->WareHouseItemInfo[cnt].dwCode == dwCode &&
 				lpPlayInfo->WareHouseItemInfo[cnt].dwKey == dwHead &&
@@ -12137,7 +12137,7 @@ int	rsCheckInvenItem(rsPLAYINFO* lpPlayInfo, DWORD dwCode)
 
 
 	if (lpPlayInfo->OpenWarehouseInfoFlag) {
-		for (cnt = 0; cnt < 100; cnt++) {
+		for (cnt = 0; cnt < WAREHOUSE_TOTAL_SLOTS; cnt++) {
 			if (lpPlayInfo->WareHouseItemInfo[cnt].dwCode > 0 &&
 				lpPlayInfo->WareHouseItemInfo[cnt].dwCode == dwCode) {
 				return INVEN_ITEM_INFO_MAX;
@@ -12178,7 +12178,7 @@ int	rsDeleteInvenItem(rsPLAYINFO* lpPlayInfo, DWORD dwCode, DWORD dwHead, DWORD 
 	}
 
 	if (lpPlayInfo->OpenWarehouseInfoFlag) {
-		for (cnt = 0; cnt < 100; cnt++) {
+		for (cnt = 0; cnt < WAREHOUSE_TOTAL_SLOTS; cnt++) {
 			if (lpPlayInfo->WareHouseItemInfo[cnt].dwCode &&
 				lpPlayInfo->WareHouseItemInfo[cnt].dwCode == dwCode &&
 				lpPlayInfo->WareHouseItemInfo[cnt].dwKey == dwHead &&
@@ -12239,7 +12239,7 @@ int	rsAddInvenItem(rsPLAYINFO* lpPlayInfo, DWORD dwCode, DWORD dwHead, DWORD dwC
 	}
 
 	if (lpPlayInfo->OpenWarehouseInfoFlag) {
-		for (cnt = 0; cnt < 100; cnt++) {
+		for (cnt = 0; cnt < WAREHOUSE_TOTAL_SLOTS; cnt++) {
 			if (lpPlayInfo->WareHouseItemInfo[cnt].dwCode &&
 				lpPlayInfo->WareHouseItemInfo[cnt].dwCode == dwCode &&
 				lpPlayInfo->WareHouseItemInfo[cnt].dwKey == dwHead &&
@@ -22834,7 +22834,7 @@ pRetry:
 			}
 
 			if (lpPlayInfo->OpenWarehouseInfoFlag) {
-				rsSaveWareHouseData(lpPlayInfo->szID, (TRANS_WAREHOUSE*)SockInfo->Buff);
+				rsSaveWareHouseData(lpPlayInfo->szID, (TRANS_WAREHOUSE*)SockInfo->Buff, lpPlayInfo);
 				lpPlayInfo->dwRecordDataTime = 1;			//??? ????? ???? ???? ???? ??? ????? ( ??? ???? ?????? )
 			}
 			break;
