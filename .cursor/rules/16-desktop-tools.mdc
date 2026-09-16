@@ -18,12 +18,22 @@ Referência: `SrcServer/src/Server/HUD/ToolTheme.h`.
 - Acento **azul** `#3A6EA8` (hover um pouco mais escuro). Sem gradiente.
 - Texto quase preto; secundário cinza. Vermelho só em ação destrutiva.
 - Status: verde online, âmbar manutenção — chapados.
+- Fonte: Segoe UI do Windows (16 / 13 / 22). Sem ProggyClean.
+- Item selecionado na sidebar: superfície branca + filete esquerdo de 3 px
+  no acento. Cards de métrica iguais (filete + valor maior).
 
 ## Layout
 
 - Janela nativa redimensionável (mínimo ~900×560). ImGui preenche o cliente.
-- Header de texto + sidebar + conteúdo que refluui (1/2/4 cards).
-- X nativo **minimiza** o `Server.exe`; sair/desligar só com confirmação.
+- Header de texto + online/uptime + pílula. Sidebar agrupada
+  (Monitorar / Operar). Conteúdo com título de página; cards 1/2/4.
+- X nativo **minimiza** o `Server.exe`; sair/desligar só com confirmação
+  (hint no header e no rodapé).
+
+## Arranque
+
+- Splash a ecrã inteiro enquanto SQL/mapas/sistemas sobem (`ServerPanel_IsBooting`).
+- Spinner + barra + últimas linhas do `cout`. `SetReady` só depois do bind.
 
 ## Arquivos
 
@@ -31,3 +41,4 @@ Edição relativa ao **diretório de trabalho do exe** (`Server\Config\...`).
 INI clássico via `WriteIni*` / `CFILE::Ini`. `Devices.ini` é diretiva
 `*CHAVE`, não INI — só reescrever chaves conhecidas.
 SQL.ini e porta de Connect.ini exigem **reinício** para valer no socket/ODBC.
+Abas de config refluem (`ToolChipTab`).

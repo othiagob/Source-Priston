@@ -18,6 +18,8 @@
 
 #include "TextMessage.h"
 #include "srcserver\\onserver.h"
+#include "..\\Database\\SQLConnection.h"
+#include <time.h>
 
 static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE* pages, int maxPages);
 static int WriteWareHouseFilePages(const char* szFileName, TRANS_WAREHOUSE* pages, int nPages);
@@ -4889,275 +4891,823 @@ int rsTimeRecData()
 
 
 
-int	rsLoadPostBox( rsPLAYINFO	*lpPlayInfo )
+int rsPostBoxTtlSeconds = POSTBOX_TTL_SECONDS;
+
+struct POSTBOX_DISK_HEADER {
+	DWORD magic;
+	DWORD version;
+	DWORD itemCount;
+	DWORD nextEntryId;
+};
+
+struct POSTBOX_DISK_ITEM {
+	int		Flag;
+	char	szCharName[32];
+	char	szItemCode[32];
+	char	szSpeJob[32];
+	char	szDoc[128];
+	char	szFormCode[64];
+	char	szPassCode[16];
+	DWORD	dwItemCode;
+	DWORD	dwJobCode;
+	DWORD	dwFormCode;
+	DWORD	dwPassCode;
+	DWORD	dwParam[4];
+	char	szSenderName[32];
+	char	szSenderID[32];
+	DWORD	dwDepositedAt;
+	DWORD	dwExpireAt;
+	DWORD	dwEntryId;
+	int		nKind;
+	int		HasItemBlob;
+};
+
+static void PostBoxEnsureDir(const char* szID)
 {
-	rsPOST_BOX_ITEM		*lpPostBox;
-	_POST_BOX_ITEM		*lpPostItem;
+	char szDir[128];
+	CreateDirectoryA(szPostBoxDir, NULL);
+	wsprintf(szDir, "%s\\%d", szPostBoxDir, GetUserCode((char*)szID));
+	CreateDirectoryA(szDir, NULL);
+}
 
-	char	szFileName[64];
+static void PostBoxFreeBlobs(rsPOST_BOX_ITEM* box)
+{
+	if (!box)
+		return;
+	for (int i = 0; i < box->ItemCounter; i++)
+	{
+		if (box->PostItem[i].lpItemBlob)
+		{
+			delete (sITEMINFO*)box->PostItem[i].lpItemBlob;
+			box->PostItem[i].lpItemBlob = 0;
+			box->PostItem[i].HasItemBlob = 0;
+		}
+	}
+}
+
+static void PostBoxMemFromDisk(_POST_BOX_ITEM* m, const POSTBOX_DISK_ITEM* d)
+{
+	ZeroMemory(m, sizeof(_POST_BOX_ITEM));
+	m->Flag = d->Flag;
+	memcpy(m->szCharName, d->szCharName, 32);
+	memcpy(m->szItemCode, d->szItemCode, 32);
+	memcpy(m->szSpeJob, d->szSpeJob, 32);
+	memcpy(m->szDoc, d->szDoc, 128);
+	memcpy(m->szFormCode, d->szFormCode, 64);
+	memcpy(m->szPassCode, d->szPassCode, 16);
+	m->dwItemCode = d->dwItemCode;
+	m->dwJobCode = d->dwJobCode;
+	m->dwFormCode = d->dwFormCode;
+	m->dwPassCode = d->dwPassCode;
+	memcpy(m->dwParam, d->dwParam, sizeof(m->dwParam));
+	memcpy(m->szSenderName, d->szSenderName, 32);
+	memcpy(m->szSenderID, d->szSenderID, 32);
+	m->dwDepositedAt = d->dwDepositedAt;
+	m->dwExpireAt = d->dwExpireAt;
+	m->dwEntryId = d->dwEntryId;
+	m->nKind = d->nKind;
+	m->HasItemBlob = d->HasItemBlob;
+	m->lpItemBlob = 0;
+}
+
+static void PostBoxDiskFromMem(POSTBOX_DISK_ITEM* d, const _POST_BOX_ITEM* m)
+{
+	ZeroMemory(d, sizeof(POSTBOX_DISK_ITEM));
+	d->Flag = m->Flag;
+	memcpy(d->szCharName, m->szCharName, 32);
+	memcpy(d->szItemCode, m->szItemCode, 32);
+	memcpy(d->szSpeJob, m->szSpeJob, 32);
+	memcpy(d->szDoc, m->szDoc, 128);
+	memcpy(d->szFormCode, m->szFormCode, 64);
+	memcpy(d->szPassCode, m->szPassCode, 16);
+	d->dwItemCode = m->dwItemCode;
+	d->dwJobCode = m->dwJobCode;
+	d->dwFormCode = m->dwFormCode;
+	d->dwPassCode = m->dwPassCode;
+	memcpy(d->dwParam, m->dwParam, sizeof(d->dwParam));
+	memcpy(d->szSenderName, m->szSenderName, 32);
+	memcpy(d->szSenderID, m->szSenderID, 32);
+	d->dwDepositedAt = m->dwDepositedAt;
+	d->dwExpireAt = m->dwExpireAt;
+	d->dwEntryId = m->dwEntryId;
+	d->nKind = m->nKind;
+	d->HasItemBlob = (m->HasItemBlob && m->lpItemBlob) ? 1 : 0;
+}
+
+static void PostBoxResolveItemCode(_POST_BOX_ITEM* lpPostItem)
+{
+	if (!lpPostItem || lpPostItem->dwItemCode)
+		return;
+	if (lstrcmpi(lpPostItem->szItemCode, "MONEY") == 0)
+		lpPostItem->dwItemCode = sinGG1 | sin01;
+	else if (lstrcmpi(lpPostItem->szItemCode, "EXP") == 0)
+		lpPostItem->dwItemCode = sinGG1 | sin02;
+	else
+	{
+		for (int cnt = 0; cnt < MAX_ITEM; cnt++)
+		{
+			if (lstrcmpi(sItem[cnt].LastCategory, lpPostItem->szItemCode) == 0)
+			{
+				lpPostItem->dwItemCode = sItem[cnt].CODE;
+				break;
+			}
+		}
+	}
+}
+
+static int PostBoxParseLegacyLine(rsPOST_BOX_ITEM* box, char* szLine)
+{
+	if (!box || !szLine || !szLine[0] || box->ItemCounter >= POST_ITEM_MAX)
+		return FALSE;
+
+	char* p = szLine;
+	char* pb;
+	char strBuff[512];
+	_POST_BOX_ITEM* lpPostItem = &box->PostItem[box->ItemCounter];
+	ZeroMemory(lpPostItem, sizeof(_POST_BOX_ITEM));
+
+	pb = p; p = GetWord(strBuff, p); if (strBuff[0] == 34) p = GetString(strBuff, pb);
+	if (strBuff[0])
+	{
+		strBuff[31] = 0;
+		lstrcpy(lpPostItem->szCharName, strBuff);
+	}
+
+	pb = p; p = GetWord(strBuff, p); if (strBuff[0] == 34) p = GetString(strBuff, pb);
+	if (strBuff[0])
+	{
+		strBuff[31] = 0;
+		lstrcpy(lpPostItem->szItemCode, strBuff);
+		PostBoxResolveItemCode(lpPostItem);
+	}
+
+	pb = p; p = GetWord(strBuff, p); if (strBuff[0] == 34) p = GetString(strBuff, pb);
+	if (strBuff[0])
+	{
+		strBuff[31] = 0;
+		strcpy_s(lpPostItem->szSpeJob, strBuff);
+		lpPostItem->dwJobCode = atoi(strBuff);
+	}
+
+	pb = p; p = GetWord(strBuff, p); if (strBuff[0] == 34) p = GetString(strBuff, pb);
+	if (strBuff[0])
+	{
+		strBuff[127] = 0;
+		strcpy_s(lpPostItem->szDoc, strBuff);
+	}
+
+	pb = p; p = GetWord(strBuff, p); if (strBuff[0] == 34) p = GetString(strBuff, pb);
+	if (strBuff[0])
+	{
+		strBuff[63] = 0;
+		strcpy_s(lpPostItem->szFormCode, strBuff);
+		lpPostItem->dwFormCode = atoi(strBuff);
+	}
+
+	pb = p; p = GetWord(strBuff, p); if (strBuff[0] == 34) p = GetString(strBuff, pb);
+	if (strBuff[0])
+	{
+		strBuff[16] = 0;
+		strcpy_s(lpPostItem->szPassCode, strBuff);
+		lpPostItem->dwPassCode = GetSpeedSum(strBuff);
+		lpPostItem->dwParam[0] = TRUE;
+	}
+
+	lpPostItem->Flag = 1;
+	lpPostItem->nKind = POSTBOX_KIND_SYSTEM;
+	lpPostItem->dwEntryId = box->dwNextEntryId++;
+	if (!lpPostItem->dwEntryId)
+		lpPostItem->dwEntryId = box->dwNextEntryId++;
+	box->ItemCounter++;
+	return TRUE;
+}
+
+static int PostBoxReadFile(const char* szID, rsPOST_BOX_ITEM* box)
+{
+	char szFileName[64];
 	FILE* fp = nullptr;
-	char	*p;
-	char	 *pb;
-	char	szLine[512];
-	char	strBuff[512];
-	int		cnt;
 
-	if ( !lpPlayInfo->szID[0] ) return FALSE;
-	if (lpPlayInfo->lpPostBoxItem) return TRUE;
+	if (!szID || !szID[0] || !box)
+		return FALSE;
 
-	GetPostBoxFile( lpPlayInfo->szID , szFileName );
+	ZeroMemory(box, sizeof(rsPOST_BOX_ITEM));
+	box->dwNextEntryId = 1;
+	GetPostBoxFile((char*)szID, szFileName);
 
 	fopen_s(&fp, szFileName, "rb");
-	if ( !fp ) return FALSE;
+	if (!fp)
+		return TRUE;
 
-	lpPlayInfo->lpPostBoxItem = new rsPOST_BOX_ITEM;
+	POSTBOX_DISK_HEADER header = {};
+	size_t nRead = fread(&header, 1, sizeof(header), fp);
+	if (nRead == sizeof(header) && header.magic == POSTBOX_FILE_MAGIC && header.version == POSTBOX_FILE_VERSION)
+	{
+		box->dwNextEntryId = header.nextEntryId ? header.nextEntryId : 1;
+		for (DWORD i = 0; i < header.itemCount && box->ItemCounter < POST_ITEM_MAX; i++)
+		{
+			POSTBOX_DISK_ITEM disk = {};
+			if (fread(&disk, 1, sizeof(disk), fp) != sizeof(disk))
+				break;
+			_POST_BOX_ITEM* item = &box->PostItem[box->ItemCounter];
+			PostBoxMemFromDisk(item, &disk);
+			if (disk.HasItemBlob)
+			{
+				sITEMINFO* blob = new sITEMINFO;
+				if (!blob)
+					break;
+				if (fread(blob, 1, sizeof(sITEMINFO), fp) != sizeof(sITEMINFO))
+				{
+					delete blob;
+					break;
+				}
+				item->lpItemBlob = blob;
+				item->HasItemBlob = 1;
+				if (!item->dwItemCode)
+					item->dwItemCode = blob->CODE;
+			}
+			if (!item->dwItemCode)
+				PostBoxResolveItemCode(item);
+			if (!item->dwEntryId)
+				item->dwEntryId = box->dwNextEntryId++;
+			if (item->dwEntryId >= box->dwNextEntryId)
+				box->dwNextEntryId = item->dwEntryId + 1;
+			if (item->Flag)
+				box->ItemCounter++;
+		}
+		fclose(fp);
+		return TRUE;
+	}
 
-	if (!lpPlayInfo->lpPostBoxItem)
+	rewind(fp);
+	char szLine[512];
+	while (!feof(fp))
+	{
+		if (fgets(szLine, 500, fp) == NULL)
+			break;
+		szLine[500] = 0;
+		if (szLine[0])
+			PostBoxParseLegacyLine(box, szLine);
+	}
+	fclose(fp);
+	return TRUE;
+}
+
+static int PostBoxWriteFile(const char* szID, rsPOST_BOX_ITEM* box)
+{
+	char szFileName[64];
+	char szTempName[80];
+	HANDLE hFile;
+	DWORD dwAcess;
+
+	if (!szID || !szID[0] || !box)
+		return FALSE;
+
+	PostBoxEnsureDir(szID);
+	GetPostBoxFile((char*)szID, szFileName);
+	wsprintf(szTempName, "%s.tmp", szFileName);
+
+	hFile = CreateFile(szTempName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+		return FALSE;
+
+	POSTBOX_DISK_HEADER header = {};
+	header.magic = POSTBOX_FILE_MAGIC;
+	header.version = POSTBOX_FILE_VERSION;
+	header.nextEntryId = box->dwNextEntryId ? box->dwNextEntryId : 1;
+
+	int live = 0;
+	for (int i = 0; i < box->ItemCounter; i++)
+	{
+		if (box->PostItem[i].Flag)
+			live++;
+	}
+	header.itemCount = (DWORD)live;
+
+	WriteFile(hFile, &header, sizeof(header), &dwAcess, NULL);
+
+	for (int i = 0; i < box->ItemCounter; i++)
+	{
+		_POST_BOX_ITEM* item = &box->PostItem[i];
+		if (!item->Flag)
+			continue;
+		POSTBOX_DISK_ITEM disk;
+		PostBoxDiskFromMem(&disk, item);
+		WriteFile(hFile, &disk, sizeof(disk), &dwAcess, NULL);
+		if (disk.HasItemBlob && item->lpItemBlob)
+			WriteFile(hFile, item->lpItemBlob, sizeof(sITEMINFO), &dwAcess, NULL);
+	}
+
+	CloseHandle(hFile);
+	if (!MoveFileExA(szTempName, szFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+	{
+		DeleteFileA(szFileName);
+		if (!MoveFileExA(szTempName, szFileName, MOVEFILE_REPLACE_EXISTING))
+		{
+			DeleteFileA(szTempName);
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+static int PostBoxAllocSlot(rsPOST_BOX_ITEM* box)
+{
+	if (!box)
+		return -1;
+	for (int i = 0; i < box->ItemCounter; i++)
+	{
+		if (!box->PostItem[i].Flag)
+			return i;
+	}
+	if (box->ItemCounter >= POST_ITEM_MAX)
+		return -1;
+	return box->ItemCounter++;
+}
+
+static void PostBoxStampNewItem(_POST_BOX_ITEM* item, int kind)
+{
+	DWORD now = (DWORD)time(NULL);
+	item->dwDepositedAt = now;
+	item->nKind = kind;
+	if (rsPostBoxTtlSeconds > 0)
+		item->dwExpireAt = now + (DWORD)rsPostBoxTtlSeconds;
+	else
+		item->dwExpireAt = 0;
+}
+
+static int PostBoxAddPrepared(rsPOST_BOX_ITEM* box, _POST_BOX_ITEM* src)
+{
+	int slot = PostBoxAllocSlot(box);
+	if (slot < 0)
+		return FALSE;
+	_POST_BOX_ITEM* dest = &box->PostItem[slot];
+	if (dest->lpItemBlob)
+	{
+		delete (sITEMINFO*)dest->lpItemBlob;
+		dest->lpItemBlob = 0;
+	}
+	*dest = *src;
+	src->lpItemBlob = 0;
+	src->HasItemBlob = 0;
+	if (!dest->dwEntryId)
+	{
+		if (!box->dwNextEntryId)
+			box->dwNextEntryId = 1;
+		dest->dwEntryId = box->dwNextEntryId++;
+	}
+	else if (dest->dwEntryId >= box->dwNextEntryId)
+		box->dwNextEntryId = dest->dwEntryId + 1;
+	dest->Flag = 1;
+	return TRUE;
+}
+
+static int PostBoxWithAccount(char* szID, int (*fn)(rsPOST_BOX_ITEM*, void*), void* ctx)
+{
+	if (!szID || !szID[0] || !fn)
+		return FALSE;
+
+	rsPLAYINFO* online = FindUserFromID(szID);
+	if (online && online->lpPostBoxItem)
+	{
+		int ok = fn(online->lpPostBoxItem, ctx);
+		if (ok)
+			rsSavePostBox(online);
+		return ok;
+	}
+
+	rsPOST_BOX_ITEM* box = new rsPOST_BOX_ITEM;
+	if (!box)
+		return FALSE;
+	PostBoxReadFile(szID, box);
+	int ok = fn(box, ctx);
+	if (ok)
+		PostBoxWriteFile(szID, box);
+	PostBoxFreeBlobs(box);
+	delete box;
+	return ok;
+}
+
+struct POSTBOX_ADD_CTX {
+	_POST_BOX_ITEM item;
+};
+
+static int PostBoxAddCtx(rsPOST_BOX_ITEM* box, void* ctx)
+{
+	POSTBOX_ADD_CTX* add = (POSTBOX_ADD_CTX*)ctx;
+	return PostBoxAddPrepared(box, &add->item);
+}
+
+static void PostBoxLogLine(const char* szLine)
+{
+	FILE* fp = nullptr;
+	fopen_s(&fp, "Data\\PostBox\\postbox.log", "a+");
+	if (!fp)
+		return;
+	fputs(szLine, fp);
+	fputs("\r\n", fp);
+	fclose(fp);
+}
+
+static int PostBoxCopyAccountCandidate(const char* szCharName, const char* candidate, char* szOutID, int idSize)
+{
+	if (!candidate || !candidate[0] || !szOutID || idSize <= 0)
+		return FALSE;
+	if (szCharName && lstrcmpi(candidate, szCharName) == 0)
+		return FALSE;
+	lstrcpyn(szOutID, candidate, idSize);
+	return szOutID[0] ? TRUE : FALSE;
+}
+
+static int rsPostBoxLookupAccountFromCharFile(const char* szCharName, char* szOutID, int idSize)
+{
+	if (!szCharName || !szCharName[0] || !szOutID || idSize <= 0)
+		return FALSE;
+
+	char szFile[256] = { 0 };
+	GetUserDataFile((char*)szCharName, szFile);
+
+	FILE* fp = nullptr;
+	fopen_s(&fp, szFile, "rb");
+	if (!fp)
+		return FALSE;
+
+	TRANS_RECORD_DATA* rec = new TRANS_RECORD_DATA;
+	if (!rec)
 	{
 		fclose(fp);
 		return FALSE;
 	}
-
-	ZeroMemory(lpPlayInfo->lpPostBoxItem, sizeof(rsPOST_BOX_ITEM));
-
-	lpPostBox = lpPlayInfo->lpPostBoxItem;
-
-	while( !feof( fp ) )//  feof: file end???? ????? 
-	{
-		if( fgets( szLine, 500, fp ) == NULL)	break;
-		if ( lpPostBox->ItemCounter>=POST_ITEM_MAX ) break;
-
-		szLine[500] = 0;
-
-		lpPostItem = &lpPostBox->PostItem[ lpPostBox->ItemCounter ];
-
-		if ( szLine[0] ) {
-			p = szLine;
-
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//???? ?????? ???
-			if ( strBuff[0] ) {
-				strBuff[31] = 0;
-				lstrcpy( lpPostItem->szCharName , strBuff );
-			}
-
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//?????? ???
-			if ( strBuff[0] ) {
-				strBuff[31] = 0;
-				lstrcpy( lpPostItem->szItemCode , strBuff );
-
-				if ( lstrcmpi( strBuff , "MONEY" )==0 ) {		//??
-					lpPostItem->dwItemCode = sinGG1|sin01;
-				}
-				if ( lstrcmpi( strBuff , "EXP" )==0 ) {			//?????
-					lpPostItem->dwItemCode = sinGG1|sin02;
-				}
-
-				if ( !lpPostItem->dwItemCode ) {
-					for(cnt=0;cnt<MAX_ITEM;cnt++) {
-						if ( lstrcmpi( sItem[cnt].LastCategory , strBuff )==0 ) {
-							lpPostItem->dwItemCode = sItem[cnt].CODE;
-							break;
-						}
-					}
-				}
-			}
-
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//?? ??? ( ???? ??? )
-			if ( strBuff[0] ) {
-				strBuff[31] = 0;
-				strcpy_s( lpPostItem->szSpeJob , strBuff );
-				lpPostItem->dwJobCode = atoi( strBuff );
-			}
-
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//????
-			if ( strBuff[0] ) {
-				strBuff[127] = 0;
-				strcpy_s( lpPostItem->szDoc , strBuff );
-			}
-
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//???????
-			if ( strBuff[0] ) {
-				strBuff[63] = 0;
-				strcpy_s( lpPostItem->szFormCode , strBuff );
-				lpPostItem->dwFormCode = atoi(strBuff);
-			}
-
-			pb=p;p=GetWord(strBuff,p);if(strBuff[0]==34)p=GetString(strBuff,pb);	//??????
-			if ( strBuff[0] ) {
-				strBuff[16] = 0;
-				strcpy_s( lpPostItem->szPassCode , strBuff );
-				lpPostItem->dwPassCode = GetSpeedSum( strBuff );
-				lpPostItem->dwParam[0] = TRUE;
-			}
-
-
-			lpPostItem->Flag ++;
-			lpPostBox->ItemCounter++;
-		}
-	}
+	ZeroMemory(rec, sizeof(TRANS_RECORD_DATA));
+	size_t read = fread(rec, sizeof(TRANS_RECORD_DATA), 1, fp);
 	fclose(fp);
 
-	DeleteFile(szFileName);
+	int ok = FALSE;
+	if (read == 1 && rec->size > 0)
+	{
+		if (!rec->smCharInfo.szName[0] || lstrcmpi(rec->smCharInfo.szName, szCharName) == 0)
+			ok = PostBoxCopyAccountCandidate(szCharName, rec->GameSaveInfo.szMasterID, szOutID, idSize);
+	}
+	delete rec;
+	return ok;
+}
 
+int rsPostBoxLookupAccountByName(const char* szCharName, char* szOutID, int idSize)
+{
+	if (!szCharName || !szCharName[0] || !szOutID || idSize <= 0)
+		return FALSE;
+	szOutID[0] = 0;
+
+	auto db = SQLConnection::GetConnection(DATABASEID_UserDB);
+	if (db && db->Open())
+	{
+		if (db->Prepare("SELECT * FROM UserInfo WHERE Name=?"))
+		{
+			db->BindInputParameter((char*)szCharName, 1, PARAMTYPE_String);
+			if (db->Execute())
+			{
+				char col1[32] = { 0 };
+				char col2[32] = { 0 };
+				db->GetData(1, PARAMTYPE_String, col1, sizeof(col1));
+				db->GetData(2, PARAMTYPE_String, col2, sizeof(col2));
+				if (lstrcmpi(col1, szCharName) == 0)
+					PostBoxCopyAccountCandidate(szCharName, col2, szOutID, idSize);
+				else if (lstrcmpi(col2, szCharName) == 0)
+					PostBoxCopyAccountCandidate(szCharName, col1, szOutID, idSize);
+				else if (!PostBoxCopyAccountCandidate(szCharName, col2, szOutID, idSize))
+					PostBoxCopyAccountCandidate(szCharName, col1, szOutID, idSize);
+			}
+		}
+		db->Close();
+	}
+
+	if (!szOutID[0])
+		rsPostBoxLookupAccountFromCharFile(szCharName, szOutID, idSize);
+
+	if (!szOutID[0])
+	{
+		char line[192];
+		wsprintf(line, "lookup fail nick=%s", szCharName);
+		PostBoxLogLine(line);
+		return FALSE;
+	}
 	return TRUE;
 }
 
-int	rsSavePostBox( rsPLAYINFO	*lpPlayInfo )
+int rsPostBoxItemForChar(rsPLAYINFO* lpPlayInfo, _POST_BOX_ITEM* lpItem)
 {
-	char	szFileName[64];
-	char	strBuff[512];
-	int		cnt;
-
-	HANDLE	hFile;
-	DWORD	dwAcess;
-	DWORD	FileLength;
-
-
-	if ( !lpPlayInfo->szID[0] ) return FALSE;
-	if ( !lpPlayInfo->lpPostBoxItem ) return FALSE;
-
-	GetPostBoxFile( lpPlayInfo->szID , szFileName );
-
-	hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE)
-	{
+	if (!lpPlayInfo || !lpItem || !lpItem->Flag)
 		return FALSE;
+	if (lpItem->szCharName[0] == '*')
+		return TRUE;
+	return lstrcmpi(lpPlayInfo->szName, lpItem->szCharName) == 0;
+}
+
+_POST_BOX_ITEM* rsPostBoxFindEntry(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId)
+{
+	if (!lpPlayInfo || !lpPlayInfo->lpPostBoxItem || !dwEntryId)
+		return NULL;
+	for (int i = 0; i < lpPlayInfo->lpPostBoxItem->ItemCounter; i++)
+	{
+		_POST_BOX_ITEM* item = &lpPlayInfo->lpPostBoxItem->PostItem[i];
+		if (item->Flag && item->dwEntryId == dwEntryId && rsPostBoxItemForChar(lpPlayInfo, item))
+			return item;
+	}
+	return NULL;
+}
+
+int	rsLoadPostBox(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo || !lpPlayInfo->szID[0])
+		return FALSE;
+	if (lpPlayInfo->lpPostBoxItem)
+		return TRUE;
+
+	lpPlayInfo->lpPostBoxItem = new rsPOST_BOX_ITEM;
+	if (!lpPlayInfo->lpPostBoxItem)
+		return FALSE;
+	return PostBoxReadFile(lpPlayInfo->szID, lpPlayInfo->lpPostBoxItem);
+}
+
+int	rsSavePostBox(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo || !lpPlayInfo->szID[0] || !lpPlayInfo->lpPostBoxItem)
+		return FALSE;
+	return PostBoxWriteFile(lpPlayInfo->szID, lpPlayInfo->lpPostBoxItem);
+}
+
+void rsFreePostBox(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo || !lpPlayInfo->lpPostBoxItem)
+		return;
+	PostBoxFreeBlobs(lpPlayInfo->lpPostBoxItem);
+	delete lpPlayInfo->lpPostBoxItem;
+	lpPlayInfo->lpPostBoxItem = 0;
+}
+
+int rsAddPostBoxSystemItem(char* szID, char* szCharName, char* szItemCode, int jobOrGold, const char* szDoc)
+{
+	if (!szID || !szID[0] || !szItemCode || !szItemCode[0])
+		return FALSE;
+
+	POSTBOX_ADD_CTX ctx = {};
+	if (szCharName && szCharName[0])
+		lstrcpyn(ctx.item.szCharName, szCharName, 32);
+	else
+		lstrcpy(ctx.item.szCharName, "*");
+	lstrcpyn(ctx.item.szItemCode, szItemCode, 32);
+	wsprintf(ctx.item.szSpeJob, "%d", jobOrGold);
+	ctx.item.dwJobCode = jobOrGold;
+	if (szDoc && szDoc[0])
+		lstrcpyn(ctx.item.szDoc, szDoc, 128);
+	PostBoxResolveItemCode(&ctx.item);
+	PostBoxStampNewItem(&ctx.item, POSTBOX_KIND_SYSTEM);
+	lstrcpy(ctx.item.szSenderName, "Sistema");
+	int ok = PostBoxWithAccount(szID, PostBoxAddCtx, &ctx);
+	if (ok && szCharName && szCharName[0] && szCharName[0] != '*')
+		rsPostBoxNotifyPlayer(szCharName, "Sistema", TRUE);
+	return ok;
+}
+
+int rsAddPostBoxPlayerItem(char* szID, char* szCharName, sITEMINFO* lpItem, const char* szSenderName, const char* szSenderID, const char* szDoc)
+{
+	if (!szID || !szID[0] || !lpItem || !szCharName || !szCharName[0])
+		return FALSE;
+
+	POSTBOX_ADD_CTX ctx = {};
+	lstrcpyn(ctx.item.szCharName, szCharName, 32);
+	ctx.item.szItemCode[0] = 0;
+	for (int cnt = 0; cnt < MAX_ITEM; cnt++)
+	{
+		if (sItem[cnt].CODE == lpItem->CODE)
+		{
+			lstrcpyn(ctx.item.szItemCode, sItem[cnt].LastCategory, 32);
+			break;
+		}
+	}
+	if (!ctx.item.szItemCode[0])
+		lstrcpyn(ctx.item.szItemCode, lpItem->ItemName, 32);
+	ctx.item.dwItemCode = lpItem->CODE;
+	if (szDoc && szDoc[0])
+		lstrcpyn(ctx.item.szDoc, szDoc, 128);
+	else
+		lstrcpy(ctx.item.szDoc, "Correio");
+	if (szSenderName && szSenderName[0])
+		lstrcpyn(ctx.item.szSenderName, szSenderName, 32);
+	if (szSenderID && szSenderID[0])
+		lstrcpyn(ctx.item.szSenderID, szSenderID, 32);
+	PostBoxStampNewItem(&ctx.item, POSTBOX_KIND_PLAYER);
+	sITEMINFO* blob = new sITEMINFO;
+	if (!blob)
+		return FALSE;
+	memcpy(blob, lpItem, sizeof(sITEMINFO));
+	ctx.item.lpItemBlob = blob;
+	ctx.item.HasItemBlob = 1;
+	int ok = PostBoxWithAccount(szID, PostBoxAddCtx, &ctx);
+	if (!ok && ctx.item.lpItemBlob)
+		delete (sITEMINFO*)ctx.item.lpItemBlob;
+	if (ok)
+		rsPostBoxNotifyPlayer(szCharName, szSenderName, TRUE);
+	return ok;
+}
+
+static int PostBoxReturnOrDiscard(_POST_BOX_ITEM* item, const char* reason)
+{
+	if (!item)
+		return FALSE;
+
+	if (item->nKind == POSTBOX_KIND_PLAYER && item->szSenderID[0] && item->lpItemBlob)
+	{
+		char doc[128] = { 0 };
+		wsprintf(doc, "Devolvido (%s)", reason ? reason : "correio");
+		int ok = rsAddPostBoxPlayerItem(item->szSenderID, item->szSenderName, (sITEMINFO*)item->lpItemBlob,
+			"Sistema", "", doc);
+		if (!ok)
+		{
+			char line[256];
+			wsprintf(line, "discard return fail id=%s char=%s reason=%s", item->szSenderID, item->szSenderName, reason ? reason : "");
+			PostBoxLogLine(line);
+		}
+		return ok;
 	}
 
-	FileLength = GetFileSize(hFile, NULL);
-	SetFilePointer(hFile, FileLength, NULL, FILE_BEGIN);
+	char line[256];
+	wsprintf(line, "discard system entry=%u code=%s reason=%s", item->dwEntryId, item->szItemCode, reason ? reason : "");
+	PostBoxLogLine(line);
+	return TRUE;
+}
 
-	for (cnt = 0; cnt < lpPlayInfo->lpPostBoxItem->ItemCounter; cnt++)
+int rsPostBoxProcessExpired(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo || !lpPlayInfo->lpPostBoxItem)
+		return FALSE;
+
+	DWORD now = (DWORD)time(NULL);
+	int changed = 0;
+	for (int i = 0; i < lpPlayInfo->lpPostBoxItem->ItemCounter; i++)
 	{
-
-		if (lpPlayInfo->lpPostBoxItem->PostItem[cnt].Flag)
+		_POST_BOX_ITEM* item = &lpPlayInfo->lpPostBoxItem->PostItem[i];
+		if (!item->Flag || !item->dwExpireAt || now < item->dwExpireAt)
+			continue;
+		if (!rsPostBoxItemForChar(lpPlayInfo, item))
+			continue;
+		PostBoxReturnOrDiscard(item, "expirou");
+		if (item->lpItemBlob)
 		{
+			delete (sITEMINFO*)item->lpItemBlob;
+			item->lpItemBlob = 0;
+		}
+		ZeroMemory(item, sizeof(_POST_BOX_ITEM));
+		changed = 1;
+	}
+	if (changed)
+		rsSavePostBox(lpPlayInfo);
+	return TRUE;
+}
 
-			wsprintf(strBuff, "%s		%s		%s		\"%s\"	%s	%s\r\n",
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].szCharName,
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].szItemCode,
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].szSpeJob,
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].szDoc,
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].szFormCode,
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].szPassCode);
+int rsPostBoxRefuseEntry(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId)
+{
+	_POST_BOX_ITEM* item = rsPostBoxFindEntry(lpPlayInfo, dwEntryId);
+	if (!item)
+		return POSTBOX_RESULT_NOTFOUND;
+	PostBoxReturnOrDiscard(item, "recusado");
+	if (item->lpItemBlob)
+	{
+		delete (sITEMINFO*)item->lpItemBlob;
+		item->lpItemBlob = 0;
+	}
+	ZeroMemory(item, sizeof(_POST_BOX_ITEM));
+	rsSavePostBox(lpPlayInfo);
+	return POSTBOX_RESULT_REFUSED;
+}
 
-			WriteFile(hFile, strBuff, lstrlen(strBuff), &dwAcess, NULL);
+int rsPostBoxRenameChar(char* szID, const char* szOldName, const char* szNewName)
+{
+	if (!szID || !szID[0] || !szOldName || !szNewName)
+		return FALSE;
+
+	rsPLAYINFO* online = FindUserFromID(szID);
+	rsPOST_BOX_ITEM* box = nullptr;
+	int owned = 0;
+	if (online && online->lpPostBoxItem)
+		box = online->lpPostBoxItem;
+	else
+	{
+		box = new rsPOST_BOX_ITEM;
+		if (!box)
+			return FALSE;
+		PostBoxReadFile(szID, box);
+		owned = 1;
+	}
+
+	int changed = 0;
+	for (int i = 0; i < box->ItemCounter; i++)
+	{
+		if (!box->PostItem[i].Flag)
+			continue;
+		if (lstrcmpi(box->PostItem[i].szCharName, szOldName) == 0)
+		{
+			lstrcpyn(box->PostItem[i].szCharName, szNewName, 32);
+			changed = 1;
 		}
 	}
 
-	CloseHandle(hFile);
-
+	if (changed)
+	{
+		if (online && online->lpPostBoxItem)
+			rsSavePostBox(online);
+		else
+			PostBoxWriteFile(szID, box);
+	}
+	if (owned)
+	{
+		PostBoxFreeBlobs(box);
+		delete box;
+	}
 	return TRUE;
 }
 
-// adciciona item postbox logador premiado xxstr
-int	rsAddPostBox_OnlineReward(rsPLAYINFO *lpPlayInfo, char * ItemName, int iQuantity)
+int	rsAddPostBox_OnlineReward(rsPLAYINFO* lpPlayInfo, char* ItemName, int iQuantity)
 {
-	char	szFileName[64];
-	char	strBuff[512];
-
-
-	HANDLE	hFile;
-	DWORD	dwAcess;
-	DWORD	FileLength;
-	// verifica userid
-	if (!lpPlayInfo->szID[0]) return FALSE;
-	// pega o postbox do player
-	GetPostBoxFile(lpPlayInfo->szID, szFileName);
-	// criar arquivo postbox
-	hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) {
+	if (!lpPlayInfo || !ItemName || iQuantity <= 0)
 		return FALSE;
-	}
-
-	FileLength = GetFileSize(hFile, NULL);
-	SetFilePointer(hFile, FileLength, NULL, FILE_BEGIN);
-
-	// escreve o tanto de item por quantidade informado no sql
-	for (int  i = 0; i < iQuantity; i++)
+	int ok = TRUE;
+	for (int i = 0; i < iQuantity; i++)
 	{
-		// ID + Item + quant + MSG
-		wsprintf(strBuff, "%s %s %d \"Logado Premiado!\"\r\n", lpPlayInfo->smCharInfo.szName, ItemName, 0);
-
-		WriteFile(hFile, strBuff, lstrlen(strBuff), &dwAcess, NULL);
+		if (!rsAddPostBoxSystemItem(lpPlayInfo->szID, lpPlayInfo->smCharInfo.szName, ItemName, 0, "Logado Premiado!"))
+			ok = FALSE;
 	}
-
-	CloseHandle(hFile);
-
-	return TRUE;
+	return ok;
 }
 
 int	rsAddPostBox_EventoInvasao(char* id, char* name, char* ItemName, int iQuantity)
 {
-	char	szFileName[64];
-	char	strBuff[512];
-
-	HANDLE	hFile;
-	DWORD	dwAcess;
-
-	GetPostBoxFile(id, szFileName);
-	hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) {
+	if (!id || !ItemName || iQuantity <= 0)
 		return FALSE;
-	}
-
-	int FileLength = GetFileSize(hFile, NULL);
-	SetFilePointer(hFile, FileLength, NULL, FILE_BEGIN);
-
-	// escreve o tanto de item por quantidade informado no sql
+	int ok = TRUE;
 	for (int i = 0; i < iQuantity; i++)
 	{
-		// ID + Item + quant + MSG
-		wsprintf(strBuff, "%s %s %d \"Arena Royale\"\r\n", name, ItemName, 0);
-
-		WriteFile(hFile, strBuff, lstrlen(strBuff), &dwAcess, NULL);
+		if (!rsAddPostBoxSystemItem(id, name, ItemName, 0, "Arena Royale"))
+			ok = FALSE;
 	}
-
-	CloseHandle(hFile);
-
-	return TRUE;
+	return ok;
 }
 
-//????????? ???? ????
-int	rsAddPostBox_Present( rsPLAYINFO *lpPlayInfo )
+int	rsAddPostBox_Present(rsPLAYINFO* lpPlayInfo)
 {
-	char	szFileName[64];
-	int		len;
+	HANDLE hFile;
+	DWORD dwAcess;
+	int len;
+	char strBuff[16384];
 
-	HANDLE	hFile;
-	DWORD	dwAcess;
-	DWORD	FileLength;
+	if (!lpPlayInfo || !lpPlayInfo->szID[0])
+		return FALSE;
 
-	char	strBuff[16384];
+	hFile = CreateFile("Present.dat", GENERIC_READ, FILE_SHARE_READ, NULL,
+		OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+		return FALSE;
 
-	if ( !lpPlayInfo->szID[0] ) return FALSE;
-
-	hFile = CreateFile( "Present.dat" , GENERIC_READ , FILE_SHARE_READ, NULL ,
-		OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL , NULL );
-
-	if ( hFile ==INVALID_HANDLE_VALUE ) return FALSE;
-
-	len = GetFileSize( hFile,NULL );
-	if ( len>16384 ) return FALSE;
-
-	ReadFile( hFile , strBuff, len , &dwAcess , NULL );
-	CloseHandle( hFile );
-
-	GetPostBoxFile( lpPlayInfo->szID , szFileName );
-
-	hFile = CreateFile( szFileName , GENERIC_WRITE , FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_ALWAYS , FILE_ATTRIBUTE_NORMAL , NULL );
-	if ( hFile==INVALID_HANDLE_VALUE ) {
+	len = GetFileSize(hFile, NULL);
+	if (len <= 0 || len > 16383)
+	{
+		CloseHandle(hFile);
 		return FALSE;
 	}
 
-	FileLength = GetFileSize( hFile , NULL );
-	SetFilePointer( hFile , FileLength , NULL , FILE_BEGIN );
+	ZeroMemory(strBuff, sizeof(strBuff));
+	ReadFile(hFile, strBuff, len, &dwAcess, NULL);
+	CloseHandle(hFile);
 
-	WriteFile( hFile , strBuff , len , &dwAcess , NULL );
+	rsPOST_BOX_ITEM temp = {};
+	temp.dwNextEntryId = 1;
+	char* line = strBuff;
+	while (line && *line)
+	{
+		char* nl = strchr(line, '\n');
+		if (nl)
+			*nl = 0;
+		char* cr = strchr(line, '\r');
+		if (cr)
+			*cr = 0;
+		if (line[0])
+			PostBoxParseLegacyLine(&temp, line);
+		if (!nl)
+			break;
+		line = nl + 1;
+	}
 
-	CloseHandle( hFile );
-
-	return TRUE;
+	int ok = TRUE;
+	for (int i = 0; i < temp.ItemCounter; i++)
+	{
+		_POST_BOX_ITEM* it = &temp.PostItem[i];
+		if (!it->Flag)
+			continue;
+		if (!rsAddPostBoxSystemItem(lpPlayInfo->szID, it->szCharName[0] ? it->szCharName : lpPlayInfo->szName,
+			it->szItemCode, it->dwJobCode, it->szDoc[0] ? it->szDoc : "Presente"))
+			ok = FALSE;
+	}
+	PostBoxFreeBlobs(&temp);
+	return ok;
 }
 
 

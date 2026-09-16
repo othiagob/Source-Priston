@@ -197,6 +197,11 @@
 #define smTRANSCODE_CLANMONEY		0x48478A18
 
 #define smTRANSCODE_ITEM_EXPRESS	0x48478A80
+#define smTRANSCODE_POSTBOX_OPEN	0x48478A81
+#define smTRANSCODE_POSTBOX_LIST	0x48478A82
+#define smTRANSCODE_POSTBOX_CLAIM	0x48478A83
+#define smTRANSCODE_POSTBOX_REFUSE	0x48478A84
+#define smTRANSCODE_POSTBOX_SEND	0x48478A85
 
 #define smTRANSCODE_OPEN_MYSHOP		0x48478A90
 #define smTRANSCODE_CALL_MYSHOP		0x48478AA0
@@ -888,6 +893,24 @@ struct TRANS_IPLIST {
 
 /////////////// ¾ÆÀÌÅÛ ÅÃ¹è ¼­ºñ½º /////////////////
 #define	POST_ITEM_MAX				500
+#define POSTBOX_LIST_CHUNK			16
+#define POSTBOX_TTL_SECONDS			(168 * 3600)
+#define POSTBOX_KIND_SYSTEM			0
+#define POSTBOX_KIND_PLAYER			1
+#define POSTBOX_FILE_MAGIC			0x32304250
+#define POSTBOX_FILE_VERSION		1
+
+#define POSTBOX_RESULT_OK			1
+#define POSTBOX_RESULT_NOTFOUND		2
+#define POSTBOX_RESULT_PASSFAIL		3
+#define POSTBOX_RESULT_LOCKED		4
+#define POSTBOX_RESULT_NOSPACE		5
+#define POSTBOX_RESULT_DEST			6
+#define POSTBOX_RESULT_ITEM			7
+#define POSTBOX_RESULT_SELF			8
+#define POSTBOX_RESULT_FULLBOX		9
+#define POSTBOX_RESULT_REFUSED		10
+#define POSTBOX_RESULT_EXPIRED		11
 
 struct _POST_BOX_ITEM {
 	int		Flag;
@@ -903,13 +926,46 @@ struct _POST_BOX_ITEM {
 	DWORD	dwFormCode;
 	DWORD	dwPassCode;
 	DWORD	dwParam[4];
+
+	char	szSenderName[32];
+	char	szSenderID[32];
+	DWORD	dwDepositedAt;
+	DWORD	dwExpireAt;
+	DWORD	dwEntryId;
+	int		nKind;
+	int		HasItemBlob;
+	void*	lpItemBlob;
 };
 
 struct	rsPOST_BOX_ITEM {
 	DWORD	dwHead;
 	int		ItemCounter;
+	DWORD	dwNextEntryId;
 
 	_POST_BOX_ITEM	PostItem[POST_ITEM_MAX];
+};
+
+struct TRANS_POSTBOX_ENTRY {
+	DWORD	dwEntryId;
+	DWORD	dwItemCode;
+	char	szItemCode[32];
+	char	szItemName[32];
+	char	szSenderName[32];
+	char	szDoc[128];
+	int		Weight;
+	int		SecondsLeft;
+	int		nKind;
+	int		HasPassCode;
+	DWORD	dwDepositedAt;
+};
+
+struct TRANS_POSTBOX_LIST {
+	int		size, code;
+	int		chunkIndex;
+	int		totalChunks;
+	int		entryCount;
+	int		totalEntries;
+	TRANS_POSTBOX_ENTRY Entries[POSTBOX_LIST_CHUNK];
 };
 
 struct	TRANS_POST_ITEM {
@@ -2016,6 +2072,12 @@ struct TRANS_ITEMINFO {
 	sITEMINFO	Item;
 	int x,y,z;
 	DWORD	dwSeCode[4];
+};
+
+struct TRANS_POSTBOX_SEND {
+	int		size, code;
+	char	szDestName[32];
+	sITEMINFO	Item;
 };
 
 struct	TRANS_ITEM_CODE {

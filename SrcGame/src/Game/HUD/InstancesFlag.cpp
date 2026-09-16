@@ -4,6 +4,7 @@
 #include <atlconv.h>
 #include "RankingWindow.h"
 #include "WarehouseWindow.h"
+#include "PostBoxWindow.h"
 #include "MixWindow.h"
 #include "..\\Shop\NewShop.h"
 #include "..\\Shop\NewShopTime.h"
@@ -36,11 +37,11 @@ bool flagWhisperParty = false;
 bool flagLogin = true;
 bool canClickButtons = true;
 
-// Histrico de mensagens
+// HistÂrico de mensagens
 bool msgHistoryUp = false;
 bool msgHistoryDown = false;
 
-// Flag de cada boto
+// Flag de cada botÂo
 bool flagOnMouseButton1 = false;
 bool flagOnMouseButton2 = false;
 bool flagOnMouseButton3 = false;
@@ -49,7 +50,7 @@ bool flagOnMouseButton5 = false;
 
 bool flagFromMouse = true;
 
-// Flag de digitao no chat
+// Flag de digitaÂÂo no chat
 bool FOCUS_CHAT = false;
 
 // Flag de parar o personagem enquanto reorganiza a hud
@@ -249,7 +250,7 @@ struct NewChatWindow
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 		window_flags |= ImGuiWindowFlags_NoSavedSettings;
 
-		// Se a checkbox de no mover estiver selecionada, trava o chat na posio
+		// Se a checkbox de nÂo mover estiver selecionada, trava o chat na posiÂÂo
 		if (isMovingEnabled) {
 			window_flags |= ImGuiWindowFlags_NoMove;
 			window_flags |= ImGuiWindowFlags_NoResize;
@@ -268,21 +269,21 @@ struct NewChatWindow
 			flagNpcs = false;
 		}
 
-		// Coloca o chat na posio inicial        
+		// Coloca o chat na posiÂÂo inicial        
 		if (flagResize) {
 			ImGui::SetNextWindowSize(ImVec2(303, 260), 0);
 			ImGui::SetNextWindowPos(ImVec2(0, smScreenHeight - 260), 0);
 			flagResize = false;
 		}
 
-		// Posio inicial do chat
+		// PosiÂÂo inicial do chat
 		if (flagLogin) {
 			ImGui::SetNextWindowPos(ImVec2(0, (smScreenHeight - 260)), ImGuiCond_Once);
 			ImGui::SetNextWindowSize(ImVec2(303, 260), ImGuiCond_Once); // Tamanho do chat
 			flagLogin = false;
 		}
 
-		ImGui::SetNextWindowBgAlpha(0.70f); // Transparncia do chat
+		ImGui::SetNextWindowBgAlpha(0.70f); // TransparÂncia do chat
 
 		if (!ImGui::Begin(title, p_open, window_flags))
 		{
@@ -528,7 +529,7 @@ struct NewChatWindow
 		{
 			if (ImGui::BeginPopupContextWindow())
 			{
-				if (ImGui::Selectable(u8"Posio Original")) flagResize = true;
+				if (ImGui::Selectable(u8"PosiÂÂo Original")) flagResize = true;
 				if (ImGui::Selectable("Limpar chat")) ClearLog();
 				ImGui::EndPopup();
 			}
@@ -687,7 +688,7 @@ struct NewChatWindow
 				MultiByteToWideChar(CP_UTF8, 0, chatMessage, -1, utf8Message, IM_ARRAYSIZE(utf8Message));
 
 				/*
-				// Histrico de mensagens
+				// HistÂrico de mensagens
 				HistoryPos = -1;
 				for (int i = History.Size - 1; i >= 0; i--)
 					if (Stricmp(History[i], InputBuf) == 0)
@@ -697,7 +698,7 @@ struct NewChatWindow
 						break;
 					}
 
-				// Adiciona a mensagem ao vetor de histrico
+				// Adiciona a mensagem ao vetor de histÂrico
 				History.push_back(Strdup(chatMessage)); */
 
 				if (chatMessage[0] == '/' || (smConfig.DebugMode && chatMessage[0] == '~') || chatMessage[0] == '`' || chatMessage[0] == '@')
@@ -992,6 +993,11 @@ void ImGuiFlags::InstancesFlag()
 		WarehouseWindow::GetInstance()->OpenNpc(&warehouseOpen);
 		if (!warehouseOpen && !WarehouseWindow::GetInstance()->ShouldEatClick())
 			WarehouseWindow::GetInstance()->RequestClose();
+	}
+
+	if (PostBoxWindow::GetInstance()->openFlag)
+	{
+		PostBoxWindow::GetInstance()->OpenNpc(&PostBoxWindow::GetInstance()->openFlag);
 	}
 
 	if (MixWindow::GetInstance()->openFlag)

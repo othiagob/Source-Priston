@@ -2189,6 +2189,47 @@ void cINVENTORY::RButtonDown(int x, int y)
 
 		}
 	}
+	else if (cWareHouse.OpenFlag)
+	{
+		if (SelectInvenItemIndex)
+		{
+			sITEM& Item = InvenItem[SelectInvenItemIndex - 1];
+			if (Item.Flag)
+			{
+				if (Item.Class == ITEM_CLASS_POTION)
+				{
+					cMessageBox.ShowMessage(MESSAGE_POTION_NOT_SETTING);
+					return;
+				}
+				if (!cWareHouse.CanStoreItem(&Item))
+				{
+					TitleBox::GetInstance()->SetText("Este item nao pode ser guardado", 3);
+					return;
+				}
+				if (Item.sItemInfo.Weight + (sWareHouse.Weight[0] - 197) > sWareHouse.Weight[1] - 196)
+				{
+					cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);
+					return;
+				}
+
+				POINT empty = {};
+				if (!cWareHouse.GetEmptyArea(&Item, &empty))
+				{
+					cMessageBox.ShowMessage(MESSAGE_OVER_SPACE);
+					return;
+				}
+
+				cInvenTory.PickUpInvenItem(Item.x + 11, Item.y + 11, TRUE);
+				if (MouseItem.Flag)
+				{
+					MouseItem.SetX = empty.x;
+					MouseItem.SetY = empty.y;
+					cWareHouse.LastSetWareHouseItem(&MouseItem);
+				}
+			}
+		}
+		return;
+	}
 	char szBuff[128] = { 0 };
 
 	if (cWareHouse.OpenFlag || cTrade.OpenFlag || cCraftItem.OpenFlag || cShop.OpenFlag || cMixtureReset.OpenFlag ||

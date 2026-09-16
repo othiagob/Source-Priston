@@ -118,32 +118,16 @@ bool NewShop::TransferTradeCoin(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2,
 
 int SendPostItem(char* id, char* name, char* ItemName, int iQuantity, int gold)
 {
-	char	szFileName[64];
-	char	strBuff[512];
-
-
-	HANDLE	hFile;
-	DWORD	dwAcess;
-
-	GetPostBoxFile(id, szFileName);
-	hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) {
+	if (!id || !id[0] || !ItemName)
 		return FALSE;
-	}
 
-	int FileLength = GetFileSize(hFile, NULL);
-	SetFilePointer(hFile, FileLength, NULL, FILE_BEGIN);
-
+	int ok = TRUE;
 	for (int i = 0; i < iQuantity; i++)
 	{
-		sprintf_s(strBuff, "%s %s %d \"Shopping\"\r\n", name, ItemName, gold);
-
-		WriteFile(hFile, strBuff, lstrlen(strBuff), &dwAcess, NULL);
+		if (!rsAddPostBoxSystemItem(id, name, ItemName, gold, "Shopping"))
+			ok = FALSE;
 	}
-
-	CloseHandle(hFile);
-
-	return TRUE;
+	return ok;
 }
 
 void NewShop::receivePaypalDonation(rsPLAYINFO* Player, Donate* NewDonate)
@@ -458,46 +442,11 @@ static char* GetWord(char* q, char* p)
 
 void replacePostBoxName(std::string oldName, std::string newName, char ID[32])
 {
-	char	szFileName[64] = { 0 };
-
-	GetPostBoxFile(ID, szFileName);
-
-	auto fp = fopen(szFileName, "rb");
-
-	if (!fp)
+	if (!ID || !ID[0] || oldName.empty() || newName.empty())
 		return;
-
-	fseek(fp, 0, SEEK_END);
-	size_t size = ftell(fp);
-	unsigned long dwAcess;
-
-	char* buffer = new char[size];
-	rewind(fp);
-
-	fread(buffer, sizeof(char), size, fp);
-	fclose(fp);
-
-	remove(szFileName);
-
-	auto hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-	if (hFile == INVALID_HANDLE_VALUE)
-	{
-		return;
-	}
-
-	auto newBuffer = std::regex_replace(buffer, std::regex(oldName.c_str()), newName.c_str());
-	newBuffer += "\r\n";
-
-	int FileLength = GetFileSize(hFile, NULL);
-	SetFilePointer(hFile, FileLength, NULL, FILE_BEGIN);
-
-	WriteFile(hFile, newBuffer.c_str(), lstrlen(newBuffer.c_str()), &dwAcess, NULL);
-
-	CloseHandle(hFile);
-
-	delete[] buffer;
+	rsPostBoxRenameChar(ID, oldName.c_str(), newName.c_str());
 }
+
 void NewShop::ChangeClass(rsPLAYINFO* Player, sFinishPurchase* Item)
 {
 	if (Item->Item.SubCategoryID != 102)

@@ -569,8 +569,11 @@ static	int AccountPerl = 100;
 static	int	ShutDownFlag = 0;
 static	int	ShutDownLeftTime = 0;
 
-INT SetupDefWindow()
+int CreateServerHostWindow()
 {
+	if (hwnd)
+		return TRUE;
+
 	WNDCLASS windowClass = {};
 	windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
 	windowClass.lpfnWndProc = (WNDPROC)WndProc;
@@ -579,7 +582,7 @@ INT SetupDefWindow()
 	windowClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 	windowClass.lpszClassName = szAppName;
 
-	if (!RegisterClass(&windowClass))
+	if (!RegisterClass(&windowClass) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS)
 	{
 		std::cout << "Falha ao registrar window class" << std::endl;
 		return FALSE;
@@ -610,12 +613,21 @@ INT SetupDefWindow()
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 	ServerPanel_Init(hwnd);
+	return TRUE;
+}
+
+INT SetupDefWindow()
+{
+	if (!CreateServerHostWindow())
+		return FALSE;
 
 	ServerMode = TRUE;
 	szServer_DebugString[0] = 0;
 
 	cout << "Lendo configuracoes do mundo..." << endl;
 	rsRefreshConfig();
+	if (ServerPanel_IsActive())
+		ServerPanel_PumpBoot();
 
 	cout << "Inicializando pacotes de conexao" << endl;
 	InitGameSocket(TRUE);
@@ -633,6 +645,8 @@ INT SetupDefWindow()
 	SERVERCOMMAND->LoadIndicators();
 
 	InitAll();
+	if (ServerPanel_IsActive())
+		ServerPanel_PumpBoot();
 
 	cout << "Servidor pronto para receber conexoes" << endl;
 	cout << "Todos os sistemas foram inicializados com sucesso.!" << endl;
@@ -643,7 +657,13 @@ INT SetupDefWindow()
 	else
 		InitBindSock(TCP_SERVPORT);
 
-	if (!ServerPanel_IsActive())
+	if (ServerPanel_IsActive())
+	{
+		ServerPanel_SetBootStatus("Servidor pronto.");
+		ServerPanel_PumpBoot();
+		ServerPanel_SetReady();
+	}
+	else
 	{
 		Sleep(4 * 1000);
 		system("cls");
@@ -12741,6 +12761,19 @@ int SendOpenWareHouse(smWINSOCK* lpsmSock)
 	return lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 }
 
+int SendOpenPostBox(smWINSOCK* lpsmSock)
+{
+	smTRANS_COMMAND		smTransCommand;
+
+	smTransCommand.code = smTRANSCODE_POSTBOX_OPEN;
+	smTransCommand.size = sizeof(smTRANS_COMMAND);
+	smTransCommand.WParam = 0;
+	smTransCommand.LParam = 0;
+	smTransCommand.SParam = 0;
+
+	return lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
+}
+
 #include ".\\..\\Caravana\\Caravana.h"
 
 int SendOpenCaravan(smWINSOCK* lpsmSock)
@@ -12822,181 +12855,472 @@ int SendOpenEventGift(smWINSOCK* lpsmSock)
 }
 
 
+int rsSendPostBoxList(rsPLAYINFO* lpPlayInfo);
+
+static void rsPostBoxSendEventMessage(rsPLAYINFO* lpPlayInfo, const char* szText)
+{
+	if (!lpPlayInfo || !lpPlayInfo->lpsmSock || !szText || !szText[0])
+		return;
+
+	TRANS_CHATMESSAGE TransChatMessage;
+	ZeroMemory(&TransChatMessage, sizeof(TransChatMessage));
+	lstrcpyn(TransChatMessage.szMessage, szText, sizeof(TransChatMessage.szMessage));
+	TransChatMessage.code = smTRANSCODE_MESSAGEBOX;
+	TransChatMessage.size = 32 + lstrlen(TransChatMessage.szMessage);
+	TransChatMessage.dwIP = 0;
+	TransChatMessage.dwObjectSerial = 0;
+	lpPlayInfo->lpsmSock->Send((char*)&TransChatMessage, TransChatMessage.size, TRUE);
+}
+
+void rsPostBoxNotifyPlayer(const char* szCharName, const char* szSender, int refreshList)
+{
+	if (!szCharName || !szCharName[0] || szCharName[0] == '*')
+		return;
+
+	rsPLAYINFO* dest = FindUserFromName2((char*)szCharName);
+	if (!dest)
+		dest = FindUserFromName((char*)szCharName);
+	if (!dest || !dest->lpsmSock)
+		return;
+
+	rsPostBoxSendEventMessage(dest, "Chegou um item no Distribuidor. Fale com o NPC para retirar.");
+	if (szSender && szSender[0])
+		SERVERCHAT->SendChatEx(dest, CHATCOLOR_Notice, "Distribuidor> %s enviou um item. Fale com o NPC para retirar.", szSender);
+	else
+		SERVERCHAT->SendChat(dest, CHATCOLOR_Notice, "Distribuidor> Voce tem item para retirar. Fale com o NPC.");
+
+	if (refreshList && dest->lpPostBoxItem)
+	{
+		rsFreePostBox(dest);
+		if (rsLoadPostBox(dest))
+			rsSendPostBoxList(dest);
+	}
+}
+
+void rsPostBoxNotifyPendingOnLogin(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo || lpPlayInfo->szServerID[0] || !lpPlayInfo->szID[0] || !lpPlayInfo->szName[0] || !lpPlayInfo->lpsmSock)
+		return;
+	if (rsLoadPostBox(lpPlayInfo) == FALSE)
+		return;
+
+	rsPostBoxProcessExpired(lpPlayInfo);
+	int count = 0;
+	for (int i = 0; i < lpPlayInfo->lpPostBoxItem->ItemCounter; i++)
+	{
+		_POST_BOX_ITEM* item = &lpPlayInfo->lpPostBoxItem->PostItem[i];
+		if (item->Flag && rsPostBoxItemForChar(lpPlayInfo, item))
+			count++;
+	}
+	if (count > 0)
+		rsPostBoxNotifyPlayer(lpPlayInfo->szName, nullptr, FALSE);
+}
+
+int rsPostBoxHandleOpen(rsPLAYINFO* lpPlayInfo);
+int rsSendPostBoxList(rsPLAYINFO* lpPlayInfo);
+int rsPostBoxHandleClaim(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId, DWORD dwPassSum);
+int rsPostBoxHandleRefuse(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId);
+int rsPostBoxHandleSend(rsPLAYINFO* lpPlayInfo, TRANS_POSTBOX_SEND* lpSend);
+
 int SendOpenGiftExpress(rsPLAYINFO* lpPlayInfo, DWORD	dwItemCode, DWORD dwPassCode_Param)
 {
-	if (rsLoadPostBox(lpPlayInfo) == FALSE) return FALSE;
-	if (!lpPlayInfo->lpPostBoxItem) return FALSE;
-	TRANS_CHATMESSAGE	TransChatMessage;
+	if (dwItemCode == 0)
+		return rsPostBoxHandleOpen(lpPlayInfo);
+	return FALSE;
+}
 
-	if (lpPlayInfo->PostPassFailCount >= 5) {
+static void rsSendPostBoxResult(rsPLAYINFO* lpPlayInfo, DWORD code, int result, DWORD lParam, DWORD sParam, DWORD eParam)
+{
+	if (!lpPlayInfo || !lpPlayInfo->lpsmSock)
+		return;
+	smTRANS_COMMAND cmd;
+	ZeroMemory(&cmd, sizeof(cmd));
+	cmd.code = code;
+	cmd.size = sizeof(smTRANS_COMMAND);
+	cmd.WParam = result;
+	cmd.LParam = lParam;
+	cmd.SParam = sParam;
+	cmd.EParam = eParam;
+	lpPlayInfo->lpsmSock->Send((char*)&cmd, cmd.size, TRUE);
+}
+
+static void rsFillPostBoxEntry(TRANS_POSTBOX_ENTRY* e, _POST_BOX_ITEM* item)
+{
+	ZeroMemory(e, sizeof(TRANS_POSTBOX_ENTRY));
+	e->dwEntryId = item->dwEntryId;
+	e->dwItemCode = item->dwItemCode;
+	lstrcpy(e->szItemCode, item->szItemCode);
+	lstrcpy(e->szDoc, item->szDoc);
+	if (item->szSenderName[0])
+		lstrcpy(e->szSenderName, item->szSenderName);
+	else
+		lstrcpy(e->szSenderName, "Sistema");
+	e->nKind = item->nKind;
+	e->HasPassCode = item->szPassCode[0] ? 1 : 0;
+	e->dwDepositedAt = item->dwDepositedAt;
+
+	DWORD now = (DWORD)time(NULL);
+	if (!item->dwExpireAt)
+		e->SecondsLeft = -1;
+	else if (item->dwExpireAt <= now)
+		e->SecondsLeft = 0;
+	else
+		e->SecondsLeft = (int)(item->dwExpireAt - now);
+
+	sITEMINFO* blob = item->HasItemBlob ? (sITEMINFO*)item->lpItemBlob : nullptr;
+	if (blob)
+	{
+		lstrcpy(e->szItemName, blob->ItemName);
+		e->Weight = blob->Weight;
+		e->dwItemCode = blob->CODE;
+	}
+	else if (item->dwItemCode == (sinGG1 | sin01))
+	{
+		lstrcpy(e->szItemName, "Gold");
+		e->Weight = 0;
+	}
+	else if (item->dwItemCode == (sinGG1 | sin02))
+	{
+		lstrcpy(e->szItemName, "Exp");
+		e->Weight = 0;
+	}
+	else
+	{
+		for (int cnt = 0; cnt < DefaultItemCount; cnt++)
+		{
+			if (DefaultItems[cnt].Item.CODE == item->dwItemCode && !DefaultItems[cnt].Item.UniqueItem)
+			{
+				lstrcpy(e->szItemName, DefaultItems[cnt].Item.ItemName);
+				e->Weight = DefaultItems[cnt].Item.Weight;
+				break;
+			}
+		}
+		if (!e->szItemName[0])
+			lstrcpy(e->szItemName, item->szItemCode);
+	}
+}
+
+int rsSendPostBoxList(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo || !lpPlayInfo->lpsmSock || !lpPlayInfo->lpPostBoxItem)
+		return FALSE;
+
+	TRANS_POSTBOX_ENTRY temp[POST_ITEM_MAX];
+	int total = 0;
+	for (int i = 0; i < lpPlayInfo->lpPostBoxItem->ItemCounter && total < POST_ITEM_MAX; i++)
+	{
+		_POST_BOX_ITEM* item = &lpPlayInfo->lpPostBoxItem->PostItem[i];
+		if (!item->Flag || !rsPostBoxItemForChar(lpPlayInfo, item))
+			continue;
+		rsFillPostBoxEntry(&temp[total], item);
+		total++;
+	}
+
+	int chunks = total ? ((total + POSTBOX_LIST_CHUNK - 1) / POSTBOX_LIST_CHUNK) : 1;
+	int sent = 0;
+	for (int c = 0; c < chunks; c++)
+	{
+		TRANS_POSTBOX_LIST list;
+		ZeroMemory(&list, sizeof(list));
+		list.code = smTRANSCODE_POSTBOX_LIST;
+		list.chunkIndex = c;
+		list.totalChunks = chunks;
+		list.totalEntries = total;
+		list.entryCount = 0;
+		while (list.entryCount < POSTBOX_LIST_CHUNK && sent < total)
+		{
+			list.Entries[list.entryCount] = temp[sent];
+			list.entryCount++;
+			sent++;
+		}
+		list.size = sizeof(TRANS_POSTBOX_LIST);
+		lpPlayInfo->lpsmSock->Send((char*)&list, list.size, TRUE);
+	}
+	return TRUE;
+}
+
+int rsPostBoxHandleOpen(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo)
+		return FALSE;
+	if (rsLoadPostBox(lpPlayInfo) == FALSE)
+		return FALSE;
+	rsPostBoxProcessExpired(lpPlayInfo);
+	return rsSendPostBoxList(lpPlayInfo);
+}
+
+static int rsPostBoxDeliverItem(rsPLAYINFO* lpPlayInfo, _POST_BOX_ITEM* item)
+{
+	char szBuff[sizeof(TRANS_POST_ITEM) + sizeof(sITEMINFO) + 64];
+	TRANS_POST_ITEM* lpTransPostItem = (TRANS_POST_ITEM*)szBuff;
+	sITEMINFO* lpItem = (sITEMINFO*)(szBuff + sizeof(TRANS_POST_ITEM));
+	psITEM psItem;
+	int spJobCode = item->dwJobCode;
+	DWORD dwFormCode = item->dwFormCode;
+	char* szPassCode = item->szPassCode;
+	DWORD dwItemCode = item->dwItemCode;
+
+	ZeroMemory(lpTransPostItem, sizeof(TRANS_POST_ITEM));
+	lpTransPostItem->code = smTRANSCODE_ITEM_EXPRESS;
+
+	if (item->HasItemBlob && item->lpItemBlob)
+	{
+		sITEMINFO* blob = (sITEMINFO*)item->lpItemBlob;
+		memcpy(lpItem, blob, sizeof(sITEMINFO));
+		ReformItem(lpItem);
+		lpTransPostItem->dwItemFlag = TRUE;
+		lstrcpy(lpTransPostItem->szItemName, lpItem->ItemName);
+		lstrcpy(lpTransPostItem->szDoc, item->szDoc);
+		lpTransPostItem->dwItemCode = lpItem->CODE;
+		lpTransPostItem->Weight = lpItem->Weight;
+
+		if ((lpItem->CODE & sinITEM_MASK1) == (sinPM1 & sinITEM_MASK1))
+		{
+			if (lpItem->PotionCount <= 0)
+				lpItem->PotionCount = 1;
+			rsAddServerPotion(lpPlayInfo, lpItem->CODE, lpItem->PotionCount);
+			rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, 0, lpItem->PotionCount, dwFormCode, szPassCode, ITEMLOG_EXPRESS);
+		}
+		else
+		{
+			rsAddInvenItem(lpPlayInfo, lpItem->CODE, lpItem->ItemHeader.Head, lpItem->ItemHeader.dwChkSum);
+			rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, lpItem->ItemHeader.Head, lpItem->ItemHeader.dwChkSum,
+				dwFormCode, szPassCode, ITEMLOG_EXPRESS);
+		}
+	}
+	else if (dwItemCode == (sinGG1 | sin01))
+	{
+		lpTransPostItem->dwItemFlag = TRUE;
+		ZeroMemory(lpItem, sizeof(sITEMINFO));
+		lpItem->CODE = sinGG1 | sin01;
+		lpItem->Money = spJobCode;
+		ReformItem(lpItem);
+		lpPlayInfo->AddServerMoney(spJobCode, WHERE_GIFT_EXPRESS);
+		rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, 0, spJobCode, dwFormCode, szPassCode, ITEMLOG_EXPRESS);
+	}
+	else if (dwItemCode == (sinGG1 | sin02))
+	{
+		lpTransPostItem->dwItemFlag = TRUE;
+		ZeroMemory(lpItem, sizeof(sITEMINFO));
+		lpItem->CODE = sinGG1 | sin02;
+		lpItem->Money = spJobCode;
+		ReformItem(lpItem);
+		lpPlayInfo->dwGameServerExp[rsServerConfig.ServerCode] += spJobCode;
+		rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, 0, spJobCode, dwFormCode, szPassCode, ITEMLOG_EXPRESS);
+	}
+	else
+	{
+		int found = 0;
+		for (int cnt = 0; cnt < DefaultItemCount; cnt++)
+		{
+			if (DefaultItems[cnt].Item.CODE == dwItemCode && !DefaultItems[cnt].Item.UniqueItem)
+			{
+				CreatePerfItem(&psItem.ItemInfo, &DefaultItems[cnt], spJobCode, 1);
+				lpTransPostItem->dwItemFlag = TRUE;
+				memcpy(lpItem, &psItem.ItemInfo, sizeof(sITEMINFO));
+				lstrcpy(lpTransPostItem->szItemName, DefaultItems[cnt].Item.ItemName);
+				lpTransPostItem->Weight = DefaultItems[cnt].Item.Weight;
+
+				if ((dwItemCode & sinITEM_MASK1) == (sinPM1 & sinITEM_MASK1))
+				{
+					lpItem->PotionCount = spJobCode;
+					rsAddServerPotion(lpPlayInfo, dwItemCode, lpItem->PotionCount);
+					rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, 0, spJobCode, dwFormCode, szPassCode, ITEMLOG_EXPRESS);
+				}
+				else
+				{
+					rsAddInvenItem(lpPlayInfo, lpItem->CODE, lpItem->ItemHeader.Head, lpItem->ItemHeader.dwChkSum);
+					rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, lpItem->ItemHeader.Head, lpItem->ItemHeader.dwChkSum,
+						dwFormCode, szPassCode, ITEMLOG_EXPRESS);
+				}
+				found = 1;
+				break;
+			}
+		}
+		if (!found)
+			return FALSE;
+	}
+
+	lstrcpy(lpTransPostItem->szDoc, item->szDoc);
+	lpTransPostItem->dwItemCode = 0;
+	lpTransPostItem->size = sizeof(TRANS_POST_ITEM);
+	if (lpTransPostItem->dwItemFlag)
+		lpTransPostItem->size += sizeof(sITEMINFO);
+	if (lpPlayInfo->lpsmSock)
+		lpPlayInfo->lpsmSock->Send((char*)lpTransPostItem, lpTransPostItem->size, TRUE);
+	return TRUE;
+}
+
+int rsPostBoxHandleClaim(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId, DWORD dwPassSum)
+{
+	TRANS_CHATMESSAGE TransChatMessage;
+	if (!lpPlayInfo)
+		return FALSE;
+	if (rsLoadPostBox(lpPlayInfo) == FALSE)
+		return FALSE;
+	if (lpPlayInfo->PostPassFailCount >= 5)
+	{
 		lstrcpy(TransChatMessage.szMessage, srMsg_301);
 		TransChatMessage.code = smTRANSCODE_MESSAGEBOX;
 		TransChatMessage.size = 32 + lstrlen(TransChatMessage.szMessage);
 		TransChatMessage.dwIP = 0;
 		TransChatMessage.dwObjectSerial = 0;
-		lpPlayInfo->lpsmSock->Send((char*)&TransChatMessage, TransChatMessage.size, TRUE);
-
+		if (lpPlayInfo->lpsmSock)
+			lpPlayInfo->lpsmSock->Send((char*)&TransChatMessage, TransChatMessage.size, TRUE);
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_CLAIM, POSTBOX_RESULT_LOCKED, dwEntryId, 0, 0);
 		return FALSE;
 	}
 
-	char	szBuff[sizeof(TRANS_POST_ITEM) + sizeof(sITEMINFO) + 64];
-	TRANS_POST_ITEM* lpTransPostItem = (TRANS_POST_ITEM*)szBuff;
-	sITEMINFO* lpItem = (sITEMINFO*)(szBuff + sizeof(TRANS_POST_ITEM));
-	int		cnt, cnt2;
-	psITEM	psItem;
-	int		spJobCode;
-	DWORD	dwPassCode;
-	DWORD	dwFormCode;
-	char* szPassCode;
-	int		TempWeight = 0;
-
-	ZeroMemory(lpTransPostItem, sizeof(TRANS_POST_ITEM));
-
-	lpTransPostItem->code = smTRANSCODE_ITEM_EXPRESS;
-
-	if (dwItemCode) {
-		spJobCode = 0;
-		dwPassCode = 0;
-		dwFormCode = 0;
-		szPassCode = 0;
-
-		for (cnt = 0; cnt < lpPlayInfo->lpPostBoxItem->ItemCounter; cnt++) {
-			if (lpPlayInfo->lpPostBoxItem->PostItem[cnt].Flag &&
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwItemCode == dwItemCode &&
-				(lpPlayInfo->lpPostBoxItem->PostItem[cnt].szCharName[0] == '*' ||
-					lstrcmpi(lpPlayInfo->szName, lpPlayInfo->lpPostBoxItem->PostItem[cnt].szCharName) == 0)) {
-
-				spJobCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwJobCode;
-				dwFormCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwFormCode;
-				dwPassCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwPassCode;
-				szPassCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].szPassCode;
-
-				if (dwPassCode && dwPassCode != dwPassCode_Param) {
-					cnt = lpPlayInfo->lpPostBoxItem->ItemCounter;
-					lpPlayInfo->PostPassFailCount++;
-
-					lstrcpy(TransChatMessage.szMessage, srMsg_300);
-					TransChatMessage.code = smTRANSCODE_MESSAGEBOX;
-					TransChatMessage.size = 32 + lstrlen(TransChatMessage.szMessage);
-					TransChatMessage.dwIP = 0;
-					TransChatMessage.dwObjectSerial = 0;
-					lpPlayInfo->lpsmSock->Send((char*)&TransChatMessage, TransChatMessage.size, TRUE);
-
-					break;
-				}
-
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].Flag = 0;
-				break;
-			}
-		}
-		if (cnt < lpPlayInfo->lpPostBoxItem->ItemCounter) {
-
-			lpPlayInfo->PostPassFailCount = 0;
-
-			if (dwItemCode == (sinGG1 | sin01)) {
-				lpTransPostItem->dwItemFlag = TRUE;
-				ZeroMemory(lpItem, sizeof(sITEMINFO));
-				lpItem->CODE = sinGG1 | sin01;
-				lpItem->Money = spJobCode;
-				ReformItem(lpItem);
-				lpPlayInfo->AddServerMoney(spJobCode, WHERE_GIFT_EXPRESS);
-
-				rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, 0, spJobCode, dwFormCode, szPassCode, ITEMLOG_EXPRESS);
-
-			}
-			else if (dwItemCode == (sinGG1 | sin02)) {
-				lpTransPostItem->dwItemFlag = TRUE;
-				ZeroMemory(lpItem, sizeof(sITEMINFO));
-				lpItem->CODE = sinGG1 | sin02;
-				lpItem->Money = spJobCode;
-				ReformItem(lpItem);
-				lpPlayInfo->dwGameServerExp[rsServerConfig.ServerCode] += spJobCode;
-
-				rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, 0, spJobCode, dwFormCode, szPassCode, ITEMLOG_EXPRESS);
-			}
-			else {
-				for (cnt = 0; cnt < DefaultItemCount; cnt++) {
-					if (DefaultItems[cnt].Item.CODE == dwItemCode && !DefaultItems[cnt].Item.UniqueItem) {
-						CreatePerfItem(&psItem.ItemInfo, &DefaultItems[cnt], spJobCode, 1);
-						lpTransPostItem->dwItemFlag = TRUE;
-						TempWeight = DefaultItems[cnt].Item.Weight;
-						memcpy(lpItem, &psItem.ItemInfo, sizeof(sITEMINFO));
-
-						if ((dwItemCode & sinITEM_MASK1) == (sinPM1 & sinITEM_MASK1)) {
-							lpItem->PotionCount = spJobCode;
-
-							rsAddServerPotion(lpPlayInfo, dwItemCode, lpItem->PotionCount);
-
-							rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, 0, spJobCode, dwFormCode, szPassCode, ITEMLOG_EXPRESS);
-						}
-						else {
-							rsAddInvenItem(lpPlayInfo, lpItem->CODE, lpItem->ItemHeader.Head, lpItem->ItemHeader.dwChkSum);
-
-							rsRecord_ItemLog_Post(lpPlayInfo, lpItem->CODE, lpItem->ItemHeader.Head, lpItem->ItemHeader.dwChkSum,
-								dwFormCode, szPassCode, ITEMLOG_EXPRESS);
-
-						}
-
-						break;
-					}
-				}
-			}
-		}
-		//rsSavePostBox(lpPlayInfo);
+	_POST_BOX_ITEM* item = rsPostBoxFindEntry(lpPlayInfo, dwEntryId);
+	if (!item)
+	{
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_CLAIM, POSTBOX_RESULT_NOTFOUND, dwEntryId, 0, 0);
+		rsSendPostBoxList(lpPlayInfo);
+		return FALSE;
 	}
 
+	if (item->dwPassCode && item->dwPassCode != dwPassSum)
+	{
+		lpPlayInfo->PostPassFailCount++;
+		lstrcpy(TransChatMessage.szMessage, srMsg_300);
+		TransChatMessage.code = smTRANSCODE_MESSAGEBOX;
+		TransChatMessage.size = 32 + lstrlen(TransChatMessage.szMessage);
+		TransChatMessage.dwIP = 0;
+		TransChatMessage.dwObjectSerial = 0;
+		if (lpPlayInfo->lpsmSock)
+			lpPlayInfo->lpsmSock->Send((char*)&TransChatMessage, TransChatMessage.size, TRUE);
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_CLAIM, POSTBOX_RESULT_PASSFAIL, dwEntryId, 0, 0);
+		return FALSE;
+	}
 
-	for (cnt = 0; cnt < lpPlayInfo->lpPostBoxItem->ItemCounter; cnt++) {
-		if (lpPlayInfo->lpPostBoxItem->PostItem[cnt].Flag &&
-			(lpPlayInfo->lpPostBoxItem->PostItem[cnt].szCharName[0] == '*' ||
-				lstrcmpi(lpPlayInfo->szName, lpPlayInfo->lpPostBoxItem->PostItem[cnt].szCharName) == 0)) {
+	lpPlayInfo->PostPassFailCount = 0;
+	if (!rsPostBoxDeliverItem(lpPlayInfo, item))
+	{
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_CLAIM, POSTBOX_RESULT_ITEM, dwEntryId, 0, 0);
+		return FALSE;
+	}
 
-			if (lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwItemCode == (sinGG1 | sin01) ||
-				lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwItemCode == (sinGG1 | sin02)) {
+	if (item->lpItemBlob)
+	{
+		delete (sITEMINFO*)item->lpItemBlob;
+		item->lpItemBlob = 0;
+	}
+	ZeroMemory(item, sizeof(_POST_BOX_ITEM));
+	rsSavePostBox(lpPlayInfo);
+	rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_CLAIM, POSTBOX_RESULT_OK, dwEntryId, 0, 0);
+	rsSendPostBoxList(lpPlayInfo);
+	return TRUE;
+}
 
-				lstrcpy(lpTransPostItem->szItemName, lpPlayInfo->lpPostBoxItem->PostItem[cnt].szItemCode);
-				lstrcpy(lpTransPostItem->szDoc, lpPlayInfo->lpPostBoxItem->PostItem[cnt].szDoc);
+int rsPostBoxHandleRefuse(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId)
+{
+	if (!lpPlayInfo)
+		return FALSE;
+	if (rsLoadPostBox(lpPlayInfo) == FALSE)
+		return FALSE;
+	int result = rsPostBoxRefuseEntry(lpPlayInfo, dwEntryId);
+	rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_REFUSE, result, dwEntryId, 0, 0);
+	rsSendPostBoxList(lpPlayInfo);
+	return TRUE;
+}
 
-				lpTransPostItem->dwItemCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwItemCode;
-				lpTransPostItem->dwItemJobCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwJobCode;
-				lpTransPostItem->dwParam[0] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[0];
-				lpTransPostItem->dwParam[1] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[1];
-				lpTransPostItem->dwParam[2] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[2];
-				lpTransPostItem->dwParam[3] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[3];
-				lpTransPostItem->Weight = TempWeight;
-				break;
+static int rsPostBoxItemCanSend(sITEMINFO* item)
+{
+	if (!item || !item->CODE)
+		return FALSE;
+	if (CheckItemForm(item) == FALSE)
+		return FALSE;
+	if (item->ItemKindCode == ITEM_KIND_QUEST || item->ItemKindCode == ITEM_KIND_QUEST_WEAPON)
+		return FALSE;
+	if ((item->CODE & sinITEM_MASK2) == sinQT1)
+		return FALSE;
+	if (item->UniqueItem)
+		return FALSE;
+	if (item->SpecialItemFlag[0] == CHECK_COPY_ITEM)
+		return FALSE;
+	if (item->CODE == (sinGG1 | sin01) || item->CODE == (sinGG1 | sin02))
+		return FALSE;
+	return TRUE;
+}
 
-			}
-			else {
-				for (cnt2 = 0; cnt2 < DefaultItemCount; cnt2++) {
-					if (DefaultItems[cnt2].Item.CODE == lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwItemCode &&
-						!DefaultItems[cnt2].Item.UniqueItem) {
-						lstrcpy(lpTransPostItem->szItemName, DefaultItems[cnt2].Item.ItemName);
-						lstrcpy(lpTransPostItem->szDoc, lpPlayInfo->lpPostBoxItem->PostItem[cnt].szDoc);
+int rsPostBoxHandleSend(rsPLAYINFO* lpPlayInfo, TRANS_POSTBOX_SEND* lpSend)
+{
+	if (!lpPlayInfo || !lpSend)
+		return FALSE;
+	if (rsLoadPostBox(lpPlayInfo) == FALSE)
+		return FALSE;
 
-						lpTransPostItem->dwItemCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwItemCode;
-						lpTransPostItem->dwItemJobCode = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwJobCode;
-						lpTransPostItem->dwParam[0] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[0];
-						lpTransPostItem->dwParam[1] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[1];
-						lpTransPostItem->dwParam[2] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[2];
-						lpTransPostItem->dwParam[3] = lpPlayInfo->lpPostBoxItem->PostItem[cnt].dwParam[3];
-						lpTransPostItem->Weight = DefaultItems[cnt2].Item.Weight;
-						break;
-					}
-				}
-				if (cnt2 < DefaultItemCount) break;
-			}
+	char szDest[32] = { 0 };
+	lstrcpyn(szDest, lpSend->szDestName, 32);
+	if (!szDest[0])
+	{
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_DEST, 0, 0, 0);
+		return FALSE;
+	}
+	if (lstrcmpi(szDest, lpPlayInfo->szName) == 0)
+	{
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_SELF, 0, 0, 0);
+		return FALSE;
+	}
+	if (!rsPostBoxItemCanSend(&lpSend->Item))
+	{
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_ITEM,
+			lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum);
+		return FALSE;
+	}
+
+	char szDestID[32] = { 0 };
+	rsPLAYINFO* destOnline = FindUserFromName2(szDest);
+	if (!destOnline)
+		destOnline = FindUserFromName(szDest);
+	if (destOnline && destOnline->szID[0])
+		lstrcpy(szDestID, destOnline->szID);
+	else if (!rsPostBoxLookupAccountByName(szDest, szDestID, sizeof(szDestID)))
+	{
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_DEST,
+			lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum);
+		return FALSE;
+	}
+
+	int potionCount = lpSend->Item.PotionCount;
+	int isPotion = ((lpSend->Item.CODE & sinITEM_MASK1) == (sinPM1 & sinITEM_MASK1));
+	if (isPotion)
+	{
+		if (potionCount <= 0)
+			potionCount = 1;
+		if (rsAddServerPotion(lpPlayInfo, lpSend->Item.CODE, -potionCount) < 0)
+		{
+			rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_ITEM,
+				lpSend->Item.CODE, 0, potionCount);
+			return FALSE;
 		}
 	}
-
-
-	lpTransPostItem->size = sizeof(TRANS_POST_ITEM);
-	if (lpTransPostItem->dwItemFlag) lpTransPostItem->size += sizeof(sITEMINFO);
-
-	if (lpPlayInfo->lpsmSock || (lpTransPostItem->dwItemCode || lpTransPostItem->dwItemFlag)) {
-		lpPlayInfo->lpsmSock->Send((char*)lpTransPostItem, lpTransPostItem->size, TRUE);
+	else if (rsDeleteInvenItem(lpPlayInfo, lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum) < 0)
+	{
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_ITEM,
+			lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum);
+		return FALSE;
 	}
 
+	char doc[128];
+	wsprintf(doc, "Enviado por %s", lpPlayInfo->szName);
+	if (!rsAddPostBoxPlayerItem(szDestID, szDest, &lpSend->Item, lpPlayInfo->szName, lpPlayInfo->szID, doc))
+	{
+		if (isPotion)
+			rsAddServerPotion(lpPlayInfo, lpSend->Item.CODE, potionCount);
+		else
+			rsAddInvenItem(lpPlayInfo, lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum);
+		rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_FULLBOX,
+			lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum);
+		return FALSE;
+	}
+
+	rsRecord_ItemLog_Post(lpPlayInfo, lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum,
+		0, szDest, ITEMLOG_EXPRESS);
+	rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_OK,
+		lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum);
+	if (destOnline && destOnline->lpPostBoxItem && destOnline->lpsmSock)
+		rsSendPostBoxList(destOnline);
 	return TRUE;
 }
 
@@ -20665,6 +20989,8 @@ pRetry:
 				}
 			}
 
+			rsPostBoxNotifyPendingOnLogin(lpPlayInfo);
+
 			// Envia os coins para o game quando loga
 			{
 				NewShop::GetInstance()->SendCoinToGame(lpPlayInfo);
@@ -23860,9 +24186,27 @@ pRetry:
 			break;
 
 		case smTRANSCODE_ITEM_EXPRESS:
-			//???? ?????? ????
 			lpTransCommand = (smTRANS_COMMAND*)SockInfo->Buff;
-			SendOpenGiftExpress(lpPlayInfo, lpTransCommand->WParam, lpTransCommand->LParam);		//???? ???
+			if (lpTransCommand->WParam == 0)
+				rsPostBoxHandleOpen(lpPlayInfo);
+			break;
+
+		case smTRANSCODE_POSTBOX_OPEN:
+			rsPostBoxHandleOpen(lpPlayInfo);
+			break;
+
+		case smTRANSCODE_POSTBOX_CLAIM:
+			lpTransCommand = (smTRANS_COMMAND*)SockInfo->Buff;
+			rsPostBoxHandleClaim(lpPlayInfo, lpTransCommand->WParam, lpTransCommand->LParam);
+			break;
+
+		case smTRANSCODE_POSTBOX_REFUSE:
+			lpTransCommand = (smTRANS_COMMAND*)SockInfo->Buff;
+			rsPostBoxHandleRefuse(lpPlayInfo, lpTransCommand->WParam);
+			break;
+
+		case smTRANSCODE_POSTBOX_SEND:
+			rsPostBoxHandleSend(lpPlayInfo, (TRANS_POSTBOX_SEND*)SockInfo->Buff);
 			break;
 
 		case smTRANSCODE_YAHOO_MOTION:
@@ -24501,9 +24845,8 @@ int Serv_DisconnectPlayer(smWINSOCK* lpsmSock)
 		tpInfo->lpRecordBase = 0;
 	}
 	if (tpInfo->lpPostBoxItem) {
-		rsSavePostBox(tpInfo);		//?????? ???? ????
-		delete	tpInfo->lpPostBoxItem;
-		tpInfo->lpPostBoxItem = 0;
+		rsSavePostBox(tpInfo);
+		rsFreePostBox(tpInfo);
 	}
 
 	Server_DebugCount = 105;
@@ -26623,16 +26966,13 @@ int RecordHackLogFile(rsPLAYINFO* lpPlayInfo, void* lpBuff)
 		//lpPlayInfo->BlockTime = rsAddBackListID( lpPlayInfo->szID , 1000*60*10 );	//10 ????? ????
 	}
 
-	if (lpTransCommand->WParam == 7010 && !cSkinChanger.OpenSkinChange(lpPlayInfo)) {
-		//U?????T ????? ?????? ????
+	if (lpTransCommand->WParam == 7010) {
 		wsprintf(szBuff, msg7010,
 			st.wHour, st.wMinute, st.wSecond, lpPlayInfo->szID, lpPlayInfo->szName,
 			lpPlayInfo->lpsmSock->szIPAddr, lpTransCommand->LParam, lpTransCommand->SParam);
 
-		//lpPlayInfo->BlockTime = rsAddBackListID( lpPlayInfo->szID , 1000*60*10 );	//10 ????? ????
-
 		if (lpPlayInfo->AdminMode) {
-			rsSendCloseClient(lpPlayInfo);		//?????? U?????T?? ???? ??W
+			rsSendCloseClient(lpPlayInfo);
 		}
 
 	}

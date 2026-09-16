@@ -9,6 +9,7 @@
 #include "sinLinkHeader.h"
 #include "..\\Shop\\NewShop.h"
 #include "..\\HUD\\WarehouseWindow.h"
+#include "..\\HUD\\PostBoxWindow.h"
 #include "cSkinChanger.h"
 /*----------------------------------------------------------------------------*
 *					         ???? ????
@@ -333,7 +334,7 @@ void sinProc(int Message)
 		if (NewShop::GetInstance()->openFlag && NewShop::GetInstance()->editingNick)
 			return;
 
-		if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard())
+		if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard() || PostBoxWindow::GetInstance()->ShouldCaptureKeyboard())
 			return;
 
 		if (sinGetKeyClick(VK_RETURN))

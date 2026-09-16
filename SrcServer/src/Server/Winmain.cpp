@@ -93,8 +93,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	initSinCos();
 	srand(GetCurrentTime());
 
+	if (CreateServerHostWindow() && ServerPanel_IsActive())
+	{
+		ServerPanel_SetBootStatus("A ligar os bancos de dados...");
+		for (int i = 0; i < 10; i++)
+		{
+			ServerPanel_PumpBoot();
+			Sleep(16);
+		}
+	}
 
 	initializeSQL();
+
+	if (ServerPanel_IsActive())
+	{
+		ServerPanel_SetBootStatus("Bancos ligados. A preparar o mundo...");
+		ServerPanel_PumpBoot();
+	}
 
 	InitializeCriticalSection(&cSection);
 	InitializeCriticalSection(&cSection_Main);

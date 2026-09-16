@@ -1879,7 +1879,7 @@ int HoLogin::DrawTitle( int state )
 {
 	dsDrawTexImage( TitleBoxFrameImage, smScreenWidth / 2 - 256 / 2, 0, 256, 128, 255 );
 	// Campo interno da placa (faixa dourada ~Y 10-46); sprite 128x30 centralizado
-	const float titleY = 14.f;
+	const float titleY = 18.f;
 	if ( state == CHARACTER_SELECT_STATE )
 		HoDrawTexImage( TitleNameImage, float( smScreenWidth / 2 - 64 ), titleY, 128.f, 30.f, 0.f, 0.f, 128.f, 30.f, 255 );
 	else if ( state == RACE_SELECT_STATE )
@@ -2213,9 +2213,9 @@ static const int kNickArtH = 128;
 static const int kNickPlaqueOffY = 40;
 static const int kNickPlaqueOffX = -16;
 static const int kNickPlaqueH = 36;
-static const int kNickTextInsetX = 88;
+static const int kNickTextInsetX = 96;
 static const int kNickFontH = 15;
-static const int kNickTextPadBottom = 8;
+static const int kNickTextPadBottom = 3;
 
 static void HoLogin_NickTextLayout( const RECT& nick, int* textX, int* textY, int* charW )
 {

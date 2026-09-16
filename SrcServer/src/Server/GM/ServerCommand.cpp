@@ -716,6 +716,20 @@ void CServerCommand::OnGameMasterAdminCommand(rsPLAYINFO* pcUser, char* pszBuff)
 
 		SERVERCHAT->SendChat(pcUser, CHATCOLOR_Error, "> Multiplicadores Recarregados!");
 	}
+	else if (ChatCommand("/postbox_ttl", pszBuff))
+	{
+		extern int rsPostBoxTtlSeconds;
+		if (GetParameterString(pszBuff, 1, szCommandParam1))
+		{
+			int ttl = atoi(szCommandParam1);
+			if (ttl > 0 && ttl < 60)
+				ttl = 60;
+			rsPostBoxTtlSeconds = ttl;
+			SERVERCHAT->SendChatEx(pcUser, CHATCOLOR_Error, "> PostBox TTL = %d segundos (0 = sem prazo em itens novos)", rsPostBoxTtlSeconds);
+		}
+		else
+			SERVERCHAT->SendChatEx(pcUser, CHATCOLOR_Error, "> PostBox TTL atual = %d segundos. Uso: /postbox_ttl <segundos>", rsPostBoxTtlSeconds);
+	}
 
 	rsRecordAdminCommand(pcUser, pszBuff, 4);
 }

@@ -8,6 +8,7 @@
 #include "Shop/NewShopTime.h"
 #include "HUD/RankingWindow.h"
 #include "HUD/WarehouseWindow.h"
+#include "HUD/PostBoxWindow.h"
 #include "HUD/MixWindow.h"
 
 std::vector<CBaseHandle*> vHandleElement;
@@ -172,6 +173,8 @@ BOOL CGameCore::OnMouseClick(CMouse* pcMouse)
 			return TRUE;
 		if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return TRUE;
+		if (PostBoxWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
 		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return TRUE;
 	}
@@ -211,6 +214,8 @@ BOOL CGameCore::OnMouseScroll(CMouse* pcMouse)
 		if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return TRUE;
 		if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return TRUE;
+		if (PostBoxWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return TRUE;
 		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return TRUE;

@@ -6,6 +6,7 @@
 #include "../Shop/NewShop.h"
 #include "Quest.h"
 #include "../SrcServer/onserver.h"
+#include "../Character/record.h"
 
 QUESTPCKG questPckg = {};
 int nQuestAtivas = 0;
@@ -515,33 +516,18 @@ void Quest::SendAllQuests(rsPLAYINFO* Player)
 	}
 }
 
-extern int GetPostBoxFile(char* szID, char* szFileName);
-
 int SendReward(char* id, char* name, char* ItemName, int iQuantity, int gold)
 {
-	char	szFileName[64];
+	if (!id || !id[0])
+		return FALSE;
 
-
-	if (!id[0]) return FALSE;
-
-	GetPostBoxFile(id, szFileName);
-
-	FILE* pFile = NULL;
-	fopen_s(&pFile, szFileName, "a+");
-
-	if (pFile)
+	int ok = TRUE;
+	for (int i = 0; i < iQuantity; i++)
 	{
-		for (int i = 0; i < iQuantity; i++)
-		{
-			fprintf(pFile, "%s		%s		%d		\"%s\"\r\n", name, ItemName, gold, "Recompensa de Desafio");
-		}
-
-		fclose(pFile);
-
-		return TRUE;
+		if (!rsAddPostBoxSystemItem(id, name, ItemName, gold, "Recompensa de Desafio"))
+			ok = FALSE;
 	}
-
-	return TRUE;
+	return ok;
 }
 
 bool Quest::checkCheat(rsPLAYINFO* Player, int questID)

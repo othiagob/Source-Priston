@@ -33,11 +33,11 @@
 #define	PK_POWER_DIVIDE	5
 #define	PK_SCORE_DIVIDE	10
 
-//∞¯º∫¿¸ « µÂ ¡¬«• ¡§∫∏ ( ≥™¡ﬂø° «Ï¥ı∆ƒ¿œ∑Œ ¿Ã¿¸øπ¡§ )
+//?????? ??? ??? ???? ( ????? ???????? ???????? )
 extern int CastleBattleZone_LineZ;
 
 
-//±‚∫ª ∞¯∞› µ•πÃ¡ˆ
+//?? ???? ??????
 WORD	rsDefaultDamage[10][2] = {
 	{	7,	14	},
 	{	17,	40	},
@@ -51,22 +51,22 @@ WORD	rsDefaultDamage[10][2] = {
 	{	70,	110	}
 };
 
-int	dm_Critical_Temp;			//≈©∏Æ∆ºƒ√ ∞™ ¿”Ω√ ∫∏∞¸
-int dm_SkillCode_Temp;			//Ω∫≈≥ƒ⁄µÂ ¿”Ω√∫∏∞¸
-//Ω«¡¶ ≈©∏Æ∆ºƒ√ 
+int	dm_Critical_Temp;			//?????? ?? ??? ????
+int dm_SkillCode_Temp;			//?????? ??????
+//???? ?????? 
 int GetCritical(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Critical_Hit);
 int GetCritical2(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Critical_Hit);
 
-//ƒ≥∏Ø≈Õ µ•πÃ¡ˆ ±‚∑œ
+//ùù???? ?????? ???
 int	rsRecordCharDamage(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Damage);
-//ƒ≥∏Ø≈Õ PK ±‚∑œ
+//ùù???? PK ???
 int	rsRecord_PKDamage(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Damage);
 
 
-//¥Ÿ∏• ¿Ø¿˙ ∞¯∞› ∆–≈∂ ∫∏≥ª±‚ ( ¿Ø¿˙ ∞¯∞› )
+//??? ???? ???? ??? ?????? ( ???? ???? )
 int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power, int AttackState, short sParam1 = 0, short sParam2 = 0);
 
-//∫Ù∏µæ∆¿Ã≈€Ω∫≈≥¿˚øÎ
+//????????????????
 int	rsBillingItemSkill(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int HitMonsters, int Power, int SkillCode);
 
 
@@ -74,9 +74,9 @@ int	rsBillingItemSkill(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int HitMonsters, 
 
 #ifdef DISP_DAMAGE
 static char szDispDamage[128];
-static char szDispDamage2[128];	//«ÿø‹
+static char szDispDamage2[128];	//???
 
-//µ•πÃ¡ˆ ¡§∫∏ √‚∑¬
+//?????? ???? ???
 int rsDisplayDamgeToClient(rsPLAYINFO* lpPlayInfo, char* szDmgMsg)
 {
 	TRANS_CHATMESSAGE	TransChatMessage;
@@ -133,7 +133,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 	lpsmSock = lpPlayInfo->lpsmSock;
 	dwTime = dwPlayServTime;
 
-	//∞¯∞› µ•¿Ã≈∏ ±‚∑œ
+	//???? ????? ???
 	lpPlayInfo->Recv_AttackCount++;
 	lpPlayInfo->Recv_AttackDamage += lpTransAttackData->Power;
 
@@ -148,10 +148,10 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 	}
 
 	if ((dwPlayServTime - lpPlayInfo->dwAttackTime) > 5000) {
-		//∞¯∞› ≈∏¿Ãπ÷ ∞ËªÍ
+		//???? ???? ???
 		lpPlayInfo->dwAttackTime = dwPlayServTime;
 		if (lpPlayInfo->AttackCount >= 40) {
-			//5√ µøæ» 10»∏ ¿ÃªÛ ∞¯∞› µÈæÓø»
+			//5????? 10? ??? ???? ????
 
 			smTransCommand.WParam = 1823;
 			smTransCommand.SParam = lpPlayInfo->AttackCount;
@@ -163,7 +163,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 
 			if (lpPlayInfo->AttackCount >= 80)
 				lpPlayInfo->BadPlayer = TRUE;
-			//DisconnectUser( lpsmSock );			//30»∏ ¿ÃªÛ µÈæÓø¬ ∞ÊøÏ ø¨∞· ¡æ∑·
+			//DisconnectUser( lpsmSock );			//30? ??? ???? ??? ???? ????
 
 			return FALSE;
 		}
@@ -172,7 +172,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 
 	if (Type != 33) {
 		if (!Type && lpTransAttackData->dwChkSum != (DWORD)(lpTransAttackData->Power * 2002 + (lpTransAttackData->x * lpTransAttackData->y * lpTransAttackData->z))) {
-			//√Ω≈©º∂ »Æ¿Œ ø¿∑˘
+			//???? ??? ????
 			smTransCommand.WParam = 1820;
 			smTransCommand.SParam = lpTransAttackData->Power;
 			smTransCommand.LParam = lpTransAttackData->Power;
@@ -188,7 +188,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 		}
 
 		if (lpTransAttackData->Power >= 20000) {
-			//∞¯∞›∑¬ ≈©±‚ ≈Õπ´¥œ æ¯¿Ω
+			//????? ??? ????? ????
 			//smTransCommand.WParam = 1821;
 			//smTransCommand.SParam = lpTransAttackData->Power;
 			//smTransCommand.LParam = lpTransAttackData->Power;
@@ -203,25 +203,25 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 			return FALSE;
 		}
 	}
-	if (abs(((long)(dwTime - lpPlayInfo->dwRecvTimePlayBuff))) > 7 * 1000) {			// pluto «¸∫Ø»Ø
-		//7√  ¿ÃªÛ ∏º« µ•¿Ã≈∏ ºˆΩ≈¿Ã æ¯æ˙¥¯ ∞ÊøÏ ( ∞¯∞›¿Œ¡§«œ¡ˆ æ ¿Ω )
+	if (abs(((long)(dwTime - lpPlayInfo->dwRecvTimePlayBuff))) > 7 * 1000) {			// pluto ?????
+		//7?? ??? ??? ????? ?????? ?????? ??? ( ???????????? ???? )
 		return FALSE;
 	}
 
-	//«œµÂƒ⁄æÓ ¿Ã∫•∆ÆøÎ ( ¿Ã∫•∆Æ ∏ÛΩ∫≈Õ∏¶ ∂Û¿Œ π€ø°º≠ ∞¯∞›«œ∏È π´»ø )
+	//?????? ?????? ( ???? ????? ???? ????? ??????? ??? )
 	if (lpChar && lpChar->PartyFlag == rsHARDCORE_EVENT_FLAG) {
 		if (lpPlayInfo->EventMode != rsHARDCORE_EVENT_FLAG) {
 			return FALSE;
 		}
 		/*
 		if ( lpPlayInfo->EventScore>100000 ) {
-			lpTransAttackData->Power>>=1;			//10∏∏ ¿ÃªÛ ¡°ºˆ »πµÊ«— ∞ÊøÏ ∞¯∞›∑¬¿ª π›¿∏∑Œ ∞®º“ ( ≥ π´ ¿ﬂ«ÿº≠ ¿«Ω… )
+			lpTransAttackData->Power>>=1;			//10?? ??? ???? ????? ??? ??????? ?????? ???? ( ??? ????? ??? )
 		}
 		*/
 	}
 
 	if (lpChar) {
-		lpChar->dwLastTransTime = dwPlayServTime;		//√÷±Ÿ »∞º∫»≠µ» Ω√∞£
+		lpChar->dwLastTransTime = dwPlayServTime;		//??? ?????? ?ùù?
 
 		x = (lpPlayInfo->Position.x - lpChar->pX) >> FLOATNS;
 		y = (lpPlayInfo->Position.y - lpChar->pY) >> FLOATNS;
@@ -239,11 +239,11 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 
 			Dmg1 = lpTransAttackData->Power;
 
-			//¿œ¥‹ ¿˚¿œ ∞ÊøÏ∏∏..
+			//??? ???? ??ùI..
 			if (lpChar->smCharInfo.State) {
 
 #ifndef	_LANGUAGE_KOREAN
-				//ƒ≥∏Ø≈ÕøÕ ∏ÛΩ∫≈ÕøÕ¿« ∑π∫ß¬˜∞° ≈´∞ÊøÏ ∞≠¡¶ ∫∏¡§
+				//ùù????? ??????? ???????? ???? ???? ????
 				cnt = lpChar->smCharInfo.Level - lpPlayInfo->smCharInfo.Level;
 				if (cnt > 20) {
 					cnt += (rand() % (cnt - 20));
@@ -262,7 +262,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 #endif
 
 				if (lpPlayInfo->BadPlayer == 2 || lpPlayInfo->BadPlayer == 4) {
-					//«ÿ≈∑ ¿Ø¿˙ ∞¯∞›∑¬ ¡∂¡§
+					//??? ???? ????? ????
 					cnt = lpPlayInfo->smCharInfo.Level / 10;
 					if (cnt < 1 || cnt>8) cnt = 1;
 
@@ -272,25 +272,25 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 					}
 				}
 
-				//√÷±Ÿ ∏Ò«• ∏ÛΩ∫≈Õ ±‚∑œ
+				//??? ??? ???? ???
 				lpPlayInfo->lpChrTarget = lpChar;
 				lpPlayInfo->dwTarObjSerial = lpChar->dwObjectSerial;
 
-				lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
+				lpChar->PlayStunCount = 0;			//?????? ????
 
-				//¿Œ√æ∆Æ øˆ∆˘ Ω∫≈≥ ¿˚øÎ
+				//??ùù? ???? ??? ????
 				if (lpPlayInfo->dwSkill_EnchantWeapon_Time) {
 					if (lpPlayInfo->dwSkill_EnchantWeapon_Time > dwPlayServTime) {
 						if (((lpTransAttackData->AttackState >> 16) & 0xF) == 0) {
-							len = lpPlayInfo->dwSkill_EnchantWeapon_Param & 0xFF;		//∆˜¿Œ∆Æ
+							len = lpPlayInfo->dwSkill_EnchantWeapon_Param & 0xFF;		//?????
 							switch (lpPlayInfo->dwSkill_EnchantWeapon_Param >> 8) {
-							case 0:		//æÛ¿Ω ( π¸¿ß∞¯∞›¿Ã µ˚∑Œ µÈæÓø¿π«∑Œ ª˝∑´)
+							case 0:		//???? ( ?????????? ???? ??????? ????)
 								/*
 								lpTransAttackData->Power += GetRandomPos(
 									Enchant_Weapon_Damage_Ice[len-1][0] , Enchant_Weapon_Damage_Ice[len-1][1] );
 									*/
 
-									// ¿Â∫∞ - Ω∫≈≥ ºˆ¡§
+									// ?? - ??? ????
 								lpTransAttackData->Power += GetRandomPos(
 									Enchant_Weapon_Damage_Ice[len - 1][0], Enchant_Weapon_Damage_Ice[len - 1][1]);
 								lpTransAttackData->AttackState |= (sITEMINFO_ICE + 1) << 16;
@@ -299,14 +299,14 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 								//	lpTransAttackData->AttackState |= (sITEMINFO_ICE+1)<<16;
 								//	lpTransAttackData->AttackState |= (1)<<(16+4);
 								break;
-							case 1:		//π¯∞≥
+							case 1:		//????
 								lpTransAttackData->Power += GetRandomPos(
 									Enchant_Weapon_Damage_Lightning[len - 1][0], Enchant_Weapon_Damage_Lightning[len - 1][1]);
 								lpTransAttackData->AttackState |= (sITEMINFO_LIGHTING + 1) << 16;
 								lpTransAttackData->AttackState |= (Enchant_Weapon_Damage_Lightning[len - 1][1]) << (16 + 4);
 								break;
 
-							case 2:		//∫“
+							case 2:		//??
 								lpTransAttackData->Power += GetRandomPos(
 									Enchant_Weapon_Damage_Fire[len - 1][0], Enchant_Weapon_Damage_Fire[len - 1][1]);
 								lpTransAttackData->AttackState |= (sITEMINFO_FIRE + 1) << 16;
@@ -315,22 +315,22 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 							}
 						}
 					}
-					else {	//¡æ∑· ( Ω√∞£√ ∞˙ )
+					else {	//???? ( ?ùù???? )
 						lpPlayInfo->dwSkill_EnchantWeapon_Time = 0;
 						lpPlayInfo->dwSkill_EnchantWeapon_Param = 0;
 					}
 				}
 
-				//º”º∫ ∞¯∞›¿œ ∞ÊøÏ
+				//??? ?????? ???
 				regs = (lpTransAttackData->AttackState >> 16) & 0xF;
 				if (regs && regs < sITEMINFO_NONE) {
-					cnt = lpTransAttackData->AttackState >> (16 + 4);		//º”º∫ ∞™ ( ªÛ¿ß ∫Ò∆Æø° ¿¸√º µ•πÃ¡ˆ¡ﬂ º”º∫ µ•πÃ¡ˆ∏∏ ¿˙¿Âµ  )
+					cnt = lpTransAttackData->AttackState >> (16 + 4);		//??? ?? ( ???? ????? ??? ???????? ??? ???????? ????? )
 					if (!cnt)
 						cnt = lpTransAttackData->Power;
 
-					//º”º∫ø° µ˚∏• ¿˙«◊∑¬ ¿˚øÎ
+					//????? ???? ????? ????
 					len = lpChar->smCharInfo.Resistance[regs - 1];
-					if (len) {					//º”º∫ ¿˙«◊∑¬ ∞ËªÍ
+					if (len) {					//??? ????? ???
 						if (len >= 100) len = 100;
 						if (len <= -100) len = -100;
 						lpTransAttackData->Power -= ((cnt * len) / 100);
@@ -341,36 +341,36 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 					switch (regs - 1) { //(lpTransAttackData->AttackState>>16)-1) {
 					case sITEMINFO_ICE:
 						if (lpPlayInfo->dwSkill_EnchantWeapon_Time > dwPlayServTime && (lpPlayInfo->dwSkill_EnchantWeapon_Param >> 8) == 0) {
-							//æÛ¿Ω ∞¯∞› º”µµ ¿˙«œ ( ¿Œ√º∆Æ ¿œ∂ß ¿˚øÎ )
-							lpChar->PlaySlowCount = 16 * 3;									//º”µµ ¥¿∑¡¡¸ ( 3√  )
+							//???? ???? ??? ???? ( ???? ??? ???? )
+							lpChar->PlaySlowCount = 16 * 3;									//??? ?????? ( 3?? )
 							lpChar->PlaySlowCount -= (lpChar->PlaySlowCount * len) / 100;
-							lpChar->PlaySlowSpeed = 230 - 10 * (lpPlayInfo->dwSkill_EnchantWeapon_Param & 0xFF);	//∑π∫ßø° µ˚∏• º”µµ
-							lpChar->PlayDistortion = 0;			//µΩ∫≈‰º« «ÿ¡¶
+							lpChar->PlaySlowSpeed = 230 - 10 * (lpPlayInfo->dwSkill_EnchantWeapon_Param & 0xFF);	//?????? ???? ???
+							lpChar->PlayDistortion = 0;			//????? ????
 							break;
 						}
 						if (lpPlayInfo->dwSkill_DancingSword_Time > dwPlayServTime && (lpPlayInfo->dwSkill_DancingSword_Param & 0xFF) == 0) {
-							//¥ÌΩÃº“µÂ æÛ¿Ω ∞¯∞›
-							lpChar->PlaySlowCount = 16 * 5;					//º”µµ ¥¿∑¡¡¸ ( 5√ ø°º≠ ªÛº‚ )
+							//?????? ???? ????
+							lpChar->PlaySlowCount = 16 * 5;					//??? ?????? ( 5????? ??? )
 							lpChar->PlaySlowCount -= (lpChar->PlaySlowCount * len) / 100;
-							lpChar->PlaySlowSpeed = 230 - 10 * (lpPlayInfo->dwSkill_DancingSword_Param >> 16);	//∑π∫ßø° µ˚∏• º”µµ
-							lpChar->PlayDistortion = 0;			//µΩ∫≈‰º« «ÿ¡¶
+							lpChar->PlaySlowSpeed = 230 - 10 * (lpPlayInfo->dwSkill_DancingSword_Param >> 16);	//?????? ???? ???
+							lpChar->PlayDistortion = 0;			//????? ????
 							break;
 						}
 						if (dm_SkillCode_Temp == SKILL_PLAY_PET_ATTACK) {
-							//∆Í æÛ¿Ω∞¯∞›
-							lpChar->PlaySlowCount = 16 * 10;					//º”µµ ¥¿∑¡¡¸ ( 10√ ø°º≠ ªÛº‚ )
+							//?? ????????
+							lpChar->PlaySlowCount = 16 * 10;					//??? ?????? ( 10????? ??? )
 							lpChar->PlaySlowCount -= (lpChar->PlaySlowCount * len) / 100;
 							lpChar->PlaySlowSpeed = 180;
-							lpChar->PlayDistortion = 0;			//µΩ∫≈‰º« «ÿ¡¶
+							lpChar->PlayDistortion = 0;			//????? ????
 							break;
 						}
 						if (lpPlayInfo->dwSkill_FrostJavelin_Time > dwPlayServTime) {
-							//«¡∑ŒΩ∫∆Æ¿Á∫Ì∏∞ æÛ¿Ω∞¯∞›
-							//º”µµ ¥¿∑¡¡¸
+							//???ùù??????? ????????
+							//??? ??????
 							lpChar->PlaySlowCount = 16 * Frost_Javelin_IceTime[lpPlayInfo->dwSkill_FrostJavelin_Param];
 							lpChar->PlaySlowCount -= (lpChar->PlaySlowCount * len) / 100;
 							lpChar->PlaySlowSpeed = 240 - (240 * Frost_Javelin_SpeedSubPercent[lpPlayInfo->dwSkill_FrostJavelin_Param]) / 100;
-							lpChar->PlayDistortion = 0;			//µΩ∫≈‰º« «ÿ¡¶
+							lpChar->PlayDistortion = 0;			//????? ????
 							break;
 						}
 						break;
@@ -386,7 +386,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 				Dmg3 = cnt;
 				Dmg4 = cnt;
 
-				//¿⁄±‚∫∏¥Ÿ ∑π∫ß¿Ã ≈´ ∏ÛΩ∫≈Õ∏¶ «—πÊø° ¡◊¿Ã¥¬ ∞ÊøÏ
+				//????? ?????? ? ????? ??ù ????? ???
 				if ((lpChar->smCharInfo.Life[1] / 4) < cnt &&
 					lpChar->smCharInfo.Level > lpPlayInfo->smCharInfo.Level) {
 
@@ -394,10 +394,10 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 				}
 
 				if (cnt > 0) {
-					//º± ∞¯∞›¿⁄ ±‚∑œΩ√ƒ— ∞Ê«Ëƒ° øÏº± »πµÊ
+					//?? ?????? ?????? ????? ?ùù ???
 					if (lpChar->smCharInfo.Life[0] == lpChar->smCharInfo.Life[1]) {
 						if (!lpChar->lpExpAttackPlayInfo) {
-							//º±∞¯∞› µÓ∑œ
+							//?????? ???
 							lpChar->lpExpAttackPlayInfo = lpPlayInfo;
 							lpChar->ExpAttackLife = 0;
 							lpChar->dwExpAttackTime = dwTime;
@@ -405,26 +405,26 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 					}
 					if (lpChar->lpExpAttackPlayInfo) {
 						if (lpChar->lpExpAttackPlayInfo == lpPlayInfo) {
-							//º±∞¯∞›¿⁄ ∞¯∞› ±‚∑œ
+							//???????? ???? ???
 							lpChar->ExpAttackLife += cnt;
 							lpChar->dwExpAttackTime = dwTime;
 						}
 						else {
 							if ((dwTime - lpChar->dwExpAttackTime) > 15000) {
-								//15√  ¿ÃªÛ ∞¯∞›æ¯¿Ω/ º±∞¯∞›¿⁄ √Îº“
+								//15?? ??? ???????/ ???????? ???
 								lpChar->lpExpAttackPlayInfo = 0;
 							}
 						}
 					}
 
-					/////////////////// Ω∫≈≥ √≥∏Æ /////////////////////
-					//HOLY_VALOR ( ∞¯∞›∑¬ % ∞°¡ﬂ )
+					/////////////////// ??? ??? /////////////////////
+					//HOLY_VALOR ( ????? % ???? )
 					if (lpPlayInfo->dwSkill_HolyValor_Time) {
 						if (lpPlayInfo->dwSkill_HolyValor_Time > dwPlayServTime) {
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_UNDEAD)
-								cnt += (cnt * lpPlayInfo->dwSkill_HolyValor_Param) / 100;	//æµ•µÂ ∞¯∞›∑¬ ∞°¡ﬂ
+								cnt += (cnt * lpPlayInfo->dwSkill_HolyValor_Param) / 100;	//??? ????? ????
 						}
-						else {	//¡æ∑· ( Ω√∞£√ ∞˙ )
+						else {	//???? ( ?ùù???? )
 							lpPlayInfo->dwSkill_HolyValor_Time = 0;
 							lpPlayInfo->dwSkill_HolyValor_Param = 0;
 						}
@@ -433,7 +433,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 					Dmg4 = cnt;
 
 					///////////////////////////////////////////////////
-					//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+					//???? ( ???? ???? )
 					lpChar->smCharInfo.Life[0] -= cnt;
 
 					if (lpChar->smCharInfo.Life[0] > 0)
@@ -441,21 +441,21 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 					else
 						SendShowDmg(lpChar, cnt, 7, lpPlayInfo);
 
-					if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, cnt);	//πﬁ¿∫∞¯∞› ±‚æÔ«œ¥¬ ∏˜
+					if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, cnt);	//???????? ?????? ??
 
 					if (lpChar->smCharInfo.Level > 14) {
-						//∑π∫ß 14¿ÃªÛ 20%¿ÃªÛ ≈∏∞›Ω√ø° ∏ÿ©ù
+						//???? 14??? 20%??? ????? ???
 						cnt = (cnt * 5) / lpChar->smCharInfo.Life[1];
 					}
 					else {
-						//∑π∫ß 10¿Ã«œ 10%¿ÃªÛ ≈∏∞›Ω√ø° ∏ÿ©ù
+						//???? 10???? 10%??? ????? ???
 						cnt = (cnt * 10) / lpChar->smCharInfo.Life[1];
 					}
 
 					if (lpChar->smCharInfo.Life[0] > 0 && (cnt >= 1 || (lpTransAttackData->AttackState & 0xFFFF) > 1) &&
 						(rand() % 100) < lpChar->smMonsterInfo.DamageStunPers) {
-						//∞¯∞›∆ƒøˆ∞° ºº∞≈≥™ ≈©∏Æ∆ºƒ√ ∆«¡§¿œ ∞ÊøÏ
-						//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+						//?????ùù??? ????? ?????? ?????? ???
+						//?????? ??? ???????? ??
 						ang2 = GetRadian2D(lpChar->pX, lpChar->pZ, lpPlayInfo->Position.x, lpPlayInfo->Position.z);
 						ang = (ang2 + ANGLE_180) & ANGCLIP;
 						lpChar->Angle.y = ang;
@@ -516,7 +516,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 						SendShopItemList(lpsmSock, lpChar);
 					}
 
-					if (lpChar->smMonsterInfo.Skin)
+					if (lpChar->smMonsterInfo.Skin && !lpChar->smMonsterInfo.WareHouseMaster)
 					{
 						cSkinChanger.OpenSkinChange(lpPlayInfo);
 					}
@@ -541,7 +541,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 						Caravana::GetInstance()->OpenCaravan(lpsmSock, lpChar);
 					}
 
-					if (lpChar->smMonsterInfo.ItemMix)
+					if (lpChar->smMonsterInfo.ItemMix && !lpChar->smMonsterInfo.WareHouseMaster)
 					{
 						SendOpenMixItem(lpsmSock, lpChar->smMonsterInfo.ItemMix);
 					}
@@ -566,12 +566,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 
 					if (lpChar->smMonsterInfo.GiftExpress)
 					{
-						smTransCommand.size = sizeof(smTRANS_COMMAND);
-						smTransCommand.code = smTRANSCODE_ITEM_EXPRESS;
-						smTransCommand.WParam = 0;
-						smTransCommand.LParam = 0;
-						smTransCommand.SParam = 0;
-						rsSendDataServer(lpsmSock, &smTransCommand);
+						SendOpenPostBox(lpsmSock);
 					}
 
 					if (lpChar->smMonsterInfo.WingQuestNpc) {
@@ -609,7 +604,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 					}
 
 					if (lpChar->smMonsterInfo.GiveMoneyNpc) {
-						//µ∑ ±‚∫Œ«‘
+						//?? ?????
 						smTransCommand.size = sizeof(smTRANS_COMMAND);
 						smTransCommand.code = smTRANSCODE_OPEN_GIVEMONEY;
 						smTransCommand.WParam = 0;
@@ -622,7 +617,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 
 					if (lpChar->smMonsterInfo.EventNPC) {
 						if (lpChar->smMonsterInfo.EventNPC == 5) {
-							//SOD »∏∞ËªÁ
+							//SOD ????
 							smTransCommand.size = sizeof(smTRANS_COMMAND);
 							smTransCommand.code = smTRANSCODE_OPEN_COLLECT;
 							smTransCommand.WParam = 5;
@@ -631,7 +626,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 							lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 						}
 						else {
-							//SOD ¿‘¿ÂµµøÏπÃ
+							//SOD ???????
 							SendOpenEvent(lpChar, lpPlayInfo, lpChar->smMonsterInfo.EventNPC);
 						}
 
@@ -642,22 +637,22 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 
 
 					if (lpChar->smMonsterInfo.ItemAging) {
-						//æ∆¿Ã≈€ ø°¿Ã¬° NPC
+						//?????? ????ùù NPC
 						SendOpenAgingItem(lpsmSock);
 					}
 
 					if (lpChar->smMonsterInfo.ClanNPC) {
-						//≈¨∑£ NPC
+						//??? NPC
 						SendOpenClanMenu(lpsmSock);
 					}
 
 					if (lpChar->smMonsterInfo.BlessCastleNPC) {
-						//∫Ì∑°Ω∫ƒ≥ΩΩ º≥¡§¡§∫∏ º€Ω≈
+						//??????ùù?? ???????? ???
 						rsSendBlessCastInfo(lpPlayInfo, lpChar->smMonsterInfo.BlessCastleNPC);
 					}
 
 					if (lpChar->smMonsterInfo.PollingNpc) {
-						//º≥πÆ¡∂ªÁ NPC
+						//???????? NPC
 						smTransCommand.size = sizeof(smTRANS_COMMAND);
 						smTransCommand.code = smTRANSCODE_PUBLIC_POLLING;
 						smTransCommand.WParam = lpChar->smMonsterInfo.PollingNpc;
@@ -669,7 +664,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 
 
 					if (lpChar->smMonsterInfo.szMediaPlayNPC_Title && lpChar->smMonsterInfo.szMediaPlayNPC_Path) {
-						//µøøµªÛ ¿Áª˝ NPC
+						//?????? ??? NPC
 
 						lstrcpy(TransChatMessage.szMessage, lpChar->smMonsterInfo.szMediaPlayNPC_Path);
 						len = lstrlen(TransChatMessage.szMessage);
@@ -682,7 +677,7 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 						lpsmSock->Send((char*)&TransChatMessage, TransChatMessage.size, TRUE);
 					}
 
-					// ºÆ¡ˆøÎ - πÕΩ∫√ƒ ∏Æº¬ ( πÕΩ∫√ƒ ∏Æº¬ npc∏¶ º±≈√«œ∏È √¢¿ª ∂ÁøÏ∂Û¥¬ ∏ﬁΩ√¡ˆ∏¶ ∫∏≥ª¥¬ «‘ºˆ »£√‚ )
+					// ?????? - ????? ???? ( ????? ???? npc?? ??????? ??? ????? ??????? ?????? ??? ??? )
 					if (lpChar->smMonsterInfo.MixtureReset)
 					{
 						SendOpenMixtureItemReset(lpsmSock);
@@ -750,17 +745,17 @@ int rsRecvAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA* lpTransAttack
 		}
 	}
 	else {
-		//«ˆ¿Á PK ∫“∞° ∏µÂ∑Œ º≥¡§
-		//ƒ≥∏Ø≈Õ∏¶ √£¥¬¥Ÿ ( ≥™¡ﬂø° ª°∏Æ ØÅ¿ªºˆ ¿÷∞‘ ƒ⁄µÂ»≠ Ω√ƒ— πŸ≤„ ¡‡æﬂ «‘ )
+		//???? PK ??? ???? ????
+		//ùù????? ??ùù? ( ????? ???? ?????? ??? ???? ???? ??? ??? ?? )
 		lpPlayInfo2 = srFindUserFromSerial(lpTransAttackData->dwTarObjectSerial);
 		if (lpPlayInfo2) {
 			if (rsServerConfig.Enable_PK || lpPlayInfo->smCharInfo.State != lpPlayInfo2->smCharInfo.State) {
 
 				if (lpPlayInfo->AdminMode || (lpPlayInfo->smCharInfo.Level > LIMIT_PK_LEVEL && lpPlayInfo2->smCharInfo.Level > LIMIT_PK_LEVEL)) {
-					//∞¢∞¢ ∑π∫ß 10 ¿Ã«œ¥¬ PK±›¡ˆ
+					//???? ???? 10 ????? PK????
 					//lpPlayInfo2->lpsmSock->Send( (char *)lpTransAttackData , lpTransAttackData->size , TRUE );
 
-					//¥Ÿ∏• ¿Ø¿˙ ∞¯∞› ∆–≈∂ ∫∏≥ª±‚ ( ¿Ø¿˙ ∞¯∞› )
+					//??? ???? ???? ??? ?????? ( ???? ???? )
 					rsSendAttackUser(lpPlayInfo, lpPlayInfo2, lpTransAttackData->Power / PK_POWER_DIVIDE, 0x80);
 				}
 			}
@@ -796,14 +791,14 @@ int rsRecvRangeAttackData_Old(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpT
 	return TRUE;
 }
 
-//∞¯∞› π¸¿ß«¸ ¿Ø¿˙ ºˆΩ≈
+//???? ?????? ???? ????
 int rsRecvRangeAttackUserData_Old(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAttackData)
 {
 
 	smTRANS_COMMAND		smTransCommand;
 
-	//π¸¿ß«¸ Ω∫≈≥ ∞¯∞› ( ¿Ø¿˙ ∞¯∞› )
-	//∞¯∞› µ•¿Ã≈∏ ±‚∑œ
+	//?????? ??? ???? ( ???? ???? )
+	//???? ????? ???
 	lpPlayInfo->Recv_AttackCount++;
 	lpPlayInfo->Recv_AttackDamage += lpTransSkilAttackData->Power;
 
@@ -858,14 +853,14 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	smTRANS_COMMAND		smTransCommand;
 	int	temp;
 
-	// pluto PK«„øÎ « µÂ ¿¸∫Œ
+	// pluto PK??? ??? ????
 	if (!lpPlayInfo->AdminMode)
 	{
 		if (rsServerConfig.Enable_PKField_All)
 		{
-			// pluto PK«„øÎ « µÂ ¿¸∫Œ ºˆ¡§
+			// pluto PK??? ??? ???? ????
 			if (!rsServerConfig.Enable_PK || lpPlayInfo->Position.Area < 11 && lpPlayInfo->Position.Area > 34)
-				return FALSE;			//«ˆ¿Á ¿œπ›¿Ø¿˙¥¬ PK±›¡ˆ
+				return FALSE;			//???? ????????? PK????
 
 			if (rsServerConfig.BlessCastleMode == 2 && !lpPlayInfo->AdminMode) return FALSE;
 		}
@@ -896,7 +891,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	TransAttackData.AttackSize = 32 * fONE;
 	TransAttackData.Power = Power;
 
-	//¡æº∫ æ∆¿Ã≈€ Ω√∞£¡æ∑· »Æ¿Œ
+	//???? ?????? ?ùù????? ???
 	if (lpPlayInfo->dwSiegeItem_Scroll_Time && lpPlayInfo->dwSiegeItem_Scroll_Time < dwPlayServTime) {
 		lpPlayInfo->dwSiegeItem_Scroll_Code = 0;
 		lpPlayInfo->dwSiegeItem_Scroll_Time = 0;
@@ -910,7 +905,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 		lpPlayInfo->dwSiegeItem_Stone2_Time = 0;
 	}
 
-	//¡æº∫ æ∆¿Ã≈€ Ω√∞£¡æ∑· »Æ¿Œ
+	//???? ?????? ?ùù????? ???
 	if (lpPlayInfo2->dwSiegeItem_Scroll_Time && lpPlayInfo2->dwSiegeItem_Scroll_Time < dwPlayServTime) {
 		lpPlayInfo2->dwSiegeItem_Scroll_Code = 0;
 		lpPlayInfo2->dwSiegeItem_Scroll_Time = 0;
@@ -924,22 +919,22 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 		lpPlayInfo->dwSiegeItem_Stone2_Time = 0;
 	}
 
-	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBC1 | sin01)) {	//π´¿˚Ω∫≈©∑—
+	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBC1 | sin01)) {	//?????????
 		if (lpPlayInfo2->Position.Area == rsCASTLE_FIELD) return FALSE;
 	}
-	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBI1 | sin05))		//π´¿˚Ω∫≈©∑—
+	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBI1 | sin05))		//?????????
 		return FALSE;
 
-	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBC1 | sin03)) {	//√ﬂ∞° »∏««
+	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBC1 | sin03)) {	//??? ???
 		if (lpPlayInfo2->Position.Area == rsCASTLE_FIELD) {
 			if ((rand() % 100) < (int)lpPlayInfo2->dwSiegeItem_Scroll_Param) {
 #ifdef DISP_DAMAGE
 				if (lpPlayInfo2->AdminMode > 2) {
-					wsprintf(szDispDamage, "> %s Esquiva Adicional ( Pergaminho de Evas„o[%d] )", lpPlayInfo->smCharInfo.szName, lpPlayInfo2->dwSiegeItem_Scroll_Param);
+					wsprintf(szDispDamage, "> %s Esquiva Adicional ( Pergaminho de Evas?o[%d] )", lpPlayInfo->smCharInfo.szName, lpPlayInfo2->dwSiegeItem_Scroll_Param);
 					rsDisplayDamgeToClient(lpPlayInfo2, szDispDamage);
 				}
 #endif
-				//√ﬂ∞°»∏«« ¡§∫∏ ≈¨∂Û∏Ææ∆Æø° √‚∑¬
+				//?????? ???? ??????? ???
 				smTransCommand.code = smTRANSCODE_SUCCESS_EVATION;
 				smTransCommand.size = sizeof(smTRANS_COMMAND);
 				smTransCommand.WParam = 0;
@@ -951,15 +946,15 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 			}
 		}
 	}
-	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBI1 | sin07)) {	//√ﬂ∞° »∏««
+	if (lpPlayInfo2->dwSiegeItem_Scroll_Code == (sinBI1 | sin07)) {	//??? ???
 		if ((rand() % 100) < (int)lpPlayInfo2->dwSiegeItem_Scroll_Param) {
 #ifdef DISP_DAMAGE
 			if (lpPlayInfo2->AdminMode > 2) {
-				wsprintf(szDispDamage, "> %s Esquiva adicional ( Pergaminho de Evas„o [%d] )", lpPlayInfo->smCharInfo.szName, lpPlayInfo2->dwSiegeItem_Scroll_Param);
+				wsprintf(szDispDamage, "> %s Esquiva adicional ( Pergaminho de Evas?o [%d] )", lpPlayInfo->smCharInfo.szName, lpPlayInfo2->dwSiegeItem_Scroll_Param);
 				rsDisplayDamgeToClient(lpPlayInfo2, szDispDamage);
 			}
 #endif
-			//√ﬂ∞°»∏«« ¡§∫∏ ≈¨∂Û∏Ææ∆Æø° √‚∑¬
+			//?????? ???? ??????? ???
 			smTransCommand.code = smTRANSCODE_SUCCESS_EVATION;
 			smTransCommand.size = sizeof(smTRANS_COMMAND);
 			smTransCommand.WParam = 0;
@@ -972,20 +967,20 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	}
 
 	if (lpPlayInfo->dwSiegeItem_Stone2_Code && lpPlayInfo2->smCharInfo.JOB_CODE == lpPlayInfo->dwSiegeItem_Stone2_Code) {
-		//¡˜æ˜∫∞ ∞≠»≠ Ω∫≈©∑—
+		//?????? ??? ?????
 		TransAttackData.Power += (TransAttackData.Power * lpPlayInfo->dwSiegeItem_Stone2_Param) / 100;
 
 #ifdef DISP_DAMAGE
-		///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+		///////////////////////// ?????? ?????? ???? ??? //////////////////////
 		if (lpPlayInfo->AdminMode > 2) {
-			wsprintf(szDispDamage, ">%s ∞¯∞›∑¬ ∞≠»≠ºÆ ( ¡˜æ˜:%d )( %d )", lpPlayInfo2->smCharInfo.szName, lpPlayInfo->dwSiegeItem_Stone2_Code, TransAttackData.Power);
+			wsprintf(szDispDamage, ">%s ????? ????? ( ????:%d )( %d )", lpPlayInfo2->smCharInfo.szName, lpPlayInfo->dwSiegeItem_Stone2_Code, TransAttackData.Power);
 			rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 		}
 #endif
 	}
 
 
-	if (lpPlayInfo2->dwSkill_PhysicalAbsorb_Time) {	//∞¯∞›∑¬ ∞®º“ (»Ìºˆ∑¬ πÃ∏Æ¿˚øÎ)- ««¡ˆƒ√ ªÁøÎ
+	if (lpPlayInfo2->dwSkill_PhysicalAbsorb_Time) {	//????? ???? (?????? ???????)- ?????? ???
 		if (lpPlayInfo2->dwSkill_PhysicalAbsorb_Time > dwPlayServTime) {
 			TransAttackData.Power -= lpPlayInfo2->dwSkill_PhysicalAbsorb_Param;
 			if (TransAttackData.Power < 0) return FALSE;
@@ -995,7 +990,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 			lpPlayInfo2->dwSkill_PhysicalAbsorb_Param = 0;
 		}
 	}
-	if (lpPlayInfo2->dwSkill_ExtreamShield_Time) {	//∫Ì∑∞¿≤¡ı∞° - ¿ÕΩ∫∆Æ∏≤ ΩØµÂ
+	if (lpPlayInfo2->dwSkill_ExtreamShield_Time) {	//?????????? - ?????? ????
 		if (lpPlayInfo2->dwSkill_ExtreamShield_Time > dwPlayServTime) {
 			TransAttackData.AttackState |= (lpPlayInfo2->dwSkill_ExtreamShield_Param << 16);
 		}
@@ -1008,7 +1003,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	/////////////////////////////////////////////////////////////////////
 
 
-	if (lpPlayInfo2->dwSkill_MetalArmor_Time) {	//∞¯∞›∑¬ ∞®º“ (»Ìºˆ∑¬ πÃ∏Æ¿˚øÎ)- ∏ﬁ≈ªæ∆∏” ªÁøÎ
+	if (lpPlayInfo2->dwSkill_MetalArmor_Time) {	//????? ???? (?????? ???????)- ?????? ???
 		if (lpPlayInfo2->dwSkill_MetalArmor_Time > dwPlayServTime) {
 			TransAttackData.Power -= lpPlayInfo2->dwSkill_MetalArmor_Param;
 			if (TransAttackData.Power < 0) return FALSE;
@@ -1020,7 +1015,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	}
 
 
-	if (lpPlayInfo2->dwSkill_VirtualLife_Time) {	//∞°ªÛ ª˝∏Ì∑¬¿ª ≥Ùø©º≠ ∞¯∞›∑¬ ∞®º“
+	if (lpPlayInfo2->dwSkill_VirtualLife_Time) {	//???? ???????? ?????? ????? ????
 		if (lpPlayInfo2->dwSkill_VirtualLife_Time > dwPlayServTime) {
 			TransAttackData.Power -= (TransAttackData.Power * lpPlayInfo2->dwSkill_VirtualLife_Param) / 100;
 			if (TransAttackData.Power < 0) return FALSE;
@@ -1031,7 +1026,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 		}
 	}
 
-	if (lpPlayInfo2->dwSkill_EnergyShield_Time) {	//ø°≥ ¡ˆΩØµÂ ∞¯∞›∑¬ ∞®º“
+	if (lpPlayInfo2->dwSkill_EnergyShield_Time) {	//?????????? ????? ????
 		if (lpPlayInfo2->dwSkill_EnergyShield_Time > dwPlayServTime) {
 			temp = (TransAttackData.Power * lpPlayInfo2->dwSkill_EnergyShield_Param) / 100;
 			TransAttackData.Power -= temp;
@@ -1044,7 +1039,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 		}
 	}
 
-	if (lpPlayInfo2->dwSkill_Compulsion_Time) {	//Compulsion »Ìºˆ∑¬ √ﬂ∞°
+	if (lpPlayInfo2->dwSkill_Compulsion_Time) {	//Compulsion ?????? ???
 		if (lpPlayInfo2->dwSkill_Compulsion_Time > dwPlayServTime) {
 			TransAttackData.Power -= lpPlayInfo2->dwSkill_Compulsion_Param;
 			if (TransAttackData.Power < 0) return FALSE;
@@ -1055,7 +1050,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 		}
 	}
 
-	if (lpPlayInfo2->dwSkill_Berserker_Time) {	//πˆº≠ƒø »Ìºˆ∑¬ ∞®º“
+	if (lpPlayInfo2->dwSkill_Berserker_Time) {	//????ùù ?????? ????
 		if (lpPlayInfo2->dwSkill_Berserker_Time > dwPlayServTime) {
 			TransAttackData.Power -= Berserker_SubAbsorb[lpPlayInfo2->dwSkill_Berserker_Param];
 			if (TransAttackData.Power < 0) return FALSE;
@@ -1067,19 +1062,19 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	}
 
 
-	//∫£¿Ã±◊ √ﬂ∞°»∏««
+	//????? ??????
 	if (lpPlayInfo2->dwSkill_Vague_Time) {
 		if (lpPlayInfo2->dwSkill_Vague_Time > dwPlayServTime) {
 			if ((rand() % 100) < Vague_EvasionPercent[lpPlayInfo2->dwSkill_Vague_Param]) {
 
 #ifdef DISP_DAMAGE
 				if (lpPlayInfo2->AdminMode > 2) {
-					wsprintf(szDispDamage, "> %s Evas„o Adicional ( Vague[%d] )", lpPlayInfo->smCharInfo.szName, Vague_EvasionPercent[lpPlayInfo2->dwSkill_Vague_Param]);
+					wsprintf(szDispDamage, "> %s Evas?o Adicional ( Vague[%d] )", lpPlayInfo->smCharInfo.szName, Vague_EvasionPercent[lpPlayInfo2->dwSkill_Vague_Param]);
 					rsDisplayDamgeToClient(lpPlayInfo2, szDispDamage);
 				}
 #endif
 
-				//√ﬂ∞°»∏«« ¡§∫∏ ≈¨∂Û∏Ææ∆Æø° √‚∑¬
+				//?????? ???? ??????? ???
 				smTransCommand.code = smTRANSCODE_SUCCESS_EVATION;
 				smTransCommand.size = sizeof(smTRANS_COMMAND);
 				smTransCommand.WParam = 0;
@@ -1088,7 +1083,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 				smTransCommand.EParam = 0;
 				lpPlayInfo2->lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 
-				return FALSE;		//√ﬂ∞° »∏«« ∆«¡§
+				return FALSE;		//??? ??? ????
 			}
 		}
 		else {
@@ -1103,12 +1098,12 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 
 #ifdef DISP_DAMAGE
 				if (lpPlayInfo2->AdminMode > 2) {
-					wsprintf(szDispDamage, "> %s Evas„o Adicional ( Vague Phoenix[%d] )", lpPlayInfo->smCharInfo.szName, Evasion_Mastery_AddPercent[lpPlayInfo2->dwSkill_EvasionMastery_Param]);
+					wsprintf(szDispDamage, "> %s Evas?o Adicional ( Vague Phoenix[%d] )", lpPlayInfo->smCharInfo.szName, Evasion_Mastery_AddPercent[lpPlayInfo2->dwSkill_EvasionMastery_Param]);
 					rsDisplayDamgeToClient(lpPlayInfo2, szDispDamage);
 				}
 #endif
 
-				//√ﬂ∞°»∏«« ¡§∫∏ ≈¨∂Û∏Ææ∆Æø° √‚∑¬
+				//?????? ???? ??????? ???
 				smTransCommand.code = smTRANSCODE_SUCCESS_EVATION;
 				smTransCommand.size = sizeof(smTRANS_COMMAND);
 				smTransCommand.WParam = 0;
@@ -1117,7 +1112,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 				smTransCommand.EParam = 0;
 				lpPlayInfo2->lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 
-				return FALSE;		//√ﬂ∞° »∏«« ∆«¡§
+				return FALSE;		//??? ??? ????
 			}
 		}
 		else {
@@ -1126,7 +1121,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 		}
 	}
 
-	if (lpPlayInfo2->dwSkill_GodlyShied_Time) {	//∞¯∞›∑¬ ∞®º“ (»Ìºˆ∑¬ πÃ∏Æ¿˚øÎ)- ∞°µÈ∏ÆΩØµÂªÁøÎ
+	if (lpPlayInfo2->dwSkill_GodlyShied_Time) {	//????? ???? (?????? ???????)- ??????????
 		if (lpPlayInfo2->dwSkill_GodlyShied_Time > dwPlayServTime) {
 			TransAttackData.Power -= (TransAttackData.Power * Godly_Shield_AbsorbPercent[lpPlayInfo2->dwSkill_GodlyShied_Param]) / 100;
 			if (TransAttackData.Power < 0) return FALSE;
@@ -1138,17 +1133,17 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	}
 
 
-	//»¶ø¿∫Íπﬂ«“∂Û √ﬂ∞°»∏««
+	//????????? ??????
 	if (lpPlayInfo2->dwSkill_HallOfValhalla_Time) {
 		if (lpPlayInfo2->dwSkill_HallOfValhalla_Time > dwPlayServTime) {
 			if ((rand() % 100) < (int)lpPlayInfo2->wSkill_HallOfValhalla_Param[0]) {
 #ifdef DISP_DAMAGE
 				if (lpPlayInfo2->AdminMode > 2) {
-					wsprintf(szDispDamage, "> %s Evas„o Adicional ( Hall of Valhalla [%d] )", lpPlayInfo->smCharInfo.szName, lpPlayInfo2->wSkill_HallOfValhalla_Param[0]);
+					wsprintf(szDispDamage, "> %s Evas?o Adicional ( Hall of Valhalla [%d] )", lpPlayInfo->smCharInfo.szName, lpPlayInfo2->wSkill_HallOfValhalla_Param[0]);
 					rsDisplayDamgeToClient(lpPlayInfo2, szDispDamage);
 				}
 #endif
-				//√ﬂ∞°»∏«« ¡§∫∏ ≈¨∂Û∏Ææ∆Æø° √‚∑¬
+				//?????? ???? ??????? ???
 				smTransCommand.code = smTRANSCODE_SUCCESS_EVATION;
 				smTransCommand.size = sizeof(smTRANS_COMMAND);
 				smTransCommand.WParam = 0;
@@ -1157,7 +1152,7 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 				smTransCommand.EParam = 0;
 				lpPlayInfo2->lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 
-				return FALSE;		//√ﬂ∞° »∏«« ∆«¡§
+				return FALSE;		//??? ??? ????
 			}
 		}
 		else {
@@ -1165,17 +1160,17 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 		}
 	}
 
-	if (lpPlayInfo2->dwSkill_SummonMuspell_Time) {	//º≠∏Û π´Ω∫∆Á
+	if (lpPlayInfo2->dwSkill_SummonMuspell_Time) {	//???? ??????
 		if (lpPlayInfo2->dwSkill_SummonMuspell_Time > dwPlayServTime) {
 
 			if ((rand() % 100) < Summon_Muspell_BlockPercent[lpPlayInfo2->dwSkill_SummonMuspell_Param]) {
 #ifdef DISP_DAMAGE
 				if (lpPlayInfo2->AdminMode > 2) {
-					wsprintf(szDispDamage, "> %s Evas„o Adicional ( Summon Muspell [%d] )", lpPlayInfo->smCharInfo.szName, Summon_Muspell_BlockPercent[lpPlayInfo2->dwSkill_SummonMuspell_Param]);
+					wsprintf(szDispDamage, "> %s Evas?o Adicional ( Summon Muspell [%d] )", lpPlayInfo->smCharInfo.szName, Summon_Muspell_BlockPercent[lpPlayInfo2->dwSkill_SummonMuspell_Param]);
 					rsDisplayDamgeToClient(lpPlayInfo2, szDispDamage);
 				}
 #endif
-				//√ﬂ∞°»∏«« ¡§∫∏ ≈¨∂Û∏Ææ∆Æø° √‚∑¬
+				//?????? ???? ??????? ???
 				smTransCommand.code = smTRANSCODE_SUCCESS_EVATION;
 				smTransCommand.size = sizeof(smTRANS_COMMAND);
 				smTransCommand.WParam = 0;
@@ -1200,32 +1195,32 @@ int rsSendAttackUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Power,
 	TransAttackData.dwDestObjectSerial = lpPlayInfo->dwObjectSerial;
 	TransAttackData.dwTarObjectSerial = lpPlayInfo2->dwObjectSerial;
 	TransAttackData.dwChkSum = TransAttackData.Power * 2002 +
-		(TransAttackData.x * TransAttackData.y * TransAttackData.z);// ¡∂¿€ πÊ¡ˆ ƒ⁄µÂ
+		(TransAttackData.x * TransAttackData.y * TransAttackData.z);// ???? ???? ???
 
 
 
 	if (lpPlayInfo2->lpsmSock) {
 
-		//∞¯∞› µ•¿Ã≈∏ ±‚∑œ
+		//???? ????? ???
 		lpPlayInfo2->Send_AttackCount++;
 		lpPlayInfo2->Send_AttackDamage += TransAttackData.Power;
 
 
-		//ƒ≥∏Ø≈Õ PK ±‚∑œ
+		//ùù???? PK ???
 		rsRecord_PKDamage(lpPlayInfo, lpPlayInfo2, TransAttackData.Power);
 
 		if (rsServerConfig.CrazyPacketMode && lpPlayInfo2->dwDecPacketCode &&
-			lpPlayInfo2->dwDecPacketTime2 < dwPlayServTime) {					//≈©∑π¿Ã¡ˆ ∆–≈∂ ∏µÂ
+			lpPlayInfo2->dwDecPacketTime2 < dwPlayServTime) {					//??????? ??? ???
 
-			//S2C ∞¯∞› √Ω≈©º∂ ( ≈©∑π¿Ã¡ˆ ∆–≈∂ )
+			//S2C ???? ???? ( ??????? ??? )
 			TransAttackData.code = smTRANSCODE_ATTACKDATA2;
-			TransAttackData.dwDamageChkSum = dm_GetDamgeChkSum_S2V(&TransAttackData);		//S2C ∞¯∞› √Ω≈©º∂
+			TransAttackData.dwDamageChkSum = dm_GetDamgeChkSum_S2V(&TransAttackData);		//S2C ???? ????
 
 			if (lpPlayInfo2)
 				rsEncodeDamagePacket(lpPlayInfo2, &TransAttackData);
 		}
 		else
-			TransAttackData.dwDamageChkSum = dm_GetDamgeChkSum_S2V(&TransAttackData);		//S2C ∞¯∞› √Ω≈©º∂
+			TransAttackData.dwDamageChkSum = dm_GetDamgeChkSum_S2V(&TransAttackData);		//S2C ???? ????
 
 		lpPlayInfo2->lpsmSock->Send((char*)&TransAttackData, TransAttackData.size, TRUE);
 	}
@@ -1271,13 +1266,13 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 
 	switch (lpTransSkilAttackData->AttackState) {
-	case 0:		//¿œπ› π¸¿ß«¸
-	case 100:	//∑π¿Ã¡ˆ ø¿∫Í ¡¶≈©∂˜ ( ∫“ ∞¯∞› )
-	case 101:	//Ω∫∆ƒ≈© ( ≥˙ ∞¯∞› )
-	case 103:	//µπŸ¿Œ ∂Û¿Ã∆√ ( æµ•µÂ 50% ∞°¡ﬂ )
-	case 104:	//æÛ¿Ω ( ∞¯∞› )
-	case 105:	//¿Œ√æ∆Æ ¿¸±‚
-	case 106:	//µ∂ ∞¯∞›
+	case 0:		//??? ??????
+	case 100:	//?????? ???? ????? ( ?? ???? )
+	case 101:	//????? ( ?? ???? )
+	case 103:	//????? ?????? ( ??? 50% ???? )
+	case 104:	//???? ( ???? )
+	case 105:	//??ùù? ????
+	case 106:	//?? ????
 
 		for (cnt2 = 0; cnt2 < CONNECTMAX; cnt2++) {
 
@@ -1288,7 +1283,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 					if (lpCharInfo->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						//if ( rsCheckAttackRange( lpTransSkilAttackData->x,lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar , dDist )==FALSE ) break;
 
 						pow = lpTransSkilAttackData->Power;
@@ -1297,10 +1292,10 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 						Dmg1 = pow;
 
 						if (lpTransSkilAttackData->AttackState == 100) {
-							//∫“ ∞¯∞› ( ∫“ ¿˙«◊∑¬ ¿˚øÎ )
+							//?? ???? ( ?? ????? ???? )
 							rs = lpCharInfo->smCharInfo.Resistance[sITEMINFO_FIRE];
 							if (SkillCode == SKILL_PLAY_METEO) {
-								rs /= 2;		//πÃ∆ºæÓ ∫“º”º∫ 50% ¿˚øÎ
+								rs /= 2;		//????? ???? 50% ????
 							}
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1309,7 +1304,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 							}
 						}
 						if (lpTransSkilAttackData->AttackState == 101) {
-							//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ )
+							//?? ???? ( ???? ????? ???? )
 							rs = lpCharInfo->smCharInfo.Resistance[sITEMINFO_LIGHTING];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1318,7 +1313,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 							}
 						}
 						if (lpTransSkilAttackData->AttackState == 105) {
-							//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ ) - ¿Œ√æ∆Æ
+							//?? ???? ( ???? ????? ???? ) - ??ùù?
 							rs = lpCharInfo->smCharInfo.Resistance[sITEMINFO_LIGHTING];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1328,7 +1323,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 							StunFlag = FALSE;
 						}
 						if (lpTransSkilAttackData->AttackState == 104) {
-							//æÛ¿Ω ∞¯∞› ( æÛ¿Ω ¿˙«◊∑¬ ¿˚øÎ )
+							//???? ???? ( ???? ????? ???? )
 							rs = lpCharInfo->smCharInfo.Resistance[sITEMINFO_ICE];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1338,7 +1333,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 						}
 
 						if (lpTransSkilAttackData->AttackState == 106) {
-							//µ∂ ∞¯∞› ( ∫£≥ Ω∫««æÓ )
+							//?? ???? ( ???? ????? )
 							rs = lpCharInfo->smCharInfo.Resistance[sITEMINFO_POISON];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1352,11 +1347,11 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 						Dmg2 = pow;
 
 						if (lpTransSkilAttackData->AttackState == 103) {
-							//µπŸ¿Œ ∂Û¿Ã∆√ ( æµ•µÂ 50% ∞°¡ﬂ )
+							//????? ?????? ( ??? 50% ???? )
 							if (lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_UNDEAD) {
 								pow += pow / 2;
 							}
-							//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ )
+							//?? ???? ( ???? ????? ???? )
 							rs = lpCharInfo->smCharInfo.Resistance[sITEMINFO_LIGHTING] / 10;
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1368,7 +1363,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 						switch (SkillCode) {
 						case SKILL_PLAY_MECHANIC_BOMB:
-							//∏ﬁƒ´¥–π¸ ( π¬≈œ∆Æ ∏ﬁƒ´¥– ∏ÛΩ∫≈Õø°∞‘ 50%√ﬂ∞° )
+							//????ùù? ( ????? ????? ??????? 50%??? )
 							if (lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_MUTANT ||
 								lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_MECHANIC) {
 								pow += pow / 2;
@@ -1376,21 +1371,21 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 							break;
 
 						case SKILL_PLAY_SPARK:
-							//Ω∫∆ƒ≈© ( ∏ﬁƒ´¥– ∏ÛΩ∫≈Õø°∞‘ 50% √ﬂ∞° )
+							//????? ( ????? ??????? 50% ??? )
 							if (lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_MECHANIC) {
 								pow += pow / 2;
 							}
 							break;
 
 						case SKILL_PLAY_EXPANSION:
-							//¿ÕΩ∫∆“º« ( π¬≈œ∆Æ ∏ÛΩ∫≈Õø°∞‘ 30% √ﬂ∞° )
+							//?????? ( ????? ??????? 30% ??? )
 							if (lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_MUTANT) {
 								pow += (pow * 30) / 100;
 							}
 							break;
 
 						case SKILL_PLAY_SWORD_BLAST:
-							//º“µÂ ∫Ì∑°Ω∫∆Æ ( ≥Î∏÷ , π¬≈œ∆Æ ∏ÛΩ∫≈Õ 30% √ﬂ∞° )
+							//??? ??????? ( ??? , ????? ???? 30% ??? )
 							if (lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_NORMAL ||
 								lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_MUTANT) {
 								pow += (pow * 30) / 100;
@@ -1398,25 +1393,25 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 							break;
 
 						case SKILL_PLAY_PIERCING:
-							//««æÓΩÃ ( π¬≈œ∆Æ ∏ÛΩ∫≈Õø°∞‘ 30% √ﬂ∞° )
+							//???? ( ????? ??????? 30% ??? )
 							if (lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_MUTANT) {
 								pow += (pow * 30) / 100;
 							}
 							break;
 
 						case SKILL_PLAY_VENOM_SPEAR:
-							//∫£≥ Ω∫««æÓ µ∂¿˚øÎ
+							//???? ????? ??????
 							//lpChar->PlayPoison[1] = VenomSpear_Time[SkillPoint]*17;
 							//lpChar->PlayPoison[0] = GetRandomPos( VenomSpear_Damage[SkillPoint][0] , VenomSpear_Damage[SkillPoint][1] );
 							break;
 
-						case SKILL_PLAY_PERFORATION:			//∆€∆˜∑π¿Ãº«
+						case SKILL_PLAY_PERFORATION:			//?????????
 							if ((rand() % 100) < GetCritical2(lpPlayInfo, lpCharInfo, dm_Critical_Temp)) {
-								pow = (pow * 170) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+								pow = (pow * 170) / 100;						//?????? ???????
 #ifdef DISP_DAMAGE
-///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+///////////////////////// ?????? ?????? ???? ??? //////////////////////
 								if (lpPlayInfo->AdminMode > 2) {
-									wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( Critical )", lpCharInfo->smCharInfo.szName);
+									wsprintf(szDispDamage, ">%s ??????????? ( Critical )", lpCharInfo->smCharInfo.szName);
 									rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 								}
 #endif
@@ -1446,7 +1441,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 							break;
 
 						case SKILL_PLAY_IMPULSION:
-							// ∏ﬁƒ´¥– ∏ÛΩ∫≈Õø°∞‘ 30% √ﬂ∞° 
+							// ????? ??????? 30% ??? 
 							if (lpCharInfo->smCharInfo.Brood == smCHAR_MONSTER_MECHANIC) {
 								pow += (pow * 30) / 100;
 							}
@@ -1454,9 +1449,9 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 						case SKILL_PLAY_CYCLONE_STRIKE:
 							if ((rand() % 100) < GetCritical2(lpPlayInfo, lpCharInfo, dm_Critical_Temp)) {
-								pow = (pow * 170) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+								pow = (pow * 170) / 100;						//?????? ???????
 #ifdef DISP_DAMAGE
-///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+///////////////////////// ?????? ?????? ???? ??? //////////////////////
 								if (lpPlayInfo->AdminMode > 2) {
 									wsprintf(szDispDamage, "> %s Ataques de estrelas ( Critical )", lpCharInfo->smCharInfo.szName);
 									rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
@@ -1485,7 +1480,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 
 #ifdef DISP_DAMAGE
-							///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+							///////////////////////// ?????? ?????? ???? ??? //////////////////////
 							if (lpPlayInfo->AdminMode > 2) {
 								wsprintf(szDispDamage, "> %s Ataques de estrelas ( %d %d %d %d )", lpCharInfo->smCharInfo.szName, Dmg1, Dmg2, Dmg3, Dmg4);
 								rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
@@ -1500,8 +1495,8 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 
 
-	case 2:	//∑ŒæÓ
-	case 5:	//ΩØµÂΩ∫∆Æ∂Û¿Ã≈©
+	case 2:	//?ùù?
+	case 5:	//??????????
 		for (cnt2 = 0; cnt2 < CONNECTMAX; cnt2++) {
 
 			lpCharInfo = &rsPlayInfo[cnt2];
@@ -1511,45 +1506,45 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 					if (lpCharInfo->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						//if ( rsCheckAttackRange( lpTransSkilAttackData->x,lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar , dDist )==FALSE ) break;
 
-						//ª˝º”º∫ ø° µ˚∏£ ¡ﬂ∏≥ªÛ≈¬ ¿Ø¡ˆ 
+						//????? ?? ???? ??????? ???? 
 						rs = lpCharInfo->smCharInfo.Resistance[sITEMINFO_BIONIC];
 						if (rs < 0) rs = 0;
 						if (rs >= 100) rs = 100;
 						rs = 100 - rs;
 
 						if (lpTransSkilAttackData->AttackState == 2) {
-							//∑ŒæÓ
+							//?ùù?
 							//if ( (rand()%100)>rs ) {
-								//lpChar->PlayStunCount = lpTransSkilAttackData->Power<<4;		//¡ﬂ∏≥ªÛ≈¬ º≥¡§
+								//lpChar->PlayStunCount = lpTransSkilAttackData->Power<<4;		//??????? ????
 								//lpChar->PlayStunCount = ( lpChar->PlayStunCount * rs )/100;
 							//}
 							rsSendAttackUser(lpPlayInfo, lpCharInfo, 1, 0x80, -SKILL_PLAY_ROAR, (lpTransSkilAttackData->Power * rs) / 100);
 
 						}
 						else if (lpTransSkilAttackData->AttackState == 5) {
-							//ΩØµÂ Ω∫∆Æ∂Û¿Ã≈©
+							//???? ????????
 							/*
 							pow = ( lpTransSkilAttackData->Power * lpChar->smCharInfo.Absorption )/100;
 							pow = lpTransSkilAttackData->Power-pow;
 							if ( pow>0 ) {
-								//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+								//???? ( ???? ???? )
 								lpChar->smCharInfo.Life[0] -= pow;
-								if ( lpChar->lpAttackDamageList ) rsRecordCharDamage( lpPlayInfo , lpChar , pow );	//πﬁ¿∫∞¯∞› ±‚æÔ«œ¥¬ ∏˜
+								if ( lpChar->lpAttackDamageList ) rsRecordCharDamage( lpPlayInfo , lpChar , pow );	//???????? ?????? ??
 
 							}
-							lpChar->PlayStunCount = 16*10;			//¡ﬂ∏≥ªÛ≈¬ 10√ 
+							lpChar->PlayStunCount = 16*10;			//??????? 10??
 							lpChar->PlayStunCount = ( lpChar->PlayStunCount * rs )/100;
 							*/
 							rsSendAttackUser(lpPlayInfo, lpCharInfo, lpTransSkilAttackData->Power / PK_POWER_DIVIDE, 0x80, -SKILL_PLAY_SHIELD_STRIKE, (10 * rs) / 100);
 
 
 #ifdef DISP_DAMAGE
-							///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+							///////////////////////// ?????? ?????? ???? ??? //////////////////////
 							if (lpPlayInfo->AdminMode > 2) {
-								wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( %d %d )", lpCharInfo->smCharInfo.szName, lpTransSkilAttackData->Power, pow);
+								wsprintf(szDispDamage, ">%s ??????????? ( %d %d )", lpCharInfo->smCharInfo.szName, lpTransSkilAttackData->Power, pow);
 								rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 							}
 #endif
@@ -1563,7 +1558,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 	case 3:
 		if (SkillCode == SKILL_PLAY_GLACIAL_SPIKE) {
-			//±€∑°º» Ω∫∆ƒ¿Ã≈©
+			//????? ???????
 			time = 8;
 			SlowSpeed = 200;
 		}
@@ -1573,12 +1568,12 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 			SlowSpeed = 80;
 		}
 		else {
-			//±◊∂ÛøÓµÂ ∆ƒ¿Ã≈©
+			//????? ?????
 			time = 10;
 			SlowSpeed = 128;
 			cnt2 = lpTransSkilAttackData->AttackSize >> FLOATNS;
 			for (cnt = 0; cnt < 10; cnt++) {
-				//±◊∂ÛøÓµÂ ∆ƒ¿Ã≈© Ω√∞£¿ª √£¥¬¥Ÿ
+				//????? ????? ?ùù??? ??ùù?
 				if (G_Pike_Range[cnt] == cnt2) {
 					time = G_Pike_Time[cnt];
 					break;
@@ -1594,7 +1589,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 					if (lpCharInfo->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						//if ( rsCheckAttackRange( lpTransSkilAttackData->x,lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar , dDist )==FALSE ) break;
 
 						pow = lpTransSkilAttackData->Power;
@@ -1608,10 +1603,10 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 						Dmg2 = pow;
 
 						/*
-													lpChar->PlaySlowCount = time;		//º”µµ ¥¿∑¡¡¸
+													lpChar->PlaySlowCount = time;		//??? ??????
 													lpChar->PlaySlowSpeed = SlowSpeed;
 
-													lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
+													lpChar->PlayStunCount = 0;			//?????? ????
 
 													if ( rs ) {
 														if ( rs<0 ) rs = 0;
@@ -1620,16 +1615,16 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 													}
 
 													//if ( (10-rs/10)
-													//10-(∏ÛΩ∫≈Õº”º∫/10) √ 
+													//10-(??????/10) ??
 						*/
 						if (pow > 0) {
-							//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+							//???? ( ???? ???? )
 							rsSendAttackUser(lpPlayInfo, lpCharInfo, pow / PK_POWER_DIVIDE, 0x80, -SkillCode, time);
 
 #ifdef DISP_DAMAGE
-							///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+							///////////////////////// ?????? ?????? ???? ??? //////////////////////
 							if (lpPlayInfo->AdminMode > 2) {
-								wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( %d %d )", lpCharInfo->smCharInfo.szName, Dmg1, Dmg2);
+								wsprintf(szDispDamage, ">%s ??????????? ( %d %d )", lpCharInfo->smCharInfo.szName, Dmg1, Dmg2);
 								rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 							}
 #endif
@@ -1644,7 +1639,7 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 		break;
 
 	case 7:
-		//µΩ∫≈‰º«
+		//?????
 //	int	rs,time;
 		time = Distortion_Time[SkillPoint];
 		rs = 240 - (240 * Distortion_SpeedSubPercent[SkillPoint]) / 100;
@@ -1657,11 +1652,11 @@ int RecvRangeAttack_User(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransS
 
 					if (lpCharInfo->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 						/*
-													lpChar->PlaySlowCount = time;		//º”µµ ¥¿∑¡¡¸
+													lpChar->PlaySlowCount = time;		//??? ??????
 													lpChar->PlaySlowSpeed = rs;
 													lpChar->PlayDistortion = time;
 
-													lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
+													lpChar->PlayStunCount = 0;			//?????? ????
 						*/
 						rsSendAttackUser(lpPlayInfo, lpCharInfo, 1, 0x80, -SkillCode, time);
 
@@ -1715,7 +1710,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 	if (lpPlayInfo->HideMode && lpPlayInfo->AdminMode < 4) return FALSE;
 
-	//∞≈∏Æ ∞ÀªÁ ( «√∑π¿ÃæÓøÕ ∏Ò«•¡ˆ¡° ∞≈∏Æ )
+	//??? ??? ( ?ùù????? ??????? ??? )
 	if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpPlayInfo) == FALSE)
 		return FALSE;
 
@@ -1725,13 +1720,13 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 
 	switch (lpTransSkilAttackData->AttackState) {
-	case 0:		//¿œπ› π¸¿ß«¸
-	case 100:	//∑π¿Ã¡ˆ ø¿∫Í ¡¶≈©∂˜ ( ∫“ ∞¯∞› )
-	case 101:	//Ω∫∆ƒ≈© ( ≥˙ ∞¯∞› )
-	case 103:	//µπŸ¿Œ ∂Û¿Ã∆√ ( æµ•µÂ 50% ∞°¡ﬂ )
-	case 104:	//æÛ¿Ω ( ∞¯∞› )
-	case 105:	//¿Œ√æ∆Æ ¿¸±‚
-	case 106:	//µ∂ ∞¯∞›
+	case 0:		//??? ??????
+	case 100:	//?????? ???? ????? ( ?? ???? )
+	case 101:	//????? ( ?? ???? )
+	case 103:	//????? ?????? ( ??? 50% ???? )
+	case 104:	//???? ( ???? )
+	case 105:	//??ùù? ????
+	case 106:	//?? ????
 
 		for (cnt2 = 0; cnt2 < STG_MONSTER_MAX; cnt2++) {
 			lpChar = lpStgArea->lpCharMonster[cnt2];
@@ -1740,15 +1735,15 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 					if (lpChar->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						if (!lpPlayInfo->lpChrTarget) lpPlayInfo->lpChrTarget = lpChar;		//øÏº± ∏Ò«• ƒ≥∏Ø¿∏∑Œ º≥¡§
+						if (!lpPlayInfo->lpChrTarget) lpPlayInfo->lpChrTarget = lpChar;		//?ùù ??? ùù?????? ????
 
 						if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_USER &&
 							lpChar->HoSkillCode &&
 							lpChar->lpMasterPlayInfo == lpPlayInfo) {
-							continue;	//∫ª¿Œ º“»Ø∏˜¿∫ µ•πÃ¡ˆ æ¯¿Ω
+							continue;	//???? ??????? ?????? ????
 						}
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar, dDist) == FALSE) break;
 
 						pow = lpTransSkilAttackData->Power;
@@ -1757,10 +1752,10 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						Dmg1 = pow;
 
 						if (lpTransSkilAttackData->AttackState == 100) {
-							//∫“ ∞¯∞› ( ∫“ ¿˙«◊∑¬ ¿˚øÎ )
+							//?? ???? ( ?? ????? ???? )
 							rs = lpChar->smCharInfo.Resistance[sITEMINFO_FIRE];
 							if (SkillCode == SKILL_PLAY_METEO) {
-								rs /= 2;		//πÃ∆ºæÓ ∫“º”º∫ 50% ¿˚øÎ
+								rs /= 2;		//????? ???? 50% ????
 							}
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1769,7 +1764,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							}
 						}
 						if (lpTransSkilAttackData->AttackState == 101) {
-							//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ )
+							//?? ???? ( ???? ????? ???? )
 							rs = lpChar->smCharInfo.Resistance[sITEMINFO_LIGHTING];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1778,7 +1773,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							}
 						}
 						if (lpTransSkilAttackData->AttackState == 105) {
-							//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ ) - ¿Œ√æ∆Æ
+							//?? ???? ( ???? ????? ???? ) - ??ùù?
 							rs = lpChar->smCharInfo.Resistance[sITEMINFO_LIGHTING];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1788,7 +1783,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							StunFlag = FALSE;
 						}
 						if (lpTransSkilAttackData->AttackState == 104) {
-							//æÛ¿Ω ∞¯∞› ( æÛ¿Ω ¿˙«◊∑¬ ¿˚øÎ )
+							//???? ???? ( ???? ????? ???? )
 							rs = lpChar->smCharInfo.Resistance[sITEMINFO_ICE];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1798,7 +1793,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						}
 
 						if (lpTransSkilAttackData->AttackState == 106) {
-							//µ∂ ∞¯∞› ( ∫£≥ Ω∫««æÓ )
+							//?? ???? ( ???? ????? )
 							rs = lpChar->smCharInfo.Resistance[sITEMINFO_POISON];
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1812,11 +1807,11 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						Dmg2 = pow;
 
 						if (lpTransSkilAttackData->AttackState == 103) {
-							//µπŸ¿Œ ∂Û¿Ã∆√ ( æµ•µÂ 50% ∞°¡ﬂ )
+							//????? ?????? ( ??? 50% ???? )
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_UNDEAD) {
 								pow += pow / 2;
 							}
-							//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ )
+							//?? ???? ( ???? ????? ???? )
 							rs = lpChar->smCharInfo.Resistance[sITEMINFO_LIGHTING] / 10;
 							if (rs) {
 								if (rs >= 100) rs = 100;
@@ -1828,7 +1823,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 						switch (SkillCode) {
 						case SKILL_PLAY_MECHANIC_BOMB:
-							//∏ﬁƒ´¥–π¸ ( π¬≈œ∆Æ ∏ﬁƒ´¥– ∏ÛΩ∫≈Õø°∞‘ 50%√ﬂ∞° )
+							//????ùù? ( ????? ????? ??????? 50%??? )
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_MUTANT ||
 								lpChar->smCharInfo.Brood == smCHAR_MONSTER_MECHANIC) {
 								pow += pow / 2;
@@ -1836,21 +1831,21 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							break;
 
 						case SKILL_PLAY_SPARK:
-							//Ω∫∆ƒ≈© ( ∏ﬁƒ´¥– ∏ÛΩ∫≈Õø°∞‘ 50% √ﬂ∞° )
+							//????? ( ????? ??????? 50% ??? )
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_MECHANIC) {
 								pow += pow / 2;
 							}
 							break;
 
 						case SKILL_PLAY_EXPANSION:
-							//¿ÕΩ∫∆“º« ( π¬≈œ∆Æ ∏ÛΩ∫≈Õø°∞‘ 30% √ﬂ∞° )
+							//?????? ( ????? ??????? 30% ??? )
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_MUTANT) {
 								pow += (pow * 30) / 100;
 							}
 							break;
 
 						case SKILL_PLAY_SWORD_BLAST:
-							//º“µÂ ∫Ì∑°Ω∫∆Æ ( ≥Î∏÷ , π¬≈œ∆Æ ∏ÛΩ∫≈Õ 30% √ﬂ∞° )
+							//??? ??????? ( ??? , ????? ???? 30% ??? )
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_NORMAL ||
 								lpChar->smCharInfo.Brood == smCHAR_MONSTER_MUTANT) {
 								pow += (pow * 30) / 100;
@@ -1858,25 +1853,25 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							break;
 
 						case SKILL_PLAY_PIERCING:
-							//««æÓΩÃ ( π¬≈œ∆Æ ∏ÛΩ∫≈Õø°∞‘ 30% √ﬂ∞° )
+							//???? ( ????? ??????? 30% ??? )
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_MUTANT) {
 								pow += (pow * 30) / 100;
 							}
 							break;
 
 						case SKILL_PLAY_VENOM_SPEAR:
-							//∫£≥ Ω∫««æÓ µ∂¿˚øÎ
+							//???? ????? ??????
 							lpChar->PlayPoison[1] = VenomSpear_Time[SkillPoint] * 17;
 							lpChar->PlayPoison[0] = GetRandomPos(VenomSpear_Damage[SkillPoint][0], VenomSpear_Damage[SkillPoint][1]);
 							break;
 
-						case SKILL_PLAY_PERFORATION:			//∆€∆˜∑π¿Ãº«
+						case SKILL_PLAY_PERFORATION:			//?????????
 							if ((rand() % 100) < GetCritical(lpPlayInfo, lpChar, dm_Critical_Temp)) {
-								pow = (pow * 170) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+								pow = (pow * 170) / 100;						//?????? ???????
 #ifdef DISP_DAMAGE
-///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+///////////////////////// ?????? ?????? ???? ??? //////////////////////
 								if (lpPlayInfo->AdminMode > 2) {
-									wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( Critical )", lpChar->smCharInfo.szName);
+									wsprintf(szDispDamage, ">%s ??????????? ( Critical )", lpChar->smCharInfo.szName);
 									rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 								}
 #endif
@@ -1911,7 +1906,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							break;
 
 						case SKILL_PLAY_IMPULSION:
-							// ∏ﬁƒ´¥– ∏ÛΩ∫≈Õø°∞‘ 30% √ﬂ∞° 
+							// ????? ??????? 30% ??? 
 							if (lpChar->smCharInfo.Brood == smCHAR_MONSTER_MECHANIC) {
 								pow += (pow * 30) / 100;
 							}
@@ -1919,11 +1914,11 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 						case SKILL_PLAY_CYCLONE_STRIKE:
 							if ((rand() % 100) < GetCritical(lpPlayInfo, lpChar, dm_Critical_Temp)) {
-								pow = (pow * 170) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+								pow = (pow * 170) / 100;						//?????? ???????
 #ifdef DISP_DAMAGE
-///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+///////////////////////// ?????? ?????? ???? ??? //////////////////////
 								if (lpPlayInfo->AdminMode > 2) {
-									wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( Critical )", lpChar->smCharInfo.szName);
+									wsprintf(szDispDamage, ">%s ??????????? ( Critical )", lpChar->smCharInfo.szName);
 									rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 								}
 #endif
@@ -1941,7 +1936,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 						}
 
-						lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
+						lpChar->PlayStunCount = 0;			//?????? ????
 
 						Dmg3 = pow;
 
@@ -1951,13 +1946,13 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						Dmg4 = pow;
 
 						if (pow > 0) {
-							//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+							//???? ( ???? ???? )
 							lpChar->smCharInfo.Life[0] -= pow;
 							SendShowDmg(lpChar, pow, 6, lpPlayInfo);
-							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, pow);	//πﬁ¿∫∞¯∞› ±‚æÔ«œ¥¬ ∏˜
+							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, pow);	//???????? ?????? ??
 
 							if (StunFlag && lpChar->smCharInfo.Life[0] && StnPers < lpChar->smMonsterInfo.DamageStunPers) {
-								//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+								//?????? ??? ???????? ??
 
 								if (lpChar->smCharInfo.Life[0] && lpChar->MotionInfo->State != CHRMOTION_STATE_DAMAGE &&
 									lpChar->MotionInfo->State != CHRMOTION_STATE_EAT) {
@@ -1968,7 +1963,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 									lpChar->MoveAngle(10);
 									lpChar->Angle.y = ang2;
 
-									//4% ¿ÃªÛ
+									//4% ???
 									if (((lpChar->smCharInfo.Life[1] << 2) / 100) < lpTransSkilAttackData->Power || StnPers == 0) {
 										lpChar->SetMotionFromCode(CHRMOTION_STATE_DAMAGE);
 									}
@@ -1976,9 +1971,9 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							}
 
 #ifdef DISP_DAMAGE
-							///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+							///////////////////////// ?????? ?????? ???? ??? //////////////////////
 							if (lpPlayInfo->AdminMode > 2) {
-								wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( %d %d %d %d )", lpChar->smCharInfo.szName, Dmg1, Dmg2, Dmg3, Dmg4);
+								wsprintf(szDispDamage, ">%s ??????????? ( %d %d %d %d )", lpChar->smCharInfo.szName, Dmg1, Dmg2, Dmg3, Dmg4);
 								rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 							}
 #endif
@@ -1999,7 +1994,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 		}
 		break;
 	case 1:
-		//∆ƒ¿Ã≈© ¿©µÂ
+		//????? ????
 		for (cnt2 = 0; cnt2 < STG_MONSTER_MAX; cnt2++) {
 			lpChar = lpStgArea->lpCharMonster[cnt2];
 			if (lpChar && lpChar->Flag && lpChar->smCharInfo.State && lpChar->MotionInfo->State != CHRMOTION_STATE_DEAD) {
@@ -2007,13 +2002,13 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 					if (lpChar->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar, dDist) == FALSE) break;
 
 						x = (lpPlayInfo->Position.x - lpChar->pX) >> FLOATNS;
 						y = (lpPlayInfo->Position.y - lpChar->pY) >> FLOATNS;
 						z = (lpPlayInfo->Position.z - lpChar->pZ) >> FLOATNS;
-						if (abs(y) > 100 || (x * x + z * z) > (800 * 800)) break;		//∞≈∏Æ∞° ∏’∞ÊøÏ Ω«∆–
+						if (abs(y) > 100 || (x * x + z * z) > (800 * 800)) break;		//????? ???? ????
 
 						dist = (int)sqrt(x * x + z * z);
 						dist = lpTransSkilAttackData->AttackSize - dist;
@@ -2023,7 +2018,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						if (lpChar->smCharInfo.dwCharSoundCode != snCHAR_SOUND_DEATHKNIGHT && lpChar->smCharInfo.dwCharSoundCode != snCHAR_SOUND_BABEL && lpChar->smCharInfo.dwCharSoundCode != snCHAR_SOUND_KELVEZU && lpChar->smCharInfo.dwCharSoundCode != snCHAR_SOUND_MOKOVA)
 						{
 							if (lpChar->smCharInfo.Life[0]) {
-								//µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+								//??? ???????? ??
 								ang2 = GetRadian2D(lpChar->pX, lpChar->pZ, lpPlayInfo->Position.x, lpPlayInfo->Position.z);
 								ang = (ang2 + ANGLE_180) & ANGCLIP;
 								lpChar->Angle.y = ang;
@@ -2033,7 +2028,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 								if (lpChar->smCharInfo.Life[0] && lpChar->MotionInfo->State != CHRMOTION_STATE_DAMAGE &&
 									lpChar->MotionInfo->State != CHRMOTION_STATE_EAT) {
-									//4% ¿ÃªÛ
+									//4% ???
 									if (((lpChar->smCharInfo.Life[1] << 2) / 100) < lpTransSkilAttackData->Power) {
 										lpChar->SetMotionFromCode(CHRMOTION_STATE_DAMAGE);
 									}
@@ -2046,10 +2041,10 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						pow = (lpTransSkilAttackData->Power * lpChar->smCharInfo.Absorption) / 100;
 						pow = lpTransSkilAttackData->Power - pow;
 
-						lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
+						lpChar->PlayStunCount = 0;			//?????? ????
 
 						if (pow > 0) {
-							//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+							//???? ( ???? ???? )
 							lpChar->smCharInfo.Life[0] -= pow;
 							SendShowDmg(lpChar, pow, 6, lpPlayInfo);
 						}
@@ -2066,8 +2061,8 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 			}
 		}
 		break;
-	case 2:	//∑ŒæÓ
-	case 5:	//ΩØµÂΩ∫∆Æ∂Û¿Ã≈©
+	case 2:	//?ùù?
+	case 5:	//??????????
 	case 201:	//Compulsion
 		for (cnt2 = 0; cnt2 < STG_MONSTER_MAX; cnt2++) {
 			lpChar = lpStgArea->lpCharMonster[cnt2];
@@ -2076,39 +2071,39 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 					if (lpChar->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar, dDist) == FALSE) break;
 
-						//ª˝º”º∫ ø° µ˚∏£ ¡ﬂ∏≥ªÛ≈¬ ¿Ø¡ˆ 
+						//????? ?? ???? ??????? ???? 
 						rs = lpChar->smCharInfo.Resistance[sITEMINFO_BIONIC];
 						if (rs < 0) rs = 0;
 						if (rs >= 100) rs = 100;
 						rs = 100 - rs;
 
 						if (lpTransSkilAttackData->AttackState == 2) {
-							//∑ŒæÓ
+							//?ùù?
 							//if ( (rand()%100)>rs ) {
-							lpChar->PlayStunCount = lpTransSkilAttackData->Power << 4;		//¡ﬂ∏≥ªÛ≈¬ º≥¡§
+							lpChar->PlayStunCount = lpTransSkilAttackData->Power << 4;		//??????? ????
 							lpChar->PlayStunCount = (lpChar->PlayStunCount * rs) / 100;
 							//}
 						}
 						else if (lpTransSkilAttackData->AttackState == 5) {
-							//ΩØµÂ Ω∫∆Æ∂Û¿Ã≈©
+							//???? ????????
 							pow = (lpTransSkilAttackData->Power * lpChar->smCharInfo.Absorption) / 100;
 							pow = lpTransSkilAttackData->Power - pow;
 							if (pow > 0) {
-								//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+								//???? ( ???? ???? )
 								lpChar->smCharInfo.Life[0] -= pow;
-								if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, pow);	//πﬁ¿∫∞¯∞› ±‚æÔ«œ¥¬ ∏˜
+								if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, pow);	//???????? ?????? ??
 
 							}
-							lpChar->PlayStunCount = 16 * 10;			//¡ﬂ∏≥ªÛ≈¬ 10√ 
+							lpChar->PlayStunCount = 16 * 10;			//??????? 10??
 							lpChar->PlayStunCount = (lpChar->PlayStunCount * rs) / 100;
 
 #ifdef DISP_DAMAGE
-							///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+							///////////////////////// ?????? ?????? ???? ??? //////////////////////
 							if (lpPlayInfo->AdminMode > 2) {
-								wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( %d %d )", lpChar->smCharInfo.szName, lpTransSkilAttackData->Power, pow);
+								wsprintf(szDispDamage, ">%s ??????????? ( %d %d )", lpChar->smCharInfo.szName, lpTransSkilAttackData->Power, pow);
 								rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 							}
 #endif
@@ -2128,9 +2123,9 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 								lpChar->dwCompulsionTime = dwPlayServTime + cnt;
 
 #ifdef DISP_DAMAGE
-								///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+								///////////////////////// ?????? ?????? ???? ??? //////////////////////
 								if (lpPlayInfo->AdminMode > 2) {
-									wsprintf(szDispDamage, ">%s Ω√º±≤¯±‚ ( %d √  )", lpChar->smCharInfo.szName, cnt / 1000);
+									wsprintf(szDispDamage, ">%s ??????? ( %d ?? )", lpChar->smCharInfo.szName, cnt / 1000);
 									rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 								}
 #endif
@@ -2144,7 +2139,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							lpChar->smCharInfo.dwCharSoundCode != snCHAR_SOUND_KELVEZU &&
 							lpChar->smCharInfo.dwCharSoundCode != snCHAR_SOUND_MOKOVA)
 						{
-							//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+							//?????? ??? ???????? ??
 							ang2 = GetRadian2D(lpChar->pX, lpChar->pZ, lpPlayInfo->Position.x, lpPlayInfo->Position.z);
 							ang = (ang2 + ANGLE_180) & ANGCLIP;
 							lpChar->Angle.y = ang;
@@ -2170,7 +2165,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 		break;
 	case 3:
 		if (SkillCode == SKILL_PLAY_GLACIAL_SPIKE) {
-			//±€∑°º» Ω∫∆ƒ¿Ã≈©
+			//????? ???????
 			time = 8 * 17;
 			SlowSpeed = 200;
 		}
@@ -2179,12 +2174,12 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 			SlowSpeed = 80;
 		}
 		else {
-			//±◊∂ÛøÓµÂ ∆ƒ¿Ã≈©
+			//????? ?????
 			time = 175;
 			SlowSpeed = 0;
 			cnt2 = lpTransSkilAttackData->AttackSize >> FLOATNS;
 			for (cnt = 0; cnt < 10; cnt++) {
-				//±◊∂ÛøÓµÂ ∆ƒ¿Ã≈© Ω√∞£¿ª √£¥¬¥Ÿ
+				//????? ????? ?ùù??? ??ùù?
 				if (G_Pike_Range[cnt] == cnt2) {
 					time = G_Pike_Time[cnt] * 17;
 					break;
@@ -2199,7 +2194,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 					if (lpChar->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar, dDist) == FALSE) break;
 
 						pow = lpTransSkilAttackData->Power;
@@ -2218,11 +2213,11 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						//int G_Pike_Time[10]	     = {3,4,5,6,7,8,9,10,11,12};
 
 
-						lpChar->PlaySlowCount = time;		//º”µµ ¥¿∑¡¡¸
+						lpChar->PlaySlowCount = time;		//??? ??????
 						lpChar->PlaySlowSpeed = SlowSpeed;
 
-						lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
-						lpChar->PlayDistortion = 0;			//µΩ∫≈‰º« «ÿ¡¶
+						lpChar->PlayStunCount = 0;			//?????? ????
+						lpChar->PlayDistortion = 0;			//????? ????
 
 						if (rs) {
 							if (rs < 0) rs = 0;
@@ -2231,16 +2226,16 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						}
 
 						//if ( (10-rs/10)
-						//10-(∏ÛΩ∫≈Õº”º∫/10) √ 
+						//10-(??????/10) ??
 
 						if (pow > 0) {
-							//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+							//???? ( ???? ???? )
 							lpChar->smCharInfo.Life[0] -= pow;
 							SendShowDmg(lpChar, pow, 6, lpPlayInfo);
-							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, pow);	//πﬁ¿∫∞¯∞› ±‚æÔ«œ¥¬ ∏˜
+							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, pow);	//???????? ?????? ??
 
 							if (lpChar->smCharInfo.Life[0]) {
-								//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+								//?????? ??? ???????? ??
 								ang2 = GetRadian2D(lpChar->pX, lpChar->pZ, lpPlayInfo->Position.x, lpPlayInfo->Position.z);
 								ang = (ang2 + ANGLE_180) & ANGCLIP;
 								lpChar->Angle.y = ang;
@@ -2249,7 +2244,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 								if (lpChar->smCharInfo.Life[0] && lpChar->MotionInfo->State != CHRMOTION_STATE_DAMAGE &&
 									lpChar->MotionInfo->State != CHRMOTION_STATE_EAT) {
-									//4% ¿ÃªÛ
+									//4% ???
 									if (((lpChar->smCharInfo.Life[1] << 2) / 100) < lpTransSkilAttackData->Power) {
 										lpChar->SetMotionFromCode(CHRMOTION_STATE_DAMAGE);
 									}
@@ -2257,9 +2252,9 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							}
 
 #ifdef DISP_DAMAGE
-							///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+							///////////////////////// ?????? ?????? ???? ??? //////////////////////
 							if (lpPlayInfo->AdminMode > 2) {
-								wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞›πﬁ¿Ω ( %d %d %d )", lpChar->smCharInfo.szName, Dmg1, Dmg2, Dmg3);
+								wsprintf(szDispDamage, ">%s ??????????? ( %d %d %d )", lpChar->smCharInfo.szName, Dmg1, Dmg2, Dmg3);
 								rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 							}
 #endif
@@ -2277,7 +2272,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 			}
 		}
 		break;
-	case 4:	//º“øÔº≠ƒø
+	case 4:	//??ù?ù
 		if (lpTransSkilAttackData->Power < 1 || lpTransSkilAttackData->Power>10) break;
 		TotalLife = 0;
 
@@ -2288,9 +2283,9 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 					if (lpChar->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt] &&
 						((lpChar->smCharInfo.Life[1] * 50) / 100) < lpChar->smCharInfo.Life[0] &&
-						lpChar->smCharInfo.Brood != smCHAR_MONSTER_UNDEAD) {	//æµ•µÂ ¡¶ø‹
+						lpChar->smCharInfo.Brood != smCHAR_MONSTER_UNDEAD) {	//??? ????
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar, dDist) == FALSE) break;
 
 						pow = Soul_Sucker_Absorb[lpTransSkilAttackData->Power - 1];
@@ -2303,19 +2298,19 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						}
 
 
-						lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
+						lpChar->PlayStunCount = 0;			//?????? ????
 
 						if (pow > 0) {
-							//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+							//???? ( ???? ???? )
 							life = (lpChar->smCharInfo.Life[1] * pow) / 100;
 							lpChar->smCharInfo.Life[0] -= life;
 							SendShowDmg(lpChar, pow, 6, lpPlayInfo);
-							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, life);	//πﬁ¿∫∞¯∞› ±‚æÔ«œ¥¬ ∏˜
+							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, life);	//???????? ?????? ??
 							if (lpChar->smCharInfo.Life[0] < 0) life += lpChar->smCharInfo.Life[0];
 							TotalLife += life;
 
 							if (lpChar->smCharInfo.Life[0] && (rand() % 100) < lpChar->smMonsterInfo.DamageStunPers) {
-								//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+								//?????? ??? ???????? ??
 								ang2 = GetRadian2D(lpChar->pX, lpChar->pZ, lpPlayInfo->Position.x, lpPlayInfo->Position.z);
 								ang = (ang2 + ANGLE_180) & ANGCLIP;
 								lpChar->Angle.y = ang;
@@ -2341,7 +2336,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 			}
 		}
 		if (TotalLife > 0) {
-			//ª©æ—¿∫ ª˝∏Ì∑¬¿ª ∫∏≥ª¡ÿ¥Ÿ
+			//?????? ???????? ???????
 			smTransCommand.code = smTRANSCODE_VIRTURAL_POTION;
 			smTransCommand.size = sizeof(smTRANS_COMMAND);
 			smTransCommand.WParam = TotalLife;
@@ -2353,7 +2348,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 		}
 		break;
 
-	case 6:	// ExtinÁ„o da PRS aqui
+	case 6:	// Extin??o da PRS aqui
 		if (lpTransSkilAttackData->Power < 1 || lpTransSkilAttackData->Power>10) break;
 		TotalLife = 0;
 
@@ -2370,7 +2365,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 					if (lpChar->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt] &&
 						lpChar->smCharInfo.Brood == smCHAR_MONSTER_UNDEAD &&
 						lpChar->smCharInfo.szName[0] &&
-						!STRINGCOMPARE(lpChar->smCharInfo.szName, "Valento")) // N„o usa no valento
+						!STRINGCOMPARE(lpChar->smCharInfo.szName, "Valento")) // N?o usa no valento
 					{
 
 						if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar, dDist) == FALSE) break;
@@ -2391,15 +2386,15 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							if (TransPartySkill.PartyCount < 8)
 								TransPartySkill.dwPartyUser[TransPartySkill.PartyCount++] = lpChar->dwObjectSerial;
 
-							//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+							//???? ( ???? ???? )
 							life = (lpChar->smCharInfo.Life[0] * Extinction_Amount[lpTransSkilAttackData->Power - 1]) / 100;
 							lpChar->smCharInfo.Life[0] -= life;
-							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, life);	//πﬁ¿∫∞¯∞› ±‚æÔ«œ¥¬ ∏˜
+							if (lpChar->lpAttackDamageList || lpChar->lpAttackDamageList_BlessCastle) rsRecordCharDamage(lpPlayInfo, lpChar, life);	//???????? ?????? ??
 							if (lpChar->smCharInfo.Life[0] < 0) life += lpChar->smCharInfo.Life[0];
 							TotalLife += life;
 
 							if (lpChar->smCharInfo.Life[0] && (rand() % 100) < lpChar->smMonsterInfo.DamageStunPers) {
-								//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+								//?????? ??? ???????? ??
 								ang2 = GetRadian2D(lpChar->pX, lpChar->pZ, lpPlayInfo->Position.x, lpPlayInfo->Position.z);
 								ang = (ang2 + ANGLE_180) & ANGCLIP;
 								lpChar->Angle.y = ang;
@@ -2434,14 +2429,14 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 		break;
 		/*
-		int Distortion_SpeedSubPercent[10]  = {5,6,7,8,9,10,11,12,13,14};         //º”µµ ¿˙«œ
-		int Distortion_DamageSubPercent[10] = {5,6,7,8,9,10,11,12,13,14};         //∞¯∞›∑¬ ¿˙«œ
+		int Distortion_SpeedSubPercent[10]  = {5,6,7,8,9,10,11,12,13,14};         //??? ????
+		int Distortion_DamageSubPercent[10] = {5,6,7,8,9,10,11,12,13,14};         //????? ????
 		int Distortion_Area[10]             = {120,125,130,135,140,145,150,155,160,165};
 		int Distortion_Time[10]             = {4,5,6,7,8,9,10,11,12,13};
 		int Distortion_UseMana[10]          = {105,110,115,120,125,130,135,140,145,150};
 		*/
 	case 7:
-		//µΩ∫≈‰º«
+		//?????
 //	int	rs,time;
 		time = Distortion_Time[SkillPoint] * 17;
 		rs = 240 - (240 * Distortion_SpeedSubPercent[SkillPoint]) / 100;
@@ -2453,19 +2448,19 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 					if (lpChar->dwObjectSerial == lpTransSkilAttackData->dwTarObjectSerial[cnt]) {
 
-						//∞≈∏Æ∞ÀªÁ
+						//??????
 						if (rsCheckAttackRange(lpTransSkilAttackData->x, lpTransSkilAttackData->y, lpTransSkilAttackData->z, lpChar, dDist) == FALSE) break;
 
 
-						lpChar->PlaySlowCount = time;		//º”µµ ¥¿∑¡¡¸
+						lpChar->PlaySlowCount = time;		//??? ??????
 						lpChar->PlaySlowSpeed = rs;
 						lpChar->PlayDistortion = time;
 
-						lpChar->PlayStunCount = 0;			//¡ﬂ∏≥∏µÂ «ÿ¡¶
+						lpChar->PlayStunCount = 0;			//?????? ????
 
 
 						if (lpChar->smCharInfo.Life[0]) {
-							//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+							//?????? ??? ???????? ??
 							ang2 = GetRadian2D(lpChar->pX, lpChar->pZ, lpPlayInfo->Position.x, lpPlayInfo->Position.z);
 							ang = (ang2 + ANGLE_180) & ANGCLIP;
 							lpChar->Angle.y = ang;
@@ -2474,7 +2469,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 							if (lpChar->smCharInfo.Life[0] && lpChar->MotionInfo->State != CHRMOTION_STATE_DAMAGE &&
 								lpChar->MotionInfo->State != CHRMOTION_STATE_EAT) {
-								//4% ¿ÃªÛ
+								//4% ???
 								if (((lpChar->smCharInfo.Life[1] << 2) / 100) < lpTransSkilAttackData->Power) {
 									lpChar->SetMotionFromCode(CHRMOTION_STATE_DAMAGE);
 								}
@@ -2513,12 +2508,12 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 		smTRANS_COMMAND	smTransCommand;
 
 		switch( lpTransSkilAttackData->AttackState ) {
-		case 0:		//¿œπ› π¸¿ß«¸
-		case 100:	//∑π¿Ã¡ˆ ø¿∫Í ¡¶≈©∂˜ ( ∫“ ∞¯∞› )
-		case 101:	//Ω∫∆ƒ≈© ( ≥˙ ∞¯∞› )
-		case 103:	//µπŸ¿Œ ∂Û¿Ã∆√ ( æµ•µÂ 50% ∞°¡ﬂ )
-		case 104:	//æÛ¿Ω ( ∞¯∞› )
-		case 105:	//¿Œ√æ∆Æ ¿¸±‚
+		case 0:		//??? ??????
+		case 100:	//?????? ???? ????? ( ?? ???? )
+		case 101:	//????? ( ?? ???? )
+		case 103:	//????? ?????? ( ??? 50% ???? )
+		case 104:	//???? ( ???? )
+		case 105:	//??ùù? ????
 			for(cnt2=0;cnt2<AUTOPLAYER_MAX;cnt2++) {
 				lpChar = &chrAutoPlayer[cnt2];
 				if ( lpChar->Flag && lpChar->smCharInfo.State && lpChar->MotionInfo->State!=CHRMOTION_STATE_DEAD ) {
@@ -2529,13 +2524,13 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 						x = (lpPlayInfo->Position.x-lpChar->pX)>>FLOATNS;
 						y = (lpPlayInfo->Position.y-lpChar->pY)>>FLOATNS;
 						z = (lpPlayInfo->Position.z-lpChar->pZ)>>FLOATNS;
-						if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//∞≈∏Æ∞° ∏’∞ÊøÏ Ω«∆–
+						if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//????? ???? ????
 
 							pow = lpTransSkilAttackData->Power;
 							StunFlag = TRUE;
 
 							if ( lpTransSkilAttackData->AttackState==100 ) {
-								//∫“ ∞¯∞› ( ∫“ ¿˙«◊∑¬ ¿˚øÎ )
+								//?? ???? ( ?? ????? ???? )
 								rs = lpChar->smCharInfo.Resistance[sITEMINFO_FIRE];
 								if ( rs ) {
 									if ( rs>=100 ) rs=100;
@@ -2544,7 +2539,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 								}
 							}
 							if ( lpTransSkilAttackData->AttackState==101 ) {
-								//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ )
+								//?? ???? ( ???? ????? ???? )
 								rs = lpChar->smCharInfo.Resistance[sITEMINFO_LIGHTING];
 								if ( rs ) {
 									if ( rs>=100 ) rs=100;
@@ -2553,7 +2548,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 								}
 							}
 							if ( lpTransSkilAttackData->AttackState==105 ) {
-								//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ ) - ¿Œ√æ∆Æ
+								//?? ???? ( ???? ????? ???? ) - ??ùù?
 								rs = lpChar->smCharInfo.Resistance[sITEMINFO_LIGHTING];
 								if ( rs ) {
 									if ( rs>=100 ) rs=100;
@@ -2564,7 +2559,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							}
 
 							if ( lpTransSkilAttackData->AttackState==104 ) {
-								//æÛ¿Ω ∞¯∞› ( æÛ¿Ω ¿˙«◊∑¬ ¿˚øÎ )
+								//???? ???? ( ???? ????? ???? )
 								rs = lpChar->smCharInfo.Resistance[sITEMINFO_ICE];
 								if ( rs ) {
 									if ( rs>=100 ) rs=100;
@@ -2573,11 +2568,11 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 								}
 							}
 							if ( lpTransSkilAttackData->AttackState==103 ) {
-								//µπŸ¿Œ ∂Û¿Ã∆√ ( æµ•µÂ 50% ∞°¡ﬂ )
+								//????? ?????? ( ??? 50% ???? )
 								if ( lpChar->smCharInfo.Brood==smCHAR_MONSTER_UNDEAD ) {
 									pow += pow/2;
 								}
-								//≥˙ ∞¯∞› ( ¿¸±‚ ¿˙«◊∑¬ ¿˚øÎ )
+								//?? ???? ( ???? ????? ???? )
 								rs = lpChar->smCharInfo.Resistance[sITEMINFO_LIGHTING]/10;
 								if ( rs ) {
 									if ( rs>=100 ) rs=100;
@@ -2591,11 +2586,11 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							//pow = lpTransSkilAttackData->Power-pow;
 
 							if ( pow>0 ) {
-								//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+								//???? ( ???? ???? )
 								lpChar->smCharInfo.Life[0] -= pow;
 
 								if ( StunFlag && lpChar->smCharInfo.Life[0] && (rand()%100)<lpChar->smMonsterInfo.DamageStunPers ) {
-									//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+									//?????? ??? ???????? ??
 									//ang2 = GetRadian2D( lpChar->pX , lpChar->pZ ,lpTransSkilAttackData->x, lpTransSkilAttackData->z );
 									ang2 = GetRadian2D( lpChar->pX , lpChar->pZ ,lpPlayInfo->Position.x, lpPlayInfo->Position.z );
 									ang = (ang2+ANGLE_180) & ANGCLIP;
@@ -2605,7 +2600,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 									if ( lpChar->smCharInfo.Life[0] && lpChar->MotionInfo->State != CHRMOTION_STATE_DAMAGE &&
 										lpChar->MotionInfo->State!=CHRMOTION_STATE_EAT) {
-											//4% ¿ÃªÛ
+											//4% ???
 											if ( ((lpChar->smCharInfo.Life[1]<<2)/100)<lpTransSkilAttackData->Power ) {
 												lpChar->SetMotionFromCode( CHRMOTION_STATE_DAMAGE );
 											}
@@ -2626,7 +2621,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 			}
 			break;
 		case 1:
-			//∆ƒ¿Ã≈© ¿©µÂ
+			//????? ????
 			for(cnt2=0;cnt2<AUTOPLAYER_MAX;cnt2++) {
 				lpChar = &chrAutoPlayer[cnt2];
 				if ( lpChar->Flag && lpChar->smCharInfo.State && lpChar->MotionInfo->State!=CHRMOTION_STATE_DEAD ) {
@@ -2637,7 +2632,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							x = (lpPlayInfo->Position.x-lpChar->pX)>>FLOATNS;
 							y = (lpPlayInfo->Position.y-lpChar->pY)>>FLOATNS;
 							z = (lpPlayInfo->Position.z-lpChar->pZ)>>FLOATNS;
-							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//∞≈∏Æ∞° ∏’∞ÊøÏ Ω«∆–
+							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//????? ???? ????
 
 							//x = ( lpChar->pX-lpPlayInfo->Position.x )>>FLOATNS;
 							//z = ( lpChar->pZ-lpPlayInfo->Position.z )>>FLOATNS;
@@ -2647,7 +2642,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 
 								if ( lpChar->smCharInfo.Life[0] ) {
-									//µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+									//??? ???????? ??
 									ang2 = GetRadian2D( lpChar->pX , lpChar->pZ ,lpPlayInfo->Position.x, lpPlayInfo->Position.z );
 									ang = (ang2+ANGLE_180) & ANGCLIP;
 									lpChar->Angle.y = ang;
@@ -2657,7 +2652,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 									if ( lpChar->smCharInfo.Life[0] && lpChar->MotionInfo->State != CHRMOTION_STATE_DAMAGE &&
 										lpChar->MotionInfo->State!=CHRMOTION_STATE_EAT) {
-											//4% ¿ÃªÛ
+											//4% ???
 											if ( ((lpChar->smCharInfo.Life[1]<<2)/100)<lpTransSkilAttackData->Power ) {
 												lpChar->SetMotionFromCode( CHRMOTION_STATE_DAMAGE );
 											}
@@ -2670,7 +2665,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							pow = lpTransSkilAttackData->Power-pow;
 
 							if ( pow>0 ) {
-								//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+								//???? ( ???? ???? )
 								lpChar->smCharInfo.Life[0] -= pow;
 							}
 
@@ -2686,8 +2681,8 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 				}
 			}
 			break;
-		case 2:	//∑ŒæÓ
-		case 5:	//ΩØµÂΩ∫∆Æ∂Û¿Ã≈©
+		case 2:	//?ùù?
+		case 5:	//??????????
 			for(cnt2=0;cnt2<AUTOPLAYER_MAX;cnt2++) {
 				lpChar = &chrAutoPlayer[cnt2];
 				if ( lpChar->Flag && lpChar->smCharInfo.State && lpChar->MotionInfo->State!=CHRMOTION_STATE_DEAD ) {
@@ -2698,36 +2693,36 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							x = (lpPlayInfo->Position.x-lpChar->pX)>>FLOATNS;
 							y = (lpPlayInfo->Position.y-lpChar->pY)>>FLOATNS;
 							z = (lpPlayInfo->Position.z-lpChar->pZ)>>FLOATNS;
-							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//∞≈∏Æ∞° ∏’∞ÊøÏ Ω«∆–
+							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//????? ???? ????
 
-							//ª˝º”º∫ ø° µ˚∏£ ¡ﬂ∏≥ªÛ≈¬ ¿Ø¡ˆ
+							//????? ?? ???? ??????? ????
 							rs = lpChar->smCharInfo.Resistance[sITEMINFO_BIONIC];
 							if ( rs<0 ) rs = 0;
 							if ( rs>=100 ) rs=100;
 							rs = 100-rs;
 
 							if ( lpTransSkilAttackData->AttackState==2 ) {
-								//∑ŒæÓ
+								//?ùù?
 								//if ( (rand()%100)>rs ) {
-									lpChar->PlayStunCount = lpTransSkilAttackData->Power<<4;		//¡ﬂ∏≥ªÛ≈¬ º≥¡§
+									lpChar->PlayStunCount = lpTransSkilAttackData->Power<<4;		//??????? ????
 									lpChar->PlayStunCount = ( lpChar->PlayStunCount * rs )/100;
 								//}
 							}
 							else if ( lpTransSkilAttackData->AttackState==5 ) {
-								//ΩØµÂ Ω∫∆Æ∂Û¿Ã≈©
+								//???? ????????
 								pow = ( lpTransSkilAttackData->Power * lpChar->smCharInfo.Absorption )/100;
 								pow = lpTransSkilAttackData->Power-pow;
 								if ( pow>0 ) {
-									//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+									//???? ( ???? ???? )
 									lpChar->smCharInfo.Life[0] -= pow;
 								}
-								lpChar->PlayStunCount = 16*10;			//¡ﬂ∏≥ªÛ≈¬ 10√ 
+								lpChar->PlayStunCount = 16*10;			//??????? 10??
 								lpChar->PlayStunCount = ( lpChar->PlayStunCount * rs )/100;
 							}
 
 
 							if ( lpChar->smCharInfo.Life[0] ) {
-								//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+								//?????? ??? ???????? ??
 								ang2 = GetRadian2D( lpChar->pX , lpChar->pZ ,lpPlayInfo->Position.x, lpPlayInfo->Position.z );
 								ang = (ang2+ANGLE_180) & ANGCLIP;
 								lpChar->Angle.y = ang;
@@ -2752,11 +2747,11 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 			}
 			break;
 		case 3:
-			//±◊∂ÛøÓµÂ ∆ƒ¿Ã≈©
+			//????? ?????
 			time = 175;
 			cnt2 = lpTransSkilAttackData->AttackSize>>FLOATNS;
 			for(cnt=0;cnt<10;cnt++) {
-				//±◊∂ÛøÓµÂ ∆ƒ¿Ã≈© Ω√∞£¿ª √£¥¬¥Ÿ
+				//????? ????? ?ùù??? ??ùù?
 				if ( G_Pike_Range[cnt]==cnt2 ) {
 					time = G_Pike_Time[cnt]*17;
 					break;
@@ -2773,7 +2768,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							x = (lpPlayInfo->Position.x-lpChar->pX)>>FLOATNS;
 							y = (lpPlayInfo->Position.y-lpChar->pY)>>FLOATNS;
 							z = (lpPlayInfo->Position.z-lpChar->pZ)>>FLOATNS;
-							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//∞≈∏Æ∞° ∏’∞ÊøÏ Ω«∆–
+							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//????? ???? ????
 
 								pow = lpTransSkilAttackData->Power;
 								rs = lpChar->smCharInfo.Resistance[sITEMINFO_ICE];
@@ -2790,7 +2785,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 								//int G_Pike_Time[10]	     = {3,4,5,6,7,8,9,10,11,12};
 
 
-								lpChar->PlaySlowCount = time;		//º”µµ ¥¿∑¡¡¸
+								lpChar->PlaySlowCount = time;		//??? ??????
 								lpChar->PlaySlowSpeed = 0;
 
 								if ( rs ) {
@@ -2800,14 +2795,14 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 								}
 
 								//if ( (10-rs/10)
-								//10-(∏ÛΩ∫≈Õº”º∫/10) √ 
+								//10-(??????/10) ??
 
 								if ( pow>0 ) {
-									//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+									//???? ( ???? ???? )
 									lpChar->smCharInfo.Life[0] -= pow;
 
 									if ( lpChar->smCharInfo.Life[0] ) {
-										//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+										//?????? ??? ???????? ??
 										ang2 = GetRadian2D( lpChar->pX , lpChar->pZ ,lpPlayInfo->Position.x, lpPlayInfo->Position.z );
 										ang = (ang2+ANGLE_180) & ANGCLIP;
 										lpChar->Angle.y = ang;
@@ -2816,7 +2811,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 
 										if ( lpChar->smCharInfo.Life[0] && lpChar->MotionInfo->State != CHRMOTION_STATE_DAMAGE &&
 											lpChar->MotionInfo->State!=CHRMOTION_STATE_EAT) {
-												//4% ¿ÃªÛ
+												//4% ???
 												if ( ((lpChar->smCharInfo.Life[1]<<2)/100)<lpTransSkilAttackData->Power ) {
 													lpChar->SetMotionFromCode( CHRMOTION_STATE_DAMAGE );
 												}
@@ -2836,7 +2831,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 				}
 			}
 			break;
-		case 4:	//º“øÔº≠ƒø
+		case 4:	//??ù?ù
 			if ( lpTransSkilAttackData->Power<1 || lpTransSkilAttackData->Power>10 ) break;
 			TotalLife = 0;
 
@@ -2851,7 +2846,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							x = (lpPlayInfo->Position.x-lpChar->pX)>>FLOATNS;
 							y = (lpPlayInfo->Position.y-lpChar->pY)>>FLOATNS;
 							z = (lpPlayInfo->Position.z-lpChar->pZ)>>FLOATNS;
-							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//∞≈∏Æ∞° ∏’∞ÊøÏ Ω«∆–
+							if ( abs(y)>100 || (x*x+z*z)>(800*800) ) break;		//????? ???? ????
 
 							pow = Soul_Sucker_Absorb[ lpTransSkilAttackData->Power-1 ];
 
@@ -2863,14 +2858,14 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 							}
 
 							if ( pow>0 ) {
-								//∏Ì¡ﬂ ( ∞¯∞› º∫∞¯ )
+								//???? ( ???? ???? )
 								life = (lpChar->smCharInfo.Life[1]*pow)/100;
 								lpChar->smCharInfo.Life[0] -= life;
 								if ( lpChar->smCharInfo.Life[0]<0 ) life+=lpChar->smCharInfo.Life[0];
 								TotalLife += life;
 
 								if ( lpChar->smCharInfo.Life[0] && (rand()%100)<lpChar->smMonsterInfo.DamageStunPers ) {
-									//∏¬¿∏∏È µ⁄∑Œ π∞∑Ø≥™∞‘ «‘
+									//?????? ??? ???????? ??
 									ang2 = GetRadian2D( lpChar->pX , lpChar->pZ ,lpPlayInfo->Position.x, lpPlayInfo->Position.z );
 									ang = (ang2+ANGLE_180) & ANGCLIP;
 									lpChar->Angle.y = ang;
@@ -2896,7 +2891,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 				}
 			}
 			if ( TotalLife>0 ) {
-				//ª©æ—¿∫ ª˝∏Ì∑¬¿ª ∫∏≥ª¡ÿ¥Ÿ
+				//?????? ???????? ???????
 				smTransCommand.code = smTRANSCODE_VIRTURAL_POTION;
 				smTransCommand.size = sizeof( smTRANS_COMMAND );
 				smTransCommand.WParam = TotalLife;
@@ -2915,7 +2910,7 @@ int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAt
 }
 
 
-//π¸¿ß«¸ ∞¯∞› πﬁ¿Ω ( ¿Ø¿˙ ∞¯∞› )
+//?????? ???? ???? ( ???? ???? )
 int RecvRangeAttackUser(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAttackData)
 {
 
@@ -2923,11 +2918,11 @@ int RecvRangeAttackUser(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSk
 	TRANS_ATTACKDATA	TransAttackData;
 
 	if (!lpPlayInfo->AdminMode) {
-		if (!rsServerConfig.Enable_PK) return FALSE;			//«ˆ¿Á ¿œπ›¿Ø¿˙¥¬ PK±›¡ˆ
-		if (lpPlayInfo->smCharInfo.Level <= LIMIT_PK_LEVEL) return FALSE;	//∑π∫ß 10¿Ã«œ PK±›¡ˆ
+		if (!rsServerConfig.Enable_PK) return FALSE;			//???? ????????? PK????
+		if (lpPlayInfo->smCharInfo.Level <= LIMIT_PK_LEVEL) return FALSE;	//???? 10???? PK????
 	}
 
-	if ((lpTransSkilAttackData->AttackState & 0xFFFF) == 2) //∑ŒæÓ PK∞¯∞› «ÿ¥Á æ¯¿Ω
+	if ((lpTransSkilAttackData->AttackState & 0xFFFF) == 2) //?ùù? PK???? ??? ????
 		return FALSE;
 
 
@@ -2953,9 +2948,9 @@ int RecvRangeAttackUser(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSk
 					TransAttackData.dwDestObjectSerial = lpPlayInfo->dwObjectSerial;
 					TransAttackData.dwTarObjectSerial = rsPlayInfo[cnt2].dwObjectSerial;
 					TransAttackData.dwChkSum = TransAttackData.Power * 2002 +
-						(TransAttackData.x * TransAttackData.y * TransAttackData.z);// ¡∂¿€ πÊ¡ˆ ƒ⁄µÂ
+						(TransAttackData.x * TransAttackData.y * TransAttackData.z);// ???? ???? ???
 
-					//∞¯∞› ±‚∑œ
+					//???? ???
 					rsPlayInfo[cnt2].Send_AttackCount++;
 					rsPlayInfo[cnt2].Send_AttackDamage += lpTransSkilAttackData->Power;
 
@@ -2971,10 +2966,10 @@ int RecvRangeAttackUser(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSk
 }
 
 
-///////////////////////////// ªı∑ŒøÓ ∞¯∞› ∆–≈∂ //////////////////////////////////
+///////////////////////////// ???ùù? ???? ??? //////////////////////////////////
 
 
-//∑π∫ß∑Œ ¡§ªÛ¿˚¿Œ Ω∫≈≥ ƒ⁄µÂ¿Œ¡ˆ ∞ÀªÁ
+//?????? ???????? ??? ??????? ???
 int rsCheckSkillLevel(rsPLAYINFO* lpPlayInfo, DWORD dwSkillCode)
 {
 	DWORD	dwCode = dwSkillCode & 0xFF;
@@ -2986,19 +2981,19 @@ int rsCheckSkillLevel(rsPLAYINFO* lpPlayInfo, DWORD dwSkillCode)
 	if (dwSkillCode == SKILL_PLAY_PIKEWIND || dwSkillCode == SKILL_PLAY_ENCHANT_WEAPON) return TRUE;
 
 	if (dwCodeByte == 0 || dwCodeByte >= 0xD) {
-		//4¬˜Ω∫≈≥
+		//4?????
 		if (lv < 59) return FALSE;
 	}
 	else if (dwCodeByte >= 9) {
-		//3¬˜ Ω∫≈≥
+		//3?? ???
 		if (lv < 39) return FALSE;
 	}
 	else if (dwCodeByte >= 5) {
-		//2¬˜ Ω∫≈≥
+		//2?? ???
 		if (lv < 19) return FALSE;
 	}
 	else if (dwCodeByte >= 1) {
-		//1¬˜ Ω∫≈≥
+		//1?? ???
 		if (lv < 9) return FALSE;
 	}
 
@@ -3428,9 +3423,9 @@ int rsSetSkillAttack(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* l
 	case SKILL_PLAY_HOLY_INCANTATION:
 		if (lpPlayInfo->smCharInfo.JOB_CODE != JOBCODE_KNIGHT) return FALSE;
 
-		if (lpChar && lpChar->smCharInfo.Brood == smCHAR_MONSTER_UNDEAD && lpChar->smCharInfo.wPlayClass[0] != MONSTER_CLASS_BOSS) // Ajuste n„o funcionar em boss
+		if (lpChar && lpChar->smCharInfo.Brood == smCHAR_MONSTER_UNDEAD && lpChar->smCharInfo.wPlayClass[0] != MONSTER_CLASS_BOSS) // Ajuste n?o funcionar em boss
 		{
-			// Retirado resistÍcnia do mob na chance
+			// Retirado resist?cnia do mob na chance
 			//pow = 0; lpChar->smCharInfo.Resistance[sITEMINFO_BIONIC];
 			//if (pow < 0) pow = 0;
 			//if (pow > 100) pow = 100;
@@ -3719,7 +3714,7 @@ int rsSetSkillAttack(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* l
 	return TRUE;
 }
 
-//Ω∫≈≥ ∞¯∞› ∫Ø»Ø
+//??? ???? ???
 int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpTransAttackData, TRANS_ATTACKDATA2* lpTransAttackData2)
 {
 	int pow;
@@ -3734,7 +3729,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 
 
 	if (lpPlayInfo->dwSkill_Maximize_Time && !dwAttSkillCode) {
-		//∏∆Ω√∏∂¿Ã¡Ó ¿˚øÎ ( √÷¥Î ∞¯∞›∑¬ π´±‚ √÷¥Îƒ° ∏∏≈≠ √ﬂ∞° )
+		//??ùù????? ???? ( ??? ????? ???? ???? ??? ??? )
 		if (lpPlayInfo->dwSkill_Maximize_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_Maximize_Time = 0;
 			lpPlayInfo->dwSkill_Maximize_Param = 0;
@@ -3749,7 +3744,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 	}
 
 	if (lpPlayInfo->dwSkill_AutoMation_Time && !dwAttSkillCode) {
-		//ø¿≈‰∏≈¿Ãº« ¿˚øÎ ( ∞¯∞›∑¬¿ª π´±‚ µ•πÃ¡ˆ ¿« ∫Ò¿≤∑Œ √ﬂ∞° )
+		//???????? ???? ( ??????? ???? ?????? ?? ?????? ??? )
 		if (lpPlayInfo->dwSkill_AutoMation_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_AutoMation_Time = 0;
 			lpPlayInfo->dwSkill_AutoMation_Param = 0;
@@ -3757,7 +3752,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 		}
 
 		dwWeaponCode = lpTransAttackData2->dwWeaponCode & sinITEM_MASK2;
-		if (dwWeaponCode == sinWS1 || dwWeaponCode == sinWT1) {		//π´±‚ »∞ , ¿Á∫Ì∏∞ ∞Ëø≠∏∏ ¿˚øÎ
+		if (dwWeaponCode == sinWS1 || dwWeaponCode == sinWT1) {		//???? ? , ????? ?ùù?? ????
 			pow = lpTransAttackData2->Power[1] - lpTransAttackData2->Power2[1];
 			if (pow >= 0 && pow < lpTransAttackData2->Power[1])
 				lpTransAttackData2->Power[1] += (pow * lpPlayInfo->dwSkill_AutoMation_Param) / 100;
@@ -3771,7 +3766,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 	}
 
 	if (lpPlayInfo->dwSkill_TriumphOfValhalla_Time && !dwAttSkillCode) {
-		//∆Æ∂Û¿Ãæˆ«¡ πﬂ«“∂Û
+		//???????? ?????
 		if (lpPlayInfo->dwSkill_TriumphOfValhalla_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_TriumphOfValhalla_Time = 0;
 			lpPlayInfo->dwSkill_TriumphOfValhalla_Param = 0;
@@ -3783,7 +3778,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 	}
 
 	if (lpPlayInfo->dwSkill_HallOfValhalla_Time && !dwAttSkillCode) {
-		//»¶ø¿∫Í πﬂ«“∂Û
+		//????? ?????
 		if (lpPlayInfo->dwSkill_HallOfValhalla_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_HallOfValhalla_Time = 0;
 			return TRUE;
@@ -3794,7 +3789,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 	}
 
 	if (lpPlayInfo->dwSkill_Vanish_Time) {
-		//πË¥œΩ¨
+		//????
 		if (lpPlayInfo->dwSkill_Vanish_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_Vanish_Time = 0;
 			lpPlayInfo->dwSkill_Vanish_Param = 0;
@@ -3806,7 +3801,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 		lpPlayInfo->dwSkill_Vanish_Time = 0;
 		lpPlayInfo->dwSkill_Vanish_Param = 0;
 
-		//πË¥œΩ¨ «ÿ¡¶«œ±‚
+		//???? ???????
 		smTransCommand.code = smTRANSCODE_PROCESS_SKILL;
 		smTransCommand.size = sizeof(smTRANS_COMMAND);
 		smTransCommand.WParam = SKILL_PLAY_VANISH;
@@ -3817,7 +3812,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 	}
 
 	if (lpPlayInfo->dwSkill_Berserker_Time) {
-		//πˆº≠ƒø
+		//????ùù
 		if (lpPlayInfo->dwSkill_Berserker_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_Berserker_Time = 0;
 			lpPlayInfo->dwSkill_Berserker_Param = 0;
@@ -3841,7 +3836,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 	}
 
 	if (lpPlayInfo->dwSkill_ForceOfNature_Time) {
-		//∆˜Ω∫ø¿∫Í ≥◊¿Ã√ƒ
+		//???????? ??????
 		if (lpPlayInfo->dwSkill_ForceOfNature_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_ForceOfNature_Time = 0;
 			return TRUE;
@@ -3853,7 +3848,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 
 
 	if (lpPlayInfo->dwSkill_GodsBless_Time) {
-		//∞´∫Ì∑πΩ∫
+		//????????
 		if (lpPlayInfo->dwSkill_GodsBless_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_GodsBless_Time = 0;
 			lpPlayInfo->dwSkill_GodsBless_Param = 0;
@@ -3864,7 +3859,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 	}
 
 	if (lpPlayInfo->dwSkill_FrostJavelin_Time && !dwAttSkillCode) {
-		//«¡∑ŒΩ∫∆Æ¿Á∫Ì∏∞
+		//???ùù???????
 		if (lpPlayInfo->dwSkill_FrostJavelin_Time < dwPlayServTime) {
 			lpPlayInfo->dwSkill_FrostJavelin_Time = 0;
 			lpPlayInfo->dwSkill_FrostJavelin_Param = 0;
@@ -3872,17 +3867,17 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 		}
 
 		dwWeaponCode = lpTransAttackData2->dwWeaponCode & sinITEM_MASK2;
-		if (dwWeaponCode == sinWT1) {		//π´±‚ ¿Á∫Ì∏∞ ∞Ëø≠∏∏ ¿˚øÎ
+		if (dwWeaponCode == sinWT1) {		//???? ????? ?ùù?? ????
 			pow = GetRandomPos(Frost_Javelin_IceAddDamage[lpPlayInfo->dwSkill_FrostJavelin_Param][0],
 				Frost_Javelin_IceAddDamage[lpPlayInfo->dwSkill_FrostJavelin_Param][1]);
 
 			lpTransAttackData->AttackState |= (sITEMINFO_ICE + 1) << 16;
-			lpTransAttackData->AttackState |= pow << (16 + 4);		//¿¸√º¡ﬂ æÛ¿Ωº”º∫ µ•πÃ¡ˆ
+			lpTransAttackData->AttackState |= pow << (16 + 4);		//????? ??????? ??????
 			lpTransAttackData->Power += pow;
 		}
 	}
 
-	if (lpPlayInfo->dwBlessSkill_Code == SKILL_PLAY_BLESS_DAMAGE) {	//≈¨∑£Ω∫≈≥ (µ•πÃ¡ˆ√ﬂ∞°)
+	if (lpPlayInfo->dwBlessSkill_Code == SKILL_PLAY_BLESS_DAMAGE) {	//?????? (?????????)
 		if (lpPlayInfo->dwBlessSkill_Time > dwPlayServTime) {
 			lpTransAttackData->Power += (lpTransAttackData->Power * lpPlayInfo->dwBlessSkill_Param) / 100;
 		}
@@ -3893,7 +3888,7 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 		}
 	}
 
-	//∞¯º∫ Ω∫≈©∑—
+	//???? ?????
 	if (lpPlayInfo->dwSiegeItem_Scroll_Time) {
 		if (lpPlayInfo->dwSiegeItem_Scroll_Time < dwPlayServTime) {
 			lpPlayInfo->dwSiegeItem_Scroll_Code = 0;
@@ -3901,21 +3896,21 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 		}
 		else {
 			switch (lpPlayInfo->dwSiegeItem_Scroll_Code) {
-			case (sinBI1 | sin05):					//π´¿˚ Ω∫≈©∑—
-				lpTransAttackData->Power /= lpPlayInfo->dwSiegeItem_Scroll_Param;			//∞¯∞›∑¬ ∞®º“
+			case (sinBI1 | sin05):					//???? ?????
+				lpTransAttackData->Power /= lpPlayInfo->dwSiegeItem_Scroll_Param;			//????? ????
 				break;
-			case (sinBI1 | sin06):					//≈©∏Æ∆ºƒ√ Ω∫≈©∑—
-				lpTransAttackData2->Critical[0] += (short)lpPlayInfo->dwSiegeItem_Scroll_Param;		//≈©∏Æ∆ºƒ√ 2πË ¡ı∞°
+			case (sinBI1 | sin06):					//?????? ?????
+				lpTransAttackData2->Critical[0] += (short)lpPlayInfo->dwSiegeItem_Scroll_Param;		//?????? 2?? ????
 				break;
 			}
 
 			if (lpPlayInfo->Position.Area == rsCASTLE_FIELD) {
 				switch (lpPlayInfo->dwSiegeItem_Scroll_Code) {
-				case (sinBC1 | sin01):					//π´¿˚ Ω∫≈©∑—
-					lpTransAttackData->Power /= lpPlayInfo->dwSiegeItem_Scroll_Param;			//∞¯∞›∑¬ ∞®º“
+				case (sinBC1 | sin01):					//???? ?????
+					lpTransAttackData->Power /= lpPlayInfo->dwSiegeItem_Scroll_Param;			//????? ????
 					break;
-				case (sinBC1 | sin02):					//≈©∏Æ∆ºƒ√ Ω∫≈©∑—
-					lpTransAttackData2->Critical[0] += (short)lpPlayInfo->dwSiegeItem_Scroll_Param;		//≈©∏Æ∆ºƒ√ 2πË ¡ı∞°
+				case (sinBC1 | sin02):					//?????? ?????
+					lpTransAttackData2->Critical[0] += (short)lpPlayInfo->dwSiegeItem_Scroll_Param;		//?????? 2?? ????
 					break;
 				}
 			}
@@ -3927,14 +3922,14 @@ int rsSetSkillPlus(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpT
 }
 
 
-//Ω«¡¶ ≈©∏Æ∆ºƒ√ 
+//???? ?????? 
 int GetCritical(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Critical_Hit)
 {
 	int Result;
 
 	Result = Critical_Hit + (((lpPlayInfo->smCharInfo.Level - lpChar->smCharInfo.Level) * 25) / 100);
 
-	//æÓººΩ≈æ∆¿Ã Ω∫≈≥ ≈©∏Æ∆ºƒ√ ∞≠»≠
+	//??????? ??? ?????? ???
 	/*
 	if ( lpPlayInfo->dwSkill_AssassinEye_Time && Critical_Hit>0 ) {
 
@@ -3965,7 +3960,7 @@ int GetCritical(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Critical_Hit)
 	return Result;
 }
 
-//Ω«¡¶ ≈©∏Æ∆ºƒ√ 
+//???? ?????? 
 int GetCritical2(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Critical_Hit)
 {
 	int Result;
@@ -3977,14 +3972,14 @@ int GetCritical2(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, int Critical_H
 	return Result;
 }
 
-//∆˜Ω∫ø¿∫Í ∆ƒøˆæ˜
+//???????? ?ùù???
 int AddForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* lpTransAttackData, DWORD dwSkillCode, int MinDamage, int MaxDamage)
 {
 	int damage = 0;
 	int	sJobLevel;
 	int	damage2;
 
-	// π⁄¿Áø¯ - ∏≈¡˜ ∆˜Ω∫, ∫Ù∏µ ∏≈¡˜ ∆˜Ω∫¥¬ ¿œπ›Ω∫≈≥∞˙ ¥‹≈∏ø°¥¬ ¿˚øÎ¿Ã µ«¡ˆ æ ¿∏π«∑Œ return FALSE
+	// ????? - ???? ????, ???? ???? ?????? ??????? ??????? ?????? ???? ??????? return FALSE
 	if ((lpPlayInfo->dwForceOrb_Code & sinITEM_MASK3) > sin14) return FALSE;
 	if (!lpPlayInfo->dwForceOrb_Time) return FALSE;
 	if (lpPlayInfo->dwForceOrb_Time < dwPlayServTime) {
@@ -3994,14 +3989,14 @@ int AddForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* l
 		return FALSE;
 	}
 
-	//¿œ∫Œ Ω∫≈≥ ¿˚øÎ ±›¡ˆ
+	//??? ??? ???? ????
 	switch (dwSkillCode & 0xFF)
 	{
 	case SKILL_PLAY_RAGEOF_ZECRAM:
 	case SKILL_PLAY_SPARK_SHIELD:
 	case SKILL_PLAY_FALCON:
 	case SKILL_PLAY_DANCING_SWORD:
-	case SKILL_PLAY_SUMMON_MUSPELL:	//º≠∏’π´Ω∫∆Á ø° ∆˜Ω∫ ∞¯∞›∑¬ √ﬂ∞° πˆ±◊∏¶ ¿œ∫ª√¯ ø‰±∏∑Œ ºˆ¡§ (2005≥‚7ø˘14¿œ)
+	case SKILL_PLAY_SUMMON_MUSPELL:	//????????? ?? ???? ????? ??? ????? ????? ???? ???? (2005??7??14??)
 	case SKILL_PLAY_PET_ATTACK:
 	case SKILL_PLAY_PET_ATTACK2:
 
@@ -4011,24 +4006,24 @@ int AddForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* l
 
 	damage = lpPlayInfo->dwForceOrb_Damage;
 
-	// π⁄¿Áø¯ : ∫Ù∏µ ∆˜Ω∫ √ﬂ∞°
+	// ????? : ???? ???? ???
 	if (lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin07) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin08) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin09) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin10))
 	{
-		//∏”≈∞ ∆˜Ω∫, µ•∫Ò≥◊ ∆˜Ω∫, ΩÏ∑πΩ∫≈‰ ∆˜Ω∫, πÃ∂Û¡ˆ ∆˜Ω∫ ∞¯∞›∑¬ 10%∞°¡ﬂ
+		//??? ????, ????? ????, ?ùù???? ????, ????? ???? ????? 10%????
 		damage2 = (MaxDamage + MinDamage) / 2;
 		if (damage2 > 0 && damage2 < 1000)
 			damage += (damage2 * 10) / 100;
 	}
 	else if (lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin11))
 	{
-		//¿Œ∆‰∏£≥™ ∆˜Ω∫ 15%∞°¡ﬂ
+		//?????? ???? 15%????
 		damage2 = (MaxDamage + MinDamage) / 2;
 		if (damage2 > 0 && damage2 < 1000)
-			damage += (damage2 * 15) / 100; // ∞¯∞›∑¬ 15%∞°¡ﬂ
+			damage += (damage2 * 15) / 100; // ????? 15%????
 	}
 	else if (lpPlayInfo->dwForceOrb_Code >= (sinFO1 | sin12))
 	{
-		//¿Ã¥œ±◊∏∂ ∆˜Ω∫ 20%∞°¡ﬂ
+		//????? ???? 20%????
 		damage2 = (MaxDamage + MinDamage) / 2;
 		if (damage2 > 0 && damage2 < 1000)
 			damage += (damage2 * 20) / 100;
@@ -4040,20 +4035,20 @@ int AddForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* l
 		if (sJobLevel >= 0 && sJobLevel < 0x10) {
 			sJobLevel >>= 2;
 			switch (sJobLevel) {
-			case 0:		//1¬˜Ω∫≈≥
+			case 0:		//1?????
 				if ((dwSkillCode & 0xFF) == SKILL_PLAY_MULTI_SPARK)
 					damage = (damage * 50) / 100;
 				else
 					damage = (damage * 80) / 100;
 
 				break;
-			case 1:		//2¬˜Ω∫≈≥
+			case 1:		//2?????
 				damage = (damage * 90) / 100;
 				break;
-			case 2:		//3¬˜Ω∫≈≥
+			case 2:		//3?????
 
 				break;
-			case 3:		//4¬˜Ω∫≈≥
+			case 3:		//4?????
 				damage = (damage * 150) / 100;
 				break;
 			}
@@ -4064,13 +4059,13 @@ int AddForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* l
 	lpTransAttackData->Power += damage;
 
 #ifdef DISP_DAMAGE
-	///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+	///////////////////////// ?????? ?????? ???? ??? //////////////////////
 	if (lpPlayInfo->AdminMode > 2) {
-		if (lpChar) {					//«ÿø‹
+		if (lpChar) {					//???
 			wsprintf(szDispDamage, ">%s Attack ( ForceOrb + %d ) (%d)", lpChar->smCharInfo.szName, damage, lpTransAttackData->Power);
 			rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 		}
-		else {							//«ÿø‹
+		else {							//???
 			wsprintf(szDispDamage, "> Attack ( ForceOrb + %d ) (%d)", damage, lpTransAttackData->Power);
 			rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 		}
@@ -4079,14 +4074,14 @@ int AddForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDATA* l
 	return TRUE;
 }
 
-// π⁄¿Áø¯ - ∏≈¡˜ ∆˜Ω∫ √ﬂ∞°, ∫Ù∏µ ∏≈¡˜ ∆˜Ω∫ √ﬂ∞°(π¸¿ß∞¯∞›øÎ ∆˜Ω∫ø¿∫Í ∆ƒøˆæ˜)
+// ????? - ???? ???? ???, ???? ???? ???? ???(????????? ???????? ?ùù???)
 int AddRangeForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_SKIL_ATTACKDATA* lpTransSkillAttackData, DWORD dwSkillCode, int MinDamage, int MaxDamage)
 {
 	int damage = 0;
 	int	sJobLevel;
 	int	damage2;
 
-	if ((lpPlayInfo->dwForceOrb_Code & sinITEM_MASK2) == sinFO1) // π⁄¿Áø¯ - ¿œπ› ∆˜Ω∫ ¿˚øÎ¡ﬂø° π¸¿ß«¸ Ω∫≈≥¿ª ªÁøÎ«œ∏È ∏Æ≈œΩ√≈≤¥Ÿ.
+	if ((lpPlayInfo->dwForceOrb_Code & sinITEM_MASK2) == sinFO1) // ????? - ??? ???? ??????? ?????? ????? ?????? ????????.
 	{
 		if ((lpPlayInfo->dwForceOrb_Code & sinITEM_MASK3) < sin21)
 			return FALSE;
@@ -4099,20 +4094,20 @@ int AddRangeForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_SKIL_ATT
 		return FALSE;
 	}
 
-	//¿œ∫Œ Ω∫≈≥ ¿˚øÎ ±›¡ˆ
+	//??? ??? ???? ????
 	switch (dwSkillCode & 0xFF)
 	{
-		//	case SKILL_PLAY_RAGEOF_ZECRAM: // π⁄¿Áø¯ - ∑π¿Ã¡ˆ ø¿∫Í ¡¶≈©∂˜ Ω∫≈≥¿∫ ∏≈¡˜ ∆˜Ω∫ ∂ß ¿˚øÎΩ√≈≤¥Ÿ.
+		//	case SKILL_PLAY_RAGEOF_ZECRAM: // ????? - ?????? ???? ????? ????? ???? ???? ?? ????????.
 	case SKILL_PLAY_SPARK_SHIELD:
 	case SKILL_PLAY_FALCON:
 	case SKILL_PLAY_DANCING_SWORD:
-	case SKILL_PLAY_SUMMON_MUSPELL:	//º≠∏’π´Ω∫∆Á ø° ∆˜Ω∫ ∞¯∞›∑¬ √ﬂ∞° πˆ±◊∏¶ ¿œ∫ª√¯ ø‰±∏∑Œ ºˆ¡§ (2005≥‚7ø˘14¿œ)
+	case SKILL_PLAY_SUMMON_MUSPELL:	//????????? ?? ???? ????? ??? ????? ????? ???? ???? (2005??7??14??)
 	case SKILL_PLAY_PET_ATTACK:
 	case SKILL_PLAY_PET_ATTACK2:
-	case SKILL_PLAY_ELEMENTAL_SHOT: // π⁄¿Áø¯ - ∏≈¡˜ ∆˜Ω∫ ªÁøÎΩ√ ¿Ã Ω∫≈≥¿« ≥˙ º”º∫¿∫ ¡¶ø‹Ω√≈≤¥Ÿ.
-	case SKILL_PLAY_SOUL_SUCKER: // π⁄¿Áø¯ - ΩÓøÔΩ‚ƒøµµ ∏≈¡˜ ∆˜Ω∫ ¿˚øÎΩ√ ¡¶ø‹Ω√≈≤¥Ÿ.
-	case SKILL_PLAY_X_RAGE: // π⁄¿Áø¯ - ¿ÕΩ∫∆º∏≤ ∑π¿Ã¡ˆµµ ∏≈¡˜ ∆˜Ω∫ ¿˚øÎΩ√ ¡¶ø‹Ω√≈≤¥Ÿ.
-	case SKILL_PLAY_EXPANSION: // π⁄¿Áø¯ - ¿ÕΩ∫∆“º«µµ ∏≈¡˜ ∆˜Ω∫ ¿˚øÎΩ√ ¡¶ø‹Ω√≈≤¥Ÿ.
+	case SKILL_PLAY_ELEMENTAL_SHOT: // ????? - ???? ???? ???? ?? ????? ?? ????? ????????.
+	case SKILL_PLAY_SOUL_SUCKER: // ????? - ????ùù?? ???? ???? ????? ????????.
+	case SKILL_PLAY_X_RAGE: // ????? - ?????? ???????? ???? ???? ????? ????????.
+	case SKILL_PLAY_EXPANSION: // ????? - ??????? ???? ???? ????? ????????.
 
 		return FALSE;
 	}
@@ -4120,10 +4115,10 @@ int AddRangeForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_SKIL_ATT
 	damage = lpPlayInfo->dwForceOrb_Damage;
 
 
-	// π⁄¿Áø¯ : ∫Ù∏µ ∆˜Ω∫ √ﬂ∞°
+	// ????? : ???? ???? ???
 	if (lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin27) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin28) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin29) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin30))
 	{
-		//∏”≈∞ ∏≈¡˜∆˜Ω∫, µ•∫Ò≥◊ ∏≈¡˜∆˜Ω∫, ΩÏ∑πΩ∫≈‰ ∏≈¡˜∆˜Ω∫, πÃ∂Û¡ˆ ∏≈¡˜∆˜Ω∫ ∞¯∞›∑¬ 10%∞°¡ﬂ
+		//??? ????????, ????? ????????, ?ùù???? ????????, ????? ???????? ????? 10%????
 		damage2 = (MaxDamage + MinDamage) / 2;
 		if (damage2 > 0 && damage2 < 1000)
 			damage += (damage2 * 10) / 100;
@@ -4131,22 +4126,22 @@ int AddRangeForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_SKIL_ATT
 	else if (lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin31) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin35) ||
 		lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin36) || lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin37))
 	{
-		//¿Œ∆‰∏£≥™ ∏≈¡˜∆˜Ω∫, ∫Ù∏µ ∏≈¡˜∆˜Ω∫(3¡æ)µµ 15%∞°¡ﬂ
+		//?????? ????????, ???? ????????(3??)?? 15%????
 		damage2 = (MaxDamage + MinDamage) / 2;
 		if (damage2 > 0 && damage2 < 1000)
-			damage += (damage2 * 15) / 100; // ∞¯∞›∑¬ 15%∞°¡ﬂ
+			damage += (damage2 * 15) / 100; // ????? 15%????
 	}
 	else if (lpPlayInfo->dwForceOrb_Code == (sinFO1 | sin32))
 	{
-		//¿Ã¥œ±◊∏∂ ∏≈¡˜∆˜Ω∫ 20%∞°¡ﬂ
+		//????? ???????? 20%????
 		damage2 = (MaxDamage + MinDamage) / 2;
 		if (damage2 > 0 && damage2 < 1000)
-			damage += (damage2 * 20) / 100; //∞¯∞›∑¬ 20%∞°¡ﬂ
+			damage += (damage2 * 20) / 100; //????? 20%????
 	}
 
 	if (dwSkillCode)
 	{
-		// π⁄¿Áø¯ - ≥™¿Ã∆Æ SKILL_PLAY_SWORD_OF_JUSTICE / ∏≈¡ˆº« SKILL_PLAY_METEO ªÁøÎΩ√ 4¬˜ Ω∫≈≥ ¿ŒΩƒ ø¿∑˘∑Œ ∫∏øœ«‘.
+		// ????? - ????? SKILL_PLAY_SWORD_OF_JUSTICE / ?????? SKILL_PLAY_METEO ???? 4?? ??? ?ùù? ?????? ??????.
 		if (dwSkillCode == 336 || dwSkillCode == 384)
 		{
 			dwSkillCode += 15;
@@ -4156,20 +4151,20 @@ int AddRangeForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_SKIL_ATT
 		if (sJobLevel >= 0 && sJobLevel < 0x10) {
 			sJobLevel >>= 2;
 			switch (sJobLevel) {
-			case 0:		//1¬˜Ω∫≈≥
+			case 0:		//1?????
 				if ((dwSkillCode & 0xFF) == SKILL_PLAY_MULTI_SPARK)
 					damage = (damage * 50) / 100;
 				else
 					damage = (damage * 80) / 100;
 
 				break;
-			case 1:		//2¬˜Ω∫≈≥
+			case 1:		//2?????
 				damage = (damage * 90) / 100;
 				break;
-			case 2:		//3¬˜Ω∫≈≥
+			case 2:		//3?????
 
 				break;
-			case 3:		//4¬˜Ω∫≈≥
+			case 3:		//4?????
 				damage = (damage * 150) / 100;
 				break;
 			}
@@ -4180,14 +4175,14 @@ int AddRangeForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_SKIL_ATT
 	lpTransSkillAttackData->Power += damage;
 
 #ifdef DISP_DAMAGE
-	///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+	///////////////////////// ?????? ?????? ???? ??? //////////////////////
 	if (lpPlayInfo->AdminMode > 2) {
 		if (lpChar) {
-			wsprintf(szDispDamage, ">%s π¸¿ß∞¯∞› ( ∏≈¡˜∆˜Ω∫ø¿∫Í + %d ) (%d)", lpChar->smCharInfo.szName, damage, lpTransSkillAttackData->Power);
+			wsprintf(szDispDamage, ">%s ???????? ( ???????????? + %d ) (%d)", lpChar->smCharInfo.szName, damage, lpTransSkillAttackData->Power);
 			rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 		}
 		else {
-			wsprintf(szDispDamage, "> π¸¿ß∞¯∞› ( ∏≈¡˜∆˜Ω∫ø¿∫Í + %d ) (%d)", damage, lpTransSkillAttackData->Power);
+			wsprintf(szDispDamage, "> ???????? ( ???????????? + %d ) (%d)", damage, lpTransSkillAttackData->Power);
 			rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 		}
 	}
@@ -4195,7 +4190,7 @@ int AddRangeForceOrbPower(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_SKIL_ATT
 	return TRUE;
 }
 
-//∞¯∞›¿ª ¿Ø¿˙«—≈◊ ∫∏≥ø ( PK-PVP )
+//?????? ???????? ???? ( PK-PVP )
 int rsSendAttackDataToUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, TRANS_ATTACKDATA* lpTransAttackData)
 {
 	int regs, cnt, len;
@@ -4204,9 +4199,9 @@ int rsSendAttackDataToUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, TRAN
 	if (!lpPlayInfo->AdminMode) {
 		if (rsServerConfig.Enable_PKField_All)
 		{
-			// pluto PK«„øÎ « µÂ ¿¸∫Œ ºˆ¡§
+			// pluto PK??? ??? ???? ????
 			if (!rsServerConfig.Enable_PK || lpPlayInfo->Position.Area < 11 && lpPlayInfo->Position.Area > 34)
-				return FALSE;			//«ˆ¿Á ¿œπ›¿Ø¿˙¥¬ PK±›¡ˆ
+				return FALSE;			//???? ????????? PK????
 		}
 		else
 		{
@@ -4216,15 +4211,15 @@ int rsSendAttackDataToUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, TRAN
 			if (!rsServerConfig.Enable_PK && !lpPlayInfo->PkMode && !lpPlayInfo2->PkMode &&
 				sField[lpPlayInfo->Position.Area].State != FIELD_STATE_CASTLE &&
 				lpPlayInfo->Position.Area != FIELD_ARENA && lpPlayInfo->Position.Area != 48)
-				return FALSE;			//«ˆ¿Á ¿œπ›¿Ø¿˙¥¬ PK±›¡ˆ
+				return FALSE;			//???? ????????? PK????
 		}
 	}
 
 #ifdef DISP_DAMAGE
-	///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+	///////////////////////// ?????? ?????? ???? ??? //////////////////////
 	if (lpPlayInfo->AdminMode > 2)
 	{
-		//«ÿø‹
+		//???
 		wsprintf(szDispDamage, ">%s Damaged ( %d -> %d )", lpPlayInfo2->smCharInfo.szName, lpTransAttackData->Power, lpTransAttackData->Power / PK_POWER_DIVIDE);
 		rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 	}
@@ -4233,16 +4228,16 @@ int rsSendAttackDataToUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, TRAN
 	Param1 = 0;
 	Param2 = 0;
 
-	//º”º∫ ∞¯∞›¿œ ∞ÊøÏ
+	//??? ?????? ???
 	regs = (lpTransAttackData->AttackState >> 16) & 0xF;
 	if (regs && regs < sITEMINFO_NONE) {
-		cnt = lpTransAttackData->AttackState >> (16 + 4);		//º”º∫ ∞™ ( ªÛ¿ß ∫Ò∆Æø° ¿¸√º µ•πÃ¡ˆ¡ﬂ º”º∫ µ•πÃ¡ˆ∏∏ ¿˙¿Âµ  )
+		cnt = lpTransAttackData->AttackState >> (16 + 4);		//??? ?? ( ???? ????? ??? ???????? ??? ???????? ????? )
 		if (!cnt)
 			cnt = lpTransAttackData->Power;
 
-		//º”º∫ø° µ˚∏• ¿˙«◊∑¬ ¿˚øÎ
+		//????? ???? ????? ????
 		len = lpPlayInfo2->smCharInfo.Resistance[regs - 1];
-		if (len) {					//º”º∫ ¿˙«◊∑¬ ∞ËªÍ
+		if (len) {					//??? ????? ???
 			if (len >= 100) len = 100;
 			if (len <= -100) len = -100;
 			lpTransAttackData->Power -= ((cnt * len) / 100);
@@ -4253,20 +4248,20 @@ int rsSendAttackDataToUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, TRAN
 		switch (regs - 1) { //(lpTransAttackData->AttackState>>16)-1) {
 		case sITEMINFO_ICE:
 			if (lpPlayInfo->dwSkill_EnchantWeapon_Time > dwPlayServTime && (lpPlayInfo->dwSkill_EnchantWeapon_Param >> 8) == 0) {
-				//æÛ¿Ω ∞¯∞› º”µµ ¿˙«œ ( ¿Œ√º∆Æ ¿œ∂ß ¿˚øÎ )
+				//???? ???? ??? ???? ( ???? ??? ???? )
 				Param1 = -SKILL_PLAY_ENCHANT_WEAPON;
-				Param2 = 230 - 10 * (lpPlayInfo->dwSkill_EnchantWeapon_Param & 0xFF);	//∑π∫ßø° µ˚∏• º”µµ
+				Param2 = 230 - 10 * (lpPlayInfo->dwSkill_EnchantWeapon_Param & 0xFF);	//?????? ???? ???
 				break;
 			}
 			if (lpPlayInfo->dwSkill_DancingSword_Time > dwPlayServTime && (lpPlayInfo->dwSkill_DancingSword_Param & 0xFF) == 0) {
-				//¥ÌΩÃº“µÂ æÛ¿Ω ∞¯∞›
+				//?????? ???? ????
 				Param1 = -SKILL_PLAY_DANCING_SWORD;
 				Param2 = 230 - 10 * (lpPlayInfo->dwSkill_DancingSword_Param >> 16);
 				break;
 			}
 			if (lpPlayInfo->dwSkill_FrostJavelin_Time > dwPlayServTime) {
-				//«¡∑ŒΩ∫∆Æ¿Á∫Ì∏∞ æÛ¿Ω∞¯∞›
-				//º”µµ ¥¿∑¡¡¸
+				//???ùù??????? ????????
+				//??? ??????
 				Param1 = -SKILL_PLAY_FROST_JAVELIN;
 				Param2 = 240 - (240 * Frost_Javelin_SpeedSubPercent[lpPlayInfo->dwSkill_FrostJavelin_Param]) / 100;
 				break;
@@ -4280,7 +4275,7 @@ int rsSendAttackDataToUser(rsPLAYINFO* lpPlayInfo, rsPLAYINFO* lpPlayInfo2, TRAN
 	return rsSendAttackUser(lpPlayInfo, lpPlayInfo2, lpTransAttackData->Power / PK_POWER_DIVIDE, 0x80, Param1, Param2);
 }
 
-//∞¯∞› ºˆΩ≈ πﬁ¿Ω
+//???? ???? ????
 int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackData)
 {
 	TRANS_ATTACKDATA	TransAttackData;
@@ -4294,9 +4289,9 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 
 	/*
 	#ifdef DISP_DAMAGE
-	///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+	///////////////////////// ?????? ?????? ???? ??? //////////////////////
 	if ( lpPlayInfo->AdminMode>2 ) {
-	wsprintf( szDispDamage , "> ∞¯∞›∆–≈∂ ¿‘ºˆ" );
+	wsprintf( szDispDamage , "> ??????? ???" );
 	rsDisplayDamgeToClient( lpPlayInfo , szDispDamage );
 	}
 	#endif
@@ -4307,9 +4302,9 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 	dm_DecodePacket(lpPlayInfo->dwObjectSerial, lpTransAttackData);			//Decryption
 #endif
 
-	if (lpTransAttackData->dwChkSum != dm_GetDamgeChkSum(lpTransAttackData))	//∆–≈∂ ∞ÀªÁ
+	if (lpTransAttackData->dwChkSum != dm_GetDamgeChkSum(lpTransAttackData))	//??? ???
 	{
-		//µ•πÃ¡ˆ µ•¿Ã≈∏ ø¿∑˘∏¶ ±∫º≠πˆ ∑Œ±◊ø° ±‚∑œ
+		//?????? ????? ?????? ?????? ?ùù?? ???
 		smTransCommand.code = smTRANSCODE_SET_BLACKLIST;
 		smTransCommand.size = sizeof(smTRANS_COMMAND);
 		smTransCommand.WParam = 8500;
@@ -4324,20 +4319,20 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 	dwCode = lpTransAttackData->SkillCode & 0xFF;
 	if (dwCode != SKILL_PLAY_FALCON && dwCode != SKILL_PLAY_MAGNETIC_SPHERE && dwCode != SKILL_PLAY_CHARGING_STRIKE &&
 		dwCode != SKILL_PLAY_SHADOW_MASTER && dwCode != SKILL_PLAY_DIVINE_PIERCING) {
-		//∆”ƒ¡, º¯º≠∞° πŸ≤ ∞°¥…º∫ ∂´ø° ¡¶ø‹
+		//????, ?????? ??? ????? ???? ????
 		if (lpTransAttackData->AttackCount <= lpPlayInfo->DamagePacketCount ||
 			lpTransAttackData->dwTime <= lpPlayInfo->dwDamagePacketTime) {
 
 
 #ifdef DISP_DAMAGE
-			///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+			///////////////////////// ?????? ?????? ???? ??? //////////////////////
 			if (lpPlayInfo->AdminMode > 2) {
-				wsprintf(szDispDamage, "> µ•πÃ¡ˆ ≈¨∂Û¿Ãæ∆Æ ƒ´øÓ∆√ Ω√∞£ ø¿∑˘");
+				wsprintf(szDispDamage, "> ?????? ??????? ????? ?ùù? ????");
 				rsDisplayDamgeToClient(lpPlayInfo, szDispDamage);
 			}
 #endif
 
-			//µ•πÃ¡ˆ ≈¨∂Û¿Ãæ∆Æ √¯ ƒ´øÓ∆√,Ω√∞£ ø¿∑˘
+			//?????? ??????? ?? ?????,?ùù? ????
 			return FALSE;
 		}
 
@@ -4349,7 +4344,7 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 		lpTransAttackData->Power[1] > lpPlayInfo->sLimitDamage[1] ||
 		lpTransAttackData->Critical[0] > lpPlayInfo->sLimitCritical[0]) {
 
-		//µ•πÃ¡ˆ µ•¿Ã≈∏ ø¿∑˘∏¶ ±∫º≠πˆ ∑Œ±◊ø° ±‚∑œ
+		//?????? ????? ?????? ?????? ?ùù?? ???
 		smTransCommand.code = smTRANSCODE_SET_BLACKLIST;
 		smTransCommand.size = sizeof(smTRANS_COMMAND_EX);
 		smTransCommand.WParam = 8510;
@@ -4369,7 +4364,7 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 		if (lpPlayInfo->AdminMode) {
 			TRANS_CHATMESSAGE	TransChatMessage;
 
-			wsprintf(TransChatMessage.szMessage, "∞¯∞› ºˆƒ°ø¿∑˘ ( %d %d %d ) ( %d %d %d )",
+			wsprintf(TransChatMessage.szMessage, "???? ??????? ( %d %d %d ) ( %d %d %d )",
 				lpTransAttackData->Power[0], lpTransAttackData->Power[1], lpTransAttackData->Critical[0],
 				lpPlayInfo->sLimitDamage[0], lpPlayInfo->sLimitDamage[1], lpPlayInfo->sLimitCritical[0]);
 
@@ -4381,7 +4376,7 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 	}
 #endif
 
-		//¡¶«— ∞¯∞› ºˆƒ° √ ∞˙ ∫∏¡§
+		//???? ???? ??? ??? ????
 		lpTransAttackData->Power[0] = lpPlayInfo->sLimitDamage[0];
 		lpTransAttackData->Power[1] = lpPlayInfo->sLimitDamage[1];
 		lpTransAttackData->Critical[0] = lpPlayInfo->sLimitCritical[0];
@@ -4418,16 +4413,16 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 	if (rsSetSkillPlus(lpPlayInfo, lpChar, &TransAttackData, lpTransAttackData) == FALSE) return FALSE;
 
 	if (!lpTransAttackData->SkillCode) {
-		//¿œπ› ∞¯∞›
+		//??? ????
 		if (rsServerConfig.Event_Child) {
-			//æÓ∏∞¿Ã ¿Ã∫•∆Æ ( æÛ≈´¿Ã ƒ≥∏Ø¿œ∂ß ∞¯∞›∞°¡ﬂ )
+			//???? ???? ( ????? ùù????? ??????? )
 			if (lpPlayInfo->smCharInfo.SizeLevel > 0x1000 && lpPlayInfo->smCharInfo.SizeLevel <= 0x1002) {
-				TransAttackData.Power += (TransAttackData.Power * 15) / 100;	//∞¯∞›∑¬ 15% ∞°¡ﬂ
+				TransAttackData.Power += (TransAttackData.Power * 15) / 100;	//????? 15% ????
 			}
 		}
 	}
 
-	//∞¯∞›ø° ¿˙¡÷∞° ∞…∑»¥Ÿ
+	//????? ????? ????
 	if (lpPlayInfo->dwCurse_Attack_Time) {
 		if (lpPlayInfo->dwCurse_Attack_Time > dwPlayServTime)
 			TransAttackData.Power -= (TransAttackData.Power * lpPlayInfo->dwCurse_Attack_Param) / 100;
@@ -4436,7 +4431,7 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 	}
 
 
-	// ¿Â∫∞ - øª∑ŒøÏ µÂ∑°∞Ô
+	// ?? - ???ùù? ?ùù??
 	if (lpPlayInfo->dwTime_PrimeItem_HelpPet > (DWORD)tServerTime && lpPlayInfo->smCharInfo.GravityScroolCheck[1] == 2)
 	{
 		TransAttackData.Power += (TransAttackData.Power * 10) / 100;
@@ -4450,19 +4445,19 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 
 	if (lpChar) {
 
-		//∆˜Ω∫ø¿∫Í ∞¯∞›∑¬ √ﬂ∞° 
+		//???????? ????? ??? 
 		AddForceOrbPower(lpPlayInfo, lpChar, &TransAttackData, lpTransAttackData->SkillCode, sDefAttack[0], sDefAttack[1]);
 
 		if (lpTransAttackData->Critical[0]) {
 			if ((rand() % 100) < GetCritical(lpPlayInfo, lpChar, lpTransAttackData->Critical[0])) {
-				TransAttackData.AttackState = (TransAttackData.AttackState & 0xFFFF0000) + 2;		//≈©∏Æ∆ºƒ√ √≥∏Æ
+				TransAttackData.AttackState = (TransAttackData.AttackState & 0xFFFF0000) + 2;		//?????? ???
 				pow = TransAttackData.Power;
-				TransAttackData.Power = (pow * 170) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+				TransAttackData.Power = (pow * 170) / 100;						//?????? ???????
 
-				//æÓººΩ≈ æ∆¿Ã
+				//???? ????
 				if (lpPlayInfo->dwSkill_AssassinEye_Time) {
 					if (lpPlayInfo->dwSkill_AssassinEye_Time > dwPlayServTime) {
-						TransAttackData.Power = (pow * (170 + Assassin_Eye_AddCritical[lpPlayInfo->dwSkill_AssassinEye_Param])) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+						TransAttackData.Power = (pow * (170 + Assassin_Eye_AddCritical[lpPlayInfo->dwSkill_AssassinEye_Param])) / 100;						//?????? ???????
 					}
 					else {
 						lpPlayInfo->dwSkill_AssassinEye_Time = 0;
@@ -4479,9 +4474,9 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 				lpPlayInfo->lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 
 #ifdef DISP_DAMAGE
-				///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+				///////////////////////// ?????? ?????? ???? ??? //////////////////////
 				//if ( lpPlayInfo->AdminMode>2 ) {
-				//wsprintf( szDispDamage , ">%s ∞¯∞›Ω√µµ ( ≈©∏Æ∆ºƒ√ )" , lpChar->smCharInfo.szName );
+				//wsprintf( szDispDamage , ">%s ?????? ( ?????? )" , lpChar->smCharInfo.szName );
 				//rsDisplayDamgeToClient( lpPlayInfo , szDispDamage );
 				//}
 #endif
@@ -4489,7 +4484,7 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 			}
 		}
 
-		//∫Ù∏µæ∆¿Ã≈€Ω∫≈≥¿˚øÎ
+		//????????????????
 		rsBillingItemSkill(lpPlayInfo, lpChar, 1, TransAttackData.Power, lpTransAttackData->SkillCode & 0xFF);
 
 
@@ -4502,7 +4497,7 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 			lpChar->smCharInfo.dwCharSoundCode == snCHAR_SOUND_CASTLE_CRYSTAL_G ||
 			lpChar->smCharInfo.dwCharSoundCode == snCHAR_SOUND_CASTLE_CRYSTAL_B))
 		{
-			//πŸ∫ß ∂«¥¬ ≈©∏ÆΩ∫≈ª ø¯∞≈∏Æ ∞¯∞›«— ¿Ø¿˙∑Œ ≈∏∞Ÿ ∫Ø∞Ê
+			//??? ??? ?????? ????? ?????? ?????? ??? ????
 			int dist, x, y, z;
 
 			x = (lpPlayInfo->Position.x - lpChar->pX) >> FLOATNS;
@@ -4517,7 +4512,7 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 		}
 	}
 	else {
-		//PK - PVP ∏µÂøÎ
+		//PK - PVP ????
 
 		lpPlayInfo2 = srFindUserFromSerial(lpTransAttackData->dwTarObjectSerial);
 		if (lpPlayInfo2) 
@@ -4530,14 +4525,14 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 
 			if (lpTransAttackData->Critical[0]) {
 				if ((rand() % 100) < GetCritical2(lpPlayInfo, lpPlayInfo2, lpTransAttackData->Critical[0])) {
-					TransAttackData.AttackState = (TransAttackData.AttackState & 0xFFFF0000) + 2;		//≈©∏Æ∆ºƒ√ √≥∏Æ
+					TransAttackData.AttackState = (TransAttackData.AttackState & 0xFFFF0000) + 2;		//?????? ???
 					pow = TransAttackData.Power;
-					TransAttackData.Power = (pow * 170) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+					TransAttackData.Power = (pow * 170) / 100;						//?????? ???????
 
-					//æÓººΩ≈ æ∆¿Ã
+					//???? ????
 					if (lpPlayInfo->dwSkill_AssassinEye_Time) {
 						if (lpPlayInfo->dwSkill_AssassinEye_Time > dwPlayServTime) {
-							TransAttackData.Power = (pow * (170 + Assassin_Eye_AddCritical[lpPlayInfo->dwSkill_AssassinEye_Param])) / 100;						//≈©∏Æ∆ºƒ√ ∞¯∞›∞°¡ﬂ
+							TransAttackData.Power = (pow * (170 + Assassin_Eye_AddCritical[lpPlayInfo->dwSkill_AssassinEye_Param])) / 100;						//?????? ???????
 						}
 						else {
 							lpPlayInfo->dwSkill_AssassinEye_Time = 0;
@@ -4554,9 +4549,9 @@ int rsRecvAttackData(rsPLAYINFO* lpPlayInfo, TRANS_ATTACKDATA2* lpTransAttackDat
 					lpPlayInfo->lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 
 #ifdef DISP_DAMAGE
-					///////////////////////// µπˆ±◊øÎ µ•πÃ¡ˆ ¿˚øÎ √‚∑¬ //////////////////////
+					///////////////////////// ?????? ?????? ???? ??? //////////////////////
 					//if ( lpPlayInfo->AdminMode>2 ) {
-					//wsprintf( szDispDamage , ">%s ∞¯∞›Ω√µµ ( ≈©∏Æ∆ºƒ√ )" , lpPlayInfo2->smCharInfo.szName );
+					//wsprintf( szDispDamage , ">%s ?????? ( ?????? )" , lpPlayInfo2->smCharInfo.szName );
 					//rsDisplayDamgeToClient( lpPlayInfo , szDispDamage );
 					//}
 #endif
@@ -4804,7 +4799,7 @@ int rsSetSkillRangeAttack(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDA
 		lpTransSkillAttackData->AttackState = 5;
 		return TRUE;
 
-		// CorreÁ„o soul sucker funcionando
+		// Corre??o soul sucker funcionando
 	case SKILL_PLAY_SOUL_SUCKER:
 		if (lpPlayInfo->smCharInfo.JOB_CODE != JOBCODE_ATALANTA) return FALSE;
 
@@ -4819,7 +4814,7 @@ int rsSetSkillRangeAttack(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, TRANS_ATTACKDA
 
 					if (monster)
 					{
-						if (monster->smCharInfo.wPlayClass[0] != MONSTER_CLASS_BOSS) // N„o funciona em boss
+						if (monster->smCharInfo.wPlayClass[0] != MONSTER_CLASS_BOSS) // N?o funciona em boss
 							monster->smCharInfo.Life[0] -= monster->smCharInfo.Life[0] * Soul_Sucker_Absorb[Point] / 100;
 					}
 				}
@@ -5125,9 +5120,9 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 	dm_DecodePacket(lpPlayInfo->dwObjectSerial, lpTransRangeAttackData);			//Decryption
 #endif
 
-	if (lpTransRangeAttackData->dwChkSum != dm_GetRangeDamgeChkSum(lpTransRangeAttackData)) {	//∆–≈∂∞ÀªÁ
+	if (lpTransRangeAttackData->dwChkSum != dm_GetRangeDamgeChkSum(lpTransRangeAttackData)) {	//??????
 
-		//µ•πÃ¡ˆ µ•¿Ã≈∏ ø¿∑˘∏¶ ±∫º≠πˆ ∑Œ±◊ø° ±‚∑œ
+		//?????? ????? ?????? ?????? ?ùù?? ???
 		smTransCommand.code = smTRANSCODE_SET_BLACKLIST;
 		smTransCommand.size = sizeof(smTRANS_COMMAND);
 		smTransCommand.WParam = 8500;
@@ -5140,10 +5135,10 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 	}
 
 
-	if ((lpTransRangeAttackData->SkillCode & 0xFF) != SKILL_PLAY_ENCHANT_WEAPON) {		//¿Œ√æ∆Æ ø˛∆˘, º¯º≠∞° πŸ≤ ∞°¥…º∫ ∂´ø° ¡¶ø‹
+	if ((lpTransRangeAttackData->SkillCode & 0xFF) != SKILL_PLAY_ENCHANT_WEAPON) {		//??ùù? ????, ?????? ??? ????? ???? ????
 		if (lpTransRangeAttackData->AttackCount <= lpPlayInfo->DamagePacketCount ||
 			lpTransRangeAttackData->dwTime <= lpPlayInfo->dwDamagePacketTime) {
-			//µ•πÃ¡ˆ ≈¨∂Û¿Ãæ∆Æ √¯ ƒ´øÓ∆√,Ω√∞£ ø¿∑˘
+			//?????? ??????? ?? ?????,?ùù? ????
 			return FALSE;
 		}
 
@@ -5155,7 +5150,7 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 		lpTransRangeAttackData->Power[1] > lpPlayInfo->sLimitDamage[1] ||
 		lpTransRangeAttackData->Critical[0] > lpPlayInfo->sLimitCritical[0]) {
 
-		//µ•πÃ¡ˆ µ•¿Ã≈∏ ø¿∑˘∏¶ ±∫º≠πˆ ∑Œ±◊ø° ±‚∑œ
+		//?????? ????? ?????? ?????? ?ùù?? ???
 		smTransCommand.code = smTRANSCODE_SET_BLACKLIST;
 		smTransCommand.size = sizeof(smTRANS_COMMAND_EX);
 		smTransCommand.WParam = 8510;
@@ -5175,7 +5170,7 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 		if (lpPlayInfo->AdminMode) {
 			TRANS_CHATMESSAGE	TransChatMessage;
 
-			wsprintf(TransChatMessage.szMessage, "∞¯∞› ºˆƒ°ø¿∑˘ ( %d %d %d ) ( %d %d %d )",
+			wsprintf(TransChatMessage.szMessage, "???? ??????? ( %d %d %d ) ( %d %d %d )",
 				lpTransRangeAttackData->Power[0], lpTransRangeAttackData->Power[1], lpTransRangeAttackData->Critical[0],
 				lpPlayInfo->sLimitDamage[0], lpPlayInfo->sLimitDamage[1], lpPlayInfo->sLimitCritical[0]);
 
@@ -5186,7 +5181,7 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 			lpPlayInfo->lpsmSock->Send((char*)&TransChatMessage, TransChatMessage.size, TRUE);
 	}
 #endif
-		//¡¶«— ∞¯∞› ºˆƒ° √ ∞˙ ∫∏¡§
+		//???? ???? ??? ??? ????
 		lpTransRangeAttackData->Power[0] = lpPlayInfo->sLimitDamage[0];
 		lpTransRangeAttackData->Power[1] = lpPlayInfo->sLimitDamage[1];
 		lpTransRangeAttackData->Critical[0] = lpPlayInfo->sLimitCritical[0];
@@ -5243,10 +5238,10 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 		}
 	}
 
-	// π⁄¿Áø¯ - ∏≈¡˜ ∆˜Ω∫ √ﬂ∞°, ∫Ù∏µ ∏≈¡˜ ∆˜Ω∫ √ﬂ∞°(π¸¿ß∞¯∞›øÎ ∆˜Ω∫ø¿∫Í ∆ƒøˆæ˜)
+	// ????? - ???? ???? ???, ???? ???? ???? ???(????????? ???????? ?ùù???)
 	AddRangeForceOrbPower(lpPlayInfo, lpChar, &TransSkillAttackData, lpTransRangeAttackData->SkillCode, lpTransRangeAttackData->Power[0], lpTransRangeAttackData->Power[1]);
 
-	//∫Ù∏µæ∆¿Ã≈€Ω∫≈≥¿˚øÎ
+	//????????????????
 	int Total = TransSkillAttackData.TargetCount;
 	int AvgPow;
 
@@ -5257,7 +5252,7 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 	rsBillingItemSkill(lpPlayInfo, lpChar, Total, AvgPow, lpTransRangeAttackData->SkillCode & 0xFF);
 
 	if (lpChar && TransAttackData.Power) {
-		//AddForceOrbPower(lpPlayInfo , lpChar ,  &TransAttackData , lpTransRangeAttackData->SkillCode );	//∆˜Ω∫ø¿∫Í ∞¯∞›∑¬ √ﬂ∞° 
+		//AddForceOrbPower(lpPlayInfo , lpChar ,  &TransAttackData , lpTransRangeAttackData->SkillCode );	//???????? ????? ??? 
 		rsRecvAttackData_Old(lpPlayInfo, &TransAttackData, lpChar, TRUE);
 	}
 
@@ -5265,13 +5260,13 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 		RecvRangeAttack(lpPlayInfo, &TransSkillAttackData, lpTransRangeAttackData->Area[0], lpTransRangeAttackData->SkillCode);
 
 
-		// pluto PK«„øÎ « µÂ ¿¸∫Œ
+		// pluto PK??? ??? ????
 		if (rsServerConfig.Enable_PKField_All)
 		{
-			// pluto PK«„øÎ « µÂ ¿¸∫Œ ºˆ¡§
+			// pluto PK??? ??? ???? ????
 			if (rsServerConfig.Enable_PK)
 			{
-				//«ˆ¿Á  PK ≈◊Ω∫∆Æ¡ﬂ
+				//????  PK ??????
 				RecvRangeAttack_User(lpPlayInfo, &TransSkillAttackData, lpTransRangeAttackData->Area[0], lpTransRangeAttackData->SkillCode);
 			}
 		}
@@ -5305,11 +5300,11 @@ int rsRecvRangeAttackData(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA2* lpTran
 		}
 
 
-/////////////////////////////////// æœ»£»≠ ∏µ‚ ///////////////////////////////////////////
-//////////// ∫∏æ» √∂¿˙ ø‰±∏ /////////////
+/////////////////////////////////// ???? ??? ///////////////////////////////////////////
+//////////// ???? ??? ?? /////////////
 
 /*
-//∏µ‚ ≥ªøÎ - ø¯∑° º“Ω∫
+//??? ???? - ???? ???
 #define	DAMAGE_PACKET_KEY	0xBBAA3840
 #define	DAMAGE_PACKET_MUL	0x11223344
 
@@ -5338,7 +5333,7 @@ int	dm_EncodePacket2( void *lpPacket )
 	return TRUE;
 }
 
-//µ•πÃ¡ˆ æœ»£ «Æ±‚ «‘ºˆ
+//?????? ??? ??? ???
 int	dm_DecodeDamagePacket( rsPLAYINFO *lpPlayInfo , void *lpPacket )
 {
 	DWORD size,code;
@@ -5395,7 +5390,7 @@ BYTE dm_DecodePacket_AsmCode[DM_DECODE_PACKET_SIZE] = {
 	0xdf,0x5d,0x5f,0x5e,0xb8,0x01,0x00,0x00,0x00,0x5b,0xc3,0x90,0x90,0x90,0x90,0x90
 };
 
-//µ•πÃ¡ˆ æœ»£»≠ ≈∞º≥¡§
+//?????? ???? ?????
 int rsSetDamagePacketKey(rsPLAYINFO* lpPlayInfo)
 {
 	DWORD	dwChkSum;
@@ -5418,7 +5413,7 @@ int rsSetDamagePacketKey(rsPLAYINFO* lpPlayInfo)
 	return TRUE;
 }
 
-//µ•πÃ¡ˆ æœ»£»≠ ∆„º«¿ª ≈Î√§∑Œ ≈¨∂Û¿Ãæ∆Æø° ∫∏≥Ω¥Ÿ
+//?????? ???? ????? ????? ????????? ??????
 int rsSendDamageFuncToClient(rsPLAYINFO* lpPlayInfo)
 {
 	TRANS_FUNC_MEMORY	TransFuncMemory;
@@ -5432,7 +5427,7 @@ int rsSendDamageFuncToClient(rsPLAYINFO* lpPlayInfo)
 
 	memcpy(TransFuncMemory.szData, dm_EncodePacket_AsmCode, DM_ENCODE_PACKET_SIZE);
 
-	rsSetDamagePacketKey(lpPlayInfo);			//∆–≈∂ æœ»£»≠øÎ ≈∞ º≥¡§
+	rsSetDamagePacketKey(lpPlayInfo);			//??? ?????? ? ????
 
 	((DWORD*)(TransFuncMemory.szData + DM_ENCODE_PACKET_KEY1))[0] = lpPlayInfo->dwDamagePacketKey[1];
 	((DWORD*)(TransFuncMemory.szData + DM_ENCODE_PACKET_KEY2))[0] = lpPlayInfo->dwDamagePacketKey[0];
@@ -5445,7 +5440,7 @@ int rsSendDamageFuncToClient(rsPLAYINFO* lpPlayInfo)
 	return FALSE;
 }
 
-//µ•πÃ¡ˆ æœ»£»≠ ∆„º«¿ª ≈Î√§∑Œ ≈¨∂Û¿Ãæ∆Æø° ∫∏≥Ω¥Ÿ
+//?????? ???? ????? ????? ????????? ??????
 int rsSendDamageFuncToClient2(rsPLAYINFO* lpPlayInfo)
 {
 	TRANS_FUNC_MEMORY	TransFuncMemory;
@@ -5459,7 +5454,7 @@ int rsSendDamageFuncToClient2(rsPLAYINFO* lpPlayInfo)
 
 	memcpy(TransFuncMemory.szData, dm_DecodePacket_AsmCode, DM_DECODE_PACKET_SIZE);
 
-	rsSetDamagePacketKey(lpPlayInfo);			//∆–≈∂ æœ»£»≠øÎ ≈∞ º≥¡§
+	rsSetDamagePacketKey(lpPlayInfo);			//??? ?????? ? ????
 
 	((DWORD*)(TransFuncMemory.szData + DM_DECODE_PACKET_KEY1))[0] = lpPlayInfo->dwDamagePacketKey2[1];
 	((DWORD*)(TransFuncMemory.szData + DM_DECODE_PACKET_KEY2))[0] = lpPlayInfo->dwDamagePacketKey2[0];
@@ -5471,7 +5466,7 @@ int rsSendDamageFuncToClient2(rsPLAYINFO* lpPlayInfo)
 	return FALSE;
 }
 
-//º“ƒœ æœ»£»≠ ∆„º«¿ª ≈Î√§∑Œ ≈¨∂Û¿Ãæ∆Æø° ∫∏≥Ω¥Ÿ
+//???? ???? ????? ????? ????????? ??????
 int rsSendPacketFuncToClient(rsPLAYINFO* lpPlayInfo, DWORD dwEncPacketCode, BYTE bEncXor, BYTE bDecXor)
 {
 
@@ -5504,7 +5499,7 @@ int rsSendPacketFuncToClient(rsPLAYINFO* lpPlayInfo, DWORD dwEncPacketCode, BYTE
 #define	PACKET_SAFE_SHIFT2		3
 
 
-//æœ»£ ∏µ‚ Ω√«‡
+//??? ??? ????
 int	rsProcessSafePacket(rsPLAYINFO* lpPlayInfo)
 {
 
@@ -5538,12 +5533,12 @@ int	rsProcessSafePacket(rsPLAYINFO* lpPlayInfo)
 	lpPlayInfo->lpsmSock->bDecXor = bDecXor;
 
 	lpPlayInfo->dwDecPacketTime = dwPlayServTime;
-	lpPlayInfo->dwDecPacketTime2 = dwPlayServTime + 60000;		//1∫– µøæ» æœ»£»≠ ªÁøÎ ∫∏∑˘ - ∞¯∞› ∆–≈∂¿« ∞ÊøÏ
+	lpPlayInfo->dwDecPacketTime2 = dwPlayServTime + 60000;		//1?? ???? ???? ??? ???? - ???? ????? ???
 
 	return TRUE;
 }
 
-//æœ»£ ∏µ‚¿Œ¡ˆ »Æ¿Œ«œø© ¿˚øÎ
+//??? ??????? ?????? ????
 int	rsCompareSafePacket(rsPLAYINFO* lpPlayInfo, DWORD dwRcvPacketCode)
 {
 	DWORD	dwChkSum;
@@ -5580,7 +5575,7 @@ int	rsCompareSafePacket(rsPLAYINFO* lpPlayInfo, DWORD dwRcvPacketCode)
 	return FALSE;
 }
 
-//µ•πÃ¡ˆ æœ»£ «Æ±‚ «‘ºˆ
+//?????? ??? ??? ???
 int	rsDecodeDamagePacket(rsPLAYINFO* lpPlayInfo, void* lpPacket)
 {
 	DWORD size, code;
@@ -5637,18 +5632,18 @@ int	rsEncodeDamagePacket(rsPLAYINFO* lpPlayInfo, void* lpPacket)
 
 #else
 
-//µ•πÃ¡ˆ æœ»£»≠ ≈∞º≥¡§
+//?????? ???? ?????
 int rsSetDamagePacketKey(rsPLAYINFO* lpPlayInfo)
 {
 	return TRUE;
 }
 
-//µ•πÃ¡ˆ æœ»£»≠ ∆„º«¿ª ≈Î√§∑Œ ≈¨∂Û¿Ãæ∆Æø° ∫∏≥Ω¥Ÿ
+//?????? ???? ????? ????? ????????? ??????
 int rsSendDamageFuncToClient(rsPLAYINFO* lpPlayInfo)
 {
 	return TRUE;
 }
-//µ•πÃ¡ˆ æœ»£ «Æ±‚ «‘ºˆ
+//?????? ??? ??? ???
 int	rsDecodeDamagePacket(rsPLAYINFO* lpPlayInfo, void* lpPacket)
 {
 	return TRUE;
@@ -5662,7 +5657,7 @@ int	rsEncodeDamagePacket(rsPLAYINFO* lpPlayInfo, void* lpPacket)
 
 
 
-//µ•πÃ¡ˆ µ•¿Ã≈∏ ø¿∑˘∏¶ ±∫º≠πˆ ∑Œ±◊ø° ±‚∑œ
+//?????? ????? ?????? ?????? ?ùù?? ???
 int rsRecordDamageError(rsPLAYINFO* lpPlayInfo, smTRANS_COMMAND* lpTransCommand)
 {
 
@@ -5677,14 +5672,14 @@ int rsRecordDamageError(rsPLAYINFO* lpPlayInfo, smTRANS_COMMAND* lpTransCommand)
 
 //ATTACK_DAMAGE_LIST_MAX
 /*
-//µ•πÃ¡ˆ∏¶ ¡ÿ ¿Ø¿˙∏¶ ±‚æÔΩ√≈¥
+//???????? ?? ?????? ?????
 struct	ATTACK_DAMAGE_LIST	{
 	DWORD	dwUserCode;
 	int		DamageCount;
 };
 */
 
-//ƒ≥∏Ø≈Õ µ•πÃ¡ˆ ±‚∑œ
+//ùù???? ?????? ???
 int	rsRecordCharDamage(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Damage)
 {
 	int cnt;
@@ -5692,10 +5687,10 @@ int	rsRecordCharDamage(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Damage)
 	DWORD	dwClanCode;
 
 	if (lpChar->lpAttackDamageList_BlessCastle) {
-		//∫Ì∑πΩ∫ ƒ≥ΩΩ ≈©∏ÆΩ∫≈ª ≈∏øˆ ( ≈¨∑£º¯¿ß )
+		//?????? ùù?? ?????? ??? ( ??????? )
 		if (lpPlayInfo->dwClanCode && lpPlayInfo->Position.Area == rsCASTLE_FIELD) {
 
-			lpPlayInfo->sBlessCastle_Damage[0] += Damage;	//µ•πÃ¡ˆ ¡§∫∏ √ﬂ∞°
+			lpPlayInfo->sBlessCastle_Damage[0] += Damage;	//?????? ???? ???
 
 			for (cnt = 0; cnt < ATTACK_DAMAGE_LIST_MAX; cnt++) {
 				if (lpChar->lpAttackDamageList_BlessCastle[cnt].dwUserCode) {
@@ -5726,10 +5721,10 @@ int	rsRecordCharDamage(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Damage)
 	if (!lpChar->lpAttackDamageList) return FALSE;
 
 	if (lpChar->smCharInfo.dwCharSoundCode == snCHAR_SOUND_CASTLE_TOWER_B) {
-		//πﬂ«“∂Û ≈æ ( ≈¨∑£º¯¿ß )
+		//????? ? ( ??????? )
 		if (lpPlayInfo->dwClanCode && lpPlayInfo->Position.Area == rsCASTLE_FIELD) {
 
-			lpPlayInfo->sBlessCastle_Damage[0] += Damage;	//µ•πÃ¡ˆ ¡§∫∏ √ﬂ∞°
+			lpPlayInfo->sBlessCastle_Damage[0] += Damage;	//?????? ???? ???
 
 			for (cnt = 0; cnt < ATTACK_DAMAGE_LIST_MAX; cnt++) {
 				if (lpChar->lpAttackDamageList[cnt].dwUserCode) {
@@ -5756,7 +5751,7 @@ int	rsRecordCharDamage(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int Damage)
 		}
 	}
 	else {
-		//¿œπ› º¯¿ß (∞≥¿Œ)
+		//??? ???? (????)
 		for (cnt = 0; cnt < ATTACK_DAMAGE_LIST_MAX; cnt++) {
 			if (lpChar->lpAttackDamageList[cnt].dwUserCode == lpPlayInfo->dwObjectSerial) {
 				lpChar->lpAttackDamageList[cnt].DamageCount += Damage;

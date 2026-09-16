@@ -37,6 +37,7 @@
 #include "HUD\\RestaureWindow.h"
 #include "HUD\\MixWindow.h"
 #include "HUD\\WarehouseWindow.h"
+#include "HUD\\PostBoxWindow.h"
 #include "Shop\\NewShop.h"
 #include "Shop\\NewShopTime.h"
 #include "Montarias\\CMountHandler.h"
@@ -4760,6 +4761,37 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 		}
 		break;
 
+	case smTRANSCODE_POSTBOX_OPEN:
+		lpTransCommand = (smTRANS_COMMAND*)pData->Buff;
+		if (cTrade.OpenFlag)
+			break;
+		PostBoxWindow::GetInstance()->Open();
+		if (smWsockDataServer)
+			smWsockDataServer->Send2((char*)lpTransCommand, lpTransCommand->size, TRUE);
+		break;
+
+	case smTRANSCODE_POSTBOX_LIST:
+		PostBoxWindow::GetInstance()->ReceiveList((TRANS_POSTBOX_LIST*)pData->Buff);
+		break;
+
+	case smTRANSCODE_POSTBOX_CLAIM:
+		lpTransCommand = (smTRANS_COMMAND*)pData->Buff;
+		if (lpTransCommand->size == sizeof(smTRANS_COMMAND))
+			PostBoxWindow::GetInstance()->ReceiveClaimResult((int)lpTransCommand->WParam, lpTransCommand->LParam);
+		break;
+
+	case smTRANSCODE_POSTBOX_REFUSE:
+		lpTransCommand = (smTRANS_COMMAND*)pData->Buff;
+		if (lpTransCommand->size == sizeof(smTRANS_COMMAND))
+			PostBoxWindow::GetInstance()->ReceiveRefuseResult((int)lpTransCommand->WParam, lpTransCommand->LParam);
+		break;
+
+	case smTRANSCODE_POSTBOX_SEND:
+		lpTransCommand = (smTRANS_COMMAND*)pData->Buff;
+		if (lpTransCommand->size == sizeof(smTRANS_COMMAND))
+			PostBoxWindow::GetInstance()->ReceiveSendResult((int)lpTransCommand->WParam, lpTransCommand->LParam, lpTransCommand->SParam, lpTransCommand->EParam);
+		break;
+
 	case smTRANSCODE_OPEN_CARAVAN:
 
 		lpTransCommand = (smTRANS_COMMAND*)pData->Buff;
@@ -5425,67 +5457,22 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 					}
 		*/
 		if (lpTransPostItem->dwItemFlag) {
-			ComparePotion();			//¹°¾à°¹¼ö ºñ±³
+			ComparePotion();
 			cInvenTory.SetInvenToItemInfo((sITEMINFO*)(pData->Buff + sizeof(TRANS_POST_ITEM)));
 			ResetInvenItemCode();
 
 			if ((((sITEMINFO*)(pData->Buff + sizeof(TRANS_POST_ITEM)))->CODE & sinITEM_MASK1) == (sinPM1 & sinITEM_MASK1)) {
-				//¹°¾à °¹¼ö »õ·Î ¼³Á¤
 				ResetPotion2();
 			}
 			SaveGameData();
 		}
 
-		if (lpCurPlayer->smCharInfo.Weight[0] > lpCurPlayer->smCharInfo.Weight[1]) {
-			cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);    //¹«°ÔÃÊ°ú ¸Þ¼¼Áö
-			break;
-		}
-
-		if (lpTransPostItem->dwItemCode) { //¹ÞÀ» ¾ÆÀÌÅÛÀÌ ÀÖÀ»°æ¿ì °ø°£À» Ã¼Å©ÇÑÈÄ ¸Þ¼¼Áö¹Ú½º¸¦¶ç¿î´Ù
-
-			// pluto ÇØ¿Ü ºô¸µ ¾ÆÀÌÅÛ ¹«°Ô
-			if (sinChar->Weight[0] + lpTransPostItem->Weight > sinChar->Weight[1])
-			{
-				cMessageBox.ShowMessage(MESSAGE_OVER_WEIGHT);    //¹«°ÔÃÊ°ú ¸Þ¼¼Áö
-				break;
-			}
-
-			memset(&sMessageBox_RecvItem.RecvItem, 0, sizeof(sITEM));
-			sMessageBox_RecvItem.RecvItem.CODE = lpTransPostItem->dwItemCode;
-			sMessageBox_RecvItem.Flag = 1;
-			sMessageBox_RecvItem.szItem[0] = 0;
-			cInvenTory.OpenFlag = 1;
-			sMessageBox_RecvItem.Param[0] = lpTransPostItem->dwParam[0];
-
-			//µ·ÀÏ °æ¿ì 
-			if (sMessageBox_RecvItem.RecvItem.CODE == (sinGG1 | sin01)) {
-				cInvenTory.LoadMoneyExpImage(&sMessageBox_RecvItem.RecvItem);
-				sMessageBox_RecvItem.RecvItem.SellPrice = lpTransPostItem->dwItemJobCode;
-				lstrcpy(sMessageBox_RecvItem.szDoc, lpTransPostItem->szDoc);
-				break;
-
-			}
-			//°æÇèÄ¡ÀÏ °æ¿ì 
-			if (sMessageBox_RecvItem.RecvItem.CODE == (sinGG1 | sin02)) {
-				cInvenTory.LoadMoneyExpImage(&sMessageBox_RecvItem.RecvItem);
-				sMessageBox_RecvItem.RecvItem.OldX = lpTransPostItem->dwItemJobCode;
-				lstrcpy(sMessageBox_RecvItem.szDoc, lpTransPostItem->szDoc);
-				break;
-			}
-			//¹°¾àÀÏ°æ¿ì
-			if ((sMessageBox_RecvItem.RecvItem.CODE & sinITEM_MASK1) == 0x04000000) {
-				sMessageBox_RecvItem.RecvItem.PotionCount = lpTransPostItem->dwItemJobCode;
-				cInvenTory.CheckInvenEmpty(&sMessageBox_RecvItem.RecvItem); //ÀÌ¹ÌÁö·Îµå
-				lstrcpy(sMessageBox_RecvItem.szItem, lpTransPostItem->szItemName);
-				lstrcpy(sMessageBox_RecvItem.szDoc, lpTransPostItem->szDoc);
-				break;
-
-			}
-
-			//¾ÆÀÌÅÛ
-			cInvenTory.CheckInvenEmpty(&sMessageBox_RecvItem.RecvItem); //ÀÌ¹ÌÁö·Îµå
-			lstrcpy(sMessageBox_RecvItem.szItem, lpTransPostItem->szItemName);
-			lstrcpy(sMessageBox_RecvItem.szDoc, lpTransPostItem->szDoc);
+		// O Yes/No (sMessageBox_RecvItem) era a UI antiga do distribuidor.
+		// Qualquer prompt de fila vira a janela ImGui.
+		if (lpTransPostItem->dwItemCode && !PostBoxWindow::GetInstance()->openFlag)
+		{
+			PostBoxWindow::GetInstance()->Open();
+			SendPostBoxOpen();
 		}
 		break;
 
@@ -12693,6 +12680,59 @@ int	SendItemExpress(DWORD	dwItemCode, char* szPassCode)
 int	SendItemExpress(DWORD	dwItemCode)
 {
 	return	SendItemExpress(dwItemCode, 0);
+}
+
+int SendPostBoxOpen()
+{
+	smTRANS_COMMAND smTransCommand;
+	ZeroMemory((char*)&smTransCommand, sizeof(smTRANS_COMMAND));
+	smTransCommand.code = smTRANSCODE_POSTBOX_OPEN;
+	smTransCommand.size = sizeof(smTRANS_COMMAND);
+	if (smWsockDataServer)
+		return smWsockDataServer->Send2((char*)&smTransCommand, smTransCommand.size, TRUE);
+	return FALSE;
+}
+
+int SendPostBoxClaim(DWORD dwEntryId, char* szPassCode)
+{
+	smTRANS_COMMAND smTransCommand;
+	ZeroMemory((char*)&smTransCommand, sizeof(smTRANS_COMMAND));
+	smTransCommand.code = smTRANSCODE_POSTBOX_CLAIM;
+	smTransCommand.size = sizeof(smTRANS_COMMAND);
+	smTransCommand.WParam = dwEntryId;
+	if (szPassCode && szPassCode[0])
+		smTransCommand.LParam = GetSpeedSum(szPassCode);
+	if (smWsockDataServer)
+		return smWsockDataServer->Send2((char*)&smTransCommand, smTransCommand.size, TRUE);
+	return FALSE;
+}
+
+int SendPostBoxRefuse(DWORD dwEntryId)
+{
+	smTRANS_COMMAND smTransCommand;
+	ZeroMemory((char*)&smTransCommand, sizeof(smTRANS_COMMAND));
+	smTransCommand.code = smTRANSCODE_POSTBOX_REFUSE;
+	smTransCommand.size = sizeof(smTRANS_COMMAND);
+	smTransCommand.WParam = dwEntryId;
+	if (smWsockDataServer)
+		return smWsockDataServer->Send2((char*)&smTransCommand, smTransCommand.size, TRUE);
+	return FALSE;
+}
+
+int SendPostBoxSend(const char* szDestName, sITEMINFO* lpItem)
+{
+	if (!szDestName || !szDestName[0] || !lpItem)
+		return FALSE;
+
+	TRANS_POSTBOX_SEND pkt;
+	ZeroMemory(&pkt, sizeof(pkt));
+	pkt.code = smTRANSCODE_POSTBOX_SEND;
+	pkt.size = sizeof(TRANS_POSTBOX_SEND);
+	lstrcpyn(pkt.szDestName, szDestName, 32);
+	pkt.Item = *lpItem;
+	if (smWsockDataServer)
+		return smWsockDataServer->Send2((char*)&pkt, pkt.size, TRUE);
+	return FALSE;
 }
 
 

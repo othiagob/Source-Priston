@@ -1,8 +1,10 @@
 #include "SQLConnection.h"
 #include <iostream>
+#include <stdio.h>
 #include "Utils/Logs/utils_logging.h"
 #include "Utils/strings.h"
 #include "Utils/FileReader.h"
+#include "HUD/ServerPanel.h"
 
 
 using namespace std;
@@ -75,6 +77,7 @@ void CreateSQLConnection(EDatabaseID eDatabaseID, SQLInstanceRead instance)
 
 		vSQLConnection.push_back(pcSQL);
 		cout << "connected with sucess!" << endl;
+		ServerPanel_PumpBoot();
 	}
 	else
 	{
@@ -113,7 +116,12 @@ bool SQLConnection::Init(EDatabaseID eDatabaseID, SQLInstanceRead instance)
 	eID = eDatabaseID;
 
 	cout << "Conectando-se ao Banco de Dados: " << szDatabaseName << endl;
-
+	{
+		char boot[160] = {};
+		sprintf_s(boot, "A ligar %s...", szDatabaseName);
+		ServerPanel_SetBootStatus(boot);
+	}
+	ServerPanel_PumpBoot();
 
 	// Try alloc Handle SQL ODBC
 	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv))
@@ -369,6 +377,8 @@ static bool EnsurePainelDatabase(SQLInstanceRead instance)
 	SQLHANDLE hStatement = SQL_NULL_HANDLE;
 
 	cout << "Verificando banco PainelDB..." << endl;
+	ServerPanel_SetBootStatus("A verificar PainelDB...");
+	ServerPanel_PumpBoot();
 
 	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv))
 		return false;
@@ -482,6 +492,8 @@ bool initializeSQL()
 	STRINGCOPY(Instance.szPassword, cConfigReader.ReadString("Database", "Password").c_str());
 
 	std::cout << "Infomation SQL Read in Archive" << std::endl;
+	ServerPanel_SetBootStatus("A ler SQL.ini...");
+	ServerPanel_PumpBoot();
 	openDatabase(Instance);
 
 	return true;

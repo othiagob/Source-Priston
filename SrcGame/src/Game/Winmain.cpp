@@ -44,6 +44,7 @@
 #include "HUD\\MixWindow.h"
 #include "HUD\\RankingWindow.h"
 #include "HUD\\WarehouseWindow.h"
+#include "HUD\\PostBoxWindow.h"
 #include "playsub.h"
 #include "cracker.h"
 #include "SkillSub.h"
@@ -433,6 +434,8 @@ static int HudBlocksWorldMouse()
 	if (RankingWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 		return TRUE;
 	if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+		return TRUE;
+	if (PostBoxWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 		return TRUE;
 	if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 		return TRUE;
@@ -1292,7 +1295,7 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		if (GetForegroundWindow() != hWnd)
 			return 0;
 
-		if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard() && wParam != VK_ESCAPE)
+		if ((WarehouseWindow::GetInstance()->ShouldCaptureKeyboard() || PostBoxWindow::GetInstance()->ShouldCaptureKeyboard()) && wParam != VK_ESCAPE)
 		{
 			VRKeyBuff[wParam] = 1;
 			break;
@@ -1324,7 +1327,7 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 
 		if (wParam == VK_RETURN)
 		{
-			if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard())
+			if (WarehouseWindow::GetInstance()->ShouldCaptureKeyboard() || PostBoxWindow::GetInstance()->ShouldCaptureKeyboard())
 			{
 				VRKeyBuff[wParam] = 1;
 				break;
@@ -1520,6 +1523,11 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		if (wParam == VK_ESCAPE && VRKeyBuff[wParam] == 0)
 		{
 			if (WarehouseWindow::GetInstance()->OnEscape())
+			{
+				VRKeyBuff[wParam] = 1;
+				break;
+			}
+			if (PostBoxWindow::GetInstance()->OnEscape())
 			{
 				VRKeyBuff[wParam] = 1;
 				break;
@@ -1766,6 +1774,9 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return 0;
 
+		if (PostBoxWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			return 0;
+
 		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			return 0;
 
@@ -1894,6 +1905,9 @@ LONG APIENTRY WndProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		if (WarehouseWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
+			break;
+
+		if (PostBoxWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))
 			break;
 
 		if (MixWindow::GetInstance()->IsBlockingMouse(pCursorPos.x, pCursorPos.y))

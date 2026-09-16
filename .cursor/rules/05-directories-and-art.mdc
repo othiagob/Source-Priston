@@ -1,0 +1,37 @@
+---
+description: Tres diretorios do Windows e pipeline de artes (Antigravity + Gemini)
+alwaysApply: true
+---
+
+# Tres diretorios e artes visuais
+
+Nesta maquina Windows o projeto vive em **tres pastas distintas**. Nao
+misture. Nao edite PNG na source achando que o jogo vai ler.
+
+| Papel | Caminho | O que e |
+|---|---|---|
+| Cliente do jogo | `C:\Cliente Full` | O que o `game.exe` abre (PNG, TGA, BMP, `StartImage`, itens). Working directory do F5. |
+| Source code | `C:\Source Priston\Source Priston` | Repo git compilavel (`SrcGame`, `SrcServer`, `Shared`). A pasta pai e `C:\Source Priston`. |
+| Documentacao | `C:\Users\carol\Desktop\doc-projeto` | Vault Obsidian (repo `othiagob/doc-projeto`). Livro de evolucao: historia, regras, caminho. |
+
+Caminho antigo do vault (`OTHIAGOB PROJETO\...\priston-documents`) **nao**
+e a fonte viva.
+
+## Artes PNG / TGA / BMP
+
+- **Geracao:** artes visuais novas (PNG de titulo, login, botao, etc.)
+  sao criadas no **Antigravity**, usando o modelo **Gemini**. O Cursor
+  **nao** gera esses arquivos de arte.
+- **Destino:** gravar no **Cliente Full**, no caminho que o C++ ja pede
+  (mesmo nome e, em TGA de char select, mesmo tamanho).
+- **Source `game/images`:** copia opcional para o Cursor ver / git. Nao
+  substitui o cliente.
+- Brief de char select no repo: `docs/prompt-antigravity-charselect-ui.md`.
+- Titulo ImGui: canvas **400x64**, recorte real, ver `15-imgui-windows.mdc`.
+- Vault: `12-UI-e-Artes/` (mapa, inventario, roadmap, como gerar).
+- **Tarefa de janela/interface:** o Cursor entrega um **prompt completo**
+  para o Antigravity (Gemini), nao a imagem. Ver
+  `06-antigravity-brief.mdc`. Modelos em `docs/prompt-antigravity-*.md`.
+
+O Cursor implementa C++, specs e documentacao. Depois de a arte existir
+no Cliente Full, o codigo so aponta o path — nao invente path novo.

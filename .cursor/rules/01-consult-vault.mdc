@@ -1,0 +1,62 @@
+---
+description: Consultar o vault (historia e evolucao) antes de criar, ajustar ou refatorar; ritual de sync da documentacao
+alwaysApply: true
+---
+
+# Consultar o livro antes de mexer no codigo
+
+O vault `C:\Users\carol\Desktop\doc-projeto` e a memoria do projeto.
+Antes de **criar**, **ajustar** ou **refatorar** qualquer coisa, olhe se
+ja trabalhamos nisso — inclusive o que **falhou e foi revertido**.
+
+Nao reinventar tela, pacote, cromado ou pasta de PNG que o livro ja
+documentou. Nao repetir experimento da tabela de falhas em `11-Evolucao/`.
+
+## Antes de editar (obrigatorio)
+
+1. Achar no vault o que ja existe sobre o assunto. Ordem:
+   - `CHANGELOG.md` (30 segundos)
+   - `10-Processos/` e `11-Evolucao/` (ja fizemos? o que quebrou?)
+   - `06-Decisoes/` (ADR — o porquê)
+   - `05-Specs/` (spec aberta ou feita)
+   - `12-UI-e-Artes/` se for tela, PNG, login, HUD
+   - `08-Ideias/` se ainda for ideia
+2. Se existir spec ou recap: **leia** (ou peca para ler) antes de
+   escrever C++. Cite o que encontrou em uma frase.
+3. Se a tabela de falhas da sessao de evolucao ja condenou uma abordagem
+   (tema global ImGui, 9-slice, UTF-8 no minimapa, ouro no Server.exe,
+   etc.): nao volte nela sem o usuario pedir e sem ADR nova.
+4. Janela ou interface: alem do livro, entregar o **prompt Antigravity**
+   (`06-antigravity-brief.mdc`). Nao substituir isso por "gere um PNG".
+5. Bug pontual de uma linha: busca rapida no CHANGELOG/recap ainda vale;
+   nao precisa reler o livro inteiro.
+
+Capa: `Home.md`. Como o livro se parte: `00-Inicio/Livro-de-Evolucao.md`.
+Onde gravar depois: `00-Inicio/Onde-Escrever.md`.
+
+## Depois de editar (nesta conversa)
+
+No resumo da tarefa: o que mudou, por que, o que testar, e **se o vault
+precisa de nota** (diario, changelog, recap, ADR, inventario de artes).
+Nao invente spec nova se so atualizar a existente.
+
+Atualizacao completa do livro **quando o usuario pedir** o ritual
+(abaixo). Entre um ritual e outro, o resumo no chat e o rascunho.
+
+## Ritual diario / semanal (quando o usuario pedir)
+
+Frases tipicas: "atualiza a documentacao", "revisa o que trabalhamos",
+"sync do vault", "ritual da semana".
+
+Aí percorra, nesta ordem:
+
+1. Git status / diff recente da source (`C:\Source Priston\Source Priston`)
+   e o que esta conversa mudou.
+2. Comparar com o vault: o que o jogador passou a ver e ainda nao esta
+   no CHANGELOG, recap ou inventario de artes.
+3. Atualizar so o que mudou de verdade — ver `00-Inicio/Onde-Escrever.md`.
+   Nao reescrever o livro. Nao criar nota duplicada.
+4. Specs cujo codigo ja foi testado: marcar `feita` e apontar o recap.
+5. Rules `.mdc` se uma decisao nova nasceu (vault manda; rules acompanham).
+
+Detalhe do ritual: `00-Inicio/Ritual-Documentacao.md` no vault.

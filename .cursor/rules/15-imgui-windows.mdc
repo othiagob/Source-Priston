@@ -39,6 +39,9 @@ o fundo real é o retângulo do chrome.
   dentro dos cantos; nenhum ornamento pode ultrapassar a janela.
 - Não usar PNG de painel, 9-slice, fundo tileado nem banner externo.
   Imagens ficam restritas aos títulos 400×64.
+  **Exceção pontual:** o Distribuidor (`PostBoxWindow`) blit
+  `game/images/postbox/frame.png` (760×540) 1:1. Não copiar isso para
+  Desafios, Loja, Ranking ou Armazém sem pedido e ADR nova.
 - Divisórias internas: **uma** linha dourada fina (header; lista|
   detalhe via `DrawPlayerColumnSplit`). Children de lista/detalhe
   **sem** `ChildBorder`.
@@ -113,7 +116,8 @@ item fora da regra (ex.: fora do nível), não o título da lista.
   Configurações: `game/images/settings/configuracoes.png`;
   Ranking: `game/images/ranking/ranking.png`;
   Lista de Mix: `game/images/mix/lista-de-mix.png`;
-  Armazém: `game/images/warehouse/armazem.png`).
+  Armazém: `game/images/warehouse/armazem.png`;
+  Distribuidor: `game/images/postbox/distribuidor.png`).
   Se o arquivo faltar, cair no texto dourado (ex.: `DESAFIOS`).
 - Carregar com `D3DXCreateTextureFromFileExA` → `D3DFMT_A8R8G8B8`.
 - Fechar: **retângulo** (~28×22), cantos levemente arredondados

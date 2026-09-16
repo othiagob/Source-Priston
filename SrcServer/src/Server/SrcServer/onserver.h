@@ -142,21 +142,21 @@ public:
 
 	STG_START_POINT		StartPoint[STG_START_POINT_MAX];
 	int					StartPointNearPlay[STG_START_POINT_MAX];
-	int					StartPointMonCount[STG_START_POINT_MAX];	//�ش� ���� ī����
+	int					StartPointMonCount[STG_START_POINT_MAX];	//ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ï¿½ï¿½
 	int					StartPointCnt;
-	int					StartPointLastOpenCount;					//�ֱ� ���� ���� ����Ʈ ī����
-	DWORD				dwStartPoint_OpenTime[STG_START_POINT_MAX];	//���� �ֱ� �ð� ���
+	int					StartPointLastOpenCount;					//ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® Ä«ï¿½ï¿½ï¿½ï¿½
+	DWORD				dwStartPoint_OpenTime[STG_START_POINT_MAX];	//ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½
 
-	int					StartPointOpenCount;						//��ü ������ ��
-	int					StartPointActiveCount;						//Ȱ��ȭ�� ������ ��
+	int					StartPointOpenCount;						//ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+	int					StartPointActiveCount;						//È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 
-	STG_ITEMS			StgItems[STG_ITEM_MAX];					//�ʻ� �����ϴ� ������
+	STG_ITEMS			StgItems[STG_ITEM_MAX];					//ï¿½Ê»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	STG_CHAR_INFO* lpStageCharInfo;
 
-	smTRNAS_PLAYERINFO	TransCharFixed[FIX_CHAR_MAX];			//������ ĳ���� ���� ( NPC�� )
+	smTRNAS_PLAYERINFO	TransCharFixed[FIX_CHAR_MAX];			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ( NPCï¿½ï¿½ )
 
-	rsSTG_MONSTER_LIST	rsMonsterList;							//���� ���� ���̺�
+	rsSTG_MONSTER_LIST	rsMonsterList;							//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½
 
 	int					StgCharInfoCnt;
 
@@ -165,28 +165,28 @@ public:
 
 	int					Counter;
 
-	DWORD				FieldNightDay;							//�� ���� ��ȭ�� �����ϱ� ���� ����
+	DWORD				FieldNightDay;							//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	smCHAR* lpCharMonster[STG_MONSTER_MAX];		//���� ���� ���� ���̺�
-	int					MonsterCount;							//���� ���� ī����
-	int					MonsterLastPoint;						//���� ���̺� ������ ����Ʈ
+	smCHAR* lpCharMonster[STG_MONSTER_MAX];		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½
+	int					MonsterCount;							//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ï¿½ï¿½
+	int					MonsterLastPoint;						//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 
-	int					EvnMonster;								//���� �Ͻ������� �ʰ� ����
+	int					EvnMonster;								//ï¿½ï¿½ï¿½ï¿½ ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	DWORD				Event_dwMonsterTime;					//�̺�Ʈ ���� ���� �ð�
-	smCHAR_INFO* Event_lpChrMonster;					//�̺�Ʈ ���� ĳ�� ������
-	int					Event_MonsterPercentage;				//�̺�Ʈ ���� �߻� Ȯ��
+	DWORD				Event_dwMonsterTime;					//ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+	smCHAR_INFO* Event_lpChrMonster;					//ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int					Event_MonsterPercentage;				//ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ È®ï¿½ï¿½
 
-	DWORD				dwActiveMode;							//���� ���� ( spp , spc ��� )
+	DWORD				dwActiveMode;							//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ( spp , spc ï¿½ï¿½ï¿½ )
 
 	STG_AREA();
 	//	~STG_AREA();
 
-	int	Close();										//Ŭ���� �ݱ�
+	int	Close();										//Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½Ý±ï¿½
 
-	int LoadStage(char* szFile, char* szFile2);						//��� �޽� �ε� 
+	int LoadStage(char* szFile, char* szFile2);						//ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ ï¿½Îµï¿½ 
 
-	smCHAR* OpenMonster(STG_CHAR_INFO* lpStgCharInfo, int gGroup = 1);	//���� ����
+	smCHAR* OpenMonster(STG_CHAR_INFO* lpStgCharInfo, int gGroup = 1);	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	smCHAR* OpenCaravan(STG_CHAR_INFO* lpStgCharInfo, rsPLAYINFO* Player);
 	int Main();
 
@@ -195,56 +195,56 @@ public:
 
 	int LoadStartPoint(char* szFile);
 	int SaveStartPoint(char* szFile);
-	int FindStartPoint(int x, int z);					//���� ���� �˻�
-	int AddStartPoint(int x, int z, int state);		//���� ���� �߰�
-	int DeleteStartPoint(int x, int z);				//���� ���� ����
-	int SetStartPosChar(smCHAR* lpChar);				//���ο� ���� ���� ��ġ�� ã�� ���� 
+	int FindStartPoint(int x, int z);					//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
+	int AddStartPoint(int x, int z, int state);		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
+	int DeleteStartPoint(int x, int z);				//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	int SetStartPosChar(smCHAR* lpChar);				//ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 	int SetStartPosCaravan(smCHAR* lpChar, rsPLAYINFO* Player);
-	int SetStartPosNearChar(smCHAR* lpChar, int cx, int cy, int cz);	//Ư�� ��ǥ �ֺ��� ĳ���� ��ġ�� ��ġ�� 
-	int SetPosNearChar(smCHAR* lpChar, int cx, int cy, int cz);	//Ư�� ��ǥ �ֺ��� ĳ���͸� �̵��� 
-	int StartPosRandomize();							//���� ���� ��ġ ����ȭ �Ѵ� 
+	int SetStartPosNearChar(smCHAR* lpChar, int cx, int cy, int cz);	//Æ¯ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½Öºï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ 
+	int SetPosNearChar(smCHAR* lpChar, int cx, int cy, int cz);	//Æ¯ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½Öºï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ 
+	int StartPosRandomize();							//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½È­ ï¿½Ñ´ï¿½ 
 
-	int SendStartPointFlag();							//�������� �����ġ ����
+	int SendStartPointFlag();							//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
 
-	smTRNAS_PLAYERINFO* FindCharInfoFixed(smTRNAS_PLAYERINFO* lpTransPlayerInfo);		//���� ĳ���� ���� ã��
-	int	AddCharInfoFixed(smTRNAS_PLAYERINFO* lpTransPlayerInfo);		//���� ĳ���� ���� �߰�
-	int	DeleteCharInfoFixed(smTRNAS_PLAYERINFO* lpTransPlayerInfo);	//���� ĳ���� ���� ����
-	int OpenNpc(smTRNAS_PLAYERINFO* lpTransPlayerInfo);				//NPC ĳ���� ����
-	int LoadCharInfoFixed(char* szFile);								//���� ĳ���� ���� �о����
-	int SaveCharInfoFixed(char* szFile);								//���� ĳ���� ���� ����
+	smTRNAS_PLAYERINFO* FindCharInfoFixed(smTRNAS_PLAYERINFO* lpTransPlayerInfo);		//ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
+	int	AddCharInfoFixed(smTRNAS_PLAYERINFO* lpTransPlayerInfo);		//ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
+	int	DeleteCharInfoFixed(smTRNAS_PLAYERINFO* lpTransPlayerInfo);	//ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	int OpenNpc(smTRNAS_PLAYERINFO* lpTransPlayerInfo);				//NPC Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	int LoadCharInfoFixed(char* szFile);								//ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½ï¿½
+	int SaveCharInfoFixed(char* szFile);								//ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	STG_ITEMS* FindItem(int x, int y, int z);							//�������� ã�´�
+	STG_ITEMS* FindItem(int x, int y, int z);							//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½Â´ï¿½
 	STG_ITEMS* FindNearGold(int x, int y, int z);
-	STG_ITEMS* AddItem(psITEM* lpItem, int x, int y, int z, int BeginMode = 0);	//�������� ��ġ�Ѵ�
-	int	DeleteItem(int x, int y, int z);								//�ش� ��ġ�� �������� ������
-	int DeleteItem(STG_ITEMS* lpStgItem);								//�ش� �������� ������
-	int SendStgItem(rsPLAYINFO* lpPlayInfo);							//������ ���� ���� 
-	int SendStgItems();													//������ ������ �� �����鿡�� ����
-	int SendStgItem(rsPLAYINFO* lpPlayInfo, STG_ITEMS* lpStgItem);	//������ ���� 1���� ���� 
-	int SendStgItemToNearUsers(STG_ITEMS* lpStgItem);					//������ ���� 1���� ���� 
-	int SendStgItemToPartyUsers(rsPLAYINFO* lpPlayInfo, STG_ITEMS* lpStgItem);	//������ ���� 1���� ��ó�� ��Ƽ������ ���� ���� 
+	STG_ITEMS* AddItem(psITEM* lpItem, int x, int y, int z, int BeginMode = 0);	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½Ñ´ï¿½
+	int	DeleteItem(int x, int y, int z);								//ï¿½Ø´ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int DeleteItem(STG_ITEMS* lpStgItem);								//ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	int SendStgItem(rsPLAYINFO* lpPlayInfo);							//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+	int SendStgItems();													//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½é¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	int SendStgItem(rsPLAYINFO* lpPlayInfo, STG_ITEMS* lpStgItem);	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+	int SendStgItemToNearUsers(STG_ITEMS* lpStgItem);					//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+	int SendStgItemToPartyUsers(rsPLAYINFO* lpPlayInfo, STG_ITEMS* lpStgItem);	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
-	int	FindEmptyMonTable();											//�� ���� ���̺� ��ȣ ã��
-	int	AddMonTable(smCHAR* lpChar);									//���� ���̺��� ������ �߰�
-	int	DeleteMonTable(smCHAR* lpChar);								//���� ���̺��� ������ ����
+	int	FindEmptyMonTable();											//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½È£ Ã£ï¿½ï¿½
+	int	AddMonTable(smCHAR* lpChar);									//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
+	int	DeleteMonTable(smCHAR* lpChar);								//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
 	int LoadEnemyList(char* szFile);
 };
 
-//StgArea �ִ� ���� 
+//StgArea ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 #define STAGE_AREA_MAX		64
 
-extern STG_AREA* StageArea;				//Stg_Area ����
+extern STG_AREA* StageArea;				//Stg_Area ï¿½ï¿½ï¿½ï¿½
 
 
 extern DWORD		dwPlayServTime;
-extern rsSERVER_CONFIG		rsServerConfig;				//���� ���� ����
+extern rsSERVER_CONFIG		rsServerConfig;				//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-// N�vel inicial configur�vel
+// Nível inicial configurável
 extern int g_LevelInicial;
 
-// N�vel m�ximo configur�vel
+// Nível máximo configurável
 extern int g_LevelFinal;
 extern smCHAR* chrAutoPlayer;					//[AUTOPLAYER_MAX];
 extern rsPLAYINFO* rsPlayInfo;				//[CONNECTMAX];
@@ -256,20 +256,20 @@ extern int Server_SqlReady;
 
 extern time_t		tServerTime;
 
-extern DWORD		dwBabelPlayTime;			//�Ŵ���� �ٺ� �����ð�
-extern int			BabelPlayField;				//�Ŵ���� �ٺ� �ʵ�
+extern DWORD		dwBabelPlayTime;			//ï¿½Å´ï¿½ï¿½ï¿½ï¿½ ï¿½Ùºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½
+extern int			BabelPlayField;				//ï¿½Å´ï¿½ï¿½ï¿½ï¿½ ï¿½Ùºï¿½ ï¿½Êµï¿½
 
-extern DWORD		dwKelvezuPlayTime;			//�Ŵ���� �̺��� �����ð�
-extern int			KelvezuPlayField;			//�Ŵ���� �̺��� �ʵ�
+extern DWORD		dwKelvezuPlayTime;			//ï¿½Å´ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½
+extern int			KelvezuPlayField;			//ï¿½Å´ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½ï¿½ï¿½ ï¿½Êµï¿½
 
 ///////////////////////////////////////////////////////////////////////
 
-//������ ĳ�� �뺴 ���Ѽ��� ����
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ ï¿½ëº´ ï¿½ï¿½ï¿½Ñ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 #define srCASLTE_SOLDER_CLAN_MAX	20
 #define srCASLTE_SOLDER_MAX			1
 #define srCASLTE_SOLDER_KIND_MAX	5
 
-//������ ĳ�� ���� ����
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 struct	rsBLESS_CASTLE {
 
 	int		CastleMode;
@@ -278,17 +278,17 @@ struct	rsBLESS_CASTLE {
 	DWORD	dwLimitTime;
 	int		Counter;
 
-	int		Tax;				//���� ����
-	int		NextTax;			//���� ����
+	int		Tax;				//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	int		NextTax;			//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	DWORD	dwBattleOverTime;	//���� ���� �ð�
-	int		SoulFountain_PotionCount;		//��ȥ�� ���� ���� ����
-	DWORD	dwSoulFountainTime;				//��ȥ�� ���� ���� �߻��ð�
-	DWORD	dwSoulFountainTime2;			//��ȥ�� ���� ���� �����ð�
+	DWORD	dwBattleOverTime;	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+	int		SoulFountain_PotionCount;		//ï¿½ï¿½È¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	DWORD	dwSoulFountainTime;				//ï¿½ï¿½È¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½Ã°ï¿½
+	DWORD	dwSoulFountainTime2;			//ï¿½ï¿½È¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½
 	int		SoulFountain_LastUserCount;
 
 	DWORD	dwStartTime;
-	short	TimeSec[2];						//����ð���[0] ����ð���[1]	
+	short	TimeSec[2];						//ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½[0] ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½[1]	
 	int		SelectedSkill;
 
 	int		Temp[10];
@@ -299,16 +299,16 @@ struct	rsBLESS_CASTLE {
 	char	bCrystalSolderCount[4];
 	char	bCrystalTowerCount[4];
 	smCHAR* lpChar_ValhallaTower;
-	DWORD	dwScoreLogTime;				//�������� ����ð�
+	DWORD	dwScoreLogTime;				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã°ï¿½
 
 };
 
-extern rsBLESS_CASTLE	rsBlessCastle;				//������ ĳ�� ���� ����
+extern rsBLESS_CASTLE	rsBlessCastle;				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
 
 struct	rsCURRENCY_LOG {
-	//���� �� ��ȭ�� ���
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½
 	INT64	int64_CraftMoney;
 	INT64	int64_AgingMoney;
 	INT64	int64_ShopMoney;
@@ -345,8 +345,8 @@ struct	TRANS_KILL_MONSTER_INFO {
 
 //////////////////////////////////////////////////////////////////////////
 
-/////////////// ����Ʈ�� ���� ��ġ ����ü //////////////////////////////
-//������ ī����
+/////////////// ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½Ã¼ //////////////////////////////
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ï¿½ï¿½
 #define	rsHARDCORE_COUNT_END	8
 #define	hCORE_ROUND_MAX		9
 
@@ -382,7 +382,7 @@ struct	sHCORE_MONSTER {
 	int		StartHour;
 	int		State;
 	int		MaxMonster;
-	int		DelayTime;			//���۽� ������ �ð�
+	int		DelayTime;			//ï¿½ï¿½ï¿½Û½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 };
 
 int rsPutItem(rsPLAYINFO* lpPlayInfo, DWORD dwItemCode, int spJobCode);
@@ -391,27 +391,28 @@ extern char* UpKeepItemName[];
 
 STG_AREA* FindStageField(int x, int z);
 
-//����Ÿ������ ��������
+//ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 int rsSendDataServer(smWINSOCK* lpsmSock, void* szData);
-//����Ʈ ���� ó��
+//ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 int rsProcessQuest(rsPLAYINFO* lpPlayInfo, smCHAR* lpChar, int QuestCode, int QuestParam);
-//���� ������ ��� Ŭ���̾�Ʈ�� ����
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int SendShopItemList(smWINSOCK* lpsmSock, smCHAR* lpChar);
-//��ų ���� NPC
+//ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ NPC
 int SendSkillMenu(smWINSOCK* lpsmSock, smCHAR* lpChar, int Mode);
-//â�� ����
+//Ã¢ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int SendOpenWareHouse(smWINSOCK* lpsmSock);
+int SendOpenPostBox(smWINSOCK* lpsmSock);
 
 int SendOpenCaravan(smWINSOCK* lpsmSock);
-//������ ����â ����
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢ ï¿½ï¿½ï¿½ï¿½
 int SendOpenMixItem(smWINSOCK* lpsmSock, int MixFlag);
-//����� ����
+//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int SendOpenCollectMoney(smWINSOCK* lpsmSock);
-//��ǰ�̺�Ʈ
+//ï¿½ï¿½Ç°ï¿½Ìºï¿½Æ®
 int SendOpenEventGift(smWINSOCK* lpsmSock);
-//����¡ â ����
+//ï¿½ï¿½ï¿½ï¿½Â¡ Ã¢ ï¿½ï¿½ï¿½ï¿½
 int SendOpenAgingItem(smWINSOCK* lpsmSock);
-//Ŭ�� �޴� ����
+//Å¬ï¿½ï¿½ ï¿½Þ´ï¿½ ï¿½ï¿½ï¿½ï¿½
 int SendOpenClanMenu(smWINSOCK* lpsmSock);
 
 int Serv_ConnectPlayer(smWINSOCK* lpsmSock);
@@ -419,119 +420,119 @@ int Serv_ConnectPlayer(smWINSOCK* lpsmSock);
 smCHAR* Serv_CheckOtherPlayPosi(int x, int y, int z);
 
 int Serv_DisconnectPlayer(smWINSOCK* lpsmSock);
-//�̺�Ʈ NPC
+//ï¿½Ìºï¿½Æ® NPC
 int SendOpenEvent(smCHAR* lpChar, rsPLAYINFO* lpPlayInfo, int EventFlag);
-//���� ���
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 int SendOpenGiftExpress(rsPLAYINFO* lpPlayInfo, DWORD	dwItemCode, DWORD dwPassCode_Param);
-// pluto ������ ����â ����
+// pluto ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢ ï¿½ï¿½ï¿½ï¿½
 int SendOpenSmelting(smWINSOCK* lpsmSock);
-// pluto ������ ����â ����
+// pluto ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢ ï¿½ï¿½ï¿½ï¿½
 int SendOpenManufacture(smWINSOCK* lpsmSock);
-//SoD ���� ��Ȳ ���
+//SoD ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È² ï¿½ï¿½ï¿½
 TRANS_SOD_RESULT* rsSod_GetRealTimeScore(rsPLAYINFO* lpPlayInfo);
-// ������ - �ͽ��� ���� â ����
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½Í½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¢ ï¿½ï¿½ï¿½ï¿½
 int SendOpenMixtureItemReset(smWINSOCK* lpsmSock);
 
 int createItemLuckyBox(psITEM* lpsItem, rsPLAYINFO* Player, char* itCode, int JobCode);
 
-//Ŭ���̾�Ʈ ���� ( ũ��ƼĮ ��� ���� )
+//Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ( Å©ï¿½ï¿½Æ¼Ä® ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ )
 int DisconnectUser(smWINSOCK* lpsmSock);
-//��ŷ �õ� ��� ���Ϸ� ����
+//ï¿½ï¿½Å· ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½
 int RecordHackLogFile(rsPLAYINFO* lpPlayInfo, void* lpTransCommand);
 
-//������ ���� ����
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int RecvRangeAttack(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAttackData);
-//������ ���� ���� ( ���� ���� )
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ( ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ )
 int RecvRangeAttackUser(rsPLAYINFO* lpPlayInfo, TRANS_SKIL_ATTACKDATA* lpTransSkilAttackData);
 INT64 GetExpForValeLevel(rsPLAYINFO* lpPlayInfo);
 
 int CreateItemPerf(psITEM* lpsItem, char* szCoed, int JobCode);
 
 smCHAR* srFindCharFromSerial(DWORD dwObjectSerial, int AreaNum);
-//ĳ���͸� ã�´� ( ���߿� ���� ������ �ְ� �ڵ�ȭ ���� �ٲ� ��� �� )
+//Ä³ï¿½ï¿½ï¿½Í¸ï¿½ Ã£ï¿½Â´ï¿½ ( ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½Úµï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ )
 smCHAR* srFindCharFromSerial(DWORD dwObjectSerial);
-//ĳ���͸� ã�´� ( ���߿� ���� ������ �ְ� �ڵ�ȭ ���� �ٲ� ��� �� )
+//Ä³ï¿½ï¿½ï¿½Í¸ï¿½ Ã£ï¿½Â´ï¿½ ( ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½Úµï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ )
 rsPLAYINFO* srFindUserFromSerial(DWORD dwObjectSerial);
-//�׷�������
+//ï¿½×·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 int rsPlayGrandHealing(rsPLAYINFO* lpPlayInfo, smTRANS_COMMAND* lpTransCommand);
-//����
+//ï¿½ï¿½ï¿½ï¿½
 int	rsPlayHealing(rsPLAYINFO* playInfo, smTRANS_COMMAND* lpTransCommand);
 
-//���� ���� �ð� ǥ��
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ Ç¥ï¿½ï¿½
 int srDisplayBillingTime(rsPLAYINFO* lpPlayInfo, int Add_BillingTime);
 
-//�ֺ� �������� ���� ����
+//ï¿½Öºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int	rsSendCommandUser(rsPLAYINFO* lpPlayInfo, smTRANS_COMMAND_EX* lpTransCommandEx);
-//�ֺ� �������� ���� ����
+//ï¿½Öºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int	rsSendCommandUser2(rsPLAYINFO* lpPlayInfo, smTRANS_COMMAND* lpTransCommand);
 rsPLAYINFO* FindUserFromName(char* szName);
 rsPLAYINFO* FindUserFromName2(char* szName);
-//������ �����Ų�� ( �����Ű�µ� �ɸ��� �ð��� �� 6~10�� ���� �ҿ� )
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½ ( ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½Âµï¿½ ï¿½É¸ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ 6~10ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¿ï¿½ )
 int	rsShutDown();
-//������ �ּҸ� ����� ��ȯ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½î¼­ ï¿½ï¿½È¯
 DWORD GetSwapIPCode(char* szIP);
 
-//�̺�Ʈ �α׿� ����ó��
+//ï¿½Ìºï¿½Æ® ï¿½Î±×¿ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 int rsEventLogOn_Sucess(rsPLAYINFO* lpPlayInfo);
 
 
-//SOD ������ȣ ���ϱ�
+//SOD ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ ï¿½ï¿½ï¿½Ï±ï¿½
 int rsGetSoD_AreaCode(int x, int y, int z);
-//����� �Ϲݰ��ݽ� ��ų�� ���� ���� (��������)
+//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¹Ý°ï¿½ï¿½Ý½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 int rsSendRangeDamage(smCHAR* lpChar, rsPLAYINFO* lpMainPlayInfo, int Range, int SubDamgePers);
-//���� ������ ���ġ ���ϴ� �Լ�
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
 int rsGetMonsterLifeRegen(smCHAR* lpChar);
 
-//Ŭ�� �Ӵ� ���
+//Å¬ï¿½ï¿½ ï¿½Ó´ï¿½ ï¿½ï¿½ï¿½
 int	rsClanMoneyLog(rsPLAYINFO* lpPlayInfo, int Money, int RestMoney);
 
 
-//���� ���ǿ� ���� �߰�
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ç¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 int rsAddServerPotion(rsPLAYINFO* lpPlayInfo, DWORD dwPotionCode, int PotionCount);
-//���� ���ǿ��� ���� ���ϱ�
+//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 int rsGetServerPotion(rsPLAYINFO* lpPlayInfo, DWORD dwPotionCode);
 
-//��ŷ �õ� ��� ���Ϸ� ����
+//ï¿½ï¿½Å· ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½
 int RecordHackLogFile(rsPLAYINFO* lpPlayInfo, void* lpBuff);
 
 
-//��ų ��ȯ���� ���� ��Ŵ
+//ï¿½ï¿½Å³ ï¿½ï¿½È¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å´
 smCHAR* OpenMonsterFromSkill(DWORD SkillCode, int x, int y, int z, rsPLAYINFO* lpPlayInfo, smCHAR* lpEnemyChar);
-//��ȯ����� ã��
+//ï¿½ï¿½È¯ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
 smCHAR* rsGetLinkChar(smCHAR* lpMasterChar);
 
 
-//������ĳ�� �������� ����
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int rsRecvBlessCastInfo(rsPLAYINFO* lpPlayInfo, void* lpPacket);
-//������ĳ�� �������� �۽�
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Û½ï¿½
 int rsSendBlessCastInfo(rsPLAYINFO* lpPlayInfo, int Mode);
 
 void SendPacket(rsPLAYINFO* lpPlayInfo, char* data, int len, int mode = 0);
 
-//Ŭ�� �ڵ� ���ϱ�
+//Å¬ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 DWORD GetClanCode(int ClassClanCode);
 
 
-//�ٸ������� ������Ʈ ���� ����
+//ï¿½Ù¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 int	rsUpdateServerParam(rsPLAYINFO* lpPlayInfo, DWORD dwUpdateCode, int Param1, int Param2, int TargetMode);
 
 
-///////////////////////// ����׿� ��� //////////////////////
-int rsDebugMessageToClient(rsPLAYINFO* lpPlayInfo, char* szDmgMsg);	//����� �޼��� ���
+///////////////////////// ï¿½ï¿½ï¿½ï¿½×¿ï¿½ ï¿½ï¿½ï¿½ //////////////////////
+int rsDebugMessageToClient(rsPLAYINFO* lpPlayInfo, char* szDmgMsg);	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 
 
-////////////////////////// ��Ʈ�� ����ġ �ð��й� /////////////////////////////
+////////////////////////// ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½Ã°ï¿½ï¿½Ð¹ï¿½ /////////////////////////////
 int rsGetExp_GameTime(rsPLAYINFO* lpPlayInfo);
-// pluto ���� �� �˻� // �庰 - ���������� ȥ
+// pluto ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë»ï¿½ // ï¿½åº° - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¥
 DWORD ManufactureCheckRune(rsPLAYINFO* lpPlayInfo, DWORD RecipeCode, DWORD* pRuneCode);
 
-////////////////////////// �߱� �ð����� �����ð��� ���� �޼��� ��� ///////////////////
+////////////////////////// ï¿½ß±ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ///////////////////
 int rsDispay_GameTime(rsPLAYINFO* lpPlayInfo, DWORD dwTimeOld);
 
-// ����� - 2010 ������ �̺�Ʈ - �౸�� ���� ���
+// ï¿½ï¿½ï¿½ï¿½ï¿½ - 2010 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® - ï¿½à±¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 int	rsUseSoccerBallPotionItem(DWORD dwItemCode, rsPLAYINFO* lpPlayInfo);
 
-// ����� - ����¡�������(����¡ ������ �����)
+// ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½Â¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½Â¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½)
 int SetAgingItem(sITEMINFO* pItem, int AgingNum);
 int SetAgingItemRestaure(sITEMINFO* pItem, int AgingNum);
 

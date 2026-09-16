@@ -227,7 +227,7 @@ static void DrawPathBanner(const char* rel)
 	if (!FileExistsRel(rel))
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ToolC(kToolDanger));
-		ImGui::TextUnformatted("Arquivo nao encontrado neste diretorio.");
+		ImGui::TextUnformatted("Arquivo n" U8_AN "o encontrado neste diret" U8_O "rio.");
 		ImGui::PopStyleColor();
 	}
 }
@@ -241,6 +241,8 @@ void ServerConfig_Draw(ServerStatusFn setStatus)
 {
 	if (!g_loaded)
 		LoadAll();
+
+	ToolPageTitle("Arquivos de configura" U8_C U8_AN "o", "Grava no diret" U8_O "rio de trabalho do exe. SQL e porta pedem rein" U8_I "cio.");
 
 	ImGui::TextDisabled("Pasta do exe: %s", g_absDir);
 	ImGui::SameLine();
@@ -256,11 +258,17 @@ void ServerConfig_Draw(ServerStatusFn setStatus)
 		"SQL",
 		"Devices"
 	};
+	const float limitX = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 	for (int i = 0; i < 6; i++)
 	{
-		if (i)
-			ImGui::SameLine();
-		if (ToolNavItem(tabs[i], g_cfgPage == i, 118.0f))
+		const float tabW = ImGui::CalcTextSize(tabs[i]).x + 22.0f;
+		if (i > 0)
+		{
+			const float nextX = ImGui::GetItemRectMax().x + 6.0f + tabW;
+			if (nextX < limitX)
+				ImGui::SameLine(0.0f, 6.0f);
+		}
+		if (ToolChipTab(tabs[i], g_cfgPage == i))
 			g_cfgPage = i;
 	}
 
@@ -378,7 +386,7 @@ void ServerConfig_Draw(ServerStatusFn setStatus)
 	{
 		ToolSection("Connect.ini");
 		DrawPathBanner(kConnectIni);
-		ToolHint("IP e porta do bind. Mudar a porta so vale depois de reiniciar o Server.exe.");
+		ToolHint("IP e porta do bind. Mudar a porta s" U8_O " vale depois de reiniciar o Server.exe.");
 		ImGui::SetNextItemWidth(220.0f);
 		ImGui::InputText("IP", g_connectIp, IM_ARRAYSIZE(g_connectIp));
 		ImGui::SetNextItemWidth(120.0f);
@@ -403,11 +411,11 @@ void ServerConfig_Draw(ServerStatusFn setStatus)
 	{
 		ToolSection("SQL.ini");
 		DrawPathBanner(kSqlIni);
-		ToolHint("ODBC abre so na subida. Salvar aqui nao reconecta o banco com o mundo ligado.");
+		ToolHint("ODBC abre s" U8_O " na subida. Salvar aqui n" U8_AN "o reconecta o banco com o mundo ligado.");
 		ImGui::SetNextItemWidth(280.0f);
 		ImGui::InputText("Host", g_sqlHost, IM_ARRAYSIZE(g_sqlHost));
 		ImGui::SetNextItemWidth(200.0f);
-		ImGui::InputText("Usuario", g_sqlUser, IM_ARRAYSIZE(g_sqlUser));
+		ImGui::InputText("Usu" U8_A "rio", g_sqlUser, IM_ARRAYSIZE(g_sqlUser));
 		ImGui::SetNextItemWidth(200.0f);
 		ImGui::InputText("Senha", g_sqlPass, IM_ARRAYSIZE(g_sqlPass), ImGuiInputTextFlags_Password);
 		if (ToolPrimaryButton("Salvar SQL.ini", ImVec2(180.0f, 30.0f)))
@@ -425,15 +433,15 @@ void ServerConfig_Draw(ServerStatusFn setStatus)
 	{
 		ToolSection("Devices.ini");
 		DrawPathBanner(kDevicesIni);
-		ToolHint("Arquivo de diretivas (*SERVER_NAME, *MAX_USERS...). So as chaves abaixo sao editadas; o resto do arquivo e preservado.");
+		ToolHint("Arquivo de diretivas (*SERVER_NAME, *MAX_USERS...). S" U8_O " as chaves abaixo s" U8_AN "o editadas; o resto do arquivo " U8_E " preservado.");
 		ImGui::SetNextItemWidth(240.0f);
 		ImGui::InputText("Nome do servidor", g_devName, IM_ARRAYSIZE(g_devName));
 		ImGui::SetNextItemWidth(140.0f);
 		ImGui::InputInt("Max. jogadores", &g_devMaxUsers);
 		ImGui::SetNextItemWidth(140.0f);
-		ImGui::InputInt("Versao min", &g_devVerMin);
+		ImGui::InputInt("Vers" U8_AN "o min", &g_devVerMin);
 		ImGui::SetNextItemWidth(140.0f);
-		ImGui::InputInt("Versao max", &g_devVerMax);
+		ImGui::InputInt("Vers" U8_AN "o max", &g_devVerMax);
 		ImGui::SetNextItemWidth(140.0f);
 		ImGui::InputInt("PK (0/1)", &g_devPk);
 		if (ToolPrimaryButton("Salvar Devices.ini", ImVec2(180.0f, 30.0f)))
