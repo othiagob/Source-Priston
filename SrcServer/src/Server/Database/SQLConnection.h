@@ -48,6 +48,7 @@ enum EDatabaseDataType
 	PARAMTYPE_Int64,
 	PARAMTYPE_Short,
 	PARAMTYPE_Time,
+	PARAMTYPE_Binary,
 	PARAMTYPE_Null = 5000,
 };
 
@@ -67,6 +68,7 @@ private:
 	EDatabaseID eID;
 	char szDatabaseName[64];
 	char szQuery[2048];
+	SQLLEN cbBinaryValue;
 	CRITICAL_SECTION sCriticalSection;
 
 	BOOL SQLTimeStampToSystemTime(SYSTEMTIME* psSystemTime, SQL_TIMESTAMP_STRUCT* psSQLTimeStamp);
@@ -83,14 +85,18 @@ public:
 	BOOL Open();
 	BOOL Prepare(const char* pszQuery);
 	BOOL Execute(BOOL bFetch = TRUE);
-	BOOL BindInputParameter(void* pParameter, int iPosition, EDatabaseDataType eDataType);
+	BOOL BindInputParameter(void* pParameter, int iPosition, EDatabaseDataType eDataType, int iSize = 0);
 	BOOL GetData(int iPosition, EDatabaseDataType eDataType, void* pParameter, int iSize = 0);
 	BOOL NextRow();
 	BOOL Close();
+	const char* GetName() const;
+	static int ListConnectedNames(char out[][64], int maxCount);
 
 
 
 };
+
+const char* SQLConnection_GetHost();
 
 
 

@@ -403,6 +403,31 @@ int SendSkillMenu(smWINSOCK* lpsmSock, smCHAR* lpChar, int Mode);
 int SendOpenWareHouse(smWINSOCK* lpsmSock);
 int SendOpenPostBox(smWINSOCK* lpsmSock);
 
+struct POSTBOX_AUDIT {
+	char	EventType[24];
+	DWORD	EntryId;
+	int		Kind;
+	char	DestAccount[32];
+	char	DestChar[32];
+	char	SenderAccount[32];
+	char	SenderChar[32];
+	char	ItemCode[32];
+	char	ItemName[64];
+	DWORD	ItemBinCode;
+	DWORD	ItemHead;
+	DWORD	ItemChkSum;
+	int		Quantity;
+	int		Weight;
+	char	Message[128];
+	int		HasPass;
+	DWORD	DepositedAt;
+	DWORD	ExpireAt;
+	char	Reason[48];
+	char	Source[24];
+	char	DestIP[48];
+};
+void rsPostBoxAuditLog(const POSTBOX_AUDIT* row);
+
 int SendOpenCaravan(smWINSOCK* lpsmSock);
 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢ ï¿½ï¿½ï¿½ï¿½
 int SendOpenMixItem(smWINSOCK* lpsmSock, int MixFlag);
@@ -469,6 +494,8 @@ rsPLAYINFO* FindUserFromName(char* szName);
 rsPLAYINFO* FindUserFromName2(char* szName);
 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½ ( ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½Âµï¿½ ï¿½É¸ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ 6~10ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò¿ï¿½ )
 int	rsShutDown();
+int	rsIsShuttingDown();
+int	rsShutDownMinutesLeft();
 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½î¼­ ï¿½ï¿½È¯
 DWORD GetSwapIPCode(char* szIP);
 

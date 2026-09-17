@@ -9,6 +9,7 @@
 
 using namespace std;
 std::vector<std::shared_ptr<SQLConnection>> vSQLConnection;
+static char s_sqlHost[128] = {};
 
 
 DatabaseStructureData sDatabaseData[]
@@ -259,7 +260,7 @@ BOOL SQLConnection::Execute(BOOL bFetch)
 	return TRUE;
 }
 
-BOOL SQLConnection::BindInputParameter(void* pParameter, int iPosition, EDatabaseDataType eDataType)
+BOOL SQLConnection::BindInputParameter(void* pParameter, int iPosition, EDatabaseDataType eDataType, int iSize)
 {
 	int iType = 0;
 	int iSQLType = 0;
@@ -274,7 +275,10 @@ BOOL SQLConnection::BindInputParameter(void* pParameter, int iPosition, EDatabas
 	case PARAMTYPE_String:
 		iType = SQL_C_CHAR;
 		iSQLType = SQL_VARCHAR;
-		iLen = lstrlenA((char*)pParameter);
+		if (pParameter)
+			iLen = lstrlenA((char*)pParameter);
+		if (iLen < 1)
+			iLen = 1;
 		break;
 	case PARAMTYPE_Float:
 		iType = SQL_C_FLOAT;
@@ -288,11 +292,27 @@ BOOL SQLConnection::BindInputParameter(void* pParameter, int iPosition, EDatabas
 		iType = SQL_C_TIMESTAMP;
 		iSQLType = SQL_TYPE_TIMESTAMP;
 		break;
+	case PARAMTYPE_Binary:
+		iType = SQL_C_BINARY;
+		iSQLType = SQL_VARBINARY;
+		iLen = iSize > 0 ? iSize : 1;
+		cbBinaryValue = iLen;
+		break;
 	default:
 		break;
 	}
 
-	if (SQLBindParameter(hStatement, iPosition, SQL_PARAM_INPUT, iType, iSQLType, iLen, 0, pParameter, 0, NULL) == SQL_ERROR)
+	int iBufLen = 0;
+	if (eDataType == PARAMTYPE_String)
+		iBufLen = iLen + 1;
+	else if (eDataType == PARAMTYPE_Binary)
+		iBufLen = iLen;
+
+	SQLLEN* pcb = NULL;
+	if (eDataType == PARAMTYPE_Binary)
+		pcb = &cbBinaryValue;
+
+	if (SQLBindParameter(hStatement, iPosition, SQL_PARAM_INPUT, iType, iSQLType, iLen, 0, pParameter, iBufLen, pcb) == SQL_ERROR)
 	{
 		show_errorSQL(SQL_HANDLE_STMT, hStatement);
 		return FALSE;
@@ -326,6 +346,9 @@ BOOL SQLConnection::GetData(int iPosition, EDatabaseDataType eDataType, void* pP
 		break;
 	case PARAMTYPE_Int64:
 		iType = SQL_C_SBIGINT;
+		break;
+	case PARAMTYPE_Binary:
+		iType = SQL_C_BINARY;
 		break;
 	case PARAMTYPE_Time:
 		iType = SQL_C_TYPE_TIMESTAMP;
@@ -466,6 +489,46 @@ void openDatabase(SQLInstanceRead instance)
 	CreateSQLConnection(DATABASEID_PainelDB, instance);
 }
 
+const char* SQLConnection::GetName() const
+{
+	return szDatabaseName;
+}
+
+int SQLConnection::ListConnectedNames(char out[][64], int maxCount)
+{
+	int n = 0;
+	if (!out || maxCount <= 0)
+		return 0;
+
+	for (UINT u = 0; u < vSQLConnection.size() && n < maxCount; u++)
+	{
+		const char* name = vSQLConnection[u]->szDatabaseName;
+		if (!name || !name[0])
+			continue;
+
+		bool dup = false;
+		for (int i = 0; i < n; i++)
+		{
+			if (_stricmp(out[i], name) == 0)
+			{
+				dup = true;
+				break;
+			}
+		}
+		if (dup)
+			continue;
+
+		strncpy_s(out[n], 64, name, _TRUNCATE);
+		n++;
+	}
+	return n;
+}
+
+const char* SQLConnection_GetHost()
+{
+	return s_sqlHost;
+}
+
 std::shared_ptr<SQLConnection> SQLConnection::GetConnection(EDatabaseID eDatabaseID)
 {
 	// Find connection pointer
@@ -490,6 +553,7 @@ bool initializeSQL()
 	STRINGCOPY(Instance.szHost, cConfigReader.ReadString("Database", "Host").c_str());
 	STRINGCOPY(Instance.szUser, cConfigReader.ReadString("Database", "User").c_str());
 	STRINGCOPY(Instance.szPassword, cConfigReader.ReadString("Database", "Password").c_str());
+	STRINGCOPY(s_sqlHost, Instance.szHost);
 
 	std::cout << "Infomation SQL Read in Archive" << std::endl;
 	ServerPanel_SetBootStatus("A ler SQL.ini...");

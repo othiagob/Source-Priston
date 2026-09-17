@@ -37,6 +37,7 @@
 #include "HUD\\RestaureWindow.h"
 #include "HUD\\MixWindow.h"
 #include "HUD\\WarehouseWindow.h"
+#include "WarehouseWire.h"
 #include "HUD\\PostBoxWindow.h"
 #include "Shop\\NewShop.h"
 #include "Shop\\NewShopTime.h"
@@ -4685,50 +4686,29 @@ int rsTRANS_SERVER::RecvMessage(smTHREADSOCK* pData)
 	case smTRANSCODE_WAREHOUSE:
 		{
 			TRANS_WAREHOUSE* lpWh = (TRANS_WAREHOUSE*)pData->Buff;
-			const int isV2 = (lpWh->wVersion[0] == WAREHOUSE_PACKET_VERSION);
-			int page = 0;
-			if (isV2)
-				page = (int)lpWh->dwTemp[0];
-			if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
-				page = 0;
+			if (lpWh->wVersion[0] != WAREHOUSE_PACKET_VERSION)
+				break;
+
+			int page = (int)lpWh->dwTemp[0];
+			if (page < 0 || page >= WAREHOUSE_UNLOCKED_PAGES)
+				break;
 
 			if (cTrade.OpenFlag || cMyShop.OpenFlag)
 				break;
 
-			if (cWareHouse.OpenFlag) {
-				if (page != 0) {
-					sWAREHOUSE pageWh;
-					ZeroMemory(&pageWh, sizeof(pageWh));
-					pageWh.Money = sWareHouse.Money;
-					pageWh.Weight[0] = sWareHouse.Weight[0];
-					pageWh.Weight[1] = sWareHouse.Weight[1];
-					if (LoadWareHouse(lpWh, &pageWh, 1, page) == TRUE)
-						cWareHouse.ApplyLoadedPage(page, pageWh.WareHouseItem);
-				}
+			if (cWareHouse.OpenFlag)
 				break;
-			}
 
-			if (page == 0) {
-				if (LoadWareHouse(lpWh, &sWareHouse, 0, 0) == TRUE) {
-					cWareHouse.BeginLoad();
-					cWareHouse.ApplyLoadedPage(0, sWareHouse.WareHouseItem);
-					cWareHouse.MarkPageReady(0);
-					if (!isV2)
-						cWareHouse.FillEmptyRemainingPages();
-					cWareHouse.TryFinishOpen();
-				}
-			}
-			else if (cWareHouse.IsLoadingPages()) {
-				sWAREHOUSE pageWh;
-				ZeroMemory(&pageWh, sizeof(pageWh));
-				pageWh.Money = sWareHouse.Money;
-				pageWh.Weight[0] = sWareHouse.Weight[0];
-				pageWh.Weight[1] = sWareHouse.Weight[1];
-				if (LoadWareHouse(lpWh, &pageWh, 1, page) == TRUE)
-					cWareHouse.ApplyLoadedPage(page, pageWh.WareHouseItem);
-				else
-					ZeroMemory(cWareHouse.Pages[page], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
-				cWareHouse.MarkPageReady(page);
+			if (!cWareHouse.IsLoadingPages() && page == 0)
+				cWareHouse.BeginLoad();
+
+			if (!cWareHouse.IsLoadingPages() && page != 0)
+				break;
+
+			if (cWareHouse.ApplyLoadedChunk(page, lpWh) == TRUE)
+			{
+				if (page == 0 && lpWh->dwTemp[1] == 0)
+					CompWareHouseMoney = sWareHouse.Money;
 				cWareHouse.TryFinishOpen();
 			}
 		}
@@ -9925,97 +9905,147 @@ int GetTotalExp()
 
 int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse, int page)
 {
-	TRANS_WAREHOUSE	TransWareHouse;
-	sWAREHOUSE	WareHouseCheck;
-	int	CompSize;
-	int cnt;
-	DWORD	dwChkSum;
-	char* szComp1, * szComp2;
-	int	flag;
-
-	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
+	if (!lpWareHouse)
+		return FALSE;
+	if (page < 0 || page >= WAREHOUSE_UNLOCKED_PAGES)
 		page = 0;
 
-	if (lpTransWareHouse) flag = 1;
-	else flag = 0;
+	const int flag = lpTransWareHouse ? 1 : 0;
+	if (!flag && QuitSave)
+		return FALSE;
 
-	if (!flag && QuitSave)	return FALSE;
-
-	for (cnt = 0; cnt < 100; cnt++) {
-		if (!lpWareHouse->WareHouseItem[cnt].Flag) {
+	for (int cnt = 0; cnt < WAREHOUSE_PAGE_SLOTS; cnt++) {
+		if (!lpWareHouse->WareHouseItem[cnt].Flag)
 			ZeroMemory(&lpWareHouse->WareHouseItem[cnt], sizeof(sITEM));
-		}
 	}
 
-
-	CompSize = EecodeCompress((BYTE*)lpWareHouse, (BYTE*)TransWareHouse.Data, sizeof(sWAREHOUSE), sizeof(sITEM) * 100);
-
-
-	if (!flag && CompSize > (smSOCKBUFF_SIZE - 256))
+	sWAREHOUSE_WIRE_ITEM* wire = new sWAREHOUSE_WIRE_ITEM[WAREHOUSE_PAGE_SLOTS];
+	if (!wire)
 		return FALSE;
-
-	if (flag && CompSize > (smSOCKBUFF_SIZE - 140))
-		return FALSE;
-
-
-	DecodeCompress((BYTE*)TransWareHouse.Data, (BYTE*)&WareHouseCheck, sizeof(sWAREHOUSE));
-
-	szComp1 = (char*)lpWareHouse;
-	szComp2 = (char*)&WareHouseCheck;
-
-	dwChkSum = 0;
-
-	for (cnt = 0; cnt < sizeof(sWAREHOUSE); cnt++) {
-		if (szComp1[cnt] != szComp2[cnt]) {
-			return FALSE;
-		}
-		else {
-			dwChkSum += szComp1[cnt] * (cnt + 1);
-		}
-	}
+	const int total = WareHouseCollectWire(lpWareHouse->WareHouseItem, wire, WAREHOUSE_PAGE_SLOTS);
 
 	if (page == 0) {
 		WareHouseSubMoney += (CompWareHouseMoney - lpWareHouse->Money);
 		CompWareHouseMoney = 0;
 	}
 
-	TransWareHouse.code = smTRANSCODE_WAREHOUSE;
-	TransWareHouse.size = sizeof(TRANS_WAREHOUSE) - (sizeof(sWAREHOUSE) - CompSize);
-	TransWareHouse.DataSize = CompSize;
-	TransWareHouse.dwChkSum = dwChkSum;
-	TransWareHouse.wVersion[0] = WAREHOUSE_PACKET_VERSION;
-	TransWareHouse.wVersion[1] = 0;
+	int starts[128] = {};
+	int counts[128] = {};
+	int nChunks = 0;
 
-	if (!flag && page == 0) {
-		TransWareHouse.WareHouseMoney = lpWareHouse->Money ^ (dwChkSum ^ smTRANSCODE_WAREHOUSE);
-		TransWareHouse.UserMoney = lpCurPlayer->smCharInfo.Money ^ (dwChkSum ^ smTRANSCODE_WAREHOUSE);
+	if (total <= 0) {
+		starts[0] = 0;
+		counts[0] = 0;
+		nChunks = 1;
+	}
+	else {
+		int start = 0;
+		BYTE* probe = new BYTE[WareHouseWirePayloadSize(WAREHOUSE_PAGE_SLOTS)];
+		if (!probe) {
+			delete[] wire;
+			return FALSE;
+		}
+		while (start < total && nChunks < 128) {
+			int best = 0;
+			int lo = 1;
+			int hi = total - start;
+			while (lo <= hi) {
+				const int mid = (lo + hi) / 2;
+				sWAREHOUSE_WIRE_HDR hdr = {};
+				hdr.itemCount = mid;
+				hdr.money = (page == 0 && start == 0) ? lpWareHouse->Money : 0;
+				hdr.weightMax = (page == 0 && start == 0) ? (lpWareHouse->Weight[1] - 196) : 0;
+				hdr.revision = cWareHouse.WareHouseRevision;
+				const int rawSize = WareHouseFillPayload(probe, WareHouseWirePayloadSize(WAREHOUSE_PAGE_SLOTS), &hdr, wire + start);
+				TRANS_WAREHOUSE test = {};
+				const int comp = EecodeCompress(probe, test.Data, rawSize, WAREHOUSE_WIRE_DATA_MAX);
+				const int pktSize = (int)(sizeof(TRANS_WAREHOUSE) - WAREHOUSE_WIRE_DATA_MAX + comp);
+				if (comp > 0 && comp <= WAREHOUSE_WIRE_DATA_MAX && pktSize <= smSOCKBUFF_SIZE) {
+					best = mid;
+					lo = mid + 1;
+				}
+				else {
+					hi = mid - 1;
+				}
+			}
+			if (best < 1) {
+				delete[] probe;
+				delete[] wire;
+				return FALSE;
+			}
+			starts[nChunks] = start;
+			counts[nChunks] = best;
+			nChunks++;
+			start += best;
+		}
+		delete[] probe;
 	}
 
-	TransWareHouse.dwTemp[0] = (DWORD)page;
-	TransWareHouse.dwTemp[1] = 0;
-	TransWareHouse.dwTemp[2] = 0;
-	TransWareHouse.dwTemp[3] = 0;
-	TransWareHouse.dwTemp[4] = 0;
+	const int commitPage = (page == WAREHOUSE_UNLOCKED_PAGES - 1);
+	DWORD lastChk = 0;
 
+	for (int c = 0; c < nChunks; c++) {
+		sWAREHOUSE_WIRE_HDR hdr = {};
+		hdr.itemCount = counts[c];
+		hdr.money = (page == 0 && starts[c] == 0) ? lpWareHouse->Money : 0;
+		hdr.weightMax = (page == 0 && starts[c] == 0) ? (lpWareHouse->Weight[1] - 196) : 0;
+		hdr.revision = cWareHouse.WareHouseRevision;
+
+		const int rawCap = WareHouseWirePayloadSize(hdr.itemCount);
+		BYTE* raw = new BYTE[rawCap > 0 ? rawCap : sizeof(sWAREHOUSE_WIRE_HDR)];
+		if (!raw) {
+			delete[] wire;
+			return FALSE;
+		}
+		const int rawSize = WareHouseFillPayload(raw, rawCap > 0 ? rawCap : (int)sizeof(sWAREHOUSE_WIRE_HDR), &hdr,
+			hdr.itemCount ? wire + starts[c] : nullptr);
+
+		TRANS_WAREHOUSE pkt = {};
+		int comp = 0;
+		if (rawSize > 0)
+			comp = EecodeCompress(raw, pkt.Data, rawSize, WAREHOUSE_WIRE_DATA_MAX);
+
+		pkt.code = smTRANSCODE_WAREHOUSE;
+		pkt.DataSize = comp;
+		pkt.dwChkSum = WareHouseBufChkSum(raw, rawSize);
+		pkt.wVersion[0] = WAREHOUSE_PACKET_VERSION;
+		pkt.wVersion[1] = 0;
+		pkt.dwTemp[0] = (DWORD)page;
+		pkt.dwTemp[1] = (DWORD)c;
+		pkt.dwTemp[2] = (DWORD)nChunks;
+		pkt.dwTemp[3] = (DWORD)cWareHouse.WareHouseRevision;
+		pkt.dwTemp[4] = (commitPage && c == nChunks - 1) ? 1 : 0;
+		if (!flag && page == 0 && c == 0) {
+			pkt.WareHouseMoney = lpWareHouse->Money ^ (pkt.dwChkSum ^ smTRANSCODE_WAREHOUSE);
+			pkt.UserMoney = lpCurPlayer->smCharInfo.Money ^ (pkt.dwChkSum ^ smTRANSCODE_WAREHOUSE);
+		}
+		pkt.size = (int)(sizeof(TRANS_WAREHOUSE) - WAREHOUSE_WIRE_DATA_MAX + (comp > 0 ? comp : 0));
+		if (pkt.size < 48)
+			pkt.size = 48;
+		if (pkt.size > smSOCKBUFF_SIZE)
+			pkt.size = smSOCKBUFF_SIZE;
+		lastChk = pkt.dwChkSum;
+		delete[] raw;
+
+		if (flag) {
+			memcpy(lpTransWareHouse, &pkt, sizeof(TRANS_WAREHOUSE));
+			delete[] wire;
+			return TRUE;
+		}
+
+		if (!smWsockDataServer) {
+			delete[] wire;
+			return FALSE;
+		}
+		smWsockDataServer->Send2((char*)&pkt, pkt.size, TRUE);
+	}
+
+	delete[] wire;
 	if (page == 0)
-		dwLastWareHouseChkSum = dwChkSum;
-
-	if (flag) {
-		memcpy(lpTransWareHouse, &TransWareHouse, sizeof(TRANS_WAREHOUSE));
-		return TRUE;
-	}
-
-	if (TransWareHouse.size > smSOCKBUFF_SIZE) TransWareHouse.size = smSOCKBUFF_SIZE;
-
-	if (smWsockDataServer) {
-		smWsockDataServer->Send2((char*)&TransWareHouse, TransWareHouse.size, TRUE);
-
-		if (page == WAREHOUSE_PAGE_COUNT - 1)
-			SaveGameData();
-		return TRUE;
-	}
-
-	return FALSE;
+		dwLastWareHouseChkSum = lastChk;
+	if (!flag && commitPage)
+		SaveGameData();
+	return TRUE;
 }
 
 int	SaveWareHouse(sWAREHOUSE * lpWareHouse, TRANS_WAREHOUSE * lpTransWareHouse)

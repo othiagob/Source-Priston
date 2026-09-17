@@ -15,23 +15,21 @@
 #define U8_E "\xC3\xA9"
 #define U8_U "\xC3\xBA"
 #define U8_A_UP "\xC3\x81"
+#define U8_E_UP "\xC3\x89"
 
 static const ImU32 kGold = IM_COL32(200, 170, 90, 220);
 static const ImU32 kGoldBright = IM_COL32(230, 200, 110, 255);
 static const ImU32 kGoldFill = IM_COL32(20, 24, 32, 255);
 static const char* kTitleImagePath = "game\\images\\warehouse\\armazem.png";
-static const float kMainHeaderH = 50.0f;
-static const float kHeaderBtnW = 28.0f;
-static const float kHeaderBtnH = 22.0f;
-static const float kHeaderBtnRound = 3.0f;
+static const char* kFrameImagePath = "game\\images\\warehouse\\frame.png";
+static const float kMainHeaderH = kPlayerFrameHeaderH;
 static const int kLogicCell = ITEMSIZE;
-static const float kCell = (float)ITEMSIZE;
-static const int kGridN = 9;
-static const float kSideW = 140.0f;
-static const float kGridPad = 10.0f;
-static const float kWindowW = 16.0f + (kCell * (float)kGridN + kGridPad) + 8.0f + kSideW + 16.0f;
-static const float kWindowH = kMainHeaderH + 12.0f + 20.0f + 24.0f + 8.0f + 26.0f + 8.0f
-	+ (kCell * (float)kGridN + kGridPad) + 16.0f;
+static const float kSideW = 148.0f;
+static const float kGridPad = 8.0f;
+static const float kSearchW = 200.0f;
+static const float kFilterIcon = 32.0f;
+static const float kWindowW = kPlayerFrameWindowW;
+static const float kWindowH = kPlayerFrameWindowH;
 static const int kLogicOriginX = 21;
 static const float kGoldModalW = 400.0f;
 static const float kGoldModalH = 368.0f;
@@ -80,26 +78,6 @@ static bool LoadPngTexture(const char* path, void** outTex, int* outW, int* outH
 	if (outW) *outW = (int)info.Width;
 	if (outH) *outH = (int)info.Height;
 	return true;
-}
-
-static bool DrawHeaderClose()
-{
-	const ImVec2 win = ImGui::GetWindowSize();
-	ImGui::SetCursorPos(ImVec2(win.x - kHeaderBtnW - 12.0f, (kMainHeaderH - kHeaderBtnH) * 0.5f));
-	ImGui::InvisibleButton("##WarehouseClose", ImVec2(kHeaderBtnW, kHeaderBtnH));
-	const bool hovered = ImGui::IsItemHovered();
-	const bool clicked = ImGui::IsItemClicked();
-	const ImVec2 p = ImGui::GetItemRectMin();
-	const ImVec2 b1(p.x + kHeaderBtnW, p.y + kHeaderBtnH);
-	ImDrawList* draw = ImGui::GetWindowDrawList();
-	draw->AddRectFilled(p, b1, hovered ? IM_COL32(56, 46, 22, 255) : IM_COL32(18, 20, 24, 255), kHeaderBtnRound);
-	draw->AddRect(p, b1, hovered ? kGoldBright : kGold, kHeaderBtnRound, 0, 1.2f);
-	const ImVec2 c((p.x + b1.x) * 0.5f, (p.y + b1.y) * 0.5f);
-	const float arm = 4.8f;
-	const ImU32 xCol = IM_COL32(236, 220, 160, 255);
-	draw->AddLine(ImVec2(c.x - arm, c.y - arm), ImVec2(c.x + arm, c.y + arm), xCol, 1.7f);
-	draw->AddLine(ImVec2(c.x + arm, c.y - arm), ImVec2(c.x - arm, c.y + arm), xCol, 1.7f);
-	return clicked;
 }
 
 static void FormatGold(int value, char* out, int outSize)
@@ -250,10 +228,10 @@ static void SnapHeldItemToCursor(sITEM* item, int cursorLogX, int cursorLogY)
 		cellsW = 1;
 	if (cellsH < 1)
 		cellsH = 1;
-	if (col > kGridN - cellsW)
-		col = kGridN - cellsW;
-	if (row > kGridN - cellsH)
-		row = kGridN - cellsH;
+	if (col > WAREHOUSE_GRID_COLS - cellsW)
+		col = WAREHOUSE_GRID_COLS - cellsW;
+	if (row > WAREHOUSE_GRID_ROWS - cellsH)
+		row = WAREHOUSE_GRID_ROWS - cellsH;
 	if (col < 0)
 		col = 0;
 	if (row < 0)
@@ -264,6 +242,42 @@ static void SnapHeldItemToCursor(sITEM* item, int cursorLogX, int cursorLogY)
 	item->SetX = item->x;
 	item->SetY = item->y;
 }
+
+enum WarehouseFilter
+{
+	WhFilter_All = 0,
+	WhFilter_Weapons,
+	WhFilter_Armors,
+	WhFilter_Boots,
+	WhFilter_Gloves,
+	WhFilter_Premiums,
+	WhFilter_Sheltoms,
+	WhFilter_Count
+};
+
+static const char* kFilterPaths[WhFilter_Count] = {
+	"game\\images\\warehouse\\filter-all.png",
+	"game\\images\\warehouse\\filter-weapons.png",
+	"game\\images\\warehouse\\filter-armors.png",
+	"game\\images\\warehouse\\filter-boots.png",
+	"game\\images\\warehouse\\filter-gloves.png",
+	"game\\images\\warehouse\\filter-premiums.png",
+	"game\\images\\warehouse\\filter-sheltons.png"
+};
+
+static const char* kFilterTips[WhFilter_Count] = {
+	"Todos",
+	"Weapons",
+	"Armors",
+	"Boots",
+	"Gloves",
+	"Premiums",
+	"Sheltons"
+};
+
+static const char* kFilterLetters[WhFilter_Count] = {
+	"T", "W", "A", "B", "G", "P", "S"
+};
 
 static std::string Utf8ToAcp(const char* src)
 {
@@ -374,8 +388,10 @@ static int ClampWithdraw(int count)
 void WarehouseWindow::ClearSearch()
 {
 	m_searchUtf8[0] = 0;
+	m_lastSearchUtf8[0] = 0;
 	cWareHouse.szSearch[0] = 0;
 	m_searchFocused = false;
+	m_filter = WhFilter_All;
 }
 
 bool WarehouseWindow::ShouldCaptureKeyboard() const
@@ -410,11 +426,35 @@ void WarehouseWindow::EnsureTitleTexture()
 	LoadPngTexture(kTitleImagePath, &m_titleTex, &m_titleW, &m_titleH);
 }
 
+void WarehouseWindow::EnsureFrameTexture()
+{
+	if (m_frameTried)
+		return;
+	m_frameTried = true;
+	if (!LoadPngTexture(kFrameImagePath, &m_frameTex, &m_frameW, &m_frameH))
+		return;
+	if (!PlayerFrameSizeOk(m_frameW, m_frameH))
+	{
+		if (m_frameTex)
+		{
+			((LPDIRECT3DTEXTURE9)m_frameTex)->Release();
+			m_frameTex = nullptr;
+		}
+		m_frameW = 0;
+		m_frameH = 0;
+	}
+}
+
+bool WarehouseWindow::HasFrame() const
+{
+	return m_frameTex != nullptr && PlayerFrameSizeOk(m_frameW, m_frameH);
+}
+
 void WarehouseWindow::PushWindowStyle()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 12.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(PlayerFrameBodyInsetX(HasFrame()), PlayerFramePadY(HasFrame())));
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 3.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
@@ -423,7 +463,7 @@ void WarehouseWindow::PushWindowStyle()
 	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 12.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 3.0f);
 
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.09f, 0.12f, 0.96f));
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.06f, 0.07f, 0.09f, 0.92f));
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.78f, 0.67f, 0.35f, 0.50f));
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -455,33 +495,18 @@ void WarehouseWindow::PopWindowStyle()
 
 void WarehouseWindow::DrawWindowChrome(float headerH)
 {
-	DrawPlayerWindowChrome(ImGui::GetWindowDrawList(), headerH, kGold, kGoldFill);
+	EnsureFrameTexture();
+	DrawPlayerFramedOrVectorChrome(ImGui::GetWindowDrawList(), m_frameTex, HasFrame(), headerH, kGold, kGoldFill);
 }
 
-void WarehouseWindow::DrawTitleHeader()
+void WarehouseWindow::DrawTitleHeader(bool* p_open)
 {
 	EnsureTitleTexture();
-
-	const ImVec2 p0 = ImGui::GetWindowPos();
-	const ImVec2 size = ImGui::GetWindowSize();
-	ImDrawList* draw = ImGui::GetWindowDrawList();
-
-	if (m_titleTex && m_titleW > 0 && m_titleH > 0)
-	{
-		const float headerTop = p0.y + 6.0f;
-		const float headerBot = p0.y + kMainHeaderH - 4.0f;
-		const float areaH = headerBot - headerTop;
-		const ImVec2 sz = FitImageSize(m_titleW, m_titleH, 300.0f, areaH);
-		const float x = p0.x + (size.x - sz.x) * 0.5f;
-		const float y = headerTop + (areaH - sz.y) * 0.5f;
-		draw->AddImage((ImTextureID)m_titleTex, ImVec2(x, y), ImVec2(x + sz.x, y + sz.y));
-	}
-	else
-	{
-		const char* title = "ARMAZEM";
-		const ImVec2 ts = ImGui::CalcTextSize(title);
-		draw->AddText(ImVec2(p0.x + (size.x - ts.x) * 0.5f, p0.y + 18.0f), kGoldBright, title);
-	}
+	DrawPlayerPngTitle(ImGui::GetWindowDrawList(), m_titleTex, m_titleW, m_titleH,
+		PlayerFrameRim(HasFrame()), kMainHeaderH, "ARMAZ" U8_E_UP "M", kGoldBright);
+	if (p_open && !m_eatClick && DrawPlayerHeaderClose("##WarehouseClose", PlayerFrameCloseRight(HasFrame()),
+		PlayerFrameRim(HasFrame()), kMainHeaderH))
+		*p_open = false;
 }
 
 bool WarehouseWindow::ShouldHideClassicPanels() const
@@ -534,39 +559,41 @@ bool WarehouseWindow::IsOverGrid(int x, int y) const
 
 void WarehouseWindow::ScreenToLogical(int screenX, int screenY, int* outX, int* outY) const
 {
-	const int vis = (int)kCell;
-	if (vis <= 0)
-		return;
+	const float scale = (m_cell > 0.0f) ? (m_cell / (float)kLogicCell) : 1.0f;
 	if (outX)
-		*outX = kLogicOriginX + ((screenX - (int)m_gridX) * kLogicCell) / vis;
+		*outX = kLogicOriginX + (int)(((float)screenX - m_gridX) / scale);
 	if (outY)
-		*outY = LogicOriginY() + ((screenY - (int)m_gridY) * kLogicCell) / vis;
+		*outY = LogicOriginY() + (int)(((float)screenY - m_gridY) / scale);
 }
 
 void WarehouseWindow::LogicalToScreen(int logicX, int logicY, float* outX, float* outY) const
 {
-	const int vis = (int)kCell;
-	if (vis <= 0)
-		return;
+	const float scale = (m_cell > 0.0f) ? (m_cell / (float)kLogicCell) : 1.0f;
 	if (outX)
-		*outX = m_gridX + (float)((logicX - kLogicOriginX) * vis) / (float)kLogicCell;
+		*outX = m_gridX + (float)(logicX - kLogicOriginX) * scale;
 	if (outY)
-		*outY = m_gridY + (float)((logicY - LogicOriginY()) * vis) / (float)kLogicCell;
+		*outY = m_gridY + (float)(logicY - LogicOriginY()) * scale;
 }
 
 void WarehouseWindow::DrawSearch()
 {
+	ImGui::BeginGroup();
 	ImGui::TextUnformatted("Busca");
-	ImGui::SetNextItemWidth(-1.0f);
+	ImGui::SetNextItemWidth(kSearchW);
 	ImGui::InputTextWithHint("##WarehouseSearch", "nome do item", m_searchUtf8, IM_ARRAYSIZE(m_searchUtf8));
 	m_searchFocused = ImGui::IsItemActive();
 	if (ImGui::IsItemDeactivatedAfterEdit() && ImGui::IsKeyPressed(ImGuiKey_Enter))
 		m_searchFocused = true;
+	ImGui::EndGroup();
 
 	const std::string acp = Utf8ToAcp(m_searchUtf8);
 	strncpy_s(cWareHouse.szSearch, sizeof(cWareHouse.szSearch), acp.c_str(), _TRUNCATE);
 
-	if (cWareHouse.szSearch[0] && !MouseItem.Flag)
+	const bool searchChanged = (strcmp(m_searchUtf8, m_lastSearchUtf8) != 0);
+	if (searchChanged)
+		strcpy_s(m_lastSearchUtf8, m_searchUtf8);
+
+	if (searchChanged && cWareHouse.szSearch[0] && !MouseItem.Flag && cWareHouse.AllPagesReady())
 	{
 		const int page = cWareHouse.FindSearchPage();
 		if (page != cWareHouse.CurrentPage)
@@ -577,9 +604,101 @@ void WarehouseWindow::DrawSearch()
 	}
 }
 
+void WarehouseWindow::EnsureFilterTextures()
+{
+	if (m_filterTried)
+		return;
+	m_filterTried = true;
+	for (int i = 0; i < WhFilter_Count; i++)
+	{
+		int w = 0, h = 0;
+		LoadPngTexture(kFilterPaths[i], &m_filterTex[i], &w, &h);
+	}
+}
+
+bool WarehouseWindow::ItemMatchesFilter(sITEM* item) const
+{
+	if (!item || !item->Flag)
+		return false;
+	if (m_filter == WhFilter_All)
+		return true;
+
+	const DWORD raw = item->CODE ? item->CODE : item->sItemInfo.CODE;
+	const DWORD mask = raw & 0xFFFF0000;
+	switch (m_filter)
+	{
+	case WhFilter_Weapons:
+		return mask == sinWA1 || mask == sinWC1 || mask == sinWH1 || mask == sinWM1
+			|| mask == sinWP1 || mask == sinWS1 || mask == sinWS2 || mask == sinWT1;
+	case WhFilter_Armors:
+		return mask == sinDA1 || mask == sinDA2;
+	case WhFilter_Boots:
+		return mask == sinDB1;
+	case WhFilter_Gloves:
+		return mask == sinDG1;
+	case WhFilter_Premiums:
+		return mask == sinBI1 || mask == sinBI2;
+	case WhFilter_Sheltoms:
+		return mask == sinOS1;
+	default:
+		return true;
+	}
+}
+
+bool WarehouseWindow::ItemVisible(sITEM* item) const
+{
+	return cWareHouse.ItemMatchesSearch(item) && ItemMatchesFilter(item);
+}
+
+void WarehouseWindow::DrawFilters()
+{
+	EnsureFilterTextures();
+	ImGui::BeginGroup();
+	ImGui::TextUnformatted("Filtros");
+	for (int i = 0; i < WhFilter_Count; i++)
+	{
+		if (i > 0)
+			ImGui::SameLine(0.0f, 4.0f);
+
+		ImGui::PushID(i);
+		const bool selected = (m_filter == i);
+		if (selected)
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.36f, 0.28f, 0.14f, 1.0f));
+
+		ImGui::InvisibleButton("##flt", ImVec2(kFilterIcon, kFilterIcon));
+		const bool hovered = ImGui::IsItemHovered();
+		const bool clicked = ImGui::IsItemClicked();
+		const ImVec2 p0 = ImGui::GetItemRectMin();
+		const ImVec2 p1 = ImGui::GetItemRectMax();
+		ImDrawList* draw = ImGui::GetWindowDrawList();
+		DrawPlayerControlBezel(draw, p0, p1, hovered || selected);
+		if (m_filterTex[i])
+		{
+			draw->AddImage((ImTextureID)m_filterTex[i],
+				ImVec2(p0.x + 3.0f, p0.y + 3.0f), ImVec2(p1.x - 3.0f, p1.y - 3.0f));
+		}
+		else
+		{
+			const ImVec2 ts = ImGui::CalcTextSize(kFilterLetters[i]);
+			draw->AddText(ImVec2((p0.x + p1.x - ts.x) * 0.5f, (p0.y + p1.y - ts.y) * 0.5f), kGoldBright, kFilterLetters[i]);
+		}
+		if (hovered)
+			ImGui::SetTooltip("%s", kFilterTips[i]);
+		if (clicked)
+		{
+			m_filter = (m_filter == i && i != WhFilter_All) ? WhFilter_All : i;
+			m_eatClick = true;
+		}
+		if (selected)
+			ImGui::PopStyleColor();
+		ImGui::PopID();
+	}
+	ImGui::EndGroup();
+}
+
 void WarehouseWindow::DrawPages()
 {
-	for (int i = 0; i < WAREHOUSE_PAGE_COUNT; i++)
+	for (int i = 0; i < WAREHOUSE_UNLOCKED_PAGES; i++)
 	{
 		if (i > 0)
 			ImGui::SameLine();
@@ -916,7 +1035,7 @@ void WarehouseWindow::HandleDragAndClick()
 		if (TradeCrashItemIndex[0] > 0)
 		{
 			sITEM* crash = &sWareHouse.WareHouseItem[TradeCrashItemIndex[0] - 1];
-			if (crash->Flag && !cWareHouse.ItemMatchesSearch(crash))
+			if (crash->Flag && !ItemVisible(crash))
 				TradeColorIndex = NOT_SETTING_COLOR;
 		}
 		MouseItem.SetX = tmp.SetX;
@@ -963,8 +1082,8 @@ void WarehouseWindow::HandleDragAndClick()
 
 void WarehouseWindow::DrawGrid()
 {
-	m_gridW = kCell * (float)kGridN;
-	m_gridH = kCell * (float)kGridN;
+	m_gridW = m_cell * (float)WAREHOUSE_GRID_COLS;
+	m_gridH = m_cell * (float)WAREHOUSE_GRID_ROWS;
 	const ImVec2 origin = ImGui::GetCursorScreenPos();
 	m_gridX = origin.x;
 	m_gridY = origin.y;
@@ -974,15 +1093,18 @@ void WarehouseWindow::DrawGrid()
 	draw->AddRectFilled(origin, g1, IM_COL32(12, 14, 18, 230), 3.0f);
 	draw->AddRect(origin, g1, kGold, 3.0f, 0, 1.2f);
 
-	for (int i = 1; i < kGridN; i++)
+	for (int i = 1; i < WAREHOUSE_GRID_COLS; i++)
 	{
-		const float x = m_gridX + kCell * (float)i;
-		const float y = m_gridY + kCell * (float)i;
+		const float x = m_gridX + m_cell * (float)i;
 		draw->AddLine(ImVec2(x, m_gridY), ImVec2(x, g1.y), IM_COL32(200, 170, 90, 40), 1.0f);
+	}
+	for (int i = 1; i < WAREHOUSE_GRID_ROWS; i++)
+	{
+		const float y = m_gridY + m_cell * (float)i;
 		draw->AddLine(ImVec2(m_gridX, y), ImVec2(g1.x, y), IM_COL32(200, 170, 90, 40), 1.0f);
 	}
 
-	const float scale = 1.0f;
+	const float scale = (m_cell > 0.0f) ? (m_cell / (float)kLogicCell) : 1.0f;
 
 	if (MouseItem.Flag && TradeColorRect.right > 0 && TradeColorRect.bottom > 0)
 	{
@@ -1027,7 +1149,7 @@ void WarehouseWindow::DrawGrid()
 	for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++)
 	{
 		sITEM* item = &sWareHouse.WareHouseItem[i];
-		if (!item->Flag || !cWareHouse.ItemMatchesSearch(item))
+		if (!item->Flag || !ItemVisible(item))
 			continue;
 
 		float sx = 0.0f;
@@ -1064,14 +1186,19 @@ void WarehouseWindow::OpenNpc(bool* p_open)
 	}
 	m_wasOpen = cWareHouse.OpenFlag != 0;
 
-	const float invReserve = 210.0f;
+	const float invReserve = 230.0f;
 	float posY = ((float)smScreenHeight - invReserve - kWindowH) * 0.5f;
 	if (posY < 16.0f)
 		posY = 16.0f;
+	if (posY + kWindowH > (float)smScreenHeight - invReserve)
+		posY = (float)smScreenHeight - invReserve - kWindowH;
+	if (posY < 8.0f)
+		posY = 8.0f;
 
 	ImGui::SetNextWindowSize(ImVec2(kWindowW, kWindowH), ImGuiCond_Always);
 	ImGui::SetNextWindowPos(ImVec2(24.0f, posY));
 
+	EnsureFrameTexture();
 	PushWindowStyle();
 
 	const ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
@@ -1087,19 +1214,30 @@ void WarehouseWindow::OpenNpc(bool* p_open)
 		m_winH = size.y;
 
 		DrawWindowChrome(kMainHeaderH);
-		DrawTitleHeader();
+		DrawTitleHeader(p_open);
 
-		SetPlayerWindowBodyCursor(kMainHeaderH);
+		const bool clipFrame = HasFrame();
+		PushPlayerFrameClip(clipFrame);
+		SetPlayerWindowBodyCursor(kMainHeaderH, clipFrame);
 
 		DrawSearch();
+		ImGui::SameLine(0.0f, 12.0f);
+		DrawFilters();
+		ImGui::Spacing();
 		DrawPages();
-		const ImVec2 bodyCursor = ImGui::GetCursorPos();
-		if (p_open && !m_eatClick && DrawHeaderClose())
-			*p_open = false;
-		ImGui::SetCursorPos(bodyCursor);
 		ImGui::Spacing();
 
-		ImGui::BeginChild("##WarehouseGridCol", ImVec2(kCell * (float)kGridN + kGridPad, kCell * (float)kGridN + kGridPad), false,
+		const float remainH = ImGui::GetContentRegionAvail().y;
+		const float remainW = ImGui::GetContentRegionAvail().x;
+		const float cellW = (remainW - kSideW - kGridPad * 2.0f) / (float)WAREHOUSE_GRID_COLS;
+		const float cellH = (remainH - kGridPad) / (float)WAREHOUSE_GRID_ROWS;
+		m_cell = (cellW < cellH) ? cellW : cellH;
+		if (m_cell < 16.0f)
+			m_cell = 16.0f;
+		if (m_cell > 28.0f)
+			m_cell = 28.0f;
+
+		ImGui::BeginChild("##WarehouseGridCol", ImVec2(m_cell * (float)WAREHOUSE_GRID_COLS + kGridPad, m_cell * (float)WAREHOUSE_GRID_ROWS + kGridPad), false,
 			ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		DrawGrid();
 		ImGui::EndChild();
@@ -1109,6 +1247,8 @@ void WarehouseWindow::OpenNpc(bool* p_open)
 
 		HandleDragAndClick();
 		DrawGoldModal();
+
+		PopPlayerFrameClip(clipFrame);
 
 		ImGui::End();
 	}

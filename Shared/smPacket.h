@@ -894,7 +894,7 @@ struct TRANS_IPLIST {
 /////////////// ¾ÆÀÌÅÛ ÅÃ¹è ¼­ºñ½º /////////////////
 #define	POST_ITEM_MAX				500
 #define POSTBOX_LIST_CHUNK			16
-#define POSTBOX_TTL_SECONDS			(168 * 3600)
+#define POSTBOX_TTL_SECONDS			(15 * 24 * 3600)
 #define POSTBOX_KIND_SYSTEM			0
 #define POSTBOX_KIND_PLAYER			1
 #define POSTBOX_FILE_MAGIC			0x32304250
@@ -1196,7 +1196,28 @@ public:
 	sTHROW_ITEM_INFO	ThrowItemInfo[THROW_ITEM_INFO_MAX];			//¹ö·ÁÁø ¾ÆÀÌÅÛ Á¤º¸
 
 	sTHROW_ITEM_INFO	InvenItemInfo[INVEN_ITEM_INFO_MAX+16];			//ÀÎº¥Åä¸® ¾ÆÀÌÅÛ Á¤º¸
-	sTHROW_ITEM_INFO	WareHouseItemInfo[300];
+#ifndef WAREHOUSE_PAGE_COUNT
+#define WAREHOUSE_MAX_PAGES			5
+#define WAREHOUSE_UNLOCKED_PAGES	3
+#define WAREHOUSE_PAGE_COUNT		WAREHOUSE_MAX_PAGES
+#define WAREHOUSE_PAGE_SLOTS		300
+#define WAREHOUSE_TOTAL_SLOTS		(WAREHOUSE_MAX_PAGES * WAREHOUSE_PAGE_SLOTS)
+#define WAREHOUSE_PACKET_VERSION	3
+#define WAREHOUSE_FILE_MAGIC		0x32304857
+#define WAREHOUSE_GRID_COLS			20
+#define WAREHOUSE_GRID_ROWS			15
+#define WAREHOUSE_WIRE_DATA_MAX		7800
+#define WAREHOUSE_DEFAULT_WEIGHT_MAX	8000
+#define WAREHOUSE_LEGACY_PAGE_SLOTS	100
+#endif
+	sTHROW_ITEM_INFO	WareHouseItemInfo[WAREHOUSE_TOTAL_SLOTS];
+	int				WareHouseRevision;
+	int				WareHouseWeightMax;
+	int				WareHouseSaveMoney;
+	int				WareHouseSaveMask;
+	int				WareHouseSaveCount;
+	int				WareHouseSavePageChunks[WAREHOUSE_MAX_PAGES];
+	void*			lpWareHouseSaveItems;
 	sTHROW_ITEM_INFO	CaravanItemInfo[120];
 			//Ã¢°í ¾ÆÀÌÅÛ Á¤º¸
 	int				OpenWarehouseInfoFlag;			
@@ -2442,11 +2463,34 @@ struct	rsCLAN_INFOMATION {
 };
 
 
-#define WAREHOUSE_PAGE_COUNT		3
-#define WAREHOUSE_PAGE_SLOTS		100
-#define WAREHOUSE_TOTAL_SLOTS		(WAREHOUSE_PAGE_COUNT * WAREHOUSE_PAGE_SLOTS)
-#define WAREHOUSE_PACKET_VERSION	2
+#ifndef WAREHOUSE_PAGE_COUNT
+#define WAREHOUSE_MAX_PAGES			5
+#define WAREHOUSE_UNLOCKED_PAGES	3
+#define WAREHOUSE_PAGE_COUNT		WAREHOUSE_MAX_PAGES
+#define WAREHOUSE_PAGE_SLOTS		300
+#define WAREHOUSE_TOTAL_SLOTS		(WAREHOUSE_MAX_PAGES * WAREHOUSE_PAGE_SLOTS)
+#define WAREHOUSE_PACKET_VERSION	3
 #define WAREHOUSE_FILE_MAGIC		0x32304857
+#define WAREHOUSE_GRID_COLS			20
+#define WAREHOUSE_GRID_ROWS			15
+#define WAREHOUSE_WIRE_DATA_MAX		7800
+#define WAREHOUSE_DEFAULT_WEIGHT_MAX	8000
+#define WAREHOUSE_LEGACY_PAGE_SLOTS	100
+#endif
+
+struct sWAREHOUSE_WIRE_ITEM {
+	WORD	Slot;
+	int		x, y, w, h;
+	DWORD	Class;
+	sITEMINFO	sItemInfo;
+};
+
+struct sWAREHOUSE_WIRE_HDR {
+	int		itemCount;
+	int		money;
+	int		weightMax;
+	int		revision;
+};
 
 struct	TRANS_WAREHOUSE {
 	int size,code;
@@ -2458,7 +2502,18 @@ struct	TRANS_WAREHOUSE {
 	DWORD	dwTemp[5];
 
 	int		DataSize;
-	BYTE	Data[ sizeof( sITEM )*100+256 ];
+	BYTE	Data[ WAREHOUSE_WIRE_DATA_MAX ];
+};
+
+struct TRANS_WAREHOUSE_LEGACY {
+	int size, code;
+	DWORD	dwChkSum;
+	WORD	wVersion[2];
+	int		WareHouseMoney;
+	int		UserMoney;
+	DWORD	dwTemp[5];
+	int		DataSize;
+	BYTE	Data[sizeof(sITEM) * WAREHOUSE_LEGACY_PAGE_SLOTS + 256];
 };
 
 struct	TRANS_CARAVAN {

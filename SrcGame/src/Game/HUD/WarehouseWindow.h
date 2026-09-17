@@ -1,5 +1,7 @@
 #pragma once
 
+struct sITEM;
+
 class WarehouseWindow
 {
 public:
@@ -34,6 +36,10 @@ private:
 	int m_titleW = 0;
 	int m_titleH = 0;
 	bool m_titleTried = false;
+	void* m_frameTex = nullptr;
+	int m_frameW = 0;
+	int m_frameH = 0;
+	bool m_frameTried = false;
 	bool m_searchFocused = false;
 	bool m_wasOpen = false;
 	bool m_placeArmed = false;
@@ -45,17 +51,28 @@ private:
 	int m_goldAmount = 0;
 	char m_goldInput[48] = {};
 	char m_searchUtf8[64] = {};
+	char m_lastSearchUtf8[64] = {};
+	int m_filter = 0;
+	float m_cell = 22.0f;
+	void* m_filterTex[7] = {};
+	bool m_filterTried = false;
 
 	void PushWindowStyle();
 	void PopWindowStyle();
 	void DrawWindowChrome(float headerH);
-	void DrawTitleHeader();
+	void DrawTitleHeader(bool* p_open);
 	void EnsureTitleTexture();
+	void EnsureFrameTexture();
+	bool HasFrame() const;
 	void DrawSearch();
+	void DrawFilters();
 	void DrawPages();
 	void DrawGrid();
 	void DrawSideInfo();
 	void DrawGoldModal();
+	void EnsureFilterTextures();
+	bool ItemVisible(sITEM* item) const;
+	bool ItemMatchesFilter(sITEM* item) const;
 	void ApplyGoldMove(bool deposit);
 	void HandleDragAndClick();
 	void LogicalToScreen(int logicX, int logicY, float* outX, float* outY) const;

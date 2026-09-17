@@ -96,21 +96,21 @@ int	ChatBuffCnt2[6] = { 0,0,0,0,0,0 };
 int ChatDispCnt = 0;
 int	ChatBuffCompCnt = 0;
 
-char* szDefaultServIP = "127.0.0.1"; // Valor padrão
+char* szDefaultServIP = "127.0.0.1"; // Valor padro
 
-// Função para inicializar o szDefaultServIP com o valor do Connect.ini
+// Funo para inicializar o szDefaultServIP com o valor do Connect.ini
 void InicializarDefaultServIP()
 {
 	std::string strIP = LerIPConnect();
 	if (!strIP.empty()) {
-		// Aloca memória para o novo IP e copia o valor
+		// Aloca memria para o novo IP e copia o valor
 		static char szNewIP[32];
 		strcpy(szNewIP, strIP.c_str());
 		szDefaultServIP = szNewIP;
 		std::cout << "szDefaultServIP inicializado com: " << szDefaultServIP << std::endl;
 	}
 	else {
-		std::cout << "Não foi possível ler o IP do Connect.ini. Usando valor padrão: " << szDefaultServIP << std::endl;
+		std::cout << "No foi possvel ler o IP do Connect.ini. Usando valor padro: " << szDefaultServIP << std::endl;
 	}
 }
 
@@ -205,7 +205,7 @@ int		TradeItemCancelCount = 0;
 
 TRANS_TRADEITEMS	TransLastRecvTrade;
 /*
-//°³ÀÎ»óÁ¡ Á¤º¸
+//? 
 struct	TRANS_MYSHOP_ITEM {
 	int		size,code;
 	DWORD	dwSender;
@@ -504,7 +504,7 @@ smWINSOCK *ConnectServer_GameMain(char *szIP1, DWORD dwPort1, char *szIP2, DWORD
 
 	if (!smWsockServer)
 	{
-		//°ÔÀÓ ¼­¹ö ¿¬°á
+		//  
 		if (smWsockDataServer && lstrcmp(smWsockDataServer->szIPAddr, szIP1) == 0 && dwDataServPort == dwPort1)
 		{
 			smWsockServer = smWsockDataServer;
@@ -554,7 +554,7 @@ smWINSOCK *ConnectServer_GameMain(char *szIP1, DWORD dwPort1, char *szIP2, DWORD
 	{
 		if (ServerInfoFlag)
 		{
-			//¼­¹ö Á¤º¸ È®ÀÎ
+			//  ?
 			CheckServerInfo(&TransServerConnectInfo);
 		}
 
@@ -564,7 +564,7 @@ smWINSOCK *ConnectServer_GameMain(char *szIP1, DWORD dwPort1, char *szIP2, DWORD
 }
 
 
-//°ÔÀÓ ¼­¹ö ¿¬°á ²÷À½
+//   
 int DisconnectServer_GameMain()
 {
 	if (smWsockExtendServer && smWsockExtendServer != smWsockServer)
@@ -600,7 +600,7 @@ int DisconnectServer_GameMain()
 	return TRUE;
 }
 
-//¼­¹ö ÄÚµå·Î ¼ÒÄÏÀ» Ã£À½
+// ?  ?
 smWINSOCK *GetServerSock(int ServerCode)
 {
 	switch (ServerCode)
@@ -628,7 +628,7 @@ smWINSOCK *GetServerSock(int ServerCode)
 	return NULL;
 }
 
-//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+//  ?
 smWINSOCK *GetAreaServerSock()
 {
 	int ServerCode;
@@ -650,7 +650,7 @@ smWINSOCK *GetAreaServerSock()
 }
 
 
-//¶³¾îÁø ¾ÆÀÌÅÛ Ã£±â
+//  ?
 scITEM *FindScItem(int x, int z)
 {
 	int cnt;
@@ -666,7 +666,7 @@ scITEM *FindScItem(int x, int z)
 	return NULL;
 }
 
-//ºó ¾ÆÀÌÅÛ °ø°£Ã£±â
+//  ?
 scITEM *FindEmptyScItem()
 {
 	int cnt;
@@ -678,7 +678,7 @@ scITEM *FindEmptyScItem()
 	return NULL;
 }
 
-//±³È¯ °Å·¡ °Å¸® È®ÀÎ
+//? ?  ?
 int GetTradeDistance(smCHAR *lpChar)
 {
 	int	x, y, z;
@@ -793,7 +793,7 @@ int	SendTotalExpMoney()
 	return TRUE;
 }
 
-//¼­¹ö¿¡¼­ µé¾î¿Â µ·ÀÇ ¾ç È®ÀÎ
+//    ?
 int CheckServerMoney(smWINSOCK *lpsmSock, TRANS_ITEMINFO	*lpTransItemInfo)
 {
 	sSERVER_MONEY	*lpServerMoney;
@@ -820,9 +820,9 @@ int CheckServerMoney(smWINSOCK *lpsmSock, TRANS_ITEMINFO	*lpTransItemInfo)
 		lpServerMoney->TotalZ = lpTransItemInfo->z;
 
 		/*
-							TransItemInfo.x = dwPlayServTime;											//ÇØµ¶ Å°
-							TransItemInfo.y = TransItemInfo.Item.ItemHeader.dwChkSum;					//ÇØµ¶ Å°2
-							TransItemInfo.z = rsPlayInfo[cnt].spMoney_Out^(TransItemInfo.x+TransItemInfo.y);	//ÅäÅ» ±â·Ï Àü¼Û
+							TransItemInfo.x = dwPlayServTime;											//? ?
+							TransItemInfo.y = TransItemInfo.Item.ItemHeader.dwChkSum;					//? ?2
+							TransItemInfo.z = rsPlayInfo[cnt].spMoney_Out^(TransItemInfo.x+TransItemInfo.y);	//?  
 		*/
 
 		int cnt;
@@ -836,7 +836,7 @@ int CheckServerMoney(smWINSOCK *lpsmSock, TRANS_ITEMINFO	*lpTransItemInfo)
 	return TRUE;
 }
 
-//¼­¹ö¿¡¼­ µé¾î¿Â °æÇèÄ¡ÀÇ ¾ç È®ÀÎ
+//  ?  ?
 int CheckServerExp(smWINSOCK *lpsmSock, smTRANS_COMMAND	*lpTransCommand)
 {
 	sSERVER_EXP	*lpServerExp;
@@ -866,8 +866,8 @@ int CheckServerExp(smWINSOCK *lpsmSock, smTRANS_COMMAND	*lpTransCommand)
 		lpServerExp->Total1 = lpTransCommand->SParam;
 		lpServerExp->Total2 = lpTransCommand->EParam;
 
-		// Àåº° - °æÇèÄ¡ ¿¡·¯ À§ÇØ (800000 - > 1600000 = °æÇèÄ¡ 2¹è ÀÌº¥Æ®)
-		int cnt = (lpServerExp->Total1^lpServerExp->Total2) + 1600000;		//¿ÀÂ÷À² Àû¿ë
+		// ? - ?   (800000 - > 1600000 = ? 2 ??)
+		int cnt = (lpServerExp->Total1^lpServerExp->Total2) + 1600000;		// 
 		if (cnt < lpServerExp->InputExp)
 		{
 			SendSetHackUser(83);
@@ -878,12 +878,12 @@ int CheckServerExp(smWINSOCK *lpsmSock, smTRANS_COMMAND	*lpTransCommand)
 	return TRUE;
 }
 
-//´Ù¸¥ ÇÃ·¹ÀÌ¾î¿ÍÀÇ ¿¬°á ¾²·¹µå¸¦ »ı¼º
+//? ?  ? 
 int CreateConnectThread(DWORD dwIP);
-//´Ù¸¥ ÇÃ·¹ÀÌ¾î¿ÍÀÇ ¿¬°áÁ¾·á ¾²·¹µå »ı¼º
+//? ?   
 int CreateDisconnectThread(smWINSOCK *lpsmSock);
 
-//´Ù¸¥ ´Ù¸¥ ÇÃ·¹ÀÌ¾îÀÇ ºó ¿µ¿ªÀ» Ã£À½
+//? ? ?   ?
 int FindNewOtherPlayer()
 {
 	int cnt;
@@ -896,7 +896,7 @@ int FindNewOtherPlayer()
 	return -1;
 }
 
-//ÀÚµ¿ ÇÃ·¹ÀÌ¾î¸¦ Ã£´Â´Ù
+//? ?? ?
 smCHAR *FindAutoPlayer(DWORD dwObjectSerial)
 {
 	int cnt;
@@ -910,7 +910,7 @@ smCHAR *FindAutoPlayer(DWORD dwObjectSerial)
 	return NULL;
 }
 
-// À¯Àú¹øÈ£·Î Ã£´Â´Ù
+// ? ?
 smCHAR *FindChrPlayer(DWORD dwObjectSerial)
 {
 	int cnt;
@@ -927,7 +927,7 @@ smCHAR *FindChrPlayer(DWORD dwObjectSerial)
 	return NULL;
 }
 
-//Á×ÀºÆÄÆ¼À¯Àú¸¦ Ã£´Â´Ù
+//? ?
 smCHAR *FindDeadPartyUser()
 {
 	int cnt;
@@ -959,7 +959,7 @@ smCHAR *FindDeadPartyUser()
 	return lpChar;
 }
 
-//ÃÖ±ÙÁ¢ ¸ó½ºÅÍ¸¦ Ã£´Â´Ù
+//? ? ?
 smCHAR *FindNearMonster(smCHAR *lpCurChar)
 {
 	int cnt;
@@ -1008,7 +1008,7 @@ smCHAR *FindNearMonster(smCHAR *lpCurChar)
 	return lpChar;
 }
 
-//ºó ÇÃ·¹ÀÌ¾î¸¦ Ã£´Â´Ù
+// ?? ?
 smCHAR *FindEmptyChar()
 {
 	int cnt;
@@ -1021,7 +1021,7 @@ smCHAR *FindEmptyChar()
 	return NULL;
 }
 
-//Ã¤ÆÃÃ¢¿¡ ¹®ÀÚ »ğÀÔ
+//??  
 int AddChatBuff(char *szMsg, DWORD dwIP)
 {
 	int ChatCnt;
@@ -1038,7 +1038,7 @@ int AddChatBuff(char *szMsg, DWORD dwIP)
 	return ChatBuffCnt;
 }
 
-//Ã¤ÆÃÃ¢¿¡ ¹®ÀÚ »ğÀÔ
+//??  
 int AddChatBuff(char *szMsg)
 {
 	return AddChatBuff(szMsg, 0);
@@ -1047,7 +1047,7 @@ int AddChatBuff(char *szMsg)
 int	ChatBuffFilter(char* szMsg, DWORD dwIP) { return TRUE; }
 
 
-//½Ã½ºÅÛ ½Ã°£À» °ÔÀÓ½Ã°£À¸·Î º¯È¯
+// ?? ??? ?
 DWORD	ConvSysTimeToGameTime(DWORD dwTime)
 {
 	return dwTime / GAME_WORLDTIME_MIN;
@@ -1076,17 +1076,17 @@ public:
 	smWINSOCK	*lpsmSock;
 
 
-	//Å¬·¡½º ÃÊ±âÈ­
+	//? ??
 	int	Init(smWINSOCK *lpsmsock);
-	//¼­¹ö·Î ¸Ş¼¼Áö Àü¼Û
+	// ? 
 	int SendChat(char *szMessage);
-	//¼­¹ö·Î ÇÃ·¹ÀÌ¾îÀÇ µ¥ÀÌÅ¸¸¦ À§Ä¡¸¦ Àü¼Û
+	// ?  ? 
 	int SendPlayData(smCHAR *lpChar);
 
-	//¼­¹ö·Î ºÎÅÍ ¹ŞÀº ¸Ş¼¼Áö Ã³¸®
+	//   ? 
 	int RecvMessage(smTHREADSOCK *SockInfo);
 
-	//¸Ş¼¼Áö Å¥ÀÇ ¸Ş¼¼Áö¸¦ Ã³¸®
+	//? ? ? 
 	int RecvMessageQue();
 
 };
@@ -1106,7 +1106,7 @@ public:
 //lpCurPlayer->MotionInfo->State==CHRMOTION_STATE_RUN
 
 
-//¸Ş¼¼Áö Å¥ÀÇ ¸Ş¼¼Áö¸¦ Ã³¸®
+//? ? ? 
 int rsTRANS_SERVER::RecvMessageQue()
 {
 	int cnt;
@@ -1114,7 +1114,7 @@ int rsTRANS_SERVER::RecvMessageQue()
 	if (RecvDataQuePop >= RecvDataQuePush) return TRUE;
 	if (MessageLoading) return FALSE;
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ¼±¾ğ
+	//???  
 	EnterCriticalSection(&cSection);
 
 	while (1) {
@@ -1132,7 +1132,7 @@ int rsTRANS_SERVER::RecvMessageQue()
 		RecvDataQuePop++;
 	}
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ÇØÁ¦
+	//???  
 	LeaveCriticalSection(&cSection);
 
 	return TRUE;
@@ -1149,7 +1149,7 @@ int rsTRANS_SERVER::Init(smWINSOCK *lpsmsock)
 	lpsmSock = lpsmsock;
 	lpRecorder = 0;
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ÃÊ±âÈ­
+	//???  ??
 	InitializeCriticalSection(&cServSection);
 
 	RecvDataQuePush = 0;
@@ -1176,7 +1176,7 @@ int rsTRANS_SERVER::SendPlayData(smCHAR *lpChar)
 		dist = x*x + y*y + z*z;
 
 		if (sinGetLife() > 0 && dist < (16 * 16 * 16)) {
-			//À§Ä¡°¡ º¯ÇÑ°Ô ¾ø´Â °æ¿ì ( 1¹ø¾¿ °É·¯¼­ º¸³¿ )
+			//? ?   ( 1 ?  )
 			return TRUE;
 		}
 	}
@@ -1226,7 +1226,7 @@ int rsTRANS_SERVER::SendPlayData(smCHAR *lpChar)
 }
 
 
-//¼­¹ö Åë½Å Å¬·¡½º ¼±¾ğ
+//  ? 
 rsTRANS_SERVER	rsMainServer;
 
 
@@ -1236,7 +1236,7 @@ rsTRANS_SERVER	rsMainServer;
 
 
 /*
-//ÇÃ·¹ÀÌ¾î Á¤º¸¸¦ »ó´ë¹æ¿¡ Àü¼Û
+//?  ? 
 int SendPlayerInfo( smWINSOCK *lpsmSock )
 {
 
@@ -1262,7 +1262,7 @@ char szSaveChatCommands[SAVE_CHAT_COMMAND_MAX][256];
 int ChatCommandSaveCnt = 0;
 int ChatSaveRecallCnt = 0;
 
-//Ã¤ÆÃ ÄÚ¸Çµå ÀúÀå
+//? ?? 
 int SaveChatCommand(char *szMessage)
 {
 	int len, cnt;
@@ -1280,7 +1280,7 @@ int SaveChatCommand(char *szMessage)
 	}
 	lstrcat(szBuff, " ");
 
-	//µ¿ÀÏ¹®ÀÚ È®ÀÎ
+	//? ?
 	for (cnt = 0; cnt < ChatCommandSaveCnt; cnt++) {
 		if (cnt >= SAVE_CHAT_COMMAND_MAX) break;
 		if (lstrcmp(szSaveChatCommands[cnt], szBuff) == 0)
@@ -1296,7 +1296,7 @@ int SaveChatCommand(char *szMessage)
 	return TRUE;
 }
 
-//Ã¤ÆÃ ÀúÀå ÄÚ¸Çµå º¹±¸ 
+//?  ??  
 int RecallSavedChatCommand(HWND hChatWnd, int Arrow)
 {
 	int mcnt;
@@ -1328,7 +1328,7 @@ int RecallSavedChatCommand(HWND hChatWnd, int Arrow)
 	return TRUE;
 }
 
-// ¹®ÀÚ¿­ ºñ±³ ÂªÀº ¹®ÀåÀÇ ±æÀÌ¸¸Å­ ºñ±³ÇÏ¿© ºñ±³ Á¾·á Æ÷ÀÎÅÍ ¹İÈ¯
+// ?    ?? ?    ?
 int rsCompString(char *src1, char *src2)
 {
 	int cnt;
@@ -1358,17 +1358,17 @@ DWORD	dwLastChatTime;
 DWORD	dwContiueChatCount = 0;
 
 
-char *rsGetWord(char *q, char *p);		//¼­¹ö¿¡ ¼±¾ğµÈ °ª
+char *rsGetWord(char *q, char *p);		//  
 
 
-//Ã¤ÆÃ ¹®ÀÚ¸¦ ¼­¹ö·Î Àü¼Û
+//? ?  
 int SendChatMessageToServer(char *szChatMessage) { return TRUE; }
 
 
-//Ã¤ÆÃ ½ºÅ©·Ñ Æ÷ÀÎÆ®
+//? ? ?
 int ChatScrollPoint = 0;
 
-//Ã¤ÆÃ Á¤º¸ È­¸é¿¡ Ç¥½Ã
+//?  ?? ?
 int DisplayChatMessage(HDC hdc, int x, int y, int MaxLine) { return TRUE; }
 
 
@@ -1379,7 +1379,7 @@ int DisplayChatMessage(HDC hdc, int x, int y, int MaxLine) { return TRUE; }
 
 //250 , 60 ,342 , 70
 
-//ÄÆÆ®ÇÒ ¶óÀÎ Ä«¿îÅÍ
+//?  ?
 int GetNextLineCount(char *szString, int LineMax)
 {
 
@@ -1389,10 +1389,10 @@ int GetNextLineCount(char *szString, int LineMax)
 int SetIpColor(HDC hdc, DWORD dwIP) { return TRUE; }
 
 static int	DisplayChatFilter = -1;
-int	DispChatMsgHeight = 6;			//ÃÖ±Ù Ç¥½ÃµÈ Ã¤ÆÃÃ¢ ÁÙ ³ôÀÌ
+int	DispChatMsgHeight = 6;			//? ? ?  
 int	DispChatMode = 0;
 
-//Ã¤ÆÃÃ¢ ÇÊÅÍ¸µ
+//? ?
 int	SetChatMsgFilter(int mode)
 {
 
@@ -1400,23 +1400,23 @@ int	SetChatMsgFilter(int mode)
 	ChatScrollPoint = 0;
 
 	switch (mode) {
-	case 0:			//ÀüÃ¼
+	case 0:			//
 		DisplayChatFilter = -1;
 		break;
 
-	case 1:			//Å¬·£
+	case 1:			//?
 		DisplayChatFilter = 5;
 		break;
 
-	case 2:			//µ¿·á
+	case 2:			//
 		DisplayChatFilter = 4;
 		break;
 
-	case 3:			//°Å·¡
+	case 3:			//?
 		DisplayChatFilter = 6;
 		break;
 
-	case 4:			//±Ó¸»
+	case 4:			//?
 		DisplayChatFilter = 1;
 		break;
 	}
@@ -1479,10 +1479,10 @@ int ChatBuffSort()
 
 	return TRUE;
 }
-//Ã¤ÆÃ Á¤º¸ È­¸é¿¡ Ç¥½Ã ( º¸Á¶ )
+//?  ?? ? (  )
 int DisplayChatMessage3(HDC hdc, int x, int y, int StrMax, int LineMax, int Mode) { return TRUE; }
 
-//Ã¤ÆÃ Á¤º¸ È­¸é¿¡ Ç¥½Ã
+//?  ?? ?
 int DisplayChatMessage2(HDC hdc, int x, int y, int StrMax, int LineMax) { return TRUE; }
 
 
@@ -1496,7 +1496,7 @@ int ConnectPlayer(smWINSOCK *lpsmSock)
 		return Serv_ConnectPlayer(lpsmSock);
 
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ¼±¾ğ
+	//???  
 	EnterCriticalSection(&cSection);
 
 	OthPlayerCnt = FindNewOtherPlayer();
@@ -1518,13 +1518,13 @@ int ConnectPlayer(smWINSOCK *lpsmSock)
 
 	}
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ÇØÁ¦
+	//???  
 	LeaveCriticalSection(&cSection);
 
 	return TRUE;
 }
 
-//ÇÃ·¹ÀÌ¾î ¿¬°á ²ö¾îÁü
+//?  
 int DisconnectPlayer(smWINSOCK *lpsmSock)
 {
 	//	int cnt;
@@ -1550,10 +1550,10 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 		Utils_Log(LOG_DEBUG, "SetDisconnectFlag: 14");
 		DisconnectFlag = dwTime;
 		//DisconnectServerCode = 1;
-		//°Å·¡ÁßÀÌ¸é °Å·¡ Ãë¼Ò ½ÃÅ´
+		//?? ?  ?
 		if (cTrade.OpenFlag) {
-			SendRequestTrade(cTrade.TradeCharCode, 3);			//°Å·¡ Ãë¼Ò ¿ä±¸
-			cTrade.CancelTradeItem();								//°Å·¡Ã¢ ´İ±â
+			SendRequestTrade(cTrade.TradeCharCode, 3);			//?  ?
+			cTrade.CancelTradeItem();								//? ?
 		}
 		return TRUE;
 	}
@@ -1566,10 +1566,10 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 		DisconnectFlag = dwTime;
 		//DisconnectServerCode = 2;
 
-		//°Å·¡ÁßÀÌ¸é °Å·¡ Ãë¼Ò ½ÃÅ´
+		//?? ?  ?
 		if (cTrade.OpenFlag) {
-			SendRequestTrade(cTrade.TradeCharCode, 3);			//°Å·¡ Ãë¼Ò ¿ä±¸
-			cTrade.CancelTradeItem();								//°Å·¡Ã¢ ´İ±â
+			SendRequestTrade(cTrade.TradeCharCode, 3);			//?  ?
+			cTrade.CancelTradeItem();								//? ?
 		}
 		return TRUE;
 	}
@@ -1580,10 +1580,10 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 		Utils_Log(LOG_DEBUG, "SetDisconnectFlag: 16");
 		DisconnectFlag = dwTime;
 		//DisconnectServerCode = 3;
-		//°Å·¡ÁßÀÌ¸é °Å·¡ Ãë¼Ò ½ÃÅ´
+		//?? ?  ?
 		if (cTrade.OpenFlag) {
-			SendRequestTrade(cTrade.TradeCharCode, 3);			//°Å·¡ Ãë¼Ò ¿ä±¸
-			cTrade.CancelTradeItem();					//°Å·¡Ã¢ ´İ±â
+			SendRequestTrade(cTrade.TradeCharCode, 3);			//?  ?
+			cTrade.CancelTradeItem();					//? ?
 		}
 		return TRUE;
 	}
@@ -1594,10 +1594,10 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 		Utils_Log(LOG_DEBUG, "SetDisconnectFlag: 18");
 		DisconnectFlag = dwTime;
 		//DisconnectServerCode = 3;
-		//°Å·¡ÁßÀÌ¸é °Å·¡ Ãë¼Ò ½ÃÅ´
+		//?? ?  ?
 		if (cTrade.OpenFlag) {
-			SendRequestTrade(cTrade.TradeCharCode, 3);		//°Å·¡ Ãë¼Ò ¿ä±¸
-			cTrade.CancelTradeItem();							//°Å·¡Ã¢ ´İ±â
+			SendRequestTrade(cTrade.TradeCharCode, 3);		//?  ?
+			cTrade.CancelTradeItem();							//? ?
 		}
 		return TRUE;
 
@@ -1605,7 +1605,7 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 
 	char szBuff[256];
 
-	//Áö¿¬ ¼­¹ö ¿¬°á ²ö¾îÁü
+	//   
 	if (AreaServerMode) {
 		if (lpWSockServer_Area[0] && lpWSockServer_Area[0]->sock == lpsmSock->sock) {
 			if (smConfig.DebugMode) {
@@ -1634,7 +1634,7 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 
 
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ¼±¾ğ
+	//???  
 	EnterCriticalSection(&cSection);
 
 	lpPlayer = (smCHAR *)lpsmSock->ExtData1;
@@ -1642,7 +1642,7 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 		lpPlayer->Close();
 	}
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ÇØÁ¦
+	//???  
 	LeaveCriticalSection(&cSection);
 
 	return TRUE;
@@ -1650,16 +1650,16 @@ int DisconnectPlayer(smWINSOCK *lpsmSock)
 
 
 
-//¸¶Áö¸·À¸·Î ¼­¹ö¿¡ µ¥ÀÌÅ¸¸¦ º¸³½ Ä«¿îÅÍ
+//    ?
 int Ts_LastSendCounter;
-DWORD	dwLastSendPosiTime = 0;		//¸¶Áö¸· Àü¼Û ½Ã°£ (À§Ä¡)
-DWORD	dwLastSendPlayTime = 0;		//¸¶Áö¸· Àü¼Û ½Ã°£ (¸ğ¼Çµ¥ÀÌÅ¸)
+DWORD	dwLastSendPosiTime = 0;		//   (?)
+DWORD	dwLastSendPlayTime = 0;		//   (?)
 
-//¼­¹ö·Î ÇÃ·¹ÀÌ¾îÀÇ µ¥ÀÌÅ¸¸¦ À§Ä¡¸¦ Àü¼Û
+// ?  ? 
 int SendPlayDataToServer() { return TRUE; }
 
 
-//´Ù¸¥ À¯Àú¿Í ¿¬°á ½ÃÅ²´Ù
+//?   ?
 int ConnectOtherPlayer(DWORD dwIP)
 {
 	smWINSOCK *lpsmSock;
@@ -1675,7 +1675,7 @@ int ConnectOtherPlayer(DWORD dwIP)
 	}
 	return FALSE;
 }
-//´Ù¸¥ ÇÃ·¹ÀÌ¾î¿ÍÀÇ ¿¬°á ¾²·¹µå
+//? ?  
 DWORD WINAPI ConnectPlayThreadProc(void *pInfo)
 {
 
@@ -1684,7 +1684,7 @@ DWORD WINAPI ConnectPlayThreadProc(void *pInfo)
 	ExitThread(TRUE);
 	return TRUE;
 }
-//´Ù¸¥ ÇÃ·¹ÀÌ¾î¿ÍÀÇ ¿¬°á Á¾·á ¾²·¹µå
+//? ?   
 DWORD WINAPI DisconnectPlayThreadProc(void *pInfo)
 {
 
@@ -1696,7 +1696,7 @@ DWORD WINAPI DisconnectPlayThreadProc(void *pInfo)
 
 
 
-//´Ù¸¥ ÇÃ·¹ÀÌ¾î¿ÍÀÇ ¿¬°á ¾²·¹µå¸¦ »ı¼º
+//? ?  ? 
 int CreateConnectThread(DWORD dwIP)
 {
 	DWORD dwMsgId;
@@ -1705,7 +1705,7 @@ int CreateConnectThread(DWORD dwIP)
 	return TRUE;
 }
 
-//´Ù¸¥ ÇÃ·¹ÀÌ¾î¿ÍÀÇ ¿¬°áÁ¾·á ¾²·¹µå »ı¼º
+//? ?   
 int CreateDisconnectThread(smWINSOCK *lpsmSock)
 {
 	DWORD dwMsgId;
@@ -1715,7 +1715,7 @@ int CreateDisconnectThread(smWINSOCK *lpsmSock)
 }
 
 
-//°Å¸®°¡ ¸Õ ´Ù¸¥ À¯ÀúµéÀÇ ¿¬°áÀ» ²ö´Â´Ù
+//  ?   
 int DisconnectFarPlayer()
 {
 	int mx, mz, dDist;
@@ -1723,7 +1723,7 @@ int DisconnectFarPlayer()
 	int timeover;
 
 	for (cnt = 0; cnt < OTHER_PLAYER_MAX; cnt++) {
-		//°Å¸®¸¦ È®ÀÎÇÏ¿© ¸Õ °æ¿ì¿¡´Â ¿¬°áÀ» ²ö¾î¹ö¸°´Ù
+		// ??  ?  
 		if (chrOtherPlayer[cnt].Flag) {
 
 			if ((chrOtherPlayer[cnt].dwLastTransTime + DIS_TIME_OVER) < dwPlayTime)
@@ -1731,23 +1731,23 @@ int DisconnectFarPlayer()
 			else
 				timeover = FALSE;
 
-			//°Å¸®°è»ê
+			//
 			mx = (lpCurPlayer->pX - chrOtherPlayer[cnt].pX) >> FLOATNS;
 			mz = (lpCurPlayer->pZ - chrOtherPlayer[cnt].pZ) >> FLOATNS;
 			dDist = mx*mx + mz*mz;
 
 			if ((chrOtherPlayer[cnt].DisplayFlag && dDist > DIST_TRANSLEVEL_DISCONNECT) || timeover) {
-				//¿¬°á Á¾·á/ ¼ÒÄÏ ´İÀ½
+				// /  
 				chrOtherPlayer[cnt].Flag = 0;
 
 				if (chrOtherPlayer[cnt].TransSock) {
 					chrOtherPlayer[cnt].TransSock->CloseSocket();
 				}
 				else {
-					//Å©¸®Æ¼Ä® ¼½¼Ç ¼±¾ğ
+					//???  
 					EnterCriticalSection(&cSection);
 					chrOtherPlayer[cnt].Close();
-					//Å©¸®Æ¼Ä® ¼½¼Ç ÇØÁ¦
+					//???  
 					LeaveCriticalSection(&cSection);
 				}
 			}
@@ -1762,7 +1762,7 @@ DWORD	dwUserServ_RecvTime = 0;
 DWORD	dwMainServ_RecvTime = 0;
 DWORD	dwDataServ_RecvTime = 0;
 
-//µ¥ÀÌÅ¸ ÀÔ¼ö
+// ?
 int RecvPlayData(smTHREADSOCK *pData)
 {
 
@@ -1771,7 +1771,7 @@ int RecvPlayData(smTHREADSOCK *pData)
 
 	DWORD	dwTime;
 
-	//Å©¸®Æ¼Ä® ¼½¼Ç ¼±¾ğ
+	//???  
 	EnterCriticalSection(&cSection);
 
 
@@ -1808,24 +1808,24 @@ int RecvPlayData(smTHREADSOCK *pData)
 		dwMainServ_RecvTime = dwTime;
 	}
 
-	//¼­¹öÃø µ¥ÀÌÅ¸ Ã³¸®
+	//  
 	rsMainServer.RecvMessage(pData);
 	/*
 		}
 		else {
-			//Å¬¶óÀÌ¾ğÆ®¿ÍÀÇ ±³½Å..
+			//??? ..
 
 			lpPlayer = (smCHAR *)pData->smMySock->ExtData1;
 			if ( lpPlayer ) lpPlayer->RecvPlayData( pData );
 		}
 	*/
-	//Å©¸®Æ¼Ä® ¼½¼Ç ÇØÁ¦
+	//???  
 	LeaveCriticalSection(&cSection);
 
 	return TRUE;
 }
 
-//¸Ş¼¼Áö Å¥ÀÇ ¸Ş¼¼Áö¸¦ Ã³¸®
+//? ? ? 
 int PlayRecvMessageQue()
 {
 	return rsMainServer.RecvMessageQue();
@@ -1856,7 +1856,7 @@ extern int GameMode;
 
 DWORD	NetScoopTime = 2000;
 
-//³İ ÇÃ·¹ÀÌ ¸ŞÀÎ
+//  
 int NetWorkPlay()
 {
 	//	char *szIP;
@@ -1865,7 +1865,7 @@ int NetWorkPlay()
 	DWORD	dwTime2;
 	smWINSOCK	*lpsmSock;
 
-	//¹ÚÀç¿ø - XignCode
+	// - XignCode
 #ifdef _XIGNCODE_CLIENT
 	ZCWAVE_Init();
 #endif
@@ -1879,29 +1879,29 @@ int NetWorkPlay()
 			//smWsockServer = smConnectSock( szServIP , dwServPort );
 		}
 
-		//Sleep( 60*1000*3 );		//3ºĞ ´ë±â
+		//Sleep( 60*1000*3 );		//3 
 
 		NetWorkInitFlag = TRUE;
 
 		rsMainServer.Init(smWsockServer);
 
-		//¼­¹ö·Î ÇÃ·¹ÀÌ¾îÀÇ µ¥ÀÌÅ¸¸¦ À§Ä¡¸¦ Àü¼Û
+		// ?  ? 
 		SendPlayDataToServer();
 
-		//¼­¹ö¿¡ ±ÇÇÑ ¼³Á¤
+		//  
 		if (smConfig.DebugMode)
 			SendAdminMode(TRUE);
 
 
 		//		if ( smWsockServer )
-		//			lpCurPlayer->SendCharInfo( smWsockServer );			//ÇÃ·¹ÀÌ¾î Á¤º¸ Àü¼Û
+		//			lpCurPlayer->SendCharInfo( smWsockServer );			//?  
 
-				//ÀúÀåµÈ Ä³¸¯ÅÍ µ¥ÀÌÅ¸ ºÒ·¯¿À±â ¿ä±¸
+				// ?  ? ?
 		if (smWsockDataServer)
 		{
 			SendGetRecordData(lpCurPlayer->smCharInfo.szName);
 
-			//¼­¹ö IP Ã½Å© ( ±º¼­¹ö¿¡ Á¢¼ÓÇÑ IPÅëº¸ )
+			// IP ? (   IP? )
 			if (smWsockServer && smWsockDataServer != smWsockServer)
 			{
 				SendCheckIP(1, smWsockServer);
@@ -1920,26 +1920,26 @@ int NetWorkPlay()
 		ChatDispCnt = 0;
 
 		Ts_LastSendCounter = PlayCounter;
-		TransThrowItem.code = 0;			//¾ÆÀÌÅÛ ¹ö¸®±â ÃÊ±âÈ­
+		TransThrowItem.code = 0;			//  ??
 
-		RecordFailCount = 0;			//ÀúÀå ½ÇÆĞ Ä«¿îÅÍ
-		dwLastWareHouseChkSum = 0;		//Ã¢°í Ã¼Å©¼¶ ÄÚµå
+		RecordFailCount = 0;			//  ?
+		dwLastWareHouseChkSum = 0;		//? ? ?
 
-		TransAgingItemFlag = 0;			//¿¡ÀÌÂ¡ ¿Ï·á ¾ÆÀÌÅÛ Àü¼Û ÇÃ·¢
+		TransAgingItemFlag = 0;			// ?   
 
 
 		ZeroMemory(&TransRecvItem, sizeof(TRANS_ITEMINFO));
 
-		Trans_SplashCharList.code = 0;	//½ºÇÃ·¹½Ã °ø°İ ¹öÆÛ ÃÊ±âÈ­
+		Trans_SplashCharList.code = 0;	//   ??
 
-		ZeroMemory(&PK_FieldState, sizeof(PK_FIELD_STATE));	//PK ±¸Á¶ ÃÊ±âÈ­
+		ZeroMemory(&PK_FieldState, sizeof(PK_FIELD_STATE));	//PK  ??
 		PK_FieldState.FieldCode = -1;
 
 
-		//¸ó½ºÅÍ ÄÚµå Å¥¿¡ °ü¸®
+		// ? ? 
 		ClearAttMonsterCode();
 
-		Init_RecordDamage();			//°ø°İ·Â ±â·Ï ÃÊ±âÈ­
+		Init_RecordDamage();			//?  ??
 
 		switch (smConfig.NetworkQuality)
 		{
@@ -1962,40 +1962,40 @@ int NetWorkPlay()
 	else
 	{
 		if (cTrade.OpenFlag) {
-			//¾ÆÀÌÅÛ ±³È¯½Ã ¿Ï·á È®ÀÎ
+			// ? ? ?
 			if (!TradeSendSucessFlag && sTrade.CheckFlag && sTradeRecv.CheckFlag) {
 				SendTradeCheckItem(cTrade.TradeCharCode);
 				TradeSendSucessFlag = TRUE;
 			}
 		}
 		if (dwTradeMaskTime) {
-			//Æ®·¹ÀÌµå ¸¶½ºÅ© Å¸ÀÌ¸Ó ÃÊ±âÈ­
+			//?? ? ? ??
 			if (dwTradeMaskTime < dwPlayTime) dwTradeMaskTime = 0;
 		}
 
 		dwTime = dwPlayTime - dwLastSendPosiTime;
 		dwTime2 = dwPlayTime - dwRecvServerTime;
 
-		//¼­¹ö·ÎÀÇ µ¥ÀÌÅ¸ Àü¼Û
+		//  
 		if ((PlayCounter - Ts_LastSendCounter) > PLAYSERVER_SENDCOUNTER) {//&& dwTime>NET_SENDING_WAIT_TIME &&
 //			dwTime2<NET_SENDING_WAIT_TIME ) {
-			//¼­¹ö·Î ÇÃ·¹ÀÌ¾îÀÇ µ¥ÀÌÅ¸¸¦ À§Ä¡¸¦ Àü¼Û
+			// ?  ? 
 			SendPlayDataToServer();
-			//°Å¸®°¡ ¸Õ ´Ù¸¥ À¯ÀúµéÀÇ ¿¬°áÀ» ²ö´Â´Ù
+			//  ?   
 			DisconnectFarPlayer();
 
-			//Ä«¿îÅÍ Áõ°¡
+			//? 
 			Ts_LastSendCounter = PlayCounter;
 			dwLastSendPosiTime = dwPlayTime;
 		}
 
 		//		if ( (xxcnt&0x3)==3 ) SendPlayData( lpCurPlayer );
 
-				//´Ù¸¥ À¯Àúµé°úÀÇ µ¥ÀÌÅ¸ ±³È¯
+				//?   ?
 				//SendPlayData( lpCurPlayer );
 
 		if (smWsockUserServer) {// && rsRecvUserServer ) {
-			//ÇÃ·¹ÀÌ¾î µ¥ÀÌÅ¸¸¦ ¼­¹ö·Î Àü¼Û (40/70) ÃÊ´ÜÀ§ ±¸ºĞ 
+			//?    (40/70) ?  
 			//if ( (lpCurPlayer->PlayBuffCnt&0x3F)==0 ) {
 
 			dwTime = dwPlayTime - dwLastSendPlayTime;
@@ -2029,7 +2029,7 @@ int NetWorkPlay()
 							NetStandCnt = 0;
 						}
 						else {
-							//¼­ÀÖ´Â µ¿ÀÛ ³×Æ®¿÷ ºÎÇÏ ÃÖ¼Ò ( ÇÑ¹ø Àü¼ÛÈÄ ³×Æ®Ÿp ½½¸³ )
+							//?  ?  ? ( ?  ?p  )
 							//if ( NetStandCnt==0 )
 							//for(int cnt=0;cnt<40;cnt++) 
 							lpsmSock->Send(lpCurPlayer->srTransBuff, ((smTRANS_PLAYDATA *)lpCurPlayer->srTransBuff)->size, TRUE);
@@ -2045,11 +2045,11 @@ int NetWorkPlay()
 			}
 		}
 
-		//ÇöÀç °ÔÀÓ ·Îµù Áß
+		//  ? 
 		if (dwLoadingTime) {
 			dwTime = GetCurrentTime();
 			if (dwTime > (dwLoadingTime + NET_LOADING_WAIT_LIMIT)) {
-				//½Ã°£ ÃÊ°ú Á¾·á
+				// ? 
 				Utils_Log(LOG_DEBUG, "SetDisconnectFlag: 19");
 				DisconnectFlag = GetCurrentTime();
 				dwLoadingTime = 0;
@@ -2059,11 +2059,11 @@ int NetWorkPlay()
 
 		cnt = PlayCounter & 0x1FF;
 		if (cnt == 0) {
-			//µ¥µå¶ô Ã½Å© ( ¸Ş¼¼Áö°¡ µ¹¾Æ ¿ÀÁö ¾ÊÀ¸¸é ³×Æ®¿÷ ´Ù¿î )
+			// ? ( ?    ? ? )
 			TransCheckNetwork();
 		}
 		else if (cnt == 0x80) {
-			//ÇÁ·Î¼¼½º ½Ã°£ °¨½ÃÁ¤º¸ ¼­¹ö·Î ¼ÛºÎ
+			//?    ?
 			SendPlayTimerMax();
 		}
 
@@ -2160,17 +2160,17 @@ int NetWorkPlay()
 			}
 		*/
 	}
-#ifndef _LANGUAGE_CHINESE	//À©µµ¿ì ¸ğµå
-#ifndef _LANGUAGE_VEITNAM	//À©µµ¿ì ¸ğµå
-#ifndef _LANGUAGE_PHILIPIN	//À©µµ¿ì ¸ğµå
-#ifndef _LANGUAGE_ENGLISH	//À©µµ¿ì ¸ğµå
+#ifndef _LANGUAGE_CHINESE	// 
+#ifndef _LANGUAGE_VEITNAM	// 
+#ifndef _LANGUAGE_PHILIPIN	// 
+#ifndef _LANGUAGE_ENGLISH	// 
 	HWND	hWnd;
 
 	if ((PlayCounter & 0x1FF) == 0 && !smConfig.DebugMode) {
 		hWnd = WinFocusCrack();
-		//À©µµ¿ì Æ÷Ä¿½º¸¦ °¨½Ã
+		// ? 
 		if (hWnd) {
-			//Å©·¢ À©µµ¿ì ½Å°í
+			//?  ?
 			SendCrackWindow(hWnd);
 		}
 }
@@ -2180,7 +2180,7 @@ int NetWorkPlay()
 #endif
 
 
-	//°Å·¡ÈÄ È®ÀÎ»ï¾Æ Àç½Ãµµ ( 0.8ÃÊÈÄ )
+	//? ??  ( 0.8 )
 	if (dwLastTransTradeKeyTime && (dwLastTransTradeKeyTime + 800) < dwPlayTime)
 	{
 		if (smWsockDataServer)
@@ -2196,18 +2196,18 @@ int NetWorkPlay()
 }
 
 
-//¾ÆÀÌÅÛ ¹ö¸®±â
+// 
 int ThrowPutItem(sITEM *lpItem, int x, int y, int z)
 {
 
-	//¼­¹ö »óÅÂ¿¡ ¹®Á¦ ¹ß»ı½Ã ¾ÆÀÌÅÛ ¹ö¸®±â ±İÁö ( 4ÃÊ ÀÌ»ó ¼ö½ÅÀÌ ¾ø´Â »óÅÂ )
+	//   ?    ( 4 ?    )
 	if ((dwRecvServerTime + 4000) < dwPlayTime || QuitSave || TransThrowItem.code)
 		return FALSE;
 
 	if (AdminCharDisable || WarningHack || !smWsockDataServer || !smWsockServer)
 		return FALSE;
 
-	//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+	//    ? (    )
 	if (!SendSaveThrowItem2(&lpItem->sItemInfo))
 		return FALSE;
 
@@ -2221,18 +2221,18 @@ int ThrowPutItem(sITEM *lpItem, int x, int y, int z)
 
 	return TRUE;
 }
-//¾ÆÀÌÅÛ ¹ö¸®±â
+// 
 int ThrowPutItem2(sITEMINFO *lpItem, int x, int y, int z)
 {
 
-	//¼­¹ö »óÅÂ¿¡ ¹®Á¦ ¹ß»ı½Ã ¾ÆÀÌÅÛ ¹ö¸®±â ±İÁö ( 4ÃÊ ÀÌ»ó ¼ö½ÅÀÌ ¾ø´Â »óÅÂ )
+	//   ?    ( 4 ?    )
 	if ((dwRecvServerTime + 4000) < dwPlayTime || QuitSave || TransThrowItem.code)
 		return FALSE;
 
 	if (AdminCharDisable || WarningHack || !smWsockDataServer || !smWsockServer)
 		return FALSE;
 
-	//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+	//    ? (    )
 	if (!SendSaveThrowItem2(lpItem))
 		return FALSE;
 
@@ -2255,17 +2255,17 @@ int ThrowPutItem2(sITEMINFO *lpItem, int x, int y, int z)
 }
 
 
-//¹ö¸± ¾ÆÀÌÅÛ ÀúÀå
+//  
 //TRANS_ITEMINFO	TransThrowItem;
 //			ThrowItemToServer((TRANS_ITEMINFO *)pData->Buff );
 
 int	ThrowPotionCount = 0;
 
-//ÀÓ½Ã ÀúÀåµÈ ¹ö¸± ¾ÆÀÌÅÛÀ» È®ÀÎÇÏ¿© ÀÏÄ¡ÇÏ¸é ¼­¹ö·Î º¸³¿
+//?    ?? ??  
 int ThrowItemToServer(smTRANS_COMMAND_EX *lpTransCommand) { return TRUE; }
 
 
-//¸ó½ºÅÍ ½ÃÀÛ ÁöÁ¡ Ãß°¡
+//   ?
 int SendAddStartPoint(int x, int z)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -2277,14 +2277,14 @@ int SendAddStartPoint(int x, int z)
 	TransCommand.SParam = TRUE;
 
 	smWINSOCK *lpsmSock;
-	lpsmSock = GetAreaServerSock();		//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+	lpsmSock = GetAreaServerSock();		//  ?
 	if (lpsmSock) {
 		return lpsmSock->Send((char *)&TransCommand, TransCommand.size, TRUE);
 	}
 	return NULL;
 }
 
-//¸ó½ºÅÍ ½ÃÀÛÁöÁ¡ Á¦°Å
+//  
 int SendDeleteStartPoint(int x, int z)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -2298,10 +2298,10 @@ int SendDeleteStartPoint(int x, int z)
 	TransCommand.WParam = z;
 	TransCommand.SParam = TRUE;
 
-	//¶³¾îÁø ¾ÆÀÌÅÛ Ã£±â
+	//  ?
 	lpItem = FindScItem(x, z);
 	if (lpItem) {
-		lpsmSock = GetServerSock(lpItem->ServerCode);		//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+		lpsmSock = GetServerSock(lpItem->ServerCode);		//  ?
 		lpItem->Close();
 	}
 
@@ -2313,7 +2313,7 @@ int SendDeleteStartPoint(int x, int z)
 
 
 
-//NPC Ä³¸¯ÅÍ Ãß°¡
+//NPC ? ?
 int SendAdd_Npc(smCHAR *lpCharSample, int state)
 {
 	smTRNAS_PLAYERINFO	smTransPlayerInfo;
@@ -2323,7 +2323,7 @@ int SendAdd_Npc(smCHAR *lpCharSample, int state)
 	memcpy(&smTransPlayerInfo.smCharInfo, &lpCharSample->smCharInfo, sizeof(smCHAR_INFO));
 	smTransPlayerInfo.smCharInfo.State = 0;
 
-	//NPC Á¤º¸ÆÄÀÏ À» ¸ğµ¨ÀÌ¸§2¿¡ ³Ö¾î¼­ º¸³¿
+	//NPC   ?2 ?? 
 	lstrcpy(smTransPlayerInfo.smCharInfo.szModelName2, NpcSelectedName);
 
 	smTransPlayerInfo.smCharInfo.Life[0] = 100;
@@ -2341,7 +2341,7 @@ int SendAdd_Npc(smCHAR *lpCharSample, int state)
 	smTransPlayerInfo.state = state;
 
 	smWINSOCK *lpsmSock;
-	lpsmSock = GetAreaServerSock();		//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+	lpsmSock = GetAreaServerSock();		//  ?
 	if (lpsmSock) {
 		return lpsmSock->Send((char *)&smTransPlayerInfo, smTransPlayerInfo.size, TRUE);
 	}
@@ -2349,7 +2349,7 @@ int SendAdd_Npc(smCHAR *lpCharSample, int state)
 	return NULL;
 }
 
-//NPC Ä³¸¯ÅÍ Á¦°Å
+//NPC ? 
 int SendDelete_Npc(smCHAR *lpCharSample)
 {
 	smTRNAS_PLAYERINFO	smTransPlayerInfo;
@@ -2369,7 +2369,7 @@ int SendDelete_Npc(smCHAR *lpCharSample)
 
 	smTransPlayerInfo.dwObjectSerial = lpCharSample->dwObjectSerial;
 
-	lpsmSock = GetServerSock(lpCharSample->ServerCode);		//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+	lpsmSock = GetServerSock(lpCharSample->ServerCode);		//  ?
 	lpCharSample->Close();
 
 	if (lpsmSock) {
@@ -2378,20 +2378,20 @@ int SendDelete_Npc(smCHAR *lpCharSample)
 	return NULL;
 }
 
-//ÀúÀåµÈ Ä³¸¯ÅÍ µ¥ÀÌÅ¸ ºÒ·¯¿À±â ¿ä±¸
+// ?  ? ?
 int SendGetRecordData(char* szName) { return TRUE; }
 
 char *szCmdOpenMonster[10] = {
-	"È©°íºí¸°",
-	"È©°íºí¸°",
-	"È©°íºí¸°",
-	"Å·È£ÇÇ",
-	"Å¸ÀÌÅº",
+	"?",
+	"?",
+	"?",
+	"??",
+	"?",
 	0,0,0,0,0
 };
 
 
-//¸ó½ºÅÍ »ı¼º
+// 
 int SendOpenMonster(int State)
 {
 	smTRANS_CHAR_COMMAND	smTransCharCommand;
@@ -2415,7 +2415,7 @@ int SendOpenMonster(int State)
 
 
 	smWINSOCK *lpsmSock;
-	lpsmSock = GetAreaServerSock();		//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+	lpsmSock = GetAreaServerSock();		//  ?
 	if (lpsmSock) {
 		return lpsmSock->Send((char *)&smTransCharCommand, smTransCharCommand.size, TRUE);
 	}
@@ -2424,7 +2424,7 @@ int SendOpenMonster(int State)
 
 }
 
-//°¢ ÄÚµå µ¥ÀÌÅ¸¸¦ ¹İÀü
+// ?  
 int	CodeXorCharInfo()
 {
 	lpCurPlayer->smCharInfo.Exp ^= CodeXorExp;
@@ -2433,7 +2433,7 @@ int	CodeXorCharInfo()
 	return TRUE;
 }
 
-//½ºÅ³°ª ÀüºÎ È®ÀÎ
+//?  ?
 int SaveCheckSkill()
 {
 
@@ -2451,7 +2451,7 @@ int SaveCheckSkill()
 	return TRUE;
 }
 
-//½ºÅ³º¸È£°ª ÀüºÎ ÃÊ±âÈ­
+//??  ??
 int ReformSkillInfo()
 {
 	for (int j = 1; j < SIN_MAX_USE_SKILL; j++) {
@@ -2461,14 +2461,14 @@ int ReformSkillInfo()
 	return TRUE;
 }
 
-//°ÔÀÓÀ» ÀúÀå
+// 
 int	SaveGameData()
 {
 	if (smWsockDataServer && !rsRecorder.dwRecordTime &&
 		lpCurPlayer->smCharInfo.JOB_CODE && !AdminCharDisable && !cTrade.OpenFlag && !cWareHouse.OpenFlag && !QuitSave)
 	{
-		//¹°¾à°¹¼ö ºñ±³
-		//if ( ComparePotion()>0 ) return FALSE;		//¹°¾à ¿À·ù
+		//? 
+		//if ( ComparePotion()>0 ) return FALSE;		// 
 
 		if (!WarningHack && CheckCharForm() != FALSE && SaveCheckSkill() == TRUE)
 		{
@@ -2477,21 +2477,21 @@ int	SaveGameData()
 
 			rsRecorder.MakeRecordData(&lpCurPlayer->smCharInfo, cInvenTory.InvenItem, cInvenTory.InvenItemTemp, &MouseItem);
 			rsRecorder.SendRecordDataToServer(smWsockDataServer);
-			rsRecorder.dwRecordTime = dwPlayTime;					//°ÔÀÓ ÀúÀå ½Ã°£ È®ÀÎ
+			rsRecorder.dwRecordTime = dwPlayTime;					//   ?
 
 			if (smConfig.DebugMode)
 				AddChatBuff("GameSave");
 
 			CodeXorCharInfo();
 			ReformCharForm();
-			CheckPlaySkill();		//½ºÅ³°¨½Ã
+			CheckPlaySkill();		//?
 			return TRUE;
 		}
 	}
 	return FALSE;
 }
 
-//°ÔÀÓ ÀúÀå »óÅÂ ( FALSE ÀúÀåÁß ( ¼­¹ö·ÎºÎÅÍ °á°ú¸¦ ¹ŞÁö ¸øÇÔ ) )
+//   ( FALSE  ( ?    ) )
 int GetSaveResult()
 {
 	if (rsRecorder.dwRecordTime) return FALSE;
@@ -2500,37 +2500,37 @@ int GetSaveResult()
 }
 
 
-///////////////////// º¸³»±â °ü·Ã ////////////////////
+/////////////////////   ////////////////////
 	//smTRANSCODE_ID_GETUSERINFO:
-	//ID·Î »ç¿ëÀÚ Ä³¸¯ÅÍ ¸®½ºÆ® ¹× Á¤º¸¸¦ ±¸ÇÔ
+	//ID  ? ?   
 
 	//smTRANSCODE_INSRECORDDATA:
-	//ID¿¡ »õ·Î¿î Ä³¸¯ÅÍ »ğÀÔ
+	//ID ? ? 
 
 	//smTRANSCODE_DELRECORDDATA:
-	//ID¿¡ »õ·Î¿î Ä³¸¯ÅÍ »èÁ¦
+	//ID ? ? 
 
 	//smTRANSCODE_ISRECORDDATA:
-	//Ä³¸¯ÅÍ°¡ Á¸Àç ÇÏ´ÂÁö È®ÀÎ
+	//??  ? ?
 
-//À¯Àú Á¤º¸ °ü·Ã Åë½Å ÄÚ¸àµå
+//    ?
 //int	TransUserCommand ( DWORD dwCode , char *szID , char *szName )
 
 ///////////////////////////////////////////////////////
 
-///////////////////// ¹Ş±â °ü·Ã ////////////////////
+///////////////////// ?  ////////////////////
 	//smTRANSCODE_ID_SETUSERINFO:
-	//ID·Î »ç¿ëÀÚ Ä³¸¯ÅÍ ¸®½ºÆ® ¹× Á¤º¸¸¦ ±¸ÇÔ 
-	//(TRANS_USERCHAR_INFO ±¸Á¶Ã¼·Î °á°ú µé¾î¿È )
+	//ID  ? ?    
+	//(TRANS_USERCHAR_INFO    )
 
 	//smTRANSCODE_ISRECORDDATA:
-	//Ä³¸¯ÅÍ°¡ Á¸Àç ÇÏ´ÂÁö È®ÀÎ 
-	//( smTRANS_CHAR_COMMAND2 ->wParam ¿¡ °á°ú µé¾î¿È )
+	//??  ? ? 
+	//( smTRANS_CHAR_COMMAND2 ->wParam    )
 ///////////////////////////////////////////////////////
 
 smTRANS_COMMAND	smMessageCommandBuff;
 
-//À¯Àú Á¤º¸ °ü·Ã Åë½Å ÄÚ¸àµå ( µ¥ÀÌÅ¸ ¼­¹ö¿ë )
+//    ? (   )
 int	TransUserCommand(DWORD dwCode, char *szID, char *szName)
 {
 	smTRANS_CHAR_COMMAND2	TransCharCommand2;
@@ -2547,7 +2547,7 @@ int	TransUserCommand(DWORD dwCode, char *szID, char *szName)
 			if ((szName[cnt] & 0x80) != 0) {
 				smMessageCommandBuff.code = smTRANSCODE_FAILCONNECT;
 				smMessageCommandBuff.size = sizeof(smTRANS_COMMAND);
-				smMessageCommandBuff.WParam = -19;			//Æ¯¼ö¹®ÀÚ ¿À·ù
+				smMessageCommandBuff.WParam = -19;			//? 
 				smMessageCommandBuff.LParam = 0;
 				smMessageCommandBuff.EParam = 2;
 				HoRecvMessage(smTRANSCODE_FAILCONNECT, &smMessageCommandBuff);
@@ -2566,7 +2566,7 @@ int	TransUserCommand(DWORD dwCode, char *szID, char *szName)
 	return smWsockDataServer->Send((char *)&TransCharCommand2, TransCharCommand2.size, TRUE);
 }
 
-//Ä³¸¯ÅÍ Á¤º¸ Àü¼Û À¯±¸
+//?   
 int	Send_GetCharInfo(DWORD	dwObjectSerial, int ServerCode)
 {
 	smTRANS_COMMAND			TransCommand;
@@ -2576,7 +2576,7 @@ int	Send_GetCharInfo(DWORD	dwObjectSerial, int ServerCode)
 	TransCommand.size = sizeof(smTRANS_COMMAND);
 	TransCommand.WParam = dwObjectSerial;
 
-	lpsmSock = GetServerSock(ServerCode);		//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+	lpsmSock = GetServerSock(ServerCode);		//  ?
 
 	if (lpsmSock) {
 		return lpsmSock->Send((char *)&TransCommand, TransCommand.size, TRUE);
@@ -2597,7 +2597,7 @@ static DWORD dwCheckNetCount = 0;
 static DWORD dwLastTransCheckTime = 0;
 static int	ReconnectCount = 0;
 
-//µ¥µå¶ô Ã½Å© ( ¸Ş¼¼Áö°¡ µ¹¾Æ ¿ÀÁö ¾ÊÀ¸¸é ³×Æ®¿÷ ´Ù¿î )
+// ? ( ?    ? ? )
 int	TransCheckNetwork()
 {
 	smTRANS_COMMAND			TransCommand;
@@ -2609,11 +2609,11 @@ int	TransCheckNetwork()
 	if (!dwConnectedServerTime)
 		return FALSE;
 
-	//ÇÁ·Î¼¼½º ½Ã°£ °¨½ÃÇÏ´Â ¾²·¹µå °¡µ¿
+	//?  ?  
 
 	OpenTimeCheckThread();
 
-	//È®ÀÎ 4ÃÊ ÀÌÈÄ¿¡³ª È®ÀÎ ¸Ş¼¼Áö º¸³¿
+	//? 4 ? ? ? 
 	dwTime = GetCurrentTime();
 	dwTime2 = dwTime;
 
@@ -2627,7 +2627,7 @@ int	TransCheckNetwork()
 		(dwLastRecvGameServerTime + DEADLOCK_CHECK_LIMIT_TIME) < dwTime ||
 		!smWsockServer || smWsockServer->WaitReadMessage < 0)
 	{
-		//¿¬°á ²ö¾î Áü ( ¼­¹ö¿ÍÀÇ ±³½Å ºÒ´É )
+		//   (   ? )
 
 		dwLastRecvGameServerTime = dwTime;
 
@@ -2646,7 +2646,7 @@ int	TransCheckNetwork()
 		if (smWsockServer)
 		{
 			//Sleep(200);
-			//¼­¹ö¿¡ ÀçÁ¢¼Ó ½Ãµµ
+			//  
 			SendContinueServer(lpCurPlayer->dwObjectSerial, smWsockServer);
 
 			char szBuff[256];
@@ -2657,7 +2657,7 @@ int	TransCheckNetwork()
 			if (dwLastRecvGameServerTime2 && dwLastRecvGameServerTime2 < dwTime2) dwLastRecvGameServerTime2 = dwTime2;
 			if (dwLastRecvGameServerTime3 && dwLastRecvGameServerTime3 < dwTime2) dwLastRecvGameServerTime3 = dwTime2;
 			if (dwLastRecvGameServerTime4 && dwLastRecvGameServerTime4 < dwTime2) dwLastRecvGameServerTime4 = dwTime2;
-			ReconnServer++;		//Àç¿¬°á Ä«¿îÅÍ
+			ReconnServer++;		//? ?
 
 			return TRUE;
 		}
@@ -2670,7 +2670,7 @@ int	TransCheckNetwork()
 	//}
 
 
-	//¿¹»ó ¼­¹ö ½Ã°£
+	//  
 	dwTime = (dwTime - dwConnectedClientTime) + dwConnectedServerTime;
 
 	TransCommand.code = smTRANSCODE_CHECK_NETSTATE;
@@ -2712,7 +2712,7 @@ int	TransCheckNetwork()
 			ConnectServer_Main();
 
 			if (smWsockUserServer) {
-				//¼­¹ö¿¡ ÀçÁ¢¼Ó ½Ãµµ
+				//  
 				//Sleep(200);
 				SendContinueServer(lpCurPlayer->dwObjectSerial, smWsockUserServer);
 
@@ -2724,7 +2724,7 @@ int	TransCheckNetwork()
 				if (dwLastRecvGameServerTime3 && dwLastRecvGameServerTime3 < dwTime2) dwLastRecvGameServerTime3 = dwTime2;
 				if (dwLastRecvGameServerTime4 && dwLastRecvGameServerTime4 < dwTime2) dwLastRecvGameServerTime4 = dwTime2;
 
-				ReconnDataServer++;		//¼­¹ö Àç¿¬°á Ä«¿îÅÍ
+				ReconnDataServer++;		// ? ?
 
 				return TRUE;
 			}
@@ -2760,7 +2760,7 @@ int	TransCheckNetwork()
 				if (dwLastRecvGameServerTime3 && dwLastRecvGameServerTime3 < dwTime2) dwLastRecvGameServerTime3 = dwTime2;
 				if (dwLastRecvGameServerTime4 && dwLastRecvGameServerTime4 < dwTime2) dwLastRecvGameServerTime4 = dwTime2;
 
-				//ReconnDataServer++;		//¼­¹ö Àç¿¬°á Ä«¿îÅÍ
+				//ReconnDataServer++;		// ? ?
 
 				return TRUE;
 			}
@@ -2777,7 +2777,7 @@ int	TransCheckNetwork()
 
 	}
 	if (AreaServerMode) {
-		//Áö¿ª¼­¹ö µ¥µå¶ô Ã½Å©
+		//  ?
 		int cnt;
 		for (cnt = 0; cnt < 2; cnt++) {
 			if (lpWSockServer_Area[cnt]) {
@@ -2811,16 +2811,16 @@ int	TransCheckNetwork()
 	}
 
 
-	//¹ŞÀº °æÇèÄ¡ µ·µ¥ÀÌÅ¸ ¼öÄ¡¸¦ ¼­¹ö¿¡ º¸³»¼­ È®ÀÎ
+	// ?  ?   ?
 	SendTotalExpMoney();
 
-	CheckMaxDamage();			//ÃÖ´ë µ¥¹ÌÁö °Ë»ç
+	CheckMaxDamage();			//?  ?
 
 
 	return TRUE;
 }
 
-//¼­¹ö¿¡ °ü¸®ÀÚ ¸ğµå ¼³Á¤
+//   
 int SendAdminMode(DWORD AdminNum)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -2844,7 +2844,7 @@ int SendAdminMode(DWORD AdminNum)
 	return smWsockServer->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 
-//¼­¹ö¿¡ °ü¸®ÀÚ ¸ğµå ¼³Á¤
+//   
 int SendAdminMode(DWORD AdminNum, smWINSOCK *lpsmSock)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -2858,7 +2858,7 @@ int SendAdminMode(DWORD AdminNum, smWINSOCK *lpsmSock)
 	return lpsmSock->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 
-//¼­¹ö¿¡ ³×Æ®¿öÅ© Ç®Áú ¸ğµå ¼³Á¤
+// ?? ?  
 int SendNetworkQuality(DWORD NetworkQuality)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -2878,7 +2878,7 @@ int SendNetworkQuality(DWORD NetworkQuality)
 	return smWsockServer->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 
-//IPÁ¢¼Ó ÁÖ¼Ò¸¦ ±º ¼­¹ö¿¡ º¸³½´Ù
+//IP ??   
 int SendCheckIP(int Code, smWINSOCK *lpsmSock)
 {
 	smTRANS_CHAR_COMMAND	TransCharCommand;
@@ -2894,10 +2894,10 @@ int SendCheckIP(int Code, smWINSOCK *lpsmSock)
 	return smWsockDataServer->Send((char *)&TransCharCommand, TransCharCommand.size, TRUE);
 }
 
-//¼­¹ö¿¡ ¿ÀºêÁ§Æ® ¹øÈ£ ¼³Á¤
+// ? ? 
 int SendSetObjectSerial(DWORD dwObjectSerial)
 {
-	//»õ¹öÀü 
+	// 
 	smTRNAS_PLAYERINFO	TransPlayerInfo;
 
 	memcpy(&TransPlayerInfo.smCharInfo, &lpCurPlayer->smCharInfo, sizeof(smCHAR_INFO));
@@ -2925,7 +2925,7 @@ int SendSetObjectSerial(DWORD dwObjectSerial)
 	return TRUE;
 }
 
-//¼­¹ö¿¡ ¿ÀºêÁ§Æ® ¹øÈ£ ¼³Á¤ ( Ã³À½ ÇÑ¹ø¸¸ )
+// ? ?  (  ? )
 int SendSetObjectSerial_First(DWORD dwObjectSerial)
 {
 
@@ -2951,7 +2951,7 @@ int SendSetObjectSerial_First(DWORD dwObjectSerial)
 	return TRUE;
 }
 
-//¼­¹ö¿¡ ÀçÁ¢¼Ó ½Ãµµ
+//  
 int SendContinueServer(DWORD dwObjectSerial, smWINSOCK *lpsmSock)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -2965,7 +2965,7 @@ int SendContinueServer(DWORD dwObjectSerial, smWINSOCK *lpsmSock)
 	return lpsmSock->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 
-//ÇØÅ· ½ÃµµÇÑ À¯Àú ÀÚµ¿ ½Å°í
+//?   ? ?
 int SendSetHackUser3(int Type, int LParam, int SParam)
 {
 	Utils_Log(LOG_DEBUG, "SendSetHackUser3: Type(%d)  LParam(%d)  SParam(%d)", Type, LParam, SParam);
@@ -2984,13 +2984,13 @@ int SendSetHackUser3(int Type, int LParam, int SParam)
 	return TRUE;
 }
 
-//Å©·¢ Ã½Å©
+//? ?
 int CheckCracker() { return TRUE; }
 
-//Å©·¢ Ã½Å© ( ¸Ş¼¼Áö Åëº¸µµ °°ÀÌ »ç¿ë )
+//? ? ( ? ?   )
 int CheckCracker(TRANS_FIND_CRACKER *lpTransFindCrack) { return TRUE; }
 
-//Å©·¢ À©µµ¿ì ½Å°í
+//?  ?
 int SendCrackWindow(HWND hWnd)
 {
 	Utils_Log(LOG_DEBUG, "SendCrackWindow");
@@ -2999,7 +2999,7 @@ int SendCrackWindow(HWND hWnd)
 	char TransBuff[1024];
 	int len;
 
-	//Å©·¢ ¹ß°ß
+	//? ?
 	if (smWsockServer) {
 
 		szName = TransBuff + 8;
@@ -3013,7 +3013,7 @@ int SendCrackWindow(HWND hWnd)
 	return TRUE;
 }
 
-//ÇØÅ· ½ÃµµÇÑ À¯Àú ÀÚµ¿ ½Å°í
+//?   ? ?
 int SendSetHackUser(int StopGame)
 {
 	Utils_Log(LOG_DEBUG, "SendSetHackUser: StopGame(%d)", StopGame);
@@ -3026,7 +3026,7 @@ int SendSetHackUser(int StopGame)
 	TransCommand.LParam = 0;
 	TransCommand.SParam = 0;
 
-	WarningHack = StopGame;		//ÇØÅ· °æ°í
+	WarningHack = StopGame;		//? 
 
 	if (smWsockDataServer)
 		smWsockDataServer->Send((char *)&TransCommand, TransCommand.size, TRUE);
@@ -3041,7 +3041,7 @@ int SendSetHackUser(int StopGame)
 	return TRUE;
 }
 
-//ÇØÅ· ½ÃµµÇÑ À¯Àú ÀÚµ¿ ½Å°í
+//?   ? ?
 int SendSetHackUser2(int Type, int LParam)
 {
 	Utils_Log(LOG_DEBUG, "SendSetHackUser2: Type(%d)  LParam(%d)", Type, LParam);
@@ -3060,7 +3060,7 @@ int SendSetHackUser2(int Type, int LParam)
 	return TRUE;
 }
 
-//¼­¹ö¿¡ °ü¸®ÀÚ ¸ğµå ¼³Á¤
+//   
 int SendAdminMode2(DWORD AdminNum)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -3078,7 +3078,7 @@ int SendAdminMode2(DWORD AdminNum)
 
 }
 
-//º¹»ç ¾ÆÀÌÅÛÀ» ¼ÒÁöÇÑ »ç¶÷ ½Å°í 
+//    ? 
 int SendCopyItemUser(int CopyItemCount)
 {
 	Utils_Log(LOG_DEBUG, "SendCopyItemUser: CopyItemCount(%d)", CopyItemCount);
@@ -3097,12 +3097,12 @@ int SendCopyItemUser(int CopyItemCount)
 	return TRUE;
 }
 
-//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+//    ? (    )
 int SendSaveThrowItem(sITEMINFO *lpItemInfo)
 {
 	smTRANS_COMMAND	TransCommand;
 
-	//¹°¾àÀÎ °æ¿ì¸¸ ÀúÀåÇÏµµ·Ï ¼öÁ¤
+	// ? ? 
 	if ((lpItemInfo->CODE&sinITEM_MASK1) != (sinPM1&sinITEM_MASK1))	return FALSE;
 
 
@@ -3113,12 +3113,12 @@ int SendSaveThrowItem(sITEMINFO *lpItemInfo)
 	TransCommand.SParam = lpItemInfo->ItemHeader.dwChkSum;
 
 	if ((lpItemInfo->CODE&sinITEM_MASK1) == (sinPM1&sinITEM_MASK1))
-		ComparePotion();	//¹°¾à°¹¼ö ºñ±³
+		ComparePotion();	//? 
 
 	return smWsockDataServer->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 /*
-//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ÃÖ´ë 32°³ µ¿½Ã ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+//    ? ? 32  (    )
 int	SendSaveThrowItems( TRANS_THROW_ITEMS	*lpTransThrowItems )
 {
 	if ( lpTransThrowItems->ThrowItemCount<0 ) return FALSE;
@@ -3132,7 +3132,7 @@ int	SendSaveThrowItems( TRANS_THROW_ITEMS	*lpTransThrowItems )
 }
 */
 
-//¾ÆÀÌÅÛ °Å·¡³»¿ª ¼­¹ö¿¡ º¸³»±â
+// ?  
 int	SendRecordTradeItems(sTRADE *lpTrade)
 {
 
@@ -3160,7 +3160,7 @@ int	SendRecordTradeItems(sTRADE *lpTrade)
 	return smWsockDataServer->Send((char *)&TransRecordTradeItems, TransRecordTradeItems.size, TRUE);
 }
 
-//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+//    ? (    )
 int SendSaveThrowItem2(sITEMINFO *lpItemInfo)
 {
 	smTRANS_COMMAND_EX	TransCommand;
@@ -3171,7 +3171,7 @@ int SendSaveThrowItem2(sITEMINFO *lpItemInfo)
 	TransCommand.WParam = lpItemInfo->CODE;
 	TransCommand.LParam = lpItemInfo->ItemHeader.Head;
 	TransCommand.SParam = lpItemInfo->ItemHeader.dwChkSum;
-	TransCommand.EParam = lpItemInfo->PotionCount^TransCommand.SParam^TransCommand.code;	//¹°¾à °¹¼ö
+	TransCommand.EParam = lpItemInfo->PotionCount^TransCommand.SParam^TransCommand.code;	// 
 
 	TransCommand.WxParam = lpCurPlayer->smCharInfo.Money;
 	TransCommand.LxParam = EncodeParam(TransCommand.WxParam);
@@ -3179,15 +3179,15 @@ int SendSaveThrowItem2(sITEMINFO *lpItemInfo)
 	TransCommand.ExParam = lpItemInfo->Money;
 
 	if ((lpItemInfo->CODE&sinITEM_MASK1) == (sinPM1&sinITEM_MASK1))
-		ComparePotion();	//¹°¾à°¹¼ö ºñ±³
+		ComparePotion();	//? 
 
-	//ÀÌº¥Åä¸® µ· °Ë»ç ¼³Á¤
+	//??  ? 
 	AddInvenMoney(-lpItemInfo->Money);
 
 	return smWsockDataServer->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 
-//µ¥ÀÌÅ¸ ¼­¹ö¿¡ µ· ÀúÀå ¿ä±¸ ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+//    ? (    )
 int SendSaveMoney()
 {
 	smTRANS_COMMAND	TransCommand;
@@ -3203,10 +3203,10 @@ int SendSaveMoney()
 	return smWsockDataServer->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 
-//´Ù¸¥ Ä³¸¯ÅÍ Ä«ÇÇ Àü¼Û ¿ä±¸
+//? ? ?  ?
 int SendCopyOtherUser(char *szName, int Mode) { return TRUE; }
 
-//¼­¹ö¿¡ º¯°æµÈ Ä³¸¯ÅÍ Á¤º¸ º¸³¿
+//  ?  
 int SendPlayUpdateInfo()
 {
 	smTRANS_COMMAND	TransCommand;
@@ -3214,14 +3214,14 @@ int SendPlayUpdateInfo()
 	TransCommand.code = smTRANSCODE_UPDATE_CINFO;
 	TransCommand.size = sizeof(smTRANS_COMMAND);
 	TransCommand.WParam = 0;
-	TransCommand.LParam = lpCurPlayer->smCharInfo.Level;			//·¹º§ Á¤º¸
+	TransCommand.LParam = lpCurPlayer->smCharInfo.Level;			// 
 	TransCommand.SParam = 0;
 	TransCommand.EParam = 0;
 
 	return smWsockServer->Send((char *)&TransCommand, TransCommand.size, TRUE);
 }
 
-//¼­¹ö¿¡ º¯°æµÈ Å¬·£ Á¤º¸ º¸³¿
+//  ?  
 int SendUpdateClanInfo()
 {
 	smTRANS_COMMAND	TransCommand;
@@ -3229,7 +3229,7 @@ int SendUpdateClanInfo()
 	TransCommand.code = smTRANSCODE_UPDATE_CINFO;
 	TransCommand.size = sizeof(smTRANS_COMMAND);
 	TransCommand.WParam = 1;
-	TransCommand.LParam = lpCurPlayer->smCharInfo.Level;			//·¹º§ Á¤º¸
+	TransCommand.LParam = lpCurPlayer->smCharInfo.Level;			// 
 	TransCommand.SParam = lpCurPlayer->smCharInfo.ClassClan;
 	TransCommand.EParam = lpCurPlayer->smCharInfo.bUpdateInfo[0];
 
@@ -3265,22 +3265,22 @@ smTRANSCODE_SKIL_ATTACKDATA
 struct TRANS_SKIL_ATTACKDATA {
 	int size,code;
 
-	DWORD	dwDestObjectSerial;	//°ø°İÇÏ´Â Ä³¸¯ÅÍ °íÀ¯¹øÈ£
+	DWORD	dwDestObjectSerial;	//? ? ?
 
-	int x,y,z;			// ÁÂÇ¥
-	int AttackState;	// ¼Ó¼º
-	int AttackSize;		// °ø°İ ¹üÀ§
-	int Power;			// °ø°İ ÆÄ¿ö
+	int x,y,z;			// ?
+	int AttackState;	// ?
+	int AttackSize;		//  
+	int Power;			//  ?
 
 	int	TargetCount;
-	DWORD	dwTarObjectSerial[SKIL_ATTACK_CHAR_MAX];	//°ø°İ´ë»ó Ä³¸¯ÅÍ °íÀ¯¹øÈ£
+	DWORD	dwTarObjectSerial[SKIL_ATTACK_CHAR_MAX];	//? ? ?
 };
 */
 
 
 TRANS_SKIL_ATTACKDATA	Back_TransSkilAttackData;
 
-//¹üÀ§Çü °ø°İ
+// 
 int Skil_RangeAttack(int x, int y, int z, int range, int power, int TargetState)
 {
 
@@ -3293,8 +3293,8 @@ int Skil_RangeAttack(int x, int y, int z, int range, int power, int TargetState)
 	smWINSOCK *lpsmSendSock = 0;
 
 
-	//Å¬¶óÀÌ¾ğÆ® ·Î±× ÆÄÀÏ ±â·Ï
-	Record_ClinetLogFile("±¸¹öÀü °ø°İÆĞÅ¶ - Skil_RangeAttack ");
+	//??? ?  
+	Record_ClinetLogFile(" ? - Skil_RangeAttack ");
 	quit = 1;
 	return TRUE;
 
@@ -3320,7 +3320,7 @@ int Skil_RangeAttack(int x, int y, int z, int range, int power, int TargetState)
 
 				TransSkilAttackData.dwTarObjectSerial[mCnt++] = chrOtherPlayer[cnt].dwObjectSerial;
 
-				//Ã³À½ °ø°İÇÏ´Â Ä³¸¯ÇÑÅ×¸¸ Ã¼·Â¹Ù Ãâ·Â
+				// ? ??  
 				if (lpChar->smCharInfo.Life[1] && lpChar->smCharInfo.Life[0] == lpChar->smCharInfo.Life[1]) {
 					lpChar->EnableStateBar = TRUE;
 				}
@@ -3344,23 +3344,23 @@ int Skil_RangeAttack(int x, int y, int z, int range, int power, int TargetState)
 	TransSkilAttackData.Power = power;
 
 	TransSkilAttackData.dwChkSum = TransSkilAttackData.Power * 2002 +
-		(TransSkilAttackData.x * TransSkilAttackData.y * TransSkilAttackData.z);// Á¶ÀÛ ¹æÁö ÄÚµå
+		(TransSkilAttackData.x * TransSkilAttackData.y * TransSkilAttackData.z);//   ?
 
 	LastAttackDamage = power;
 
-	memcpy(&Back_TransSkilAttackData, &TransSkilAttackData, sizeof(TRANS_SKIL_ATTACKDATA));		//¹é¾÷
+	memcpy(&Back_TransSkilAttackData, &TransSkilAttackData, sizeof(TRANS_SKIL_ATTACKDATA));		//
 
-	lpsmSendSock = GetAreaServerSock();		//º¸³¾ ¼­¹ö±¸ÇÏ±â
+	lpsmSendSock = GetAreaServerSock();		// ?
 
 	if (lpsmSendSock && mCnt > 0) {
-		//º¸³½ °ø°İ·Â ±â·Ï
+		// ? 
 		Record_SendDamage(lpsmSendSock, TransSkilAttackData.Power);
 
 		lpsmSendSock->Send((char *)&TransSkilAttackData, TransSkilAttackData.size, TRUE);
 	}
 
 	if (PkMode) {
-		//¹üÀ§Çü °ø°İ( À¯Àú¸¸ °ø°İ )
+		// (   )
 		Skil_RangeAttack_User(x, y, z, range, power, TargetState);
 	}
 
@@ -3368,7 +3368,7 @@ int Skil_RangeAttack(int x, int y, int z, int range, int power, int TargetState)
 }
 
 
-//¹üÀ§Çü °ø°İ( À¯Àú¸¸ °ø°İ )
+// (   )
 int Skil_RangeAttack_User(int x, int y, int z, int range, int power, int TargetState)
 {
 	TRANS_SKIL_ATTACKDATA	TransSkilAttackData;
@@ -3417,18 +3417,18 @@ int Skil_RangeAttack_User(int x, int y, int z, int range, int power, int TargetS
 	TransSkilAttackData.Power = power;
 
 	TransSkilAttackData.dwChkSum = TransSkilAttackData.Power * 2002 +
-		(TransSkilAttackData.x * TransSkilAttackData.y * TransSkilAttackData.z);// Á¶ÀÛ ¹æÁö ÄÚµå
+		(TransSkilAttackData.x * TransSkilAttackData.y * TransSkilAttackData.z);//   ?
 
 
 	if (mCnt > 0) {
-		//º¸³½ °ø°İ·Â ±â·Ï
+		// ? 
 		Record_SendDamage(smWsockUserServer, TransSkilAttackData.Power);
 
 		smWsockUserServer->Send((char *)&TransSkilAttackData, TransSkilAttackData.size, TRUE);
 	}
 
 
-	//	lpsmSendSock = GetAreaServerSock();		//º¸³¾ ¼­¹ö±¸ÇÏ±â
+	//	lpsmSendSock = GetAreaServerSock();		// ?
 
 	//	if ( lpsmSendSock ) {
 	//		lpsmSendSock->Send( (char *)&TransSkilAttackData , TransSkilAttackData.size , TRUE );
@@ -3436,7 +3436,7 @@ int Skil_RangeAttack_User(int x, int y, int z, int range, int power, int TargetS
 	return TRUE;
 }
 
-//¹üÀ§Çü °ø°İ
+// 
 int Skil_RangeBoxAttack(smCHAR *lpCurChar, RECT *lpRect, int power, int TargetState, int UseAttackRating)
 {
 
@@ -3448,8 +3448,8 @@ int Skil_RangeBoxAttack(smCHAR *lpCurChar, RECT *lpRect, int power, int TargetSt
 	smWINSOCK *lpsmSendSock = 0;
 
 
-	//Å¬¶óÀÌ¾ğÆ® ·Î±× ÆÄÀÏ ±â·Ï
-	Record_ClinetLogFile("±¸¹öÀü °ø°İÆĞÅ¶ - Skil_RangeBoxAttack ");
+	//??? ?  
+	Record_ClinetLogFile(" ? - Skil_RangeBoxAttack ");
 	quit = 1;
 	return TRUE;
 
@@ -3465,7 +3465,7 @@ int Skil_RangeBoxAttack(smCHAR *lpCurChar, RECT *lpRect, int power, int TargetSt
 			dy = (lpChar->pY - lpCurChar->pY) >> FLOATNS;
 			dz = (lpChar->pZ - lpCurChar->pZ) >> FLOATNS;
 
-			// ÀÌµ¿µÈ Áö¿ª ÁÂÇ¥°ªÀ» ±¸ÇÏ´Â °ÍÀÌ±¸³ª! ³î¶ø´Ù.
+			// ?  ? ? ?! .
 			GetMoveLocation(dx, dy, dz, 0, (-lpCurChar->Angle.y)&ANGCLIP, 0);
 
 			if (GeoResult_X > lpRect->left && GeoResult_X<lpRect->right  &&
@@ -3482,7 +3482,7 @@ int Skil_RangeBoxAttack(smCHAR *lpCurChar, RECT *lpRect, int power, int TargetSt
 				if (Attack) {
 					TransSkilAttackData.dwTarObjectSerial[mCnt++] = chrOtherPlayer[cnt].dwObjectSerial;
 
-					//Ã³À½ °ø°İÇÏ´Â Ä³¸¯ÇÑÅ×¸¸ Ã¼·Â¹Ù Ãâ·Â
+					// ? ??  
 					if (lpChar->smCharInfo.Life[1] && lpChar->smCharInfo.Life[0] == lpChar->smCharInfo.Life[1]) {
 						lpChar->EnableStateBar = TRUE;
 					}
@@ -3509,15 +3509,15 @@ int Skil_RangeBoxAttack(smCHAR *lpCurChar, RECT *lpRect, int power, int TargetSt
 	LastAttackDamage = power;
 
 	TransSkilAttackData.dwChkSum = TransSkilAttackData.Power * 2002 +
-		(TransSkilAttackData.x * TransSkilAttackData.y * TransSkilAttackData.z);// Á¶ÀÛ ¹æÁö ÄÚµå
+		(TransSkilAttackData.x * TransSkilAttackData.y * TransSkilAttackData.z);//   ?
 
 
-	memcpy(&Back_TransSkilAttackData, &TransSkilAttackData, sizeof(TRANS_SKIL_ATTACKDATA));		//¹é¾÷
+	memcpy(&Back_TransSkilAttackData, &TransSkilAttackData, sizeof(TRANS_SKIL_ATTACKDATA));		//
 
-	lpsmSendSock = GetAreaServerSock();		//º¸³¾ ¼­¹ö±¸ÇÏ±â
+	lpsmSendSock = GetAreaServerSock();		// ?
 
 	if (lpsmSendSock && mCnt > 0) {
-		//º¸³½ °ø°İ·Â ±â·Ï
+		// ? 
 		Record_SendDamage(lpsmSendSock, TransSkilAttackData.Power);
 
 		lpsmSendSock->Send((char *)&TransSkilAttackData, TransSkilAttackData.size, TRUE);
@@ -3529,16 +3529,16 @@ int Skil_RangeBoxAttack(smCHAR *lpCurChar, RECT *lpRect, int power, int TargetSt
 int Skill_CharRangeEffect(DWORD dwSkillCode, smCHAR *lpCurChar, smCHAR *lpCharTarget, int point) { return TRUE; }
 
 
-//¹üÀ§Çü °ø°İ ÀÌÆåÆ® ¿¬Ãâ
+//  ? 
 int Skil_RangeBoxEffect(smCHAR *lpCurChar, RECT *lpRect, DWORD dwSkillCode, int TargetState) { return TRUE; }
 
-//¹üÀ§Çü °ø°İ ÀÌÆåÆ® ¿¬Ãâ
+//  ? 
 int Skil_RangeEffect(smCHAR *lpCurChar, int Range, DWORD dwSkillCode, int TargetState, int point) { return TRUE; }
 
 
 
 
-//ÄÚµå ¾ÏÈ£ Ã½Å©¼¶ ¸¸µé±â
+//? ? ? 
 DWORD EncodeParam(DWORD Param)
 {
 	return (Param + (Param << 4)) * 2002;
@@ -3546,15 +3546,15 @@ DWORD EncodeParam(DWORD Param)
 
 
 
-//»ó´ë Ä³¸¯ÅÍ¿¡ °ø°İ °¡ÇÔ 
+// ??   
 int QuickSendTransAttack(smCHAR *lpChar, int power, int AttackState, int Resistance)
 {
 	TRANS_ATTACKDATA	TransAttackData;
 	smWINSOCK *lpsmSendSock = 0;
 	int pow;
 
-	//Å¬¶óÀÌ¾ğÆ® ·Î±× ÆÄÀÏ ±â·Ï
-	Record_ClinetLogFile("±¸¹öÀü °ø°İÆĞÅ¶ - QuickSendTransAttack ");
+	//??? ?  
+	Record_ClinetLogFile(" ? - QuickSendTransAttack ");
 	quit = 1;
 	return TRUE;
 
@@ -3575,29 +3575,29 @@ int QuickSendTransAttack(smCHAR *lpChar, int power, int AttackState, int Resista
 		TransAttackData.AttackState |= (Resistance << 16);
 		pow = Resistance >> 4;
 		if (pow > 0 && pow < 512) {
-			TransAttackData.Power += pow;			//¼Ó¼º °ø°İ·Â Ãß°¡ ( ¼­¹ö¿¡¼­ Ãß°¡µÈ °ø°İ·Â µû·Î °è»ê )
+			TransAttackData.Power += pow;			//? ? ? (  ? ?   )
 		}
 	}
 
 	TransAttackData.dwDestObjectSerial = lpCurPlayer->dwObjectSerial;
 	TransAttackData.dwTarObjectSerial = lpChar->dwObjectSerial;
 	TransAttackData.dwChkSum = TransAttackData.Power * 2002 +
-		(TransAttackData.x * TransAttackData.y * TransAttackData.z);// Á¶ÀÛ ¹æÁö ÄÚµå
+		(TransAttackData.x * TransAttackData.y * TransAttackData.z);//   ?
 
 	LastAttackDamage = TransAttackData.Power;
 
-	//Ã³À½ °ø°İÇÏ´Â Ä³¸¯ÇÑÅ×¸¸ Ã¼·Â¹Ù Ãâ·Â
+	// ? ??  
 	if (lpChar->smCharInfo.Life[1] && lpChar->smCharInfo.Life[0] == lpChar->smCharInfo.Life[1]) {
 		lpChar->EnableStateBar = TRUE;
 	}
 
 	if (lpChar->ServerCode) {
-		lpsmSendSock = GetServerSock(lpChar->ServerCode);		//¼­¹ö ÄÚµå ±¸ÇÏ±â
+		lpsmSendSock = GetServerSock(lpChar->ServerCode);		// ? ?
 	}
 
 
 	if (lpsmSendSock) {
-		//º¸³½ °ø°İ·Â ±â·Ï
+		// ? 
 		Record_SendDamage(lpsmSendSock, TransAttackData.Power);
 
 		return lpsmSendSock->Send((char *)&TransAttackData, TransAttackData.size, TRUE);
@@ -3606,24 +3606,24 @@ int QuickSendTransAttack(smCHAR *lpChar, int power, int AttackState, int Resista
 	return NULL;
 }
 
-//»ó´ë Ä³¸¯ÅÍ¿¡ °ø°İ °¡ÇÔ 
+// ??   
 int QuickSendTransAttack(smCHAR *lpChar, int power)
 {
 	return QuickSendTransAttack(lpChar, power, 1, 0);
 }
-//»ó´ë Ä³¸¯ÅÍ¿¡ °ø°İ °¡ÇÔ 
+// ??   
 int QuickSendTransAttack(smCHAR *lpChar, int power, int Resistance)
 {
 	return QuickSendTransAttack(lpChar, power, 1, Resistance);
 }
 
-///////////////////////// Æ®·¹ÀÌµå °ü·Ã //////////////////////////////
+///////////////////////// ??  //////////////////////////////
 /*
-sTRADE sTrade;	   //º¸³¾ Á¤º¸
-sTRADE sTradeRecv; //¹ŞÀº Á¤º¸
+sTRADE sTrade;	   // 
+sTRADE sTradeRecv; // 
 */
 
-//¾ÆÀÌÅÛ ±³È¯ ½ÅÃ»
+// ? 
 int SendRequestTrade(int dwObjectSerial, int Flag)
 {
 	smTRANS_COMMAND	TransCommand;
@@ -3640,7 +3640,7 @@ int SendRequestTrade(int dwObjectSerial, int Flag)
 	return FALSE;
 }
 
-//¾ÆÀÌÅÛ ±³È¯ Á¤º¸ Àü¼Û
+// ?  
 int SendTradeItem(sTRADE *lpTrade, DWORD dwSender)
 {
 	int cnt;
@@ -3651,16 +3651,16 @@ int SendTradeItem(sTRADE *lpTrade, DWORD dwSender)
 
 	len = 0;
 
-	//Æ®·¹ÀÌµå Á¤º¸ ÀÎÁõ È®ÀÎ
+	//??   ?
 	if (CheckTrade((void *)lpTrade) == FALSE) {
-		SendRequestTrade(dwSender, 3);			//°Å·¡ Ãë¼Ò ¿ä±¸
-		cTrade.CancelTradeItem();					//°Å·¡Ã¢ ´İ±â
+		SendRequestTrade(dwSender, 3);			//?  ?
+		cTrade.CancelTradeItem();					//? ?
 		return FALSE;
 	}
 
 	memcpy(&sTradeBuff, lpTrade, sizeof(sTRADE));
 
-	//¹°¾à°¹¼ö ºñ±³
+	//? 
 	PotionError = ComparePotion();
 
 	for (cnt = 0; cnt < MAX_TRADE_ITEM; cnt++) {
@@ -3668,15 +3668,15 @@ int SendTradeItem(sTRADE *lpTrade, DWORD dwSender)
 			ZeroMemory(&sTradeBuff.TradeItem[cnt], sizeof(sITEM));
 		}
 		else {
-			sTradeBuff.TradeItem[cnt].sItemInfo.ItemHeader.Head = 0;		//Å°°ª Áö¿ò
+			sTradeBuff.TradeItem[cnt].sItemInfo.ItemHeader.Head = 0;		//? 
 			if (PotionError) {
-				sTradeBuff.TradeItem[cnt].sItemInfo.PotionCount = sTradeBuff.TradeItem[cnt].sItemInfo.ItemHeader.Head + 1;	//¹°¾à°¹¼ö ¿À·ù½Ã ¸ğµç Æ÷¼ÇÄ«¿îÆ®¸¦ 1·Î ¹Ù²Û´Ù
+				sTradeBuff.TradeItem[cnt].sItemInfo.PotionCount = sTradeBuff.TradeItem[cnt].sItemInfo.ItemHeader.Head + 1;	//?   ?? 1 ??
 			}
 			len++;
 		}
 	}
 
-	//µ¥ÀÌÅ¸ ¾ĞÃà ( Z/NZ ¹æ½Ä )
+	//  ( Z/NZ  )
 	len = EecodeCompress((BYTE *)&sTradeBuff, TransTradeItems.TradeBuff, sizeof(sTRADE));
 	if (len > TRANS_TRADE_BUFF_SIZE) return FALSE;
 
@@ -3696,21 +3696,21 @@ int SendTradeItem(sTRADE *lpTrade, DWORD dwSender)
 	return FALSE;
 }
 
-//¾ÆÀÌÅÛ ±³È¯ Á¤º¸ ¼ö½Å 
+// ?   
 int RecvTradeItems(TRANS_TRADEITEMS *lpTransTradeItems, sTRADE *lpTrade)
 {
-	//¾ĞÃà µ¥ÀÌÅ¸ ÇØµ¶ ( Z/NZ ¹æ½Ä )
+	//  ? ( Z/NZ  )
 	DecodeCompress(lpTransTradeItems->TradeBuff, (BYTE *)lpTrade);
-	memcpy(&TransLastRecvTrade, lpTransTradeItems, lpTransTradeItems->size);		//¹ŞÀº Æ®·¹ÀÌµå µ¥ÀÌÅ¸ ÀÓ½Ã º¹»ç
+	memcpy(&TransLastRecvTrade, lpTransTradeItems, lpTransTradeItems->size);		// ??  ? 
 	return TRUE;
 }
 
-//±³È¯Ã¢ ¾ÆÀÌÅÛ ¼Û½Å
+//?  ?
 int SendTradeItem(DWORD dwSender)
 {
 	return SendTradeItem(&sTrade, dwSender);
 }
-//±³È¯Ã¢ ¾ÆÀÌÅÛ ¼ö½Å
+//?  
 int RecvTradeItems(TRANS_TRADEITEMS *lpTransTradeItems)
 {
 	int res;
@@ -3721,9 +3721,9 @@ int RecvTradeItems(TRANS_TRADEITEMS *lpTransTradeItems)
 
 	ItemPickUpFlag = 1;
 
-	//Æ®·¹ÀÌµå Á¤º¸ ÀÎÁõ È®ÀÎ
+	//??   ?
 	if (CheckTrade(&sTradeRecv) == FALSE) {
-		SendRequestTrade(lpTransTradeItems->dwSender, 3);	//±³È¯ Ãë¼Ò
+		SendRequestTrade(lpTransTradeItems->dwSender, 3);	//? 
 		cTrade.CancelTradeItem();
 		return FALSE;
 	}
@@ -3732,8 +3732,8 @@ int RecvTradeItems(TRANS_TRADEITEMS *lpTransTradeItems)
 		sTrade.CheckFlag = 0;
 		TradeItemCancelCount++;
 		if (TradeItemCancelCount >= 3) {
-			//3¹ø Ãë¼Ò ´çÇÔ
-			SendRequestTrade(lpTransTradeItems->dwSender, 3);	//±³È¯ Ãë¼Ò
+			//3  
+			SendRequestTrade(lpTransTradeItems->dwSender, 3);	//? 
 			cTrade.CancelTradeItem();
 			return FALSE;
 		}
@@ -3742,18 +3742,18 @@ int RecvTradeItems(TRANS_TRADEITEMS *lpTransTradeItems)
 	return res;
 }
 
-//¾ÆÀÌÅÛ ±³È¯ ÀÎÁõÅ° Àü¼Û
+// ? ? 
 int SendTradeSucessKey(DWORD dwSender)
 {
-	//¾ÆÀÌÅÛ ±³È¯ ÀÎÁõÅ° Àü¼Û
+	// ? ? 
 	return SendTradeSucessKey(&sTrade, dwSender);
 }
 
 
 
-//-------> ÀÌÇÔ¼ö°¡ °ÅÀÇ ÅëÃ¤·Î ¸¹ÀÌ ¹Ù²åÀ¸´Ï ±¸¹öÀü Àû¿ë½Ã È®ÀÎ //////////////
+//-------> ?  ?  ?   ? //////////////
 
-//¾ÆÀÌÅÛ ±³È¯ ÀÎÁõÅ° Àü¼Û
+// ? ? 
 int SendTradeSucessKey(sTRADE *lpTrade, DWORD dwSender)
 {
 
@@ -3784,17 +3784,17 @@ int SendTradeSucessKey(sTRADE *lpTrade, DWORD dwSender)
 			if (FindInvenItem(lpTrade->TradeItem[cnt].sItemInfo.CODE,
 				lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.Head,
 				lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.dwChkSum) != 0) {
-				//º¸³¾ ¾ÆÀÌÅÛÀÌ ÀÎº¥¿¡ ³²¾Æ ÀÖÀ½À» ¹ß°ß
+				//  ?   ?
 				CancelFlag = TRUE;
 
-				//ÀÎº¥Åä¸® ¾ÆÀÌÅÛ º¹»ç ¿À·ù
+				//??   
 				SendInvenItemError(1, lpTrade->TradeItem[cnt].sItemInfo.CODE,
 					lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.Head,
 					lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.dwChkSum);
 			}
 
 			if ((TransTradeItemKey.dwItemCode[cnt] & sinITEM_MASK1) == (sinPM1&sinITEM_MASK1)) {
-				//¹°¾àÀÌ´Ù! ( ¾ÆÀÌÅÛ Ã¼Å©¼¶¿¡ ¹°¾à°¹¼ö¸¦ ¼³Á¤ )
+				//?! (  ? ?  )
 				TransTradeItemKey.dwItemSum[cnt] = lpTrade->TradeItem[cnt].sItemInfo.PotionCount & 0xFFFF;
 				TransTradeItemKey.dwItemSum[cnt] |= (lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.dwChkSum) << 16;
 				TransTradeItemKey.dwItemSum[cnt] ^= (TransTradeItemKey.dwItemSum[cnt] >> 16) ^ 0x5cbc;
@@ -3826,7 +3826,7 @@ int SendTradeSucessKey(sTRADE *lpTrade, DWORD dwSender)
 						//SendSaveThrowItem( &lpTrade->TradeItem[cnt].sItemInfo );
 					}
 				}
-				//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ÃÖ´ë 32°³ µ¿½Ã ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+				//    ? ? 32  (    )
 				SendSaveThrowItems( &TransThrowItems );
 
 				if ( smWsockServer )
@@ -3839,7 +3839,7 @@ int SendTradeSucessKey(sTRADE *lpTrade, DWORD dwSender)
 			smWsockDataServer->Send((char *)&TransTradeItemKey, TransTradeItemKey.size, TRUE);
 
 
-		//¾ÆÀÌÅÛ ±³È¯Å°
+		// ??
 		memcpy(&LastTransTradeItemKey, &TransTradeItemKey, sizeof(TRANS_TRADE_ITEMKEY));
 		dwLastTransTradeKeyTime = dwPlayTime;
 	}
@@ -3850,7 +3850,7 @@ int SendTradeSucessKey(sTRADE *lpTrade, DWORD dwSender)
 }
 
 
-//¾ÆÀÌÅÛ ±³È¯ ÀÎÁõÅ° ¼ö½Å
+// ? ? 
 int RecvTradeSucessKey(TRANS_TRADE_ITEMKEY *lpTransTradeItemKey, sTRADE *lpTrade)
 {
 	int cnt;
@@ -3861,7 +3861,7 @@ int RecvTradeSucessKey(TRANS_TRADE_ITEMKEY *lpTransTradeItemKey, sTRADE *lpTrade
 	dwTradeMaskTime = dwPlayTime + 3000;
 
 	if (TransLastRecvTrade.code) {
-		//¸¶Áö¸· ¹ŞÀº µ¥ÀÌÅ¸·Î ¾ĞÃà µ¥ÀÌÅ¸ ´Ù½Ã ÇØµ¶ ( Z/NZ ¹æ½Ä )
+		//     ? ? ( Z/NZ  )
 		DecodeCompress(TransLastRecvTrade.TradeBuff, (BYTE *)&sChkTrade);
 		for (cnt = 0; cnt < MAX_TRADE_ITEM; cnt++) {
 			memcpy(&lpTrade->TradeItem[cnt].sItemInfo, &sChkTrade.TradeItem[cnt].sItemInfo, sizeof(sITEMINFO));
@@ -3875,7 +3875,7 @@ int RecvTradeSucessKey(TRANS_TRADE_ITEMKEY *lpTransTradeItemKey, sTRADE *lpTrade
 			dwChkSum1 = lpTransTradeItemKey->dwItemSum[cnt];
 			dwChkSum2 = lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.dwChkSum;
 			if ((lpTrade->TradeItem[cnt].sItemInfo.CODE&sinITEM_MASK1) == (sinPM1&sinITEM_MASK1)) {
-				//¹°¾àÀÎ°æ¿ì
+				//?
 				ItemFlag = 1;
 				dwChkSum1 = dwChkSum1 >> 16;
 				dwChkSum2 = dwChkSum2 & 0xFFFF;
@@ -3888,12 +3888,12 @@ int RecvTradeSucessKey(TRANS_TRADE_ITEMKEY *lpTransTradeItemKey, sTRADE *lpTrade
 
 				lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.Head = lpTransTradeItemKey->dwItemKey[cnt];
 
-				//Àß¸øµÈ ¾ÆÀÌÅÛ ¼ö½Å
+				//?  
 				if (!lpTrade->TradeItem[cnt].sItemInfo.ItemHeader.Head)
 					lpTrade->TradeItem[cnt].Flag = 0;
 				else {
 					if (ItemFlag == 1) {
-						//¹°¾à ÀçÀÎÁõ
+						// 
 						ReformItem(&lpTrade->TradeItem[cnt].sItemInfo);
 					}
 				}
@@ -3909,14 +3909,14 @@ int RecvTradeSucessKey(TRANS_TRADE_ITEMKEY *lpTransTradeItemKey, sTRADE *lpTrade
 		}
 	}
 
-	//SendRecordTradeItems( lpTrade );			//±³È¯ ³»¿ë ¼­¹ö¿¡ ±â·Ï
+	//SendRecordTradeItems( lpTrade );			//?   
 
 	return TRUE;
 }
 
 
 
-//¾ÆÀÌÅÛ ±³È¯ ³»¿ë È®ÀÎ
+// ?  ?
 int SendTradeCheckItem(DWORD dwSender)
 {
 
@@ -3932,7 +3932,7 @@ int SendTradeCheckItem(DWORD dwSender)
 	TransTradeCheckItem.dwRecver = dwSender;
 
 	if (sTrade.Money) {
-		SendSaveMoney();			//µ· ÀúÀå ( º¹»ç¹æÁö )
+		SendSaveMoney();			//  (  )
 	}
 
 	for (cnt = 0; cnt < MAX_TRADE_ITEM; cnt++) {
@@ -3940,11 +3940,11 @@ int SendTradeCheckItem(DWORD dwSender)
 			TransTradeCheckItem.dwSendItemCode[cnt] = sTrade.TradeItem[cnt].sItemInfo.CODE;
 			TransTradeCheckItem.dwSendItemSum[cnt] = sTrade.TradeItem[cnt].sItemInfo.ItemHeader.dwChkSum;
 
-			//SendSaveThrowItem( &sTrade.TradeItem[cnt].sItemInfo );		//¾ÆÀÌÅÛ º¹»ç ¹æÁö
+			//SendSaveThrowItem( &sTrade.TradeItem[cnt].sItemInfo );		//  
 
-			//¾ÆÀÌÅÛ ÀÎÁõ È®ÀÎ
+			//  ?
 			if (CheckItemForm(&sTrade.TradeItem[cnt].sItemInfo) == FALSE)
-				return FALSE;		//Àß¸øµÈ ¾ÆÀÌÅÛ 
+				return FALSE;		//?  
 
 		}
 		else {
@@ -3975,7 +3975,7 @@ int SendTradeCheckItem(DWORD dwSender)
 				TransThrowItems.ThrowItemCount++;
 			}
 		}
-		//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ÃÖ´ë 32°³ µ¿½Ã ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
+		//    ? ? 32  (    )
 		SendSaveThrowItems( &TransThrowItems );
 	*/
 
@@ -3990,7 +3990,7 @@ int SendTradeCheckItem(DWORD dwSender)
 	return TRUE;
 }
 
-//¾ÆÀÌÅÛ ±³È¯ ³»¿ë È®ÀÎ ¼ö½Å
+// ?  ? 
 int RecvTradeCheckItem(TRANS_TRADE_CHECKITEM *lpTransTradeCheckItem)
 {
 	int cnt;
@@ -4046,7 +4046,7 @@ int	PartyButton(int Num, int Button) { return TRUE; }
 
 
 
-////////////////////////// µ·°ú °æÇèÄ¡ ÀÌµ¿ ±â·Ï ///////////////
+//////////////////////////  ? ?  ///////////////
 
 int	SetTotalSubMoney(int Money)
 {
@@ -4103,115 +4103,12 @@ int GetTotalExp()
 	return m;
 }
 
-//Ã¢°í ÀúÀå
+//? 
 int	SaveWareHouse(sWAREHOUSE *lpWareHouse, TRANS_WAREHOUSE *lpTransWareHouse)
 {
-	TRANS_WAREHOUSE	TransWareHouse;
-	//TRANS_THROW_ITEMS	TransThrowItems;
-	sWAREHOUSE	WareHouseCheck;
-	int	CompSize;
-	int cnt;
-	DWORD	dwChkSum;
-	char	*szComp1, *szComp2;
-	int	flag;
-
-	if (lpTransWareHouse) flag = 1;
-	else flag = 0;
-
-	if (!flag && QuitSave)	return FALSE;
-
-	for (cnt = 0; cnt < 100; cnt++) {
-		if (!lpWareHouse->WareHouseItem[cnt].Flag) {
-			ZeroMemory(&lpWareHouse->WareHouseItem[cnt], sizeof(sITEM));
-		}
-	}
-
-
-	CompSize = EecodeCompress((BYTE *)lpWareHouse, (BYTE *)TransWareHouse.Data, sizeof(sWAREHOUSE), sizeof(sITEM) * 100);
-
-
-	//¿ë·® Ã½Å©
-	if (!flag && CompSize > (smSOCKBUFF_SIZE - 256))
+	if (!lpWareHouse)
 		return FALSE;
-
-	if (flag && CompSize > (smSOCKBUFF_SIZE - 140))
-		return FALSE;
-
-
-	DecodeCompress((BYTE *)TransWareHouse.Data, (BYTE *)&WareHouseCheck, sizeof(sWAREHOUSE));
-
-	szComp1 = (char *)lpWareHouse;
-	szComp2 = (char *)&WareHouseCheck;
-
-	dwChkSum = 0;
-
-	for (cnt = 0; cnt < sizeof(sWAREHOUSE); cnt++) {
-		if (szComp1[cnt] != szComp2[cnt]) {
-			return FALSE;
-		}
-		else {
-			dwChkSum += szComp1[cnt] * (cnt + 1);
-		}
-	}
-
-
-	//Ã¢°í°¡ ¿­·ÈÀ»¶§¿Í ´İÇûÀ»¶§ÀÇ µ·ÀÇ Â÷¸¦ °Ë»çÇÏ±â À§ÇÑ º¯¼ö
-	WareHouseSubMoney += (CompWareHouseMoney - lpWareHouse->Money);
-	CompWareHouseMoney = 0;
-	/*
-		if ( !flag ) {
-			//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
-			SendSaveMoney();				//µ·
-
-			TransThrowItems.ThrowItemCount = 0;
-			for( cnt=0;cnt<THROW_ITEMS_MAX;cnt++) {
-				if ( lpWareHouse->WareHouseItem[cnt].Flag ) {
-					TransThrowItems.ThrowItems[TransThrowItems.ThrowItemCount].dwCode   = lpWareHouse->WareHouseItem[cnt].sItemInfo.CODE;
-					TransThrowItems.ThrowItems[TransThrowItems.ThrowItemCount].dwHead   = lpWareHouse->WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
-					TransThrowItems.ThrowItems[TransThrowItems.ThrowItemCount].dwChkSum = lpWareHouse->WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
-					TransThrowItems.ThrowItemCount++;
-				}
-			}
-			//µ¥ÀÌÅ¸ ¼­¹ö¿¡ ¾ÆÀÌÅÛ ÀúÀå ¿ä±¸ ÃÖ´ë 32°³ µ¿½Ã ( º¹»ç ¾ÆÀÌÅÛ ¹æÁö )
-			SendSaveThrowItems( &TransThrowItems );
-		}
-	*/
-
-	TransWareHouse.code = smTRANSCODE_WAREHOUSE;
-	TransWareHouse.size = sizeof(TRANS_WAREHOUSE) - (sizeof(sWAREHOUSE) - CompSize);
-	TransWareHouse.DataSize = CompSize;
-	TransWareHouse.dwChkSum = dwChkSum;
-	TransWareHouse.wVersion[0] = Version_WareHouse;
-	TransWareHouse.wVersion[1] = 0;
-
-	if (!flag) {
-		//µ· ÀúÀå ( ¼­¹ö¿¡¼­ »ç¿ëÇÒ ³»¿ë / ºÒ·¯¿Ã¶§´Â ¼­¹ö¿¡¼­ ÃÊ±âÈ­ ÇØÁà¾ß ÇÔ )
-		TransWareHouse.WareHouseMoney = lpWareHouse->Money ^ (dwChkSum^smTRANSCODE_WAREHOUSE);
-		TransWareHouse.UserMoney = lpCurPlayer->smCharInfo.Money ^ (dwChkSum^smTRANSCODE_WAREHOUSE);
-	}
-
-	TransWareHouse.dwTemp[0] = 0;
-	TransWareHouse.dwTemp[1] = 0;
-	TransWareHouse.dwTemp[2] = 0;
-	TransWareHouse.dwTemp[3] = 0;
-	TransWareHouse.dwTemp[4] = 0;
-
-	dwLastWareHouseChkSum = dwChkSum;				//ÃÖÁ¾ ÀúÀå Ã¢°í ÄÚµå
-
-	if (flag) {
-		memcpy(lpTransWareHouse, &TransWareHouse, sizeof(TRANS_WAREHOUSE));
-		return TRUE;
-	}
-
-	if (TransWareHouse.size > smSOCKBUFF_SIZE) TransWareHouse.size = smSOCKBUFF_SIZE;
-
-	if (smWsockDataServer) {
-		smWsockDataServer->Send((char *)&TransWareHouse, TransWareHouse.size, TRUE);
-
-		SaveGameData();						//°ÔÀÓÀ» ÀúÀå
-		return TRUE;
-	}
-
+	(void)lpTransWareHouse;
 	return FALSE;
 }
 
@@ -4241,7 +4138,7 @@ int	SaveCaravan2(sCARAVAN* lpWareHouse, TRANS_CARAVAN* lpTransWareHouse)
 	CompSize = EecodeCompress((BYTE*)lpWareHouse, (BYTE*)TransWareHouse.Data, sizeof(sCARAVAN), sizeof(sITEM) * 100);
 
 
-	//¿ë·® Ã½Å©
+	//? ?
 	if (!flag && CompSize > (smSOCKBUFF_SIZE - 256))
 		return FALSE;
 
@@ -4301,7 +4198,7 @@ int	SaveCaravan2(sCARAVAN* lpWareHouse, TRANS_CARAVAN* lpTransWareHouse)
 
 
 
-//Ã¢°í ÀúÀå
+//? 
 int	SaveWareHouse(sWAREHOUSE *lpWareHouse)
 {
 	return SaveWareHouse(lpWareHouse, 0);
@@ -4322,7 +4219,7 @@ int	LoadWareHouse(TRANS_WAREHOUSE *lpTransWareHouse, sWAREHOUSE *lpWareHouse, in
 	char	szMsgBuff[128];
 
 	if (lpTransWareHouse->DataSize == 0) {
-		//ÃÊ±â°ª ¾Æ¹«°Íµµ ¾øÀ½
+		//?? ?? 
 		ZeroMemory(lpWareHouse, sizeof(sWAREHOUSE));
 		lpWareHouse->Money = 2023;
 		lpWareHouse->Weight[0] = 197;
@@ -4391,11 +4288,11 @@ int SendCollectMoney(int Money)
 
 		TransCommand.code =	smTRANSCODE_COLLECTMONEY;
 		TransCommand.size = sizeof(smTRANS_COMMAND);
-		TransCommand.WParam = Money;							//±âºÎÇÑ µ·
-		TransCommand.LParam = lpCurPlayer->smCharInfo.Money;		//º¸À¯ÇÑ µ·
+		TransCommand.WParam = Money;							// 
+		TransCommand.LParam = lpCurPlayer->smCharInfo.Money;		// 
 		TransCommand.SParam = 0;
 
-		AddInvenMoney( -Money );				//ÀÎº¥ µ· È®ÀÎ
+		AddInvenMoney( -Money );				//?  ?
 
 		if ( smWsockServer ) {
 			return smWsockServer->Send( (char *)&TransCommand , TransCommand.size , TRUE );
@@ -4409,13 +4306,13 @@ int SendCollectMoney(int Money)
 	memset(&sItemMoney, 0, sizeof(sITEM));
 	sItemMoney.sItemInfo.CODE = sinGG1 | sin01;
 	for (j = 0; j < MAX_ITEM; j++) {
-		if (sItem[j].CODE == sItemMoney.sItemInfo.CODE) { //ÄÚÀÎÀÌ¸é 
+		if (sItem[j].CODE == sItemMoney.sItemInfo.CODE) { //? 
 			memcpy(&sItemMoney, &sItem[j], sizeof(sITEM));
-			sItemMoney.sItemInfo.Money = Money;			//±İ¾×À» ³Ñ°ÜÁØ´Ù 
+			sItemMoney.sItemInfo.Money = Money;			//? ?? 
 			sItemMoney.sItemInfo.ItemKindCode = smTRANSCODE_COLLECTMONEY;
-			ReformItem(&sItemMoney.sItemInfo);		//ÀÎÁõ 
+			ReformItem(&sItemMoney.sItemInfo);		// 
 			if (sinThrowItemToFeild(&sItemMoney)) {
-				AddInvenMoney(-Money);				//ÀÎº¥ µ· È®ÀÎ
+				AddInvenMoney(-Money);				//?  ?
 				return TRUE;
 			}
 		}
@@ -4424,15 +4321,15 @@ int SendCollectMoney(int Money)
 	return FALSE;
 }
 
-//PK´çÇØ¼­ Á×À½
+//PK? 
 int PlayerKilling(DWORD dwObjectSerial)
 {
 	smTRANS_COMMAND	TransCommand;
 
 	TransCommand.code = smTRANSCODE_PLAYERKILLING;
 	TransCommand.size = sizeof(smTRANS_COMMAND);
-	TransCommand.WParam = dwObjectSerial;				//»ó´ë¹æ ÄÚµå
-	TransCommand.LParam = lpCurPlayer->dwObjectSerial;		//³» ÄÚµå
+	TransCommand.WParam = dwObjectSerial;				// ?
+	TransCommand.LParam = lpCurPlayer->dwObjectSerial;		// ?
 	TransCommand.SParam = 0;
 
 	if (smWsockUserServer) {
@@ -4443,22 +4340,22 @@ int PlayerKilling(DWORD dwObjectSerial)
 
 
 
-//¹Í½ºÃÄ µ¥ÀÌÅ¸¸¦ ¼­¹ö·Î º¸³¿
+//?   
 int SendCraftItemToServer(void *lpsCraftItem_Send) { return TRUE; }
 
-//À§ÇÁ¿ë À® ¾ÆÀÌÅÛ µ¥ÀÌÅ¸¸¦ ¼­¹ö·Î º¸³¿
+//     
 int SendWingItemToServer(void *lpsCraftItem_Send) { return TRUE; }
 
 
-//¿¡ÀÌÂ¡ µ¥ÀÌÅ¸¸¦ ¼­¹ö·Î º¸³¿
+//   
 int SendAgingItemToServer(void *lpsCraftItem_Send) { return TRUE; }
 
-//¸µÅ©ÄÚ¾î µî·Ï º¸³¿
+//??  
 int SendLinkCoreToServer(sITEMINFO *lpItem) { return TRUE; }
 
 
 
-//¿¡ÀÌÂ¡ ¿Ï·áµÈ ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³¿
+// ?   
 int SendAgingUpgradeItemToServer(sITEMINFO *lpItem) { return TRUE; }
 
 int ClearInvenPotionCount()
@@ -4517,35 +4414,35 @@ sITEMINFO *FindItemFromCode(DWORD dwItemCode)
 
 DWORD	dwLastCheckItemTime = 0;
 
-//¾ÆÀÌÅÛÀ» ¼­¹ö¿¡ º¸³»¼­ È®ÀÎ
+//   ?
 int	SendCheckItemToServer(sITEMINFO *lpItem) { return TRUE; }
 
-//¾ÆÀÌÅÛ È®ÀÎ °á°ú µµÂø
+// ?  
 int RecvCheckItemFromServer(TRANS_ITEM_CODE *lpTransItemCode)
 {
 
 	switch (lpTransItemCode->code) {
 	case smTRANSCODE_CHECKITEM:
-		//¾ÆÀÌÅÛ ¼­¹ö È®ÀÎ ÄÚµå ¹ŞÀ½
+		//  ? ? 
 		//cInvenTory.ResetInvenItemToServer( lpTransItemCode->dwItemCode , lpTransItemCode->dwHead ,
 		//	lpTransItemCode->dwChkSum , lpTransItemCode->dwTime );
 		break;
 
 	case smTRANSCODE_ERRORITEM:
-		//¾ÆÀÌÅÛ ¼­¹öÈ®ÀÎ ÄÚµå ¿À·ù ( ¾ÆÀÌÅÛ Á¦°Å )
+		// ? ?  (   )
 		cInvenTory.DeleteInvenItemToServer(lpTransItemCode->dwItemCode, lpTransItemCode->dwHead, lpTransItemCode->dwChkSum);
 
-		//ÀÎº¥Åä¸®ÀÇ ÁöÁ¤ÇÑ ¾ÆÀÌÅÛÀ» Ã£¾Æ °Ë»öÇÏ¿© Ã£´Â´Ù
+		//??   ? ?? ?
 		if (FindInvenItem(lpTransItemCode->dwItemCode, lpTransItemCode->dwHead, lpTransItemCode->dwChkSum) == 0) {
 
 			SendInvenItemError(0, lpTransItemCode->dwItemCode, lpTransItemCode->dwHead, lpTransItemCode->dwChkSum);
-			ResetInvenItemCode();				//ÀÌº¥ ¾ÆÀÌÅÛ ÄÚµå ÃÊ±âÈ­
+			ResetInvenItemCode();				//?  ? ??
 		}
 
 		break;
 
 	case smTRANSCODE_CLEARPOTION:
-		//ÀÎº¥Åä¸®ÀÇ ¹°¾à°¹¼ö¸¦ ÀüºÎ 1·Î ¼¼ÆÃ
+		//?? ?  1 
 		ClearInvenPotionCount();
 		break;
 	}
@@ -4553,7 +4450,7 @@ int RecvCheckItemFromServer(TRANS_ITEM_CODE *lpTransItemCode)
 	return TRUE;
 }
 
-//ÆÇ¸ÅÇÒ ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³¿
+//?   
 int	SellItemToServer(sITEMINFO *lpItem, int Count) { return TRUE; }
 
 
@@ -4563,10 +4460,10 @@ int	SellItemToServer(sITEMINFO *lpItem, int Count) { return TRUE; }
 int Chk_InventPosCount = 1;
 DWORD	dwCheckInvenItemTime = 0;
 
-//ÀÎº¥Åä¸®ÀÇ ÀåÂøµÈ ¾ÆÀÌÅÛÀ» ¼­¹ö·Î º¸³»¼­ °Ë»ç
+//??     ?
 int CheckInvenItemToServer() { return TRUE; }
 
-////////////////////////////// ¸Ş¸ğ¸® Å¸ÀÓ Ã½Å© ¾²·¹µå ///////////////////////////////
+////////////////////////////// ?  ?  ///////////////////////////////
 
 HANDLE	hTimeCheckThread = 0;
 int		TimeCheckCounter;
@@ -4597,7 +4494,7 @@ DWORD WINAPI TimeCheckThread(void *pInfo)
 }
 
 
-//·ÎµùÁß È­¸é Ç¥½Ã
+//? ? ?
 int OpenTimeCheckThread()
 {
 	DWORD	dwTimeCheckThreadID;
@@ -4641,7 +4538,7 @@ int SendPlayTimerMax()
 
 
 
-//¼­¹ö¿¡¼­ ¸Ş¸ğ¸® °ªÀ» Á¤ÇØ¼­ °¡Á®°£´Ù
+// ?  ? 
 DWORD funcCheckMemSum(DWORD FuncPoint, int count)
 {
 	int cnt;
@@ -4674,7 +4571,7 @@ DWORD funcCheckMemSum(DWORD FuncPoint, int count)
 		smTransCommand.EParam = dwResult;
 
 */
-//¼­¹ö¿¡¼­ ¸Ş¸ğ¸® °ªÀ» Á¤ÇØ¼­ °¡Á®°£´Ù
+// ?  ? 
 //DWORD funcCheckMemSum2( DWORD FuncPoint , int count )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4688,15 +4585,15 @@ DWORD	dwFuncList[][2] = {
 	{ (DWORD)sinSetLife << 1					,	512		},
 	{ (DWORD)NetWorkPlay << 1					,	2800	},
 
-	{ (DWORD)E_Shield_BlockRate << 1			,	((Meteo_UseMana - E_Shield_BlockRate) + 10ul) },		//½ºÅ³ Å×ÀÌºí º¸¾È
+	{ (DWORD)E_Shield_BlockRate << 1			,	((Meteo_UseMana - E_Shield_BlockRate) + 10ul) },		//? ? 
 
-	{ (DWORD)Code_VRamBuffOpen << 1			,	3600	},			//¸¶Áö¸· ²¨´Â º°µµ Ã½Å© ÇÑ´Ù
+	{ (DWORD)Code_VRamBuffOpen << 1			,	3600	},			//   ? ?
 	{ 0,0 }
 };
 
 
 
-//Å¬¶óÀÌ¾ğÆ® Æã¼Ç À§Ä¡¿Í °ªÀ» ¼­¹ö¿¡ º¸°í
+//???  ?   
 int	SendClientFuncPos()
 {
 
@@ -4731,7 +4628,7 @@ int	SendClientFuncPos()
 
 	TransClientFuncPos.FuncCount = cnt;
 
-	//¼­¹ö¿¡ º¸°í
+	// 
 	if (smWsockDataServer)
 		return smWsockDataServer->Send((char *)&TransClientFuncPos, TransClientFuncPos.size, TRUE);
 
@@ -4739,7 +4636,7 @@ int	SendClientFuncPos()
 }
 
 
-//¸Ş¸ğ¸® °Ë»ç ¸ğµâ ¹ŞÀ½
+//? ?  
 int	RecvMemFuncData(TRANS_FUNC_MEMORY *TransFuncMem)
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -4757,7 +4654,7 @@ int	RecvMemFuncData(TRANS_FUNC_MEMORY *TransFuncMem)
 }
 
 
-////////////////////////////// ¾ÆÀÌÅÛ ÀÓÁö ÀúÀå Å¥Ã³¸® //////////////////////////
+//////////////////////////////    ? //////////////////////////
 
 #define	RECV_TRANSITEM_QUE_MAX			256
 #define	RECV_TRANSITEM_QUE_MASK			255
@@ -4767,7 +4664,7 @@ TRANS_ITEMINFO	Recv_TransItemInfo_Que[RECV_TRANSITEM_QUE_MAX];
 int	RecvTransItemQue_Push = 0;
 int	RecvTransItemQue_Pop = 0;
 
-//¾ÆÀÌÅÛ Å¥¿¡ ÀÓ½Ã ÀúÀå
+// ? ? 
 int	PushRecvTransItemQue(TRANS_ITEMINFO *lpTransItemInfo)
 {
 	int mCnt;
@@ -4782,7 +4679,7 @@ int	PushRecvTransItemQue(TRANS_ITEMINFO *lpTransItemInfo)
 	return TRUE;
 }
 
-//ÀÓ½ÃÀúÀåµÈ ¾ÆÀÌÅÛ Å¥¿¡¼­ Ã£±â
+//?  ? ?
 TRANS_ITEMINFO	*FindRecvTransItemQue(DWORD dwCode, DWORD dwHead, DWORD dwChkSum)
 {
 	int cnt, mCnt;
@@ -4801,7 +4698,7 @@ TRANS_ITEMINFO	*FindRecvTransItemQue(DWORD dwCode, DWORD dwHead, DWORD dwChkSum)
 	return NULL;
 }
 
-//ÀÓ½ÃÀúÀåµÈ ¾ÆÀÌÅÛ Å¥¿¡ ¾ÆÀÌÅÛ ´ë±âÁßÀÎÁö °Ë»ç
+//?  ?   ?
 int CheckRecvTrnsItemQue()
 {
 	int cnt, mCnt;
@@ -4814,13 +4711,13 @@ int CheckRecvTrnsItemQue()
 	return TRUE;
 }
 
-//»ç¿ëÇÑ ¾ÆÀÌÅÛ ÄÚµå ¼­¹ö·Î º¸³¿
+//  ?  
 int SendUseItemCodeToServer(sITEMINFO *lpItem) { return TRUE; }
 
-//ÁÖº¯ Ä³¸¯ÅÍ¿ë ÀÌº¥Æ® ¸í·É ÄÚµå
+//? ?? ??  ?
 int RecvCommandUser(smTRANS_COMMAND_EX *lpTransCommandEx) { return TRUE; }
 
-//ÁÖº¯ Ä³¸¯ÅÍ¿¡ ÀÌº¥Æ® ¸í·É ÄÚµå º¸³»±â
+//? ?? ??  ? 
 int	SendCommandUser(int wParam, int lParam, int sParam, int eParam)
 {
 	smTRANS_COMMAND_EX	smTransCommandEx;
@@ -4843,7 +4740,7 @@ int	SendCommandUser(int wParam, int lParam, int sParam, int eParam)
 	return FALSE;
 }
 
-//Áö¿ª¼­¹ö¿¡ ¸í·É ÄÚµå Àü¼Û
+//  ? 
 int	SendCommand_AreaServer(DWORD dwCode, int wParam, int lParam, int sParam, int eParam)
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -4864,7 +4761,7 @@ int	SendCommand_AreaServer(DWORD dwCode, int wParam, int lParam, int sParam, int
 	return FALSE;
 }
 
-//Áö¿ª¼­¹ö¿¡ ¸í·É ÄÚµå Àü¼Û
+//  ? 
 int	SendCommand_DataServer(DWORD dwCode, int wParam, int lParam, int sParam, int eParam)
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -4892,7 +4789,7 @@ sDAMAGE_RECORD	sRecvDamage[3];
 sDAMAGE_RECORD	sSendDamage[3];
 
 ////////////////////////////////////////////////////////////////////////////
-//°ø°İ·Â ±â·Ï ÃÊ±âÈ­
+//?  ??
 int	Init_RecordDamage()
 {
 	ZeroMemory(sRecvDamage, sizeof(sDAMAGE_RECORD) * 3);
@@ -4901,7 +4798,7 @@ int	Init_RecordDamage()
 	return TRUE;
 }
 
-//¹ŞÀº °ø°İ·Â ±â·Ï
+// ? 
 int	Record_RecvDamage(smWINSOCK *lpsmSock, int Damage)
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -4953,7 +4850,7 @@ int	Record_RecvDamage(smWINSOCK *lpsmSock, int Damage)
 	return TRUE;
 }
 
-//º¸³½ °ø°İ·Â ±â·Ï
+// ? 
 int	Record_SendDamage(smWINSOCK *lpsmSock, int Damage)
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -5005,19 +4902,19 @@ int	Record_SendDamage(smWINSOCK *lpsmSock, int Damage)
 	return TRUE;
 }
 
-//ÆÄÆ¼¿ø¿¡°Ô ½ºÅ³ »ç¿ë Á¤º¸ º¸³»±â
+//? ?   
 int	SendPartySkillToServer(DWORD dwSkillCode, int SkillLevel, int Around, int wParam, int lParam, int sParam, int eParam) { return TRUE; }
 
-//½ºÅ³ Ãë¼Ò
+//? 
 int SendCancelSkillToServer(DWORD dwSkillCode, int lParam, int sParam, int eParam) { return TRUE; }
 
-//½ºÅ³ º¯°æ
+//? 
 int SendUpdateSkillToServer(DWORD dwSkillCode, int lParam, int sParam, int eParam) { return TRUE; }
 
-//¼­¹ö¿¡ ½ºÅ³¼öÇà º¸³¿
+// ? 
 int SendProcessSKillToServer(DWORD dwSkillCode, int point, int Param1, int Param2) { return TRUE; }
 
-//ÆÄÆ¼ ½ºÅ³ ÆĞÅ¶ ¼ö½Å
+//? ? ? 
 int RecvPartySkillFromServer(TRANS_PARTY_SKILL *lpTransPartySkill)
 {
 	int cnt, cnt3;
@@ -5027,7 +4924,7 @@ int RecvPartySkillFromServer(TRANS_PARTY_SKILL *lpTransPartySkill)
 
 	switch (lpTransPartySkill->dwSkillCode) {
 	case SKILL_PLAY_HOLY_VALOR:
-		//È¦¸®¹ë·¯
+		//??
 		if (lpTransPartySkill->Point < 1 || lpTransPartySkill->Point>10) break;
 
 		time = Holy_Valor_Time[lpTransPartySkill->Point - 1];
@@ -5045,14 +4942,14 @@ int RecvPartySkillFromServer(TRANS_PARTY_SKILL *lpTransPartySkill)
 				}
 
 				if (flag) {
-					//È¦¸®¹Ùµğ »ç¿ëÁß ( ½ºÅ³À» Ãë¼Ò ) / ½º·¡½ºÆ½ ½ºÇÇ¸®Æ® »ç¿ëÁßÀÏ¶§µµ Ãë¼Ò
-					//- Ãß°¡»çÇ× - È¦¸® ¹ë·¯¸¦ ÀÌ¹Ì »ç¿ëÁßÀÌ¸é ÀÌÆåÆ®¿¡¼­ Áßº¹ Ç¥½ÃµÇÁö ¾Êµµ·Ï Ã³¸® 
-					//(³ªÁß¿¡ ½ÇÇàÇÑ ÀÌÆåÆ®·Î Àû¿ë )
+					//??  ( ?  ) / ? ?? ? 
+					//- ? - ? ? ? ? ? ? ? ?  
+					//(?  ?  )
 
 					SendCancelSkillToServer(lpTransPartySkill->dwSkillCode, 0, 0, 0);
 				}
 				else {
-					//½ºÅ³ ÀÌÆåÆ® Àû¿ë
+					//? ? 
 					sSKILL sSkill;
 
 					ZeroMemory(&sSkill, sizeof(sSKILL));
@@ -5067,12 +4964,12 @@ int RecvPartySkillFromServer(TRANS_PARTY_SKILL *lpTransPartySkill)
 		break;
 		/*
 				case SKILL_PLAY_TRIUMPH_OF_VALHALLA:
-					//Æ®¸®¾öÇÁ¹ßÇÒ¶ó
+					//??
 					if ( lpTransPartySkill->Point<1 || lpTransPartySkill->Point>10 ) break;
 
 					time = T_Of_Valhalla_Time[lpTransPartySkill->Point-1];
 
-					lpChar = FindChrPlayer( lpTransPartySkill->dwPartyUser[0] );		//½ÃÀüÀÚ
+					lpChar = FindChrPlayer( lpTransPartySkill->dwPartyUser[0] );		//
 
 					if ( lpChar ) {
 						if ( lpChar!=lpCurPlayer ) {
@@ -5106,19 +5003,19 @@ int RecvPartySkillFromServer(TRANS_PARTY_SKILL *lpTransPartySkill)
 
 DWORD	dwLastClanUserCode = 0;
 
-//Å¬·£ ¸Ş¼¼Áö º¸³»±â
+//? ? 
 int SendClanJoinService(DWORD dwMsgCode, smCHAR* lpChar) { return TRUE; }
 
-//Å¬·£ °¡ÀÔ ½ÂÀÎ ¸Ş¼¼Áö º¸³»±â
+//?   ? 
 int SendJoinClan() { return TRUE; }
 
-//Å¬·£ ¸Ş¼¼Áö ¹Ş±â
+//? ? ?
 int RecvClanJoinService(smTRANS_CHAR_COMMAND2 *lpTransCharCommand)
 {
 	smCHAR *lpChar;
 
 	switch (lpTransCharCommand->WParam) {
-	case 1:		//°¡ÀÔ ±ÇÀ¯
+	case 1:		// 
 		if (cldata.myPosition == 102 || cldata.myPosition == 103) {
 
 			lpChar = FindAutoPlayer(lpTransCharCommand->SParam);
@@ -5150,13 +5047,13 @@ int RecvClanJoinService(smTRANS_CHAR_COMMAND2 *lpTransCharCommand)
 }
 
 
-/////////// DivineLightning ½ºÅ³ ¼­ºê ÇÔ¼ö ///////////////////
+/////////// DivineLightning ?  ? ///////////////////
 
 DWORD	dwSkill_DivineLightning_Target[8];
 int		DivineLightning_Target_Count = 0;
 int		DivineLightning_FindCount = 0;
 
-//µğ¹ÙÀÎ ¶óÀÌÆ®´× ½ºÅ³ ¿¬Ãâ ( ÁØºñÇÔ¼ö - ÁÖÀÎ°ø¸¸ )
+// ? ?  ( ?? - ? )
 int	SkillPlay_DivineLightning_Select(smCHAR *lpChar, int SkillPoint)
 {
 	int cnt, TargetCount;
@@ -5166,8 +5063,8 @@ int	SkillPlay_DivineLightning_Select(smCHAR *lpChar, int SkillPoint)
 	TRANS_SKIL_ATTACKDATA	TransSkilAttackData;
 	smWINSOCK *lpsmSendSock = 0;
 
-	//Å¬¶óÀÌ¾ğÆ® ·Î±× ÆÄÀÏ ±â·Ï
-	Record_ClinetLogFile("±¸¹öÀü °ø°İÆĞÅ¶ - SkillPlay_DivineLightning_Select ");
+	//??? ?  
+	Record_ClinetLogFile(" ? - SkillPlay_DivineLightning_Select ");
 	quit = 1;
 	return TRUE;
 
@@ -5219,14 +5116,14 @@ int	SkillPlay_DivineLightning_Select(smCHAR *lpChar, int SkillPoint)
 	TransSkilAttackData.y = lpChar->pY;
 	TransSkilAttackData.z = lpChar->pZ;
 
-	TransSkilAttackData.AttackState = 103;			//¾ğµ¥µå °¡Áß
+	TransSkilAttackData.AttackState = 103;			//?? 
 	TransSkilAttackData.AttackSize = 160 * 160;
 	TransSkilAttackData.Power = Divine_Lightning_Damage[SkillPoint - 1];
 
-	lpsmSendSock = GetAreaServerSock();		//º¸³¾ ¼­¹ö±¸ÇÏ±â
+	lpsmSendSock = GetAreaServerSock();		// ?
 
 	if (lpsmSendSock && TargetCount > 0) {
-		//º¸³½ °ø°İ·Â ±â·Ï
+		// ? 
 		Record_SendDamage(lpsmSendSock, TransSkilAttackData.Power);
 
 		lpsmSendSock->Send((char *)&TransSkilAttackData, TransSkilAttackData.size, TRUE);
@@ -5235,24 +5132,24 @@ int	SkillPlay_DivineLightning_Select(smCHAR *lpChar, int SkillPoint)
 	return TRUE;
 }
 
-//µğ¹ÙÀÎ ¶óÀÌÆ®´× ½ºÅ³ ¿¬Ãâ ( ÀÌÆåÆ® ½ÇÇö )
+// ? ?  ( ?  )
 int SkillPlay_DivineLightning_Effect(smCHAR *lpChar, int SkillPoint) { return TRUE; }
 
 
-//µğ¹ÙÀÎ ¶óÀÌÆ®´× ½ºÅ³ ¿¬Ãâ ( ¸Ó¹Ì·Îµå )
+// ? ?  ( ??? )
 int SkillPlay_MummyLord_Effect(smCHAR *lpChar, int Range) { return TRUE; }
 
 
-//º£³ğ ½ºÇÇ¾î ½ºÅ³ ¿¬Ãâ ( ÀÌÆåÆ® ½ÇÇö )
+// ? ?  ( ?  )
 int SkillPlay_VenomSpear_Effect(smCHAR *lpChar, int SkillPoint) { return TRUE; }
 
-//¸ó½ºÅÍ ½ºÅ³ ÀÌÆåÆ® ½ÇÇö ( ÀÌÆåÆ® ½ÇÇö )
+// ? ?  ( ?  )
 int SkillPlay_Monster_Effect(smCHAR *lpChar, int EffectKind, int Range) { return TRUE; }
 
 
 
 
-//½ºÅ³ ½ÇÇà ÆĞÅ¶ ¼ö½Å
+//?  ? 
 int RecvProcessSkill(smTRANS_COMMAND *lpTransCommand) { return TRUE; }
 
 
@@ -5260,16 +5157,16 @@ int RecvProcessSkill(smTRANS_COMMAND *lpTransCommand) { return TRUE; }
 /////////////////////////////////////////////////////////////////
 
 //int ReadClanInfo(DWORD dwClanNum)
-//CLANINFO ClanInfo[CLAN_MAX]; //Å¬·£ Á¤º¸ ÀúÀå
+//CLANINFO ClanInfo[CLAN_MAX]; //?  
 //
-//cldata ¾øµ¥ÀÌÆ®¿ë
+//cldata ?
 //void Updatecldata();
 
-//Å¬·£ ¾÷µ¥ÀÌÆ® ¿ä±¸ ¸Ş¼¼Áö
+//? ? ? ?
 //#define	smTRANSCODE_CLAN_UPDATE			0x50320C10
 
 
-//Å¬·£¿ø Á¤º¸ Àü¼Û¿ë ÇÔ¼ö
+//?  ? ?
 int SendClanCommandUser(smWINSOCK *lpsmSock, DWORD	dwCode, int Param1, int Param2, CLANWONLIST *lpClanUserList, int ClanUserCount)
 {
 
@@ -5310,7 +5207,7 @@ int SendClanCommandUser(smWINSOCK *lpsmSock, DWORD	dwCode, int Param1, int Param
 	return TRUE;
 }
 
-//Å¬·£¿ø Á¤º¸ ÇØµ¶
+//?  ?
 int	RecvClanCommand(TRANS_CLAN_COMMAND_USER *lpTransClanUser, _CLAN_USER_INFO *ClanUserInfo)// char **lpClanUserName , DWORD *dwUserSpeedSum )
 {
 	int cnt;
@@ -5337,7 +5234,7 @@ int	RecvClanCommand(TRANS_CLAN_COMMAND_USER *lpTransClanUser, _CLAN_USER_INFO *C
 	return TRUE;
 }
 
-//Äù½ºÆ® ¾ÆÀÌÅÛ ÀÔ¼ö ÇÊÅÍ¸µ
+//?  ? ?
 int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 {
 	int cnt;
@@ -5345,10 +5242,10 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 
 	switch (sinQuest_ChangeJob2.CODE) {
 	case SIN_QUEST_CODE_CHANGEJOB2_NPC_M:
-		//¹ú²Ü ¾ÆÀÌÅÛ (ÃÖ´ë °¹¼ö È®ÀÎ )
+		//  (?  ? )
 		if (lpTransItemInfo->Item.CODE == (sinMA2 | sin01)) {
-			if (!cInvenTory.SearchItemCode(sinMA1 | sin01)) return FALSE;		//À¯¸®º´ ¾ø´Â°æ¿ì
-			if (cInvenTory.SearchItemCode(sinQT1 | sin04)) return FALSE;		//·Î¾âÁ¦¸® ÀÖ´Â °æ¿ì
+			if (!cInvenTory.SearchItemCode(sinMA1 | sin01)) return FALSE;		// 
+			if (cInvenTory.SearchItemCode(sinQT1 | sin04)) return FALSE;		//? ? 
 			cnt = cInvenTory.SearchItemCode(sinMA2 | sin01);
 			if (cnt >= 9) return FALSE;
 		}
@@ -5356,10 +5253,10 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 		return TRUE;
 
 	case SIN_QUEST_CODE_CHANGEJOB2_NPC_D:
-		//±â¸§ ¾ÆÀÌÅÛ (ÃÖ´ë °¹¼ö È®ÀÎ )
+		//?  (?  ? )
 		if (lpTransItemInfo->Item.CODE == (sinMA2 | sin02)) {
-			if (!cInvenTory.SearchItemCode(sinMA1 | sin01)) return FALSE;		//À¯¸®º´ ¾ø´Â°æ¿ì
-			if (cInvenTory.SearchItemCode(sinQT1 | sin05)) return FALSE;		//¹ß¸ğÁ¦ ÀÖ´Â °æ¿ì
+			if (!cInvenTory.SearchItemCode(sinMA1 | sin01)) return FALSE;		// 
+			if (cInvenTory.SearchItemCode(sinQT1 | sin05)) return FALSE;		//? ? 
 			cnt = cInvenTory.SearchItemCode(sinMA2 | sin02);
 			if (cnt >= 7) return FALSE;
 		}
@@ -5367,8 +5264,8 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 		return TRUE;
 	}
 
-	//3Â÷ ÀüÁ÷ Äù½ºÆ®
-	//¹ìÇÁ
+	//3  ?
+	//
 	if (lpTransItemInfo->Item.CODE == (sinQT1 | sin06)) {
 		if (sinQuest_ChangeJob3.CODE == SIN_QUEST_CODE_CHANGEJOB3) {
 			cnt = cInvenTory.SearchItemCode(sinQT1 | sin06);
@@ -5378,7 +5275,7 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 		return FALSE;
 	}
 
-	//·¹º§ Äù½ºÆ®¿ë ¹ìÇÁ 1
+	// ?  1
 	if (lpTransItemInfo->Item.CODE == (sinQT1 | sin09)) {
 		if (sinQuest_Level80_2.CODE == SIN_QUEST_CODE_LEVEL80_2) {
 			cnt = cInvenTory.SearchItemCode(sinQT1 | sin09);
@@ -5387,7 +5284,7 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 		}
 		return FALSE;
 	}
-	//·¹º§ Äù½ºÆ®¿ë ¹ìÇÁ 2
+	// ?  2
 	if (lpTransItemInfo->Item.CODE == (sinQT1 | sin10)) {
 		if (sinQuest_Level80_2.CODE == SIN_QUEST_CODE_LEVEL80_2) {
 			cnt = cInvenTory.SearchItemCode(sinQT1 | sin10);
@@ -5396,7 +5293,7 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 		}
 		return FALSE;
 	}
-	//·¹º§ Äù½ºÆ®¿ë ¹ìÇÁ 3
+	// ?  3
 	if (lpTransItemInfo->Item.CODE == (sinQT1 | sin11)) {
 		if (sinQuest_Level80_2.CODE == SIN_QUEST_CODE_LEVEL80_2) {
 			cnt = cInvenTory.SearchItemCode(sinQT1 | sin11);
@@ -5407,7 +5304,7 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 	}
 
 
-	//3Â÷ Àü¾÷ Äù½ºÆ®¿ë 
+	//3  ? 
 	if (lpTransItemInfo->Item.CODE == (sinQT1 | sin13)) {
 
 		if (sinQuest_ChangeJob4.CODE == SIN_QUEST_CODE_CHANGEJOB4 && sinQuest_ChangeJob4.State == 5) {
@@ -5422,7 +5319,7 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 
 
 
-	//¾öÇÁÀÇ ¸ÁÄ¡ Äù½ºÆ® 
+	// ? ? 
 	if (lpTransItemInfo->Item.CODE == (sinQT1 | sin16)) {
 
 		return FALSE;
@@ -5431,7 +5328,7 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 
 	if ((lpTransItemInfo->Item.CODE&sinITEM_MASK2) == sinMA1 ||
 		(lpTransItemInfo->Item.CODE&sinITEM_MASK2) == sinMA2) {
-		//Äù½ºÆ®°¡ ¾ø´Â°æ¿ì Äù½ºÆ® ¾ÆÀÌÅÛ µé¾î¿Â °æ¿ì
+		//?  ?   
 
 		return FALSE;
 	}
@@ -5441,10 +5338,10 @@ int FiltQuestItem(TRANS_ITEMINFO	*lpTransItemInfo, DWORD dwPacketCode)
 
 POINT GetProcessModule();
 
-//¸ğµâ°Ë»ç ÇÏ¿© ¼­¹ö·Î º¸³»±â
+//? ?  
 int CheckProcessModule() { return TRUE; }
 
-//ÆÈ°ï µ¥¹ÌÁö º¸³»±â
+//?  
 int SendFalconDamage(smCHAR *lpChar)
 {
 	DWORD point;
@@ -5460,23 +5357,23 @@ int SendFalconDamage(smCHAR *lpChar)
 	return NULL;
 }
 
-//´í½Ì¼Òµå µ¥¹ÌÁö º¸³»±â
+//??  
 int SendDancingSwordDamage(smCHAR *lpChar) { return TRUE; }
 
 
-//¸Ş±×³×Æ½ ½ºÇÇ¾î µ¥¹ÌÁö º¸³»±â
+//??? ?  
 int SendMegneticSphereDamage(smCHAR *lpChar) { return TRUE; }
 
-//¸Ó½ºÆç µ¥¹ÌÁö º¸³»±â
+//?  
 int SendMuspellDamage(smCHAR *lpChar) { return TRUE; }
 
 
 
-//Àú·¦¿ë Æê µ¥¹ÌÁö
+//  
 int SendLowLevelPetDamage(smCHAR *lpChar, int petType) { return TRUE; }
 
 
-//PC¹æ¿ë Æê µ¥¹ÌÁö
+//PC  
 int SendPCBangPetDamage(smCHAR *lpChar, int petType)
 {
 	DWORD point;
@@ -5500,7 +5397,7 @@ int SendPCBangPetDamage(smCHAR *lpChar, int petType)
 
 
 
-//¾ÆÀÌÅÛ ÅÃ¹è ¼­ºñ½º ¼ö½Å ¿ä±¸
+//    ?
 int	SendItemExpress(DWORD	dwItemCode, char *szPassCode)
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -5519,14 +5416,14 @@ int	SendItemExpress(DWORD	dwItemCode, char *szPassCode)
 	return FALSE;
 }
 
-//¾ÆÀÌÅÛ ÅÃ¹è ¼­ºñ½º ¼ö½Å ¿ä±¸
+//    ?
 int	SendItemExpress(DWORD	dwItemCode)
 {
 	return	SendItemExpress(dwItemCode, 0);
 }
 
 
-//¾ßÈ£ ¸ğ¼Ç ¼­¹ö·Î º¸³»±â
+//?   
 int SendClanYahooMotion()
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -5540,7 +5437,7 @@ int SendClanYahooMotion()
 		smTransCommand.SParam = 0;
 		smTransCommand.EParam = 0;
 
-		lpsmSock = GetAreaServerSock();		//Áö¿ª¼­¹ö ¼ÒÄÏÀ» Ã£À½
+		lpsmSock = GetAreaServerSock();		//  ?
 		if (lpsmSock)
 			lpsmSock->Send((char *)&smTransCommand, smTransCommand.size, TRUE);
 
@@ -5550,37 +5447,37 @@ int SendClanYahooMotion()
 	return FALSE;
 }
 
-//º° Æ÷ÀÎÆ® Á¤º¸¸¦ ¼­¹ö¿¡ º¸³½´Ù
+// ?   
 int	SendStarPointToServer(int Price, int Cash) { return TRUE; }
 
-//±âºÎÇÑµ·À» ¼­¹ö¿¡ º¸³½´Ù
+//?  
 int	SendGiveMoneyToServer(int Money) { return TRUE; }
 
-//Å¬·£¸Ó´Ï Á¤º¸¸¦ ¼­¹ö¿¡ º¸³½´Ù
+//??   
 int	SendClanMoneyToServer(int Money, int Flag, int Kind) { return TRUE; }
 
 int	SendClanMoneyToServer(int Money, int Flag) { return TRUE; }
 
-//ÀÌ¿ë¿ä±İ Á¤º¸¸¦ ¼­¹ö¿¡ º¸³½´Ù
+//?   
 int	SendPaymentMoneyToServer(int Money, int Flag) { return TRUE; }
 
 
 
 /*
-//°³ÀÎ»óÁ¡ ¿ÀÇÂ
+//? 
 #define smTRANSCODE_OPEN_PERTRADE	0x48478A90
-//°³ÀÎ»óÁ¡ ºÎ¸£±â
+//? ?
 #define smTRANSCODE_CALL_PERTRADE	0x48478AA0
-//°³ÀÎ»óÁ¡ ¾ÆÀÌÅÛ
+//? 
 #define	smTRANSCODE_MYSHOP_ITEM		0x48478AB0
 
-int	Send_ShowMyShopItem( smCHAR *lpChar );							//°³ÀÎ»óÁ¡ ¾ÆÀÌÅÛ ³»¿ë ¿ä±¸
-int	Send_MyShopItemList( smTRANS_COMMAND	*lpTransCommand );		//°³ÀÎ»óÁ¡ ¾ÆÀÌÅÛ ³»¿ë »ó´ë¹æ¿¡ º¸³»±â
-int	Recv_MyShopItemList( TRANS_TRADEITEMS *lpTransTradeItems );		//°³ÀÎ»óÁ¡ ¾ÆÀÌÅÛ ³»¿ë ¹ŞÀ½
+int	Send_ShowMyShopItem( smCHAR *lpChar );							//?   ?
+int	Send_MyShopItemList( smTRANS_COMMAND	*lpTransCommand );		//?   ? 
+int	Recv_MyShopItemList( TRANS_TRADEITEMS *lpTransTradeItems );		//?   
 */
 
 
-//°³ÀÎ»óÁ¡ ¾ÆÀÌÅÛ ³»¿ë ¿ä±¸
+//?   ?
 int	Send_ShowMyShopItem(smCHAR *lpChar)
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -5601,7 +5498,7 @@ int	Send_ShowMyShopItem(smCHAR *lpChar)
 	return result;
 }
 
-//°³ÀÎ»óÁ¡ ¾ÆÀÌÅÛ ³»¿ë »ó´ë¹æ¿¡ º¸³»±â
+//?   ? 
 int	Send_MyShopItemList(smTRANS_COMMAND	*lpTransCommand)
 {
 	int	result;
@@ -5617,20 +5514,20 @@ int	Send_MyShopItemList(smTRANS_COMMAND	*lpTransCommand)
 }
 
 
-//°³ÀÎ»óÁ¡ ¾ÆÀÌÅÛ ³»¿ë ¹ŞÀ½
+//?   
 int	Recv_MyShopItemList(TRANS_TRADEITEMS *lpTransTradeItems) { return TRUE; }
 
 
-//°³ÀÎ »óÁ¡ ¹°°Ç ±¸ÀÔ
+//   
 int	Send_PersonalShopItem(DWORD dwCharCode, void *lpShopItem) { return TRUE; }
 
-//°³ÀÎ »óÁ¡ ¾ÆÀÌÅÛ Á¤º¸ ¾÷µ¥ÀÌÆ®
+//    ?
 int	UpdateMyShopList(void *lpMyShop) { return TRUE; }
 
-//°³ÀÎ »óÁ¡ ¿ÀÇÂ
+//  
 int SendOpenPersonalTrade(char *szTradeMsg, void *lpPersTrade) { return TRUE; }
 
-//»óÁ¡ ´İ±â
+// ?
 int SendClosePersonalTrade()
 {
 	TRANS_CHATMESSAGE	TransChatMessage;
@@ -5651,7 +5548,7 @@ int SendClosePersonalTrade()
 	return result;
 }
 
-// Àåº° - ÀÔ·ÂÃ¢
+// ? - ?
 int SendsServerDoc(char *szTradeMsg)
 {
 	TRANS_CHATMESSAGE	TransChatMessage;
@@ -5676,9 +5573,9 @@ int SendsServerDoc(char *szTradeMsg)
 
 int DeleteEventItem_TimeOut(sITEMINFO	*lpsItem)
 {
-	// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ, ½ºÅ³ ¸¶½ºÅÍ Ãß°¡
-	if (lpsItem->CODE == (sinBI1 | sin32) || lpsItem->CODE == (sinBI1 | sin33) || lpsItem->CODE == (sinBI1 | sin34) || lpsItem->CODE == (sinBI1 | sin51) ||// pluto Æê(ÇØ¿Ü)
-	//	lpsItem->CODE == (sinBI1|sin35) || lpsItem->CODE == (sinBI1|sin36) || lpsItem->CODE == (sinBI1|sin37) || lpsItem->CODE == (sinBI1|sin38) )	//¼öÇ¥
+	//  -  , ?  ?
+	if (lpsItem->CODE == (sinBI1 | sin32) || lpsItem->CODE == (sinBI1 | sin33) || lpsItem->CODE == (sinBI1 | sin34) || lpsItem->CODE == (sinBI1 | sin51) ||// pluto (?)
+	//	lpsItem->CODE == (sinBI1|sin35) || lpsItem->CODE == (sinBI1|sin36) || lpsItem->CODE == (sinBI1|sin37) || lpsItem->CODE == (sinBI1|sin38) )	//?
 		lpsItem->CODE == (sinBI1 | sin36) || lpsItem->CODE == (sinBI1 | sin37) ||
 		lpsItem->CODE == (sinBI1 | sin38) || lpsItem->CODE == (sinBI1 | sin39) ||
 		lpsItem->CODE == (sinBI1 | sin40) || lpsItem->CODE == (sinBI1 | sin41) ||
@@ -5686,18 +5583,18 @@ int DeleteEventItem_TimeOut(sITEMINFO	*lpsItem)
 		lpsItem->CODE == (sinBI1 | sin44) || lpsItem->CODE == (sinBI1 | sin45) ||
 		lpsItem->CODE == (sinBI1 | sin46) || lpsItem->CODE == (sinBI1 | sin47) ||
 		lpsItem->CODE == (sinBI1 | sin48) || lpsItem->CODE == (sinBI1 | sin49) ||
-		lpsItem->CODE == (sinBI1 | sin50) || lpsItem->CODE == (sinBI1 | sin52) || // ¹ÚÀç¿ø - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡
+		lpsItem->CODE == (sinBI1 | sin50) || lpsItem->CODE == (sinBI1 | sin52) || //  -    ?
 		lpsItem->CODE == (sinBI1 | sin53) || lpsItem->CODE == (sinBI1 | sin54) ||
 
-		lpsItem->CODE == (sinBI1 | sin65) || lpsItem->CODE == (sinBI1 | sin66) || // Àåº° - ºô¸µ µµ¿ì¹Ì Æê (7ÀÏ, 1ÀÏ)
+		lpsItem->CODE == (sinBI1 | sin65) || lpsItem->CODE == (sinBI1 | sin66) || // ? -    (7, 1)
 		lpsItem->CODE == (sinBI1 | sin67) || lpsItem->CODE == (sinBI1 | sin68) ||
 		lpsItem->CODE == (sinBI1 | sin69) || lpsItem->CODE == (sinBI1 | sin70) ||
 		lpsItem->CODE == (sinBI1 | sin71) || lpsItem->CODE == (sinBI1 | sin72) ||
-		lpsItem->CODE == (sinBI1 | sin55) || lpsItem->CODE == (sinBI1 | sin77) ||	// Àåº° - ÇÇ´Ğ½ºÆê(1½Ã°£)
-		lpsItem->CODE == (sinBI1 | sin62) || lpsItem->CODE == (sinBI1 | sin63) ||	// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(2Â÷) ¾ÆÀÌÅÛ Ãß°¡ D, E
-		lpsItem->CODE == (sinBI1 | sin64) ||										// ¹ÚÀç¿ø - ¿¡ÀÌÂ¡ ¸¶½ºÅÍ(2Â÷) ¾ÆÀÌÅÛ Ãß°¡ F
-		lpsItem->CODE == (sinBI1 | sin73) || lpsItem->CODE == (sinBI1 | sin74) || // Àåº° - ºô¸µ µµ¿ì¹Ì Æê Ãß°¡(Å×¸® 1½Ã°£ ¿Ü 4Á¾)
-		lpsItem->CODE == (sinBI1 | sin75) || lpsItem->CODE == (sinBI1 | sin76)) // Àåº° - ºô¸µ µµ¿ì¹Ì Æê (1½Ã°£)
+		lpsItem->CODE == (sinBI1 | sin55) || lpsItem->CODE == (sinBI1 | sin77) ||	// ? - ??(1)
+		lpsItem->CODE == (sinBI1 | sin62) || lpsItem->CODE == (sinBI1 | sin63) ||	//  -  (2)  ? D, E
+		lpsItem->CODE == (sinBI1 | sin64) ||										//  -  (2)  ? F
+		lpsItem->CODE == (sinBI1 | sin73) || lpsItem->CODE == (sinBI1 | sin74) || // ? -    ?(? 1  4)
+		lpsItem->CODE == (sinBI1 | sin75) || lpsItem->CODE == (sinBI1 | sin76)) // ? -    (1)
 	{
 		return FALSE;
 	}
@@ -5752,7 +5649,7 @@ int DeleteEventItem_TimeOut(sITEMINFO	*lpsItem)
 
 int RecvSodGameInfomation(void *Info) { return TRUE; }
 
-//Æ÷½º¿Àºê ¾ÆÀÌÅÛ ÀÔ¼ö
+//  ?
 int RecvForceOrbItem(TRANS_ITEMINFO_GROUP2 *lpTransItemGroup2)
 {
 	TRANS_ITEMINFO_GROUP	TransItemGroup;
@@ -5762,23 +5659,23 @@ int RecvForceOrbItem(TRANS_ITEMINFO_GROUP2 *lpTransItemGroup2)
 
 	DecodeCompress((BYTE *)lpTransItemGroup2->szBuff, (BYTE *)TransItemGroup.sItemInfo, sizeof(sITEMINFO)*TRANS_GROUPITEM_MAX);
 
-	//¹Ú»ó·Ä ÇÔ¼ö È£Ãâ
-	//Æ÷½º ¾ÆÀÌÅÛÀ» ¹Ş´Â´Ù
+	//? ? ?
+	//  ?
 	sinRecvForceOrb(TransItemGroup.sItemInfo, TransItemGroup.ItemCount);
 
 
 	return TRUE;
 }
 
-//Äù½ºÆ® ¸í·É º¸³»±â
+//?  
 int SendQuestCommandToServer(DWORD dwQuestCode, int Param1, int Param2, int Param3) { return TRUE; }
 
-//´ëÀü Äù½ºÆ® ½ÇÇà
+// ? 
 
-//ºí·¡½ºÄ³½½ ¼³Á¤Á¤º¸ ¼­¹ö¿¡ º¸³¿
+//?   
 int	SendBlessCastleToServer(smTRANS_BLESSCASTLE *lpBlessCastleSetup, int Mode) { return TRUE; }
 
-//ºí·¡½ºÄ³½½ ¼¼À² Á¤º¸ ¼­¹ö¿¡ ¿ä±¸
+//?    ?
 int	Send_GetBlessCastleTax()
 {
 	smTRANS_COMMAND	smTransCommand;
@@ -5794,20 +5691,20 @@ int	Send_GetBlessCastleTax()
 
 	return FALSE;
 }
-//ºí·¡½ºÄ³½½ ¼³Á¤Á¤º¸ ¼ö½Å
+//?  
 int RecvBlessCastInfo(void *lpPacket)
 {
 	smTRANS_BLESSCASTLE *lpBlessCastleSetup = (smTRANS_BLESSCASTLE *)lpPacket;
 	rsUSER_LIST_TOP10	*lpClanListTop10;
 
 	switch (lpBlessCastleSetup->smTransCommand.WParam) {
-	case 1:		//¼³Á¤Á¤º¸ ¼ö½Å
+	case 1:		// 
 		chaSiege.ShowSiegeMenu(lpBlessCastleSetup);
 		break;
 
-	case 2:		//¼øÀ§ Á¤º¸ ¼ö½Å
+	case 2:		//  
 		lpClanListTop10 = (rsUSER_LIST_TOP10 *)lpPacket;
-		//¼øÀ§ Ãâ·Â ÇÔ¼ö È£Ãâ
+		//  ? ?
 		chaSiege.ShowSiegeScore(lpClanListTop10);
 		break;
 	}
@@ -5815,7 +5712,7 @@ int RecvBlessCastInfo(void *lpPacket)
 	return TRUE;
 }
 
-//ºí·¹½º Ä³½½ ¸¶½ºÅÍ Å¬·£ ¼³Á¤
+// ?  ? 
 int SetBlessCastleMaster(DWORD dwClanCode, int Mode)
 {
 
@@ -5824,7 +5721,7 @@ int SetBlessCastleMaster(DWORD dwClanCode, int Mode)
 	}
 	else {
 		if (rsBlessCastle.dwMasterClan != dwClanCode) {
-			//Ä³½½ ¸¶½ºÅÍ ¾÷µ¥ÀÌÆ®
+			//?  ?
 			UpdateCastleMasterClan(rsBlessCastle.dwMasterClan);
 		}
 
@@ -5834,16 +5731,16 @@ int SetBlessCastleMaster(DWORD dwClanCode, int Mode)
 	return TRUE;
 }
 
-//¼Ó¼ºÁ¤º¸ ¼­¹ö·Î Àü¼Û
+//?  
 int	SendResistanceToServer() { return TRUE; }
 
-//¼³¹®Á¶»ç °á°ú ¼­¹ö¿¡ º¸³»±â
+//   
 int	SendPublicPollingToServer(int PollCode, int PollCnt, BYTE *bPollingData) { return TRUE; }
 
 
 #ifdef _xTrap_GUARD
 #include "XTrapSrc\\XTrap.h"
-//¿¢½ºÆ®·¦ ÆĞÅ¶¼ö½Å
+//? ?
 int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 {
 	smTRANS_XTRAP_ADDR		*lpTransXTrapAddr;
@@ -5884,7 +5781,7 @@ int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 #ifdef _XTRAP_GUARD_4_CLIENT
 #include "XTrapSrcD5\Client\XTrap4Client.h"	//XTrapD5
 //		#include "XTrapSrc4\XTrap.h"
-		//¿¢½ºÆ®·¦ ÆĞÅ¶¼ö½Å
+		//? ?
 int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 {
 	char debug[512];
@@ -5894,7 +5791,7 @@ int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 	OutputDebugString(debug);
 
 	if (lpPacket->WParam == XTRAP_CMD_SEEDKEY)
-	{//¼­¹ö¿¡¼­ ÆĞÅ¶À» ¹ŞÀ¸¸é
+	{// ? 
 		sprintf(debug, "CMD_SEEDKEY");
 		OutputDebugString(debug);
 
@@ -5907,7 +5804,7 @@ int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 			lpTransXTrapAddr->PacketBuf[5]);
 		OutputDebugString(debug);
 
-		//----[ 1. ¼­¹ö·Î ºÎÅÍ ¹ŞÀº Á¤º¸ °Ë»ç ]
+		//----[ 1.     ? ]
 		smTRANS_XTRAP_ADDR	smTransXTrapAddr;
 		memset(&smTransXTrapAddr, 0, sizeof(smTransXTrapAddr));
 
@@ -5916,7 +5813,7 @@ int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 		usResult = XTrap_CS_Step2((PUCHAR)lpTransXTrapAddr->PacketBuf, (PUCHAR)smTransXTrapAddr.PacketBuf,
 			XTRAP_PROTECT_PE | XTRAP_PROTECT_TEXT | XTRAP_PROTECT_EXCEPT_VIRUS);
 
-		//----[ 2. °á°ú Á¤º¸ ¼­¹ö·Î º¸³»±â ]
+		//----[ 2.     ]
 		smTransXTrapAddr.smTransCommand.size = sizeof(smTRANS_XTRAP_ADDR);
 		smTransXTrapAddr.smTransCommand.code = smTRANSCODE_XTRAP_PACKET;
 		smTransXTrapAddr.smTransCommand.WParam = XTRAP_CMD_UNIQKEY;
@@ -5924,12 +5821,12 @@ int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 		if (smWsockDataServer)
 			smWsockDataServer->Send((char *)&smTransXTrapAddr, smTransXTrapAddr.smTransCommand.size, TRUE);
 
-		//----[ 3. ÇÔ¼ö ¸®ÅÏ°ª °Ë»ç ]
+		//----[ 3. ? ? ? ]
 		if (usResult == 0)
-		{//Á¤»ó
+		{//
 		}
 		else
-		{//ºñÁ¤»ó
+		{//
 			DisconnectServerCode = 4;
 			Utils_Log(LOG_DEBUG, "SetDisconnectFlag: 31");
 			DisconnectFlag = GetCurrentTime();
@@ -5953,7 +5850,7 @@ VOID __stdcall XTrapCS_SendUniqKey(PUCHAR pUniqKey)
 {}
 
 #else
-//¿¢½ºÆ®·¦ ÆĞÅ¶¼ö½Å
+//? ?
 int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 {
 	return TRUE;
@@ -5966,18 +5863,18 @@ int XTrap_Recv(smTRANS_COMMAND *lpPacket, smWINSOCK *lpsmSock)
 
 int	HackTrap_OpenFlagMask = 0;
 
-//ÇÙÅø Ã½Å©¿ë NPC±â´É ±¸Çö½Ã ¼­¹ö¿¡ °Ë»çÅëº¸
+// ? NPC   ??
 int HackTrap_CheckOpenFlag() { return TRUE; }
 
 
-//ÇÙÅø Ã½Å©¿ë ÇÔÁ¤
+// ? 
 int	SendHackTrapToServer(DWORD dwTrapCode, int Param) { return TRUE; }
 
-// pluto Á¦·Ã µ¥ÀÌÅ¸¸¦ ¼­¹ö·Î º¸³¿
+// pluto    
 int SendSmeltingItemToServer(void *lpsSmeltingItem_Send) { return TRUE; }
-// pluto Á¦ÀÛ µ¥ÀÌÅ¸¸¦ ¼­¹ö·Î º¸³¿
+// pluto    
 int SendManufactureItemToServer(void *lpsManufactureItem_Send) { return TRUE; }
 
-// ¼®Áö¿ë - ¹Í½ºÃÄ ¸®¼Â ¾ÆÀÌÅÛÀ» ¼­¹ö·Î Àü¼ÛÇÑ´Ù.
+//  - ?    ?.
 int SendMixtureResetItemToServer(void *lpsMixtureResetItem_Send) { return TRUE; }
 

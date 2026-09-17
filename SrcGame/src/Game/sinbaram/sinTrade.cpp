@@ -1,6 +1,7 @@
 #include "sinLinkHeader.h"
 #include "..\\netplay.h"
 #include "..\\HUD\\WarehouseWindow.h"
+#include "WarehouseWire.h"
 #include "..\\HUD\\MixWindow.h"
 #include "..\\cSkinChanger.h"
 #include "Utils\\Geometry.h"
@@ -1034,8 +1035,8 @@ void cTRADE::Main()
 		sinMoveKindInter[SIN_MIXTURE_RESET] = 0;
 		sinMoveKindInter[SIN_TRADE] = 0;
 
-		sWareHouse.BuyAreaCount = 10;
-		sWareHouse.Weight[1] = (sWareHouse.BuyAreaCount * 100) + 196;
+		sWareHouse.BuyAreaCount = WAREHOUSE_DEFAULT_WEIGHT_MAX / 100;
+		sWareHouse.Weight[1] = WAREHOUSE_DEFAULT_WEIGHT_MAX + 196;
 
 		if (smConfig.DebugMode) {
 			for (i = 0; i < 10; i++) {
@@ -1043,9 +1044,9 @@ void cTRADE::Main()
 
 			}
 
-			for (i = 0; i < 100; i++) {
+			for (i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 				if (sWareHouse.WareHouseItem[i].Flag) {
-					for (j = 0; j < 100; j++) {
+					for (j = 0; j < WAREHOUSE_PAGE_SLOTS; j++) {
 						if (sWareHouse.WareHouseItem[j].Flag) {
 							if (i == j)continue;
 							if (CompareItems(&sWareHouse.WareHouseItem[i].sItemInfo, &sWareHouse.WareHouseItem[j].sItemInfo)) {
@@ -2330,7 +2331,7 @@ void cTRADE::DrawTradeText()
 			dsTextLineOut(hdc, CheckEditSize(ShopGoldEdit[1][0], ShopGoldEdit[1][2], strBuff) - (256 + 128 - sinMoveKindInter[SIN_WAREHOUSE]), ShopGoldEdit[1][1],
 				strBuff, lstrlen(strBuff));
 
-			for (i = 0; i < 100; i++) {
+			for (i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 				if (sWareHouse.WareHouseItem[i].Flag) {
 					if (sWareHouse.WareHouseItem[i].Class == ITEM_CLASS_POTION) {
 						wsprintf(strBuff, "%d", sWareHouse.WareHouseItem[i].sItemInfo.PotionCount);
@@ -2688,7 +2689,7 @@ int cTRADE::CrashTradeItem(RECT& desRect, int PassItemIndex, int Kind)
 		}
 	}
 	if (Kind == 1) {
-		for (i = 0; i < 100; i++) {
+		for (i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 			if (sWareHouse.WareHouseItem[i].Flag) {
 				if (PassItemIndex != 0)
 					if (PassItemIndex == i + 1)continue;
@@ -3320,8 +3321,8 @@ bool cWAREHOUSE::GetEmptyArea(sITEM* pItem, POINT* EmptyPos)
 {
 	int X = 21;
 	int Y = 136 + sinInterHeight2;
-	int Max_X = X + (22 * 9);
-	int Max_Y = Y + (22 * 9);
+	int Max_X = X + (ITEMSIZE * WAREHOUSE_GRID_COLS);
+	int Max_Y = Y + (ITEMSIZE * WAREHOUSE_GRID_ROWS);
 
 	RECT Rectangle = { 0 };
 	int Indexs[2] = { 0 };
@@ -3372,8 +3373,8 @@ int cWAREHOUSE::SetWareHouseItemAreaCheck(sITEM* pItem)
 
 	TradeStartX = 21;
 	TradeStartY = 136 + sinInterHeight2;
-	TradeEndX = TradeStartX + (22 * 9);
-	TradeEndY = TradeStartY + (22 * 9);
+	TradeEndX = TradeStartX + (ITEMSIZE * WAREHOUSE_GRID_COLS);
+	TradeEndY = TradeStartY + (ITEMSIZE * WAREHOUSE_GRID_ROWS);
 
 	for (i = pItem->x + 11; i < pItem->x + pItem->w; i += 22) {
 		for (j = pItem->y + 11; j < pItem->y + pItem->h; j += 22) {
@@ -3471,7 +3472,7 @@ int cWAREHOUSE::LastSetWareHouseItem(sITEM* pItem)
 {
 	CheckWareHouseForm();
 
-	for (int j = 0; j < 100; j++) {
+	for (int j = 0; j < WAREHOUSE_PAGE_SLOTS; j++) {
 		if (!sWareHouse.WareHouseItem[j].Flag) {
 			memcpy(&sWareHouse.WareHouseItem[j], pItem, sizeof(sITEM));
 			sWareHouse.WareHouseItem[j].x = pItem->SetX;
@@ -3542,7 +3543,7 @@ int cWAREHOUSE::PickUpWareHouseItem(int x, int y, int PickUpFlag)
 {
 	int i = 0;
 	SelectTradeItemIndex = 0;    //���� ������ 
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
 			if (!ItemMatchesSearch(&sWareHouse.WareHouseItem[i]))
 				continue;
@@ -3691,7 +3692,7 @@ int cWAREHOUSE::FindSearchPage()
 			return CurrentPage;
 	}
 
-	for (int page = 0; page < WAREHOUSE_PAGE_COUNT; page++) {
+	for (int page = 0; page < WAREHOUSE_UNLOCKED_PAGES; page++) {
 		if (page == CurrentPage)
 			continue;
 		for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
@@ -3707,8 +3708,12 @@ int cWAREHOUSE::BeginLoad()
 	WarehouseWindow::GetInstance()->ArmHideClassic();
 	ZeroMemory(Pages, sizeof(Pages));
 	ZeroMemory(PagesReady, sizeof(PagesReady));
+	ZeroMemory(PageChunkRecv, sizeof(PageChunkRecv));
+	ZeroMemory(PageChunkNeed, sizeof(PageChunkNeed));
 	CurrentPage = 0;
 	LoadingPages = 1;
+	for (int i = WAREHOUSE_UNLOCKED_PAGES; i < WAREHOUSE_PAGE_COUNT; i++)
+		PagesReady[i] = 1;
 	return TRUE;
 }
 
@@ -3722,7 +3727,7 @@ int cWAREHOUSE::MarkPageReady(int page)
 
 int cWAREHOUSE::AllPagesReady()
 {
-	for (int i = 0; i < WAREHOUSE_PAGE_COUNT; i++) {
+	for (int i = 0; i < WAREHOUSE_UNLOCKED_PAGES; i++) {
 		if (!PagesReady[i])
 			return FALSE;
 	}
@@ -3736,10 +3741,12 @@ int cWAREHOUSE::IsLoadingPages()
 
 int cWAREHOUSE::FillEmptyRemainingPages()
 {
-	for (int i = 1; i < WAREHOUSE_PAGE_COUNT; i++) {
+	for (int i = 1; i < WAREHOUSE_UNLOCKED_PAGES; i++) {
 		ZeroMemory(Pages[i], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
 		PagesReady[i] = 1;
 	}
+	for (int i = WAREHOUSE_UNLOCKED_PAGES; i < WAREHOUSE_PAGE_COUNT; i++)
+		PagesReady[i] = 1;
 	return TRUE;
 }
 
@@ -3771,7 +3778,7 @@ int cWAREHOUSE::SwitchPage(int page)
 {
 	if (!AllPagesReady())
 		return FALSE;
-	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT || page == CurrentPage)
+	if (page < 0 || page >= WAREHOUSE_UNLOCKED_PAGES || page == CurrentPage)
 		return FALSE;
 	if (MouseItem.Flag)
 		return FALSE;
@@ -3800,18 +3807,103 @@ int cWAREHOUSE::ApplyLoadedPage(int page, sITEM* items)
 	return TRUE;
 }
 
+int cWAREHOUSE::ApplyLoadedChunk(int page, TRANS_WAREHOUSE* pkt)
+{
+	if (page < 0 || page >= WAREHOUSE_UNLOCKED_PAGES || !pkt)
+		return FALSE;
+	if (pkt->wVersion[0] != WAREHOUSE_PACKET_VERSION)
+		return FALSE;
+
+	const int chunkIndex = (int)pkt->dwTemp[1];
+	int chunkCount = (int)pkt->dwTemp[2];
+	if (chunkCount < 1)
+		chunkCount = 1;
+	if (chunkIndex < 0 || chunkIndex >= chunkCount)
+		return FALSE;
+
+	if (page == 0 && chunkIndex == 0)
+		WareHouseRevision = (int)pkt->dwTemp[3];
+
+	if (chunkIndex == 0)
+	{
+		ZeroMemory(Pages[page], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+		PageChunkRecv[page] = 0;
+		PageChunkNeed[page] = chunkCount;
+	}
+
+	if (pkt->DataSize > 0)
+	{
+		const int rawMax = WareHouseWirePayloadSize(WAREHOUSE_PAGE_SLOTS);
+		BYTE* raw = new BYTE[rawMax];
+		if (!raw)
+			return FALSE;
+		ZeroMemory(raw, rawMax);
+		DecodeCompress((BYTE*)pkt->Data, raw, rawMax);
+
+		sWAREHOUSE_WIRE_HDR hdr = {};
+		sWAREHOUSE_WIRE_ITEM* items = new sWAREHOUSE_WIRE_ITEM[WAREHOUSE_PAGE_SLOTS];
+		if (!items)
+		{
+			delete[] raw;
+			return FALSE;
+		}
+		if (!WareHouseReadPayload(raw, rawMax, &hdr, items, WAREHOUSE_PAGE_SLOTS))
+		{
+			delete[] items;
+			delete[] raw;
+			return FALSE;
+		}
+		if (WareHouseBufChkSum(raw, WareHouseWirePayloadSize(hdr.itemCount)) != pkt->dwChkSum)
+		{
+			delete[] items;
+			delete[] raw;
+			return FALSE;
+		}
+		for (int i = 0; i < hdr.itemCount; i++)
+			WareHouseApplyWireItem(Pages[page], &items[i]);
+
+		if (page == 0 && chunkIndex == 0)
+		{
+			sWareHouse.Money = hdr.money;
+			if (hdr.weightMax > 0)
+				sWareHouse.Weight[1] = hdr.weightMax + 196;
+			else
+				sWareHouse.Weight[1] = WAREHOUSE_DEFAULT_WEIGHT_MAX + 196;
+			sWareHouse.BuyAreaCount = (sWareHouse.Weight[1] - 196) / 100;
+		}
+
+		delete[] items;
+		delete[] raw;
+	}
+
+	PageChunkRecv[page]++;
+	if (PageChunkNeed[page] < 1)
+		PageChunkNeed[page] = 1;
+	if (PageChunkRecv[page] >= PageChunkNeed[page])
+	{
+		MarkPageReady(page);
+		if (page == CurrentPage || (!OpenFlag && page == 0))
+		{
+			memcpy(sWareHouse.WareHouseItem, Pages[page], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
+			if (OpenFlag)
+				ReFormWareHouse();
+		}
+	}
+	return TRUE;
+}
+
 int cWAREHOUSE::SaveAllPages()
 {
 	CopyCurrentToPage();
 
 	const int keepPage = CurrentPage;
 	const int money = sWareHouse.Money;
-	const short w0 = sWareHouse.Weight[0];
-	const short w1 = sWareHouse.Weight[1];
+	const int w0 = sWareHouse.Weight[0];
+	const int w1 = sWareHouse.Weight[1];
 	const int buy = sWareHouse.BuyAreaCount;
 	const int fake = sWareHouse.FakeMoney;
 
-	for (int page = 0; page < WAREHOUSE_PAGE_COUNT; page++)
+	for (int page = 0; page < WAREHOUSE_UNLOCKED_PAGES; page++)
 	{
 		memcpy(sWareHouse.WareHouseItem, Pages[page], sizeof(sITEM) * WAREHOUSE_PAGE_SLOTS);
 		sWareHouse.Money = money;
@@ -3837,7 +3929,7 @@ int cWAREHOUSE::LoadWareHouseItemIamge(int openInterface)
 
 	char szFilePath[256];
 	int  cnt = 0;
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
 			for (int j = 0; j < MAX_ITEM; j++) {
 				if (sWareHouse.WareHouseItem[i].sItemInfo.CODE == sItem[j].CODE) {
@@ -5229,7 +5321,7 @@ int cTRADE::ReFormTradeItem()
 int cWAREHOUSE::CheckWareHouseForm()
 { //�?  
 	int TempCheckDataSum = 0;
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
 			TempCheckDataSum += (i + 1) * sWareHouse.WareHouseItem[i].x;
 			TempCheckDataSum += (i + 1) * sWareHouse.WareHouseItem[i].y;
@@ -5249,7 +5341,7 @@ int cWAREHOUSE::ReFormWareHouse()
 { //���� 
 
 	WareHouseCheckSum = 0;
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
 			WareHouseCheckSum += (i + 1) * sWareHouse.WareHouseItem[i].x;
 			WareHouseCheckSum += (i + 1) * sWareHouse.WareHouseItem[i].y;
@@ -6211,7 +6303,7 @@ int cWAREHOUSE::CopyItemNotPickUp(sITEM * pItem, int JumpIndex)
 {
 	int i;
 	if (smConfig.DebugMode)return TRUE; //����� ����?��� ����?� ???
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
 			if (JumpIndex == i)continue; //�?��� �������� ?�?��
 			if (CompareItems(&pItem->sItemInfo, &sWareHouse.WareHouseItem[i].sItemInfo)) {
@@ -6233,9 +6325,9 @@ int cWAREHOUSE::CheckCopyItem()
 {
 	int i, j;
 	if (SendServerFlag7)return FALSE;
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
-			for (j = 0; j < 100; j++) {
+			for (j = 0; j < WAREHOUSE_PAGE_SLOTS; j++) {
 				if (i != j && sWareHouse.WareHouseItem[j].Flag) {
 					if (CompareItems(&sWareHouse.WareHouseItem[i].sItemInfo, &sWareHouse.WareHouseItem[j].sItemInfo)) {
 						SendSetHackUser2(1010, sWareHouse.WareHouseItem[i].CODE); //��?�� ������ �?��?�
@@ -6858,9 +6950,9 @@ int cCRAFTITEM::sinRecvCraftItemResult(sCRAFTITEM_SERVER * pCraftItem_Server)
 int cWAREHOUSE::DeleteCopyItem()
 {
 	int i, j;
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < WAREHOUSE_PAGE_SLOTS; i++) {
 		if (sWareHouse.WareHouseItem[i].Flag) {
-			for (j = 0; j < 100; j++) {
+			for (j = 0; j < WAREHOUSE_PAGE_SLOTS; j++) {
 				if (i != j && sWareHouse.WareHouseItem[j].Flag) {
 					if (CompareItems(&sWareHouse.WareHouseItem[i].sItemInfo, &sWareHouse.WareHouseItem[j].sItemInfo)) {
 						//SendSetHackUser2(1010,sWareHouse.WareHouseItem[i].CODE); //��?�� ������ �?��?�

@@ -11815,6 +11815,10 @@ int AddNewPlayInfo(smWINSOCK* lpsmSock)
 	ZeroMemory(rsPlayInfo[cnt].dwSendFrames, CONNECTMAX * sizeof(DWORD));
 	ZeroMemory(rsPlayInfo[cnt].InvenItemInfo, INVEN_ITEM_INFO_MAX * sizeof(sTHROW_ITEM_INFO));
 	rsPlayInfo[cnt].OpenWarehouseInfoFlag = 0;
+	rsWareHouseSessionFree(&rsPlayInfo[cnt]);
+	rsPlayInfo[cnt].WareHouseRevision = 0;
+	rsPlayInfo[cnt].WareHouseWeightMax = WAREHOUSE_DEFAULT_WEIGHT_MAX;
+	rsPlayInfo[cnt].WareHouseSaveMoney = 0;
 	rsPlayInfo[cnt].OpenCaravanInfoFlag = 0;
 	rsPlayInfo[cnt].TradePotionInfoCount = 0;
 	rsPlayInfo[cnt].MyShopListCount = 0;
@@ -13200,6 +13204,43 @@ int rsPostBoxHandleClaim(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId, DWORD dwPassSu
 		return FALSE;
 	}
 
+	POSTBOX_AUDIT audit;
+	ZeroMemory(&audit, sizeof(audit));
+	lstrcpy(audit.EventType, "CLAIM");
+	audit.EntryId = item->dwEntryId;
+	audit.Kind = item->nKind;
+	lstrcpyn(audit.DestAccount, lpPlayInfo->szID, 32);
+	lstrcpyn(audit.DestChar, lpPlayInfo->szName, 32);
+	lstrcpyn(audit.SenderAccount, item->szSenderID, 32);
+	lstrcpyn(audit.SenderChar, item->szSenderName, 32);
+	lstrcpyn(audit.ItemCode, item->szItemCode, 32);
+	audit.ItemBinCode = item->dwItemCode;
+	lstrcpyn(audit.Message, item->szDoc, 128);
+	audit.HasPass = item->szPassCode[0] ? 1 : 0;
+	audit.DepositedAt = item->dwDepositedAt;
+	audit.ExpireAt = item->dwExpireAt;
+	audit.Quantity = item->dwJobCode;
+	if (item->HasItemBlob && item->lpItemBlob)
+	{
+		sITEMINFO* blob = (sITEMINFO*)item->lpItemBlob;
+		lstrcpyn(audit.ItemName, blob->ItemName, 64);
+		audit.ItemHead = blob->ItemHeader.Head;
+		audit.ItemChkSum = blob->ItemHeader.dwChkSum;
+		audit.Weight = blob->Weight;
+		if (blob->PotionCount > 0)
+			audit.Quantity = blob->PotionCount;
+	}
+	if (!audit.ItemName[0])
+		lstrcpyn(audit.ItemName, item->szItemCode, 64);
+	lstrcpy(audit.Source, item->nKind == POSTBOX_KIND_PLAYER ? "P2P" : "System");
+	if (lpPlayInfo->lpsmSock)
+	{
+		in_addr addr;
+		addr.S_un.S_addr = lpPlayInfo->lpsmSock->acc_sin.sin_addr.S_un.S_addr;
+		lstrcpyn(audit.DestIP, inet_ntoa(addr), sizeof(audit.DestIP));
+	}
+	rsPostBoxAuditLog(&audit);
+
 	if (item->lpItemBlob)
 	{
 		delete (sITEMINFO*)item->lpItemBlob;
@@ -13317,6 +13358,39 @@ int rsPostBoxHandleSend(rsPLAYINFO* lpPlayInfo, TRANS_POSTBOX_SEND* lpSend)
 
 	rsRecord_ItemLog_Post(lpPlayInfo, lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum,
 		0, szDest, ITEMLOG_EXPRESS);
+
+	POSTBOX_AUDIT sendAudit;
+	ZeroMemory(&sendAudit, sizeof(sendAudit));
+	lstrcpy(sendAudit.EventType, "SEND");
+	lstrcpyn(sendAudit.DestAccount, szDestID, 32);
+	lstrcpyn(sendAudit.DestChar, szDest, 32);
+	lstrcpyn(sendAudit.SenderAccount, lpPlayInfo->szID, 32);
+	lstrcpyn(sendAudit.SenderChar, lpPlayInfo->szName, 32);
+	lstrcpyn(sendAudit.ItemName, lpSend->Item.ItemName, 64);
+	sendAudit.ItemBinCode = lpSend->Item.CODE;
+	sendAudit.ItemHead = lpSend->Item.ItemHeader.Head;
+	sendAudit.ItemChkSum = lpSend->Item.ItemHeader.dwChkSum;
+	sendAudit.Weight = lpSend->Item.Weight;
+	sendAudit.Quantity = isPotion ? potionCount : 0;
+	sendAudit.Kind = POSTBOX_KIND_PLAYER;
+	lstrcpyn(sendAudit.Message, doc, 128);
+	lstrcpy(sendAudit.Source, "P2P");
+	if (lpPlayInfo->lpsmSock)
+	{
+		in_addr addr;
+		addr.S_un.S_addr = lpPlayInfo->lpsmSock->acc_sin.sin_addr.S_un.S_addr;
+		lstrcpyn(sendAudit.DestIP, inet_ntoa(addr), sizeof(sendAudit.DestIP));
+	}
+	for (int cnt = 0; cnt < MAX_ITEM; cnt++)
+	{
+		if (sItem[cnt].CODE == lpSend->Item.CODE)
+		{
+			lstrcpyn(sendAudit.ItemCode, sItem[cnt].LastCategory, 32);
+			break;
+		}
+	}
+	rsPostBoxAuditLog(&sendAudit);
+
 	rsSendPostBoxResult(lpPlayInfo, smTRANSCODE_POSTBOX_SEND, POSTBOX_RESULT_OK,
 		lpSend->Item.CODE, lpSend->Item.ItemHeader.Head, lpSend->Item.ItemHeader.dwChkSum);
 	if (destOnline && destOnline->lpPostBoxItem && destOnline->lpsmSock)
@@ -24971,6 +25045,8 @@ int DisconnectUser(smWINSOCK* lpsmSock)
 
 		rsLogOut(tpInfo);
 
+		rsWareHouseSessionFree(tpInfo);
+
 		tpInfo->lpsmSock = 0;
 
 		Server_DebugCount = 205;
@@ -26134,6 +26210,16 @@ int	rsShutDown()
 	}
 
 	return FALSE;
+}
+
+int	rsIsShuttingDown()
+{
+	return ShutDownFlag ? TRUE : FALSE;
+}
+
+int	rsShutDownMinutesLeft()
+{
+	return ShutDownLeftTime;
 }
 
 #ifdef	_LANGUAGE_KOREAN

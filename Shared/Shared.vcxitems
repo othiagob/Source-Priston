@@ -27,6 +27,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Skills\pikeman.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Skills\priestess.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)smPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WarehouseWire.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utils\CMutex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utils\common.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utils\Debug.h" />

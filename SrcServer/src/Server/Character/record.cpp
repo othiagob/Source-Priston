@@ -19,11 +19,12 @@
 #include "TextMessage.h"
 #include "srcserver\\onserver.h"
 #include "..\\Database\\SQLConnection.h"
+#include "WarehouseWire.h"
 #include <time.h>
 
-static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE* pages, int maxPages);
-static int WriteWareHouseFilePages(const char* szFileName, TRANS_WAREHOUSE* pages, int nPages);
+static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE_LEGACY* pages, int maxPages);
 static void MakeEmptyWareHousePacket(TRANS_WAREHOUSE* pkt, int page);
+void rsWareHouseSessionFree(rsPLAYINFO* lpPlayInfo);
 
 char	*szRecordHeader = "RC 1.50";			//???? ?????
 DWORD	dwRecordVersion = 150;					//??? ????? ????
@@ -2915,9 +2916,6 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 	//????? ?????? ?????? ????? ???
 
 	sWAREHOUSE WareHouseCheck;
-	TRANS_WAREHOUSE	TransWareHouse;
-	TRANS_WAREHOUSE whPages[WAREHOUSE_PAGE_COUNT];
-	int nWhPages = 0;
 	int	WareHouseFixFlag = 0;
 	char szFileName[128];
 	char szItemName[64];
@@ -2930,17 +2928,7 @@ int rsRecordMemoryBuff_CheckInvenItem( rsPLAYINFO *lpPlayInfo , int Mode )
 
 
 	if ( lpPlayInfo->OpenWarehouseInfoFlag && (lpPlayInfo->dwDataError&rsDATA_ERROR_WAREHOUSE)==0 ) {
-		GetWareHouseFile( lpPlayInfo->szID , szFileName );
-
-		fp = fopen( szFileName , "rb" );
-		if ( fp ) {
-			nWhPages = ReadWareHouseFilePages(fp, whPages, WAREHOUSE_PAGE_COUNT);
-			memcpy(&TransWareHouse, &whPages[0], sizeof(TRANS_WAREHOUSE));
-			fclose(fp);
-		}
-		else {
-			lpPlayInfo->OpenWarehouseInfoFlag = 0;
-		}
+		WareHouseCheck.Money = lpPlayInfo->WareHouseMoney;
 	}
 
 	if (lpPlayInfo->OpenCaravanInfoFlag && (lpPlayInfo->dwDataError & rsDATA_ERROR_WAREHOUSE) == 0) 
@@ -3050,77 +3038,27 @@ skip_Warehouse:
 
 	if ( lpPlayInfo->OpenWarehouseInfoFlag ) {
 
-		//??? ???? ??? ?????? ?????? ????
-		DecodeCompress( (BYTE *)TransWareHouse.Data , (BYTE *)&WareHouseCheck , sizeof(sWAREHOUSE) );
-
-			//?????? ??? ???
-			DWORD	dwChkSum = 0;
-			char	*szComp = (char *)&WareHouseCheck;
-
-			for( cnt=0;cnt<sizeof(sWAREHOUSE);cnt++ ) {
-				dwChkSum += szComp[cnt]*(cnt+1);
-			}
-			if ( dwChkSum!=TransWareHouse.dwChkSum ) {
-				lpPlayInfo->OpenWarehouseInfoFlag = 0;
-				goto skip_Warehouse;
-			}
-
-
-
-		for(cnt=0;cnt<100;cnt++) {
-			if ( WareHouseCheck.WareHouseItem[cnt].Flag ) {
+		for(cnt=0;cnt<WAREHOUSE_TOTAL_SLOTS;cnt++) {
+			if ( lpPlayInfo->WareHouseItemInfo[cnt].dwCode ) {
 
 				flag = 0;
 				for( cnt2=0;cnt2<INVEN_ITEM_INFO_MAX;cnt2++ ) {
 					if ( lpPlayInfo->InvenItemInfo[cnt2].dwCode &&
-						lpPlayInfo->InvenItemInfo[cnt2].dwCode==WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE &&
-						lpPlayInfo->InvenItemInfo[cnt2].dwKey==WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head &&
-						lpPlayInfo->InvenItemInfo[cnt2].dwSum==WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum ) {
+						lpPlayInfo->InvenItemInfo[cnt2].dwCode==lpPlayInfo->WareHouseItemInfo[cnt].dwCode &&
+						lpPlayInfo->InvenItemInfo[cnt2].dwKey==lpPlayInfo->WareHouseItemInfo[cnt].dwKey &&
+						lpPlayInfo->InvenItemInfo[cnt2].dwSum==lpPlayInfo->WareHouseItemInfo[cnt].dwSum ) {
 							lpPlayInfo->InvenItemInfo[cnt2].dwCode = 0;
 							flag++;
 						}
 				}
 
-				for( cnt2=0;cnt2<WAREHOUSE_TOTAL_SLOTS;cnt2++ ) {
-					if ( lpPlayInfo->WareHouseItemInfo[cnt2].dwCode &&
-						lpPlayInfo->WareHouseItemInfo[cnt2].dwCode==WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE &&
-						lpPlayInfo->WareHouseItemInfo[cnt2].dwKey==WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head &&
-						lpPlayInfo->WareHouseItemInfo[cnt2].dwSum==WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum ) {
-
-						lpPlayInfo->WareHouseItemInfo[cnt2].dwCode = 0;
-						flag++;
-					}
-				}
-
-
-				if ( !flag ) {
-					WareHouseCheck.WareHouseItem[cnt].Flag = 0;
-					WareHouseFixFlag ++;
-
-
-					//????? ?????? ?? ??? ?????? ????? ????? ???? ???
-					memcpy( szItemName , WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemName , 32 );
-					szItemName[31] = 0;
-
-					//????? ???
-					smTransCommand.WParam = 8000;
-					smTransCommand.WxParam = 3;
-					smTransCommand.LxParam = (int)szItemName;
-					smTransCommand.LParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE;
-					smTransCommand.SParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
-					smTransCommand.EParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
-
-					RecordHackLogFile( lpPlayInfo , &smTransCommand );
-				}
-
 				if ( flag>1 ) {
-					//????? ???
 					smTransCommand.WParam = 8000;
 					smTransCommand.WxParam = flag;
 					smTransCommand.LxParam = (int)"*RECORD COPIED ITEM IN WAREHOUSE";
-					smTransCommand.LParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE;
-					smTransCommand.SParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
-					smTransCommand.EParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
+					smTransCommand.LParam = lpPlayInfo->WareHouseItemInfo[cnt].dwCode;
+					smTransCommand.SParam = lpPlayInfo->WareHouseItemInfo[cnt].dwKey;
+					smTransCommand.EParam = lpPlayInfo->WareHouseItemInfo[cnt].dwSum;
 					RecordHackLogFile( lpPlayInfo , &smTransCommand );
 				}
 			}
@@ -3132,7 +3070,6 @@ skip_Warehouse:
 			money += lpPlayInfo->WareHouseMoney;
 
 			if( lpTransRecordData->smCharInfo.Money<0 ) {
-				//???? ?????? ???? - ???? ????? ?????? ????
 				lpTransRecordData->smCharInfo.Money = 0;
 				money = lpPlayInfo->WareHouseMoney;
 			}
@@ -3145,7 +3082,6 @@ skip_Warehouse:
 
 
 		if ( money>lpPlayInfo->ServerMoney ) {
-			//????? ???
 			smTransCommand.WParam = 8010;
 			smTransCommand.LParam = 2;
 			smTransCommand.SParam = lpPlayInfo->ServerMoney;
@@ -3160,25 +3096,9 @@ skip_Warehouse:
 			if ( lpTransRecordData->smCharInfo.Money<0 ) {
 				WareHouseCheck.Money += lpTransRecordData->smCharInfo.Money;
 				if ( WareHouseCheck.Money<2023 ) WareHouseCheck.Money = 2023;
-				WareHouseFixFlag ++;
-
 				lpTransRecordData->smCharInfo.Money=0;
 			}
 
-		}
-
-		if ( WareHouseFixFlag && !Mode ) {
-
-			if ( SaveWareHouse( &WareHouseCheck , &TransWareHouse )==TRUE ) {
-				if (nWhPages >= WAREHOUSE_PAGE_COUNT) {
-					GetWareHouseFile(lpPlayInfo->szID, szFileName);
-					memcpy(&whPages[0], &TransWareHouse, sizeof(TRANS_WAREHOUSE));
-					WriteWareHouseFilePages(szFileName, whPages, WAREHOUSE_PAGE_COUNT);
-				}
-				else {
-					rsSaveWareHouseData( lpPlayInfo->szID , &TransWareHouse , lpPlayInfo );
-				}
-			}
 		}
 	}
 	else {
@@ -3574,9 +3494,9 @@ int rsRECORD_DBASE::SaveThrowData( char *szName , sTHROW_ITEM_INFO *lpThrowItemL
 
 
 
-static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE* pages, int maxPages)
+static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE_LEGACY* pages, int maxPages)
 {
-	ZeroMemory(pages, sizeof(TRANS_WAREHOUSE) * maxPages);
+	ZeroMemory(pages, sizeof(TRANS_WAREHOUSE_LEGACY) * maxPages);
 	DWORD magic = 0;
 	if (fread(&magic, sizeof(DWORD), 1, fp) == 1 && magic == WAREHOUSE_FILE_MAGIC) {
 		int nPages = 0;
@@ -3589,7 +3509,7 @@ static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE* pages, int maxPages
 			int pktSize = 0;
 			if (fread(&pktSize, sizeof(int), 1, fp) != 1)
 				return i;
-			if (pktSize < 32 || pktSize > (int)sizeof(TRANS_WAREHOUSE))
+			if (pktSize < 32 || pktSize > (int)sizeof(TRANS_WAREHOUSE_LEGACY))
 				return i;
 			if (fread(&pages[i], pktSize, 1, fp) != 1)
 				return i;
@@ -3598,7 +3518,7 @@ static int ReadWareHouseFilePages(FILE* fp, TRANS_WAREHOUSE* pages, int maxPages
 		return nPages;
 	}
 	fseek(fp, 0, SEEK_SET);
-	fread(&pages[0], sizeof(TRANS_WAREHOUSE), 1, fp);
+	fread(&pages[0], sizeof(TRANS_WAREHOUSE_LEGACY), 1, fp);
 	return 1;
 }
 
@@ -3636,135 +3556,547 @@ static void MakeEmptyWareHousePacket(TRANS_WAREHOUSE* pkt, int page)
 {
 	ZeroMemory(pkt, sizeof(TRANS_WAREHOUSE));
 	pkt->code = smTRANSCODE_WAREHOUSE;
-	pkt->size = sizeof(TRANS_WAREHOUSE) - sizeof(sWAREHOUSE);
+	pkt->size = (int)(sizeof(TRANS_WAREHOUSE) - WAREHOUSE_WIRE_DATA_MAX);
+	if (pkt->size < 48)
+		pkt->size = 48;
 	pkt->DataSize = 0;
 	pkt->wVersion[0] = WAREHOUSE_PACKET_VERSION;
 	pkt->wVersion[1] = 0;
 	pkt->dwTemp[0] = (DWORD)page;
+	pkt->dwTemp[2] = 1;
 }
 
-static void CopyWareHousePacket(TRANS_WAREHOUSE* dest, TRANS_WAREHOUSE* src)
+void rsWareHouseSessionFree(rsPLAYINFO* lpPlayInfo)
 {
-	int copy = src->size;
-	if (copy < 32)
-		copy = 32;
-	if (copy > (int)sizeof(TRANS_WAREHOUSE))
-		copy = sizeof(TRANS_WAREHOUSE);
-	memcpy(dest, src, copy);
-	dest->size = copy;
-}
-
-static int DecodeWareHousePacket(TRANS_WAREHOUSE* pkt, sWAREHOUSE* out)
-{
-	ZeroMemory(out, sizeof(sWAREHOUSE));
-	if (!pkt || !pkt->DataSize)
-		return TRUE;
-
-	DecodeCompress((BYTE*)pkt->Data, (BYTE*)out, sizeof(sWAREHOUSE));
-
-	DWORD dwChkSum = 0;
-	char* szComp = (char*)out;
-	for (int cnt = 0; cnt < (int)sizeof(sWAREHOUSE); cnt++)
-		dwChkSum += szComp[cnt] * (cnt + 1);
-	return dwChkSum == pkt->dwChkSum;
-}
-
-static void RebuildWareHouseItemInfo(rsPLAYINFO* lpPlayInfo, TRANS_WAREHOUSE* pages)
-{
-	if (!lpPlayInfo || !pages)
+	if (!lpPlayInfo)
 		return;
+	if (lpPlayInfo->lpWareHouseSaveItems)
+	{
+		delete[] (sWAREHOUSE_SAVE_ITEM*)lpPlayInfo->lpWareHouseSaveItems;
+		lpPlayInfo->lpWareHouseSaveItems = nullptr;
+	}
+	lpPlayInfo->WareHouseSaveCount = 0;
+	lpPlayInfo->WareHouseSaveMask = 0;
+	ZeroMemory(lpPlayInfo->WareHouseSavePageChunks, sizeof(lpPlayInfo->WareHouseSavePageChunks));
+}
 
-	ZeroMemory(lpPlayInfo->WareHouseItemInfo, sizeof(sTHROW_ITEM_INFO) * WAREHOUSE_TOTAL_SLOTS);
+static void WareHouseKickCopy(rsPLAYINFO* lpPlayInfo, DWORD code, DWORD head, DWORD sum)
+{
+	smTRANS_COMMAND smTransCommand = {};
+	smTransCommand.size = sizeof(smTRANS_COMMAND);
+	smTransCommand.code = smTRANSCODE_CLOSECLIENT;
+	if (lpPlayInfo && lpPlayInfo->lpsmSock)
+		lpPlayInfo->lpsmSock->Send((char*)&smTransCommand, smTransCommand.size, TRUE);
 
-	sWAREHOUSE check;
-	int infoIndex = 0;
-	for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
-		if (!DecodeWareHousePacket(&pages[p], &check))
-			continue;
-		for (int cnt = 0; cnt < WAREHOUSE_PAGE_SLOTS; cnt++) {
-			if (!check.WareHouseItem[cnt].Flag)
-				continue;
-			if (infoIndex >= WAREHOUSE_TOTAL_SLOTS)
-				return;
-			lpPlayInfo->WareHouseItemInfo[infoIndex].dwCode = check.WareHouseItem[cnt].sItemInfo.CODE;
-			lpPlayInfo->WareHouseItemInfo[infoIndex].dwKey = check.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
-			lpPlayInfo->WareHouseItemInfo[infoIndex].dwSum = check.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
-			infoIndex++;
+	if (lpPlayInfo)
+	{
+		smTransCommand.code = smTRANSCODE_CLOSECLIENT;
+		smTransCommand.WParam = 8070;
+		smTransCommand.WxParam = 2;
+		smTransCommand.LxParam = (int)"*WAREHOUSE";
+		smTransCommand.LParam = (int)code;
+		smTransCommand.SParam = (int)head;
+		smTransCommand.EParam = (int)sum;
+		RecordHackLogFile(lpPlayInfo, &smTransCommand);
+	}
+}
+
+struct sWAREHOUSE_LEGACY_MEM {
+	sITEM WareHouseItem[WAREHOUSE_LEGACY_PAGE_SLOTS];
+	int Money;
+	short Weight[2];
+	int BuyAreaCount;
+	int FakeMoney;
+};
+
+static int WareHouseSqlEnsureAccount(const char* szID, int money, int weightMax, int* outRevision)
+{
+	auto db = SQLCONNECTION(DATABASEID_UserDB);
+	if (!db)
+		return FALSE;
+	db->Open();
+	if (!db->Prepare("SELECT Revision FROM Warehouse WHERE AccountID=?"))
+	{
+		db->Close();
+		Utils_Log(LOG_SERVER, "Warehouse: tabelas ausentes. Rode docs/sql/Create-Warehouse.sql no UserDB.");
+		return FALSE;
+	}
+	db->BindInputParameter((void*)szID, 1, PARAMTYPE_String);
+	if (db->Execute())
+	{
+		int rev = 1;
+		db->GetData(1, PARAMTYPE_Integer, &rev);
+		if (outRevision)
+			*outRevision = rev;
+		db->Close();
+		return TRUE;
+	}
+	db->Close();
+
+	db->Open();
+	if (!db->Prepare("INSERT INTO Warehouse (AccountID, Money, WeightMax, UnlockedPages, Revision, ImportedFromWar) VALUES (?,?,?,?,1,0)"))
+	{
+		db->Close();
+		return FALSE;
+	}
+	int unlocked = WAREHOUSE_UNLOCKED_PAGES;
+	db->BindInputParameter((void*)szID, 1, PARAMTYPE_String);
+	db->BindInputParameter(&money, 2, PARAMTYPE_Integer);
+	db->BindInputParameter(&weightMax, 3, PARAMTYPE_Integer);
+	db->BindInputParameter(&unlocked, 4, PARAMTYPE_Integer);
+	if (!db->Execute(FALSE))
+	{
+		db->Close();
+		return FALSE;
+	}
+	db->Close();
+	if (outRevision)
+		*outRevision = 1;
+	return TRUE;
+}
+
+static int WareHouseSqlHasAccount(const char* szID)
+{
+	auto db = SQLCONNECTION(DATABASEID_UserDB);
+	if (!db)
+		return FALSE;
+	db->Open();
+	if (!db->Prepare("SELECT 1 FROM Warehouse WHERE AccountID=?"))
+	{
+		db->Close();
+		return FALSE;
+	}
+	db->BindInputParameter((void*)szID, 1, PARAMTYPE_String);
+	const int ok = db->Execute() ? TRUE : FALSE;
+	db->Close();
+	return ok;
+}
+
+static int SendWareHouseWirePage(rsPLAYINFO* lpPlayInfo, int page, int money, int weightMax, int revision, int commit,
+	sWAREHOUSE_WIRE_ITEM* wire, int total)
+{
+	if (!lpPlayInfo || !lpPlayInfo->lpsmSock)
+		return FALSE;
+
+	int starts[128] = {};
+	int counts[128] = {};
+	int nChunks = 0;
+	if (total <= 0)
+	{
+		nChunks = 1;
+		counts[0] = 0;
+	}
+	else
+	{
+		BYTE* probe = new BYTE[WareHouseWirePayloadSize(WAREHOUSE_PAGE_SLOTS)];
+		if (!probe)
+			return FALSE;
+		int start = 0;
+		while (start < total && nChunks < 128)
+		{
+			int best = 0;
+			int lo = 1;
+			int hi = total - start;
+			while (lo <= hi)
+			{
+				const int mid = (lo + hi) / 2;
+				sWAREHOUSE_WIRE_HDR hdr = {};
+				hdr.itemCount = mid;
+				hdr.money = (page == 0 && start == 0) ? money : 0;
+				hdr.weightMax = (page == 0 && start == 0) ? weightMax : 0;
+				hdr.revision = revision;
+				const int rawSize = WareHouseFillPayload(probe, WareHouseWirePayloadSize(WAREHOUSE_PAGE_SLOTS), &hdr, wire + start);
+				TRANS_WAREHOUSE test = {};
+				const int comp = EecodeCompress(probe, test.Data, rawSize, WAREHOUSE_WIRE_DATA_MAX);
+				const int pktSize = (int)(sizeof(TRANS_WAREHOUSE) - WAREHOUSE_WIRE_DATA_MAX + comp);
+				if (comp > 0 && comp <= WAREHOUSE_WIRE_DATA_MAX && pktSize <= smSOCKBUFF_SIZE)
+				{
+					best = mid;
+					lo = mid + 1;
+				}
+				else
+					hi = mid - 1;
+			}
+			if (best < 1)
+			{
+				delete[] probe;
+				return FALSE;
+			}
+			starts[nChunks] = start;
+			counts[nChunks] = best;
+			nChunks++;
+			start += best;
+		}
+		delete[] probe;
+	}
+
+	for (int c = 0; c < nChunks; c++)
+	{
+		sWAREHOUSE_WIRE_HDR hdr = {};
+		hdr.itemCount = counts[c];
+		hdr.money = (page == 0 && starts[c] == 0) ? money : 0;
+		hdr.weightMax = (page == 0 && starts[c] == 0) ? weightMax : 0;
+		hdr.revision = revision;
+		const int rawCap = WareHouseWirePayloadSize(hdr.itemCount);
+		BYTE* raw = new BYTE[rawCap > 0 ? rawCap : (int)sizeof(sWAREHOUSE_WIRE_HDR)];
+		if (!raw)
+			return FALSE;
+		const int rawSize = WareHouseFillPayload(raw, rawCap > 0 ? rawCap : (int)sizeof(sWAREHOUSE_WIRE_HDR), &hdr,
+			hdr.itemCount ? wire + starts[c] : nullptr);
+		TRANS_WAREHOUSE pkt = {};
+		int comp = 0;
+		if (rawSize > 0)
+			comp = EecodeCompress(raw, pkt.Data, rawSize, WAREHOUSE_WIRE_DATA_MAX);
+		pkt.code = smTRANSCODE_WAREHOUSE;
+		pkt.DataSize = comp;
+		pkt.dwChkSum = WareHouseBufChkSum(raw, rawSize);
+		pkt.wVersion[0] = WAREHOUSE_PACKET_VERSION;
+		pkt.dwTemp[0] = (DWORD)page;
+		pkt.dwTemp[1] = (DWORD)c;
+		pkt.dwTemp[2] = (DWORD)nChunks;
+		pkt.dwTemp[3] = (DWORD)revision;
+		pkt.dwTemp[4] = (commit && c == nChunks - 1) ? 1 : 0;
+		if (page == 0 && c == 0)
+		{
+			pkt.WareHouseMoney = money ^ (pkt.dwChkSum ^ smTRANSCODE_WAREHOUSE);
+			pkt.UserMoney = 0;
+		}
+		pkt.size = (int)(sizeof(TRANS_WAREHOUSE) - WAREHOUSE_WIRE_DATA_MAX + (comp > 0 ? comp : 0));
+		if (pkt.size < 48)
+			pkt.size = 48;
+		if (pkt.size > smSOCKBUFF_SIZE)
+			pkt.size = smSOCKBUFF_SIZE;
+		delete[] raw;
+		lpPlayInfo->lpsmSock->Send((char*)&pkt, pkt.size, TRUE);
+	}
+	return TRUE;
+}
+
+static int WareHouseSqlCommit(rsPLAYINFO* lpPlayInfo)
+{
+	if (!lpPlayInfo || !lpPlayInfo->szID[0])
+		return FALSE;
+
+	sWAREHOUSE_SAVE_ITEM* items = (sWAREHOUSE_SAVE_ITEM*)lpPlayInfo->lpWareHouseSaveItems;
+	const int n = lpPlayInfo->WareHouseSaveCount;
+	if (n < 0 || n > WAREHOUSE_UNLOCKED_PAGES * WAREHOUSE_PAGE_SLOTS)
+		return FALSE;
+
+	for (int i = 0; i < n; i++)
+	{
+		if (items[i].Page >= WAREHOUSE_UNLOCKED_PAGES || items[i].Slot >= WAREHOUSE_PAGE_SLOTS)
+			return FALSE;
+		if (!WareHouseSkipUnique(items[i].Info.CODE))
+		{
+			for (int j = i + 1; j < n; j++)
+			{
+				if (WareHouseSkipUnique(items[j].Info.CODE))
+					continue;
+				if (items[i].Info.ItemHeader.Head == items[j].Info.ItemHeader.Head &&
+					items[i].Info.ItemHeader.dwChkSum == items[j].Info.ItemHeader.dwChkSum)
+				{
+					WareHouseKickCopy(lpPlayInfo, items[i].Info.CODE, items[i].Info.ItemHeader.Head, items[i].Info.ItemHeader.dwChkSum);
+					return FALSE;
+				}
+			}
+			for (int k = 0; k < INVEN_ITEM_INFO_MAX; k++)
+			{
+				if (lpPlayInfo->InvenItemInfo[k].dwCode &&
+					lpPlayInfo->InvenItemInfo[k].dwCode == items[i].Info.CODE &&
+					lpPlayInfo->InvenItemInfo[k].dwKey == items[i].Info.ItemHeader.Head &&
+					lpPlayInfo->InvenItemInfo[k].dwSum == items[i].Info.ItemHeader.dwChkSum)
+				{
+					WareHouseKickCopy(lpPlayInfo, items[i].Info.CODE, items[i].Info.ItemHeader.Head, items[i].Info.ItemHeader.dwChkSum);
+					return FALSE;
+				}
+			}
 		}
 	}
+
+	for (int p = 0; p < WAREHOUSE_UNLOCKED_PAGES; p++)
+	{
+		sWAREHOUSE_WIRE_ITEM pageItems[WAREHOUSE_PAGE_SLOTS];
+		int pc = 0;
+		for (int i = 0; i < n && pc < WAREHOUSE_PAGE_SLOTS; i++)
+		{
+			if (items[i].Page != p)
+				continue;
+			pageItems[pc].Slot = items[i].Slot;
+			pageItems[pc].x = items[i].x;
+			pageItems[pc].y = items[i].y;
+			pageItems[pc].w = items[i].w;
+			pageItems[pc].h = items[i].h;
+			pageItems[pc].Class = items[i].Class;
+			pageItems[pc].sItemInfo = items[i].Info;
+			pc++;
+		}
+		if (pc > 0 && !WareHouseValidatePageItems(pageItems, pc))
+			return FALSE;
+	}
+
+	auto db = SQLCONNECTION(DATABASEID_UserDB);
+	if (!db)
+		return FALSE;
+
+	int rev = lpPlayInfo->WareHouseRevision;
+	int money = lpPlayInfo->WareHouseSaveMoney;
+	int weightMax = lpPlayInfo->WareHouseWeightMax > 0 ? lpPlayInfo->WareHouseWeightMax : WAREHOUSE_DEFAULT_WEIGHT_MAX;
+
+	if (!WareHouseSqlEnsureAccount(lpPlayInfo->szID, money, weightMax, nullptr))
+		return FALSE;
+
+	db->Open();
+	if (!db->Prepare("BEGIN TRANSACTION") || !db->Execute(FALSE))
+	{
+		db->Close();
+		return FALSE;
+	}
+	db->Close();
+
+	db->Open();
+	if (!db->Prepare("UPDATE Warehouse SET Money=?, WeightMax=?, Revision=Revision+1, UpdatedAt=GETDATE() WHERE AccountID=? AND Revision=?"))
+	{
+		db->Close();
+		return FALSE;
+	}
+	db->BindInputParameter(&money, 1, PARAMTYPE_Integer);
+	db->BindInputParameter(&weightMax, 2, PARAMTYPE_Integer);
+	db->BindInputParameter(lpPlayInfo->szID, 3, PARAMTYPE_String);
+	db->BindInputParameter(&rev, 4, PARAMTYPE_Integer);
+	if (!db->Execute(FALSE))
+	{
+		db->Close();
+		db->Open();
+		db->Prepare("ROLLBACK TRANSACTION");
+		db->Execute(FALSE);
+		db->Close();
+		return FALSE;
+	}
+	db->Close();
+
+	db->Open();
+	if (!db->Prepare("SELECT Revision FROM Warehouse WHERE AccountID=?"))
+	{
+		db->Close();
+		db->Open();
+		db->Prepare("ROLLBACK TRANSACTION");
+		db->Execute(FALSE);
+		db->Close();
+		return FALSE;
+	}
+	db->BindInputParameter(lpPlayInfo->szID, 1, PARAMTYPE_String);
+	int nowRev = 0;
+	if (!db->Execute() || !db->GetData(1, PARAMTYPE_Integer, &nowRev) || nowRev != rev + 1)
+	{
+		db->Close();
+		db->Open();
+		db->Prepare("ROLLBACK TRANSACTION");
+		db->Execute(FALSE);
+		db->Close();
+		return FALSE;
+	}
+	db->Close();
+
+	db->Open();
+	if (!db->Prepare("DELETE FROM WarehouseItem WHERE AccountID=? AND Page<?"))
+	{
+		db->Close();
+		db->Open();
+		db->Prepare("ROLLBACK TRANSACTION");
+		db->Execute(FALSE);
+		db->Close();
+		return FALSE;
+	}
+	int unlocked = WAREHOUSE_UNLOCKED_PAGES;
+	db->BindInputParameter(lpPlayInfo->szID, 1, PARAMTYPE_String);
+	db->BindInputParameter(&unlocked, 2, PARAMTYPE_Integer);
+	db->Execute(FALSE);
+	db->Close();
+
+	for (int i = 0; i < n; i++)
+	{
+		int page = items[i].Page;
+		int slot = items[i].Slot;
+		int gx = items[i].x;
+		int gy = items[i].y;
+		int code = (int)items[i].Info.CODE;
+		int head = (int)items[i].Info.ItemHeader.Head;
+		int chk = (int)items[i].Info.ItemHeader.dwChkSum;
+		db->Open();
+		if (!db->Prepare("INSERT INTO WarehouseItem (AccountID, Page, Slot, GridX, GridY, ItemBlob, ItemCode, Head, ChkSum) VALUES (?,?,?,?,?,?,?,?,?)"))
+		{
+			db->Close();
+			db->Open();
+			db->Prepare("ROLLBACK TRANSACTION");
+			db->Execute(FALSE);
+			db->Close();
+			return FALSE;
+		}
+		db->BindInputParameter(lpPlayInfo->szID, 1, PARAMTYPE_String);
+		db->BindInputParameter(&page, 2, PARAMTYPE_Integer);
+		db->BindInputParameter(&slot, 3, PARAMTYPE_Integer);
+		db->BindInputParameter(&gx, 4, PARAMTYPE_Integer);
+		db->BindInputParameter(&gy, 5, PARAMTYPE_Integer);
+		db->BindInputParameter(&items[i].Info, 6, PARAMTYPE_Binary, (int)sizeof(sITEMINFO));
+		db->BindInputParameter(&code, 7, PARAMTYPE_Integer);
+		db->BindInputParameter(&head, 8, PARAMTYPE_Integer);
+		db->BindInputParameter(&chk, 9, PARAMTYPE_Integer);
+		if (!db->Execute(FALSE))
+		{
+			db->Close();
+			db->Open();
+			db->Prepare("ROLLBACK TRANSACTION");
+			db->Execute(FALSE);
+			db->Close();
+			WareHouseKickCopy(lpPlayInfo, items[i].Info.CODE, items[i].Info.ItemHeader.Head, items[i].Info.ItemHeader.dwChkSum);
+			return FALSE;
+		}
+		db->Close();
+	}
+
+	db->Open();
+	if (!db->Prepare("COMMIT TRANSACTION") || !db->Execute(FALSE))
+	{
+		db->Close();
+		db->Open();
+		db->Prepare("ROLLBACK TRANSACTION");
+		db->Execute(FALSE);
+		db->Close();
+		return FALSE;
+	}
+	db->Close();
+
+	lpPlayInfo->WareHouseRevision = rev + 1;
+	lpPlayInfo->WareHouseMoney = money;
+	ZeroMemory(lpPlayInfo->WareHouseItemInfo, sizeof(sTHROW_ITEM_INFO) * WAREHOUSE_TOTAL_SLOTS);
+	int infoIndex = 0;
+	for (int i = 0; i < n && infoIndex < WAREHOUSE_TOTAL_SLOTS; i++)
+	{
+		lpPlayInfo->WareHouseItemInfo[infoIndex].dwCode = items[i].Info.CODE;
+		lpPlayInfo->WareHouseItemInfo[infoIndex].dwKey = items[i].Info.ItemHeader.Head;
+		lpPlayInfo->WareHouseItemInfo[infoIndex].dwSum = items[i].Info.ItemHeader.dwChkSum;
+		infoIndex++;
+	}
+	rsWareHouseSessionFree(lpPlayInfo);
+	return TRUE;
 }
 
 int rsSaveWareHouseData( char *szID , TRANS_WAREHOUSE *lpTransWareHouse , rsPLAYINFO *lpPlayInfo )
 {
-	char szFileName[128];
-	FILE	*fp;
-
-	if (!szID || !szID[0] || !lpTransWareHouse)
+	if (!szID || !szID[0] || !lpTransWareHouse || !lpPlayInfo)
+		return FALSE;
+	if (lpTransWareHouse->wVersion[0] != WAREHOUSE_PACKET_VERSION)
 		return FALSE;
 
-	GetWareHouseFile( szID , szFileName );
-
-	int page = 0;
-	if (lpTransWareHouse->wVersion[0] == WAREHOUSE_PACKET_VERSION)
-		page = (int)lpTransWareHouse->dwTemp[0];
-	if (page < 0 || page >= WAREHOUSE_PAGE_COUNT)
-		page = 0;
-
-	if (lpTransWareHouse->wVersion[0] != WAREHOUSE_PACKET_VERSION) {
-		fp = fopen( szFileName , "wb" );
-		if ( !fp ) return FALSE;
-		fwrite( lpTransWareHouse , lpTransWareHouse->size , 1 , fp );
-		fclose(fp);
-
-		if (lpPlayInfo) {
-			TRANS_WAREHOUSE pages[WAREHOUSE_PAGE_COUNT];
-			ZeroMemory(pages, sizeof(pages));
-			CopyWareHousePacket(&pages[0], lpTransWareHouse);
-			for (int p = 1; p < WAREHOUSE_PAGE_COUNT; p++)
-				MakeEmptyWareHousePacket(&pages[p], p);
-			RebuildWareHouseItemInfo(lpPlayInfo, pages);
-		}
-		return TRUE;
+	const int page = (int)lpTransWareHouse->dwTemp[0];
+	if (page < 0 || page >= WAREHOUSE_UNLOCKED_PAGES)
+	{
+		smTRANS_COMMAND cmd = {};
+		cmd.size = sizeof(smTRANS_COMMAND);
+		cmd.WParam = 8070;
+		cmd.LParam = page;
+		cmd.LxParam = (int)"*WAREHOUSE PAGE";
+		RecordHackLogFile(lpPlayInfo, &cmd);
+		return FALSE;
 	}
 
-	sWAREHOUSE incoming;
-	if (!DecodeWareHousePacket(lpTransWareHouse, &incoming)) {
-		if (page == 0) {
-			if (lpPlayInfo)
+	if ((int)lpTransWareHouse->dwTemp[3] != lpPlayInfo->WareHouseRevision && lpPlayInfo->WareHouseRevision != 0)
+		return FALSE;
+
+	if (page != 0 && lpTransWareHouse->WareHouseMoney != 0)
+		lpTransWareHouse->WareHouseMoney = 0;
+
+	if (!lpPlayInfo->lpWareHouseSaveItems)
+	{
+		lpPlayInfo->lpWareHouseSaveItems = new sWAREHOUSE_SAVE_ITEM[WAREHOUSE_UNLOCKED_PAGES * WAREHOUSE_PAGE_SLOTS];
+		if (!lpPlayInfo->lpWareHouseSaveItems)
+			return FALSE;
+		lpPlayInfo->WareHouseSaveCount = 0;
+		lpPlayInfo->WareHouseSaveMask = 0;
+		ZeroMemory(lpPlayInfo->WareHouseSavePageChunks, sizeof(lpPlayInfo->WareHouseSavePageChunks));
+		lpPlayInfo->WareHouseSaveMoney = lpPlayInfo->WareHouseMoney;
+	}
+
+	sWAREHOUSE_WIRE_HDR hdr = {};
+	sWAREHOUSE_WIRE_ITEM* chunkItems = new sWAREHOUSE_WIRE_ITEM[WAREHOUSE_PAGE_SLOTS];
+	if (!chunkItems)
+		return FALSE;
+
+	if (lpTransWareHouse->DataSize > 0)
+	{
+		const int rawMax = WareHouseWirePayloadSize(WAREHOUSE_PAGE_SLOTS);
+		BYTE* raw = new BYTE[rawMax];
+		if (!raw)
+		{
+			delete[] chunkItems;
+			return FALSE;
+		}
+		ZeroMemory(raw, rawMax);
+		DecodeCompress((BYTE*)lpTransWareHouse->Data, raw, rawMax);
+		if (!WareHouseReadPayload(raw, rawMax, &hdr, chunkItems, WAREHOUSE_PAGE_SLOTS) ||
+			WareHouseBufChkSum(raw, WareHouseWirePayloadSize(hdr.itemCount)) != lpTransWareHouse->dwChkSum)
+		{
+			delete[] raw;
+			delete[] chunkItems;
+			if (page == 0)
 				lpPlayInfo->dwDataError |= rsDATA_ERROR_WAREHOUSE;
 			return FALSE;
 		}
-		return TRUE;
+		delete[] raw;
+		if (page == 0 && hdr.money)
+			lpPlayInfo->WareHouseSaveMoney = hdr.money;
+		if (page == 0 && hdr.weightMax > 0)
+			lpPlayInfo->WareHouseWeightMax = hdr.weightMax;
 	}
 
-	TRANS_WAREHOUSE pages[WAREHOUSE_PAGE_COUNT];
-	ZeroMemory(pages, sizeof(pages));
-	int nPages = 0;
-	fp = fopen(szFileName, "rb");
-	if (fp) {
-		nPages = ReadWareHouseFilePages(fp, pages, WAREHOUSE_PAGE_COUNT);
-		fclose(fp);
+	sWAREHOUSE_SAVE_ITEM* dest = (sWAREHOUSE_SAVE_ITEM*)lpPlayInfo->lpWareHouseSaveItems;
+	const int chunkIndex = (int)lpTransWareHouse->dwTemp[1];
+	if (chunkIndex == 0)
+	{
+		int w = 0;
+		for (int r = 0; r < lpPlayInfo->WareHouseSaveCount; r++)
+		{
+			if (dest[r].Page == (BYTE)page)
+				continue;
+			if (w != r)
+				dest[w] = dest[r];
+			w++;
+		}
+		lpPlayInfo->WareHouseSaveCount = w;
+		lpPlayInfo->WareHouseSaveMask &= ~(1 << page);
 	}
-	if (nPages < 1) {
-		MakeEmptyWareHousePacket(&pages[0], 0);
-		nPages = 1;
+	for (int i = 0; i < hdr.itemCount; i++)
+	{
+		if (lpPlayInfo->WareHouseSaveCount >= WAREHOUSE_UNLOCKED_PAGES * WAREHOUSE_PAGE_SLOTS)
+		{
+			delete[] chunkItems;
+			return FALSE;
+		}
+		sWAREHOUSE_SAVE_ITEM& it = dest[lpPlayInfo->WareHouseSaveCount++];
+		it.Page = (BYTE)page;
+		it.Slot = chunkItems[i].Slot;
+		it.x = chunkItems[i].x;
+		it.y = chunkItems[i].y;
+		it.w = chunkItems[i].w;
+		it.h = chunkItems[i].h;
+		it.Class = chunkItems[i].Class;
+		it.Info = chunkItems[i].sItemInfo;
 	}
-	for (int p = nPages; p < WAREHOUSE_PAGE_COUNT; p++)
-		MakeEmptyWareHousePacket(&pages[p], p);
+	delete[] chunkItems;
 
-	CopyWareHousePacket(&pages[page], lpTransWareHouse);
-	pages[page].wVersion[0] = WAREHOUSE_PACKET_VERSION;
-	pages[page].wVersion[1] = 0;
-	pages[page].dwTemp[0] = (DWORD)page;
-	if (page != 0) {
-		pages[page].WareHouseMoney = 0;
-		pages[page].UserMoney = 0;
+	int chunkCount = (int)lpTransWareHouse->dwTemp[2];
+	if (chunkCount < 1)
+		chunkCount = 1;
+	if (chunkIndex == chunkCount - 1)
+		lpPlayInfo->WareHouseSaveMask |= (1 << page);
+
+	const int allMask = (1 << WAREHOUSE_UNLOCKED_PAGES) - 1;
+	if (lpTransWareHouse->dwTemp[4] == 1 || lpPlayInfo->WareHouseSaveMask == allMask)
+	{
+		if (lpPlayInfo->WareHouseSaveMask != allMask)
+			return TRUE;
+		return WareHouseSqlCommit(lpPlayInfo);
 	}
-
-	if (!WriteWareHouseFilePages(szFileName, pages, WAREHOUSE_PAGE_COUNT))
-		return FALSE;
-
-	RebuildWareHouseItemInfo(lpPlayInfo, pages);
 	return TRUE;
 }
 
@@ -3785,153 +4117,219 @@ int rsSaveCaravanData(char* szID, TRANS_CARAVAN* lpTransWareHouse)
 
 int rsLoadWareHouseData( rsPLAYINFO *lpPlayInfo )
 {
-	char szFileName[128];
-	sWAREHOUSE	WareHouseCheck;
-	FILE	*fp;
-	smTRANS_COMMAND_EX	smTransCommand;
-	int	CopiedItemFlag;
+	if (!lpPlayInfo || !lpPlayInfo->szID[0])
+		return FALSE;
 
-	WIN32_FIND_DATA		ffd;
-	HANDLE				hFind;
-	int	Money;
-	int cnt,cnt2;
+	rsWareHouseSessionFree(lpPlayInfo);
+	ZeroMemory(lpPlayInfo->WareHouseItemInfo, sizeof(sTHROW_ITEM_INFO) * WAREHOUSE_TOTAL_SLOTS);
 
+	int money = 2023;
+	int weightMax = WAREHOUSE_DEFAULT_WEIGHT_MAX;
+	int revision = 1;
+	int imported = 0;
 
-	GetWareHouseFile( lpPlayInfo->szID , szFileName );
-
-	TRANS_WAREHOUSE whPages[WAREHOUSE_PAGE_COUNT];
-	int nPages = 0;
-	ZeroMemory(whPages, sizeof(whPages));
-
- 	hFind = FindFirstFile( szFileName , &ffd );
-	FindClose( hFind );
-	if ( hFind!=INVALID_HANDLE_VALUE ) {
-		fp = fopen( szFileName , "rb" );
-		if ( fp ) {
-			nPages = ReadWareHouseFilePages(fp, whPages, WAREHOUSE_PAGE_COUNT);
+	if (!WareHouseSqlHasAccount(lpPlayInfo->szID))
+	{
+		char szFileName[128];
+		GetWareHouseFile(lpPlayInfo->szID, szFileName);
+		FILE* fp = fopen(szFileName, "rb");
+		TRANS_WAREHOUSE_LEGACY legacyPages[3];
+		ZeroMemory(legacyPages, sizeof(legacyPages));
+		int nPages = 0;
+		if (fp)
+		{
+			nPages = ReadWareHouseFilePages(fp, legacyPages, 3);
 			fclose(fp);
 		}
-	}
+		if (!WareHouseSqlEnsureAccount(lpPlayInfo->szID, money, weightMax, &revision))
+			return FALSE;
 
-	if (nPages < 1) {
-		MakeEmptyWareHousePacket(&whPages[0], 0);
-		nPages = 1;
-	}
-
-	for (int p = nPages; p < WAREHOUSE_PAGE_COUNT; p++)
-		MakeEmptyWareHousePacket(&whPages[p], p);
-
-	for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
-		if (whPages[p].size >= smSOCKBUFF_SIZE)
-			whPages[p].size = smSOCKBUFF_SIZE;
-		whPages[p].wVersion[0] = WAREHOUSE_PACKET_VERSION;
-		whPages[p].wVersion[1] = 0;
-		whPages[p].dwTemp[0] = (DWORD)p;
-		if (p != 0) {
-			whPages[p].WareHouseMoney = 0;
-			whPages[p].UserMoney = 0;
-		}
-	}
-
-	Money = whPages[0].WareHouseMoney;
-	whPages[0].WareHouseMoney = 0;
-	whPages[0].UserMoney = 0;
-	CopiedItemFlag = 0;
-
-
-	Server_DebugCount = 500;
-
-
-	if ( !lpPlayInfo->OpenWarehouseInfoFlag ) {
-
-		Server_DebugCount = 510;
-
-		lpPlayInfo->OpenWarehouseInfoFlag = TRUE;
-		ZeroMemory( lpPlayInfo->WareHouseItemInfo , sizeof(sTHROW_ITEM_INFO)*WAREHOUSE_TOTAL_SLOTS );
-
-		int infoIndex = 0;
-		for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
-			if (!whPages[p].DataSize)
-				continue;
-
-			DecodeCompress( (BYTE *)whPages[p].Data , (BYTE *)&WareHouseCheck , sizeof(sWAREHOUSE) );
-
-			DWORD	dwChkSum = 0;
-			char	*szComp = (char *)&WareHouseCheck;
-
-			for( cnt=0;cnt<sizeof(sWAREHOUSE);cnt++ ) {
-				dwChkSum += szComp[cnt]*(cnt+1);
-			}
-			if ( dwChkSum!=whPages[p].dwChkSum ) {
-				if (p == 0) {
-					lpPlayInfo->OpenWarehouseInfoFlag = FALSE;
-					lpPlayInfo->dwDataError |= rsDATA_ERROR_WAREHOUSE;
-					return 0;
-				}
-				continue;
-			}
-
-			for( cnt=0;cnt<WAREHOUSE_PAGE_SLOTS;cnt++ ) {
-				if ( WareHouseCheck.WareHouseItem[cnt].Flag ) {
-
-					for(cnt2=0;cnt2<INVEN_ITEM_INFO_MAX;cnt2++) {
-		
-						if ( lpPlayInfo->InvenItemInfo[cnt2].dwCode &&
-							lpPlayInfo->InvenItemInfo[cnt2].dwCode==WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE &&
-							lpPlayInfo->InvenItemInfo[cnt2].dwKey==WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head &&
-							lpPlayInfo->InvenItemInfo[cnt2].dwSum==WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum ) {
-
-	
-								smTransCommand.WParam = 8070;
-								smTransCommand.WxParam = 2;
-								smTransCommand.LxParam = (int)"*WAREHOUSE";
-								smTransCommand.LParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE;
-								smTransCommand.SParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
-								smTransCommand.EParam = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
-								RecordHackLogFile( lpPlayInfo , &smTransCommand );
-								CopiedItemFlag++;
-								break;
-
-							}
+		auto db = SQLCONNECTION(DATABASEID_UserDB);
+		if (db && nPages > 0)
+		{
+			for (int p = 0; p < nPages && p < WAREHOUSE_UNLOCKED_PAGES; p++)
+			{
+				sWAREHOUSE_LEGACY_MEM check;
+				ZeroMemory(&check, sizeof(check));
+				if (!legacyPages[p].DataSize)
+					continue;
+				DecodeCompress((BYTE*)legacyPages[p].Data, (BYTE*)&check, sizeof(check));
+				DWORD dwChkSum = 0;
+				char* szComp = (char*)&check;
+				for (int cnt = 0; cnt < (int)sizeof(check); cnt++)
+					dwChkSum += (DWORD)((unsigned char)szComp[cnt]) * (DWORD)(cnt + 1);
+				if (dwChkSum != legacyPages[p].dwChkSum)
+					continue;
+				if (p == 0 && check.Money)
+					money = check.Money;
+				for (int cnt = 0; cnt < WAREHOUSE_LEGACY_PAGE_SLOTS; cnt++)
+				{
+					if (!check.WareHouseItem[cnt].Flag)
+						continue;
+					int page = p;
+					int slot = cnt;
+					int gx = check.WareHouseItem[cnt].x;
+					int gy = check.WareHouseItem[cnt].y;
+					int code = (int)check.WareHouseItem[cnt].sItemInfo.CODE;
+					int head = (int)check.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
+					int chk = (int)check.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
+					db->Open();
+					if (db->Prepare("INSERT INTO WarehouseItem (AccountID, Page, Slot, GridX, GridY, ItemBlob, ItemCode, Head, ChkSum) VALUES (?,?,?,?,?,?,?,?,?)"))
+					{
+						db->BindInputParameter(lpPlayInfo->szID, 1, PARAMTYPE_String);
+						db->BindInputParameter(&page, 2, PARAMTYPE_Integer);
+						db->BindInputParameter(&slot, 3, PARAMTYPE_Integer);
+						db->BindInputParameter(&gx, 4, PARAMTYPE_Integer);
+						db->BindInputParameter(&gy, 5, PARAMTYPE_Integer);
+						db->BindInputParameter(&check.WareHouseItem[cnt].sItemInfo, 6, PARAMTYPE_Binary, (int)sizeof(sITEMINFO));
+						db->BindInputParameter(&code, 7, PARAMTYPE_Integer);
+						db->BindInputParameter(&head, 8, PARAMTYPE_Integer);
+						db->BindInputParameter(&chk, 9, PARAMTYPE_Integer);
+						db->Execute(FALSE);
 					}
-
-					if ( cnt2>=INVEN_ITEM_INFO_MAX && infoIndex < WAREHOUSE_TOTAL_SLOTS ) {
-						lpPlayInfo->WareHouseItemInfo[infoIndex].dwCode = WareHouseCheck.WareHouseItem[cnt].sItemInfo.CODE;
-						lpPlayInfo->WareHouseItemInfo[infoIndex].dwKey = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.Head;
-						lpPlayInfo->WareHouseItemInfo[infoIndex].dwSum = WareHouseCheck.WareHouseItem[cnt].sItemInfo.ItemHeader.dwChkSum;
-						infoIndex++;
-					}
+					db->Close();
 				}
 			}
-
-			if ( p == 0 && WareHouseCheck.Money ) 
-				lpPlayInfo->AddServerMoney( WareHouseCheck.Money-2023 , WHERE_OPEN_WAREHOUES );
+			imported = 1;
+			db->Open();
+			if (db->Prepare("UPDATE Warehouse SET Money=?, ImportedFromWar=1, UpdatedAt=GETDATE() WHERE AccountID=?"))
+			{
+				db->BindInputParameter(&money, 1, PARAMTYPE_Integer);
+				db->BindInputParameter(lpPlayInfo->szID, 2, PARAMTYPE_String);
+				db->Execute(FALSE);
+			}
+			db->Close();
+			char bak[160];
+			sprintf_s(bak, "%s.bak", szFileName);
+			MoveFileExA(szFileName, bak, MOVEFILE_REPLACE_EXISTING);
 		}
-		Server_DebugCount = 520;
 	}
 
-	if ( !CopiedItemFlag ) {
-		if ( lpPlayInfo->lpsmSock ) {
-			for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++)
-				lpPlayInfo->lpsmSock->Send( (char *)&whPages[p] , whPages[p].size , TRUE );
+	auto db = SQLCONNECTION(DATABASEID_UserDB);
+	if (!db)
+		return FALSE;
+	if (!WareHouseSqlEnsureAccount(lpPlayInfo->szID, money, weightMax, &revision))
+		return FALSE;
+
+	db->Open();
+	if (!db->Prepare("SELECT Money, WeightMax, UnlockedPages, Revision FROM Warehouse WHERE AccountID=?"))
+	{
+		db->Close();
+		Utils_Log(LOG_SERVER, "Warehouse: tabelas ausentes. Rode docs/sql/Create-Warehouse.sql no UserDB.");
+		return FALSE;
+	}
+	db->BindInputParameter(lpPlayInfo->szID, 1, PARAMTYPE_String);
+	int unlocked = WAREHOUSE_UNLOCKED_PAGES;
+	if (db->Execute())
+	{
+		db->GetData(1, PARAMTYPE_Integer, &money);
+		db->GetData(2, PARAMTYPE_Integer, &weightMax);
+		db->GetData(3, PARAMTYPE_Integer, &unlocked);
+		db->GetData(4, PARAMTYPE_Integer, &revision);
+	}
+	db->Close();
+	if (unlocked > WAREHOUSE_UNLOCKED_PAGES)
+		unlocked = WAREHOUSE_UNLOCKED_PAGES;
+	if (unlocked < 1)
+		unlocked = WAREHOUSE_UNLOCKED_PAGES;
+
+	sWAREHOUSE_WIRE_ITEM* pages[WAREHOUSE_UNLOCKED_PAGES];
+	int counts[WAREHOUSE_UNLOCKED_PAGES];
+	for (int p = 0; p < WAREHOUSE_UNLOCKED_PAGES; p++)
+	{
+		pages[p] = new sWAREHOUSE_WIRE_ITEM[WAREHOUSE_PAGE_SLOTS];
+		counts[p] = 0;
+		if (!pages[p])
+		{
+			for (int q = 0; q < p; q++)
+				delete[] pages[q];
+			return FALSE;
 		}
 	}
-	else {
-		smTransCommand.code = smTRANSCODE_CLOSECLIENT;
-		smTransCommand.size = sizeof(smTRANS_COMMAND);
-		smTransCommand.WParam = 0;
-		smTransCommand.LParam = 0;
-		smTransCommand.SParam = 0;
-		smTransCommand.EParam = 0;
 
-		if ( lpPlayInfo->lpsmSock )
-			lpPlayInfo->lpsmSock->Send( (char *)&smTransCommand , smTransCommand.size , TRUE );
+	int copied = 0;
+	db->Open();
+	if (db->Prepare("SELECT Page, Slot, GridX, GridY, ItemBlob, ItemCode, Head, ChkSum FROM WarehouseItem WHERE AccountID=? AND Page<? ORDER BY Page, Slot"))
+	{
+		db->BindInputParameter(lpPlayInfo->szID, 1, PARAMTYPE_String);
+		db->BindInputParameter(&unlocked, 2, PARAMTYPE_Integer);
+		if (db->Execute())
+		{
+			do
+			{
+				int page = 0, slot = 0, gx = 0, gy = 0, code = 0, head = 0, chk = 0;
+				sITEMINFO info = {};
+				db->GetData(1, PARAMTYPE_Integer, &page);
+				db->GetData(2, PARAMTYPE_Integer, &slot);
+				db->GetData(3, PARAMTYPE_Integer, &gx);
+				db->GetData(4, PARAMTYPE_Integer, &gy);
+				db->GetData(5, PARAMTYPE_Binary, &info, (int)sizeof(sITEMINFO));
+				db->GetData(6, PARAMTYPE_Integer, &code);
+				db->GetData(7, PARAMTYPE_Integer, &head);
+				db->GetData(8, PARAMTYPE_Integer, &chk);
+				if (page < 0 || page >= unlocked || slot < 0 || slot >= WAREHOUSE_PAGE_SLOTS)
+					continue;
+				if (!WareHouseSkipUnique(info.CODE))
+				{
+					for (int cnt2 = 0; cnt2 < INVEN_ITEM_INFO_MAX; cnt2++)
+					{
+						if (lpPlayInfo->InvenItemInfo[cnt2].dwCode &&
+							lpPlayInfo->InvenItemInfo[cnt2].dwCode == info.CODE &&
+							lpPlayInfo->InvenItemInfo[cnt2].dwKey == info.ItemHeader.Head &&
+							lpPlayInfo->InvenItemInfo[cnt2].dwSum == info.ItemHeader.dwChkSum)
+						{
+							copied++;
+							break;
+						}
+					}
+				}
+				sWAREHOUSE_WIRE_ITEM& w = pages[page][counts[page]];
+				w.Slot = (WORD)slot;
+				w.x = gx;
+				w.y = gy;
+				w.w = 22;
+				w.h = 22;
+				w.Class = 0;
+				w.sItemInfo = info;
+				counts[page]++;
+			} while (db->NextRow() && counts[0] + counts[1] + counts[2] < WAREHOUSE_TOTAL_SLOTS);
+		}
+	}
+	db->Close();
+
+	if (copied)
+	{
+		for (int p = 0; p < WAREHOUSE_UNLOCKED_PAGES; p++)
+			delete[] pages[p];
+		WareHouseKickCopy(lpPlayInfo, 0, 0, 0);
+		return FALSE;
 	}
 
-	Server_DebugCount = 0;
+	lpPlayInfo->OpenWarehouseInfoFlag = TRUE;
+	lpPlayInfo->WareHouseRevision = revision;
+	lpPlayInfo->WareHouseWeightMax = weightMax;
+	lpPlayInfo->WareHouseMoney = money;
 
-	return Money;
+	int infoIndex = 0;
+	for (int p = 0; p < WAREHOUSE_UNLOCKED_PAGES; p++)
+	{
+		for (int i = 0; i < counts[p] && infoIndex < WAREHOUSE_TOTAL_SLOTS; i++)
+		{
+			lpPlayInfo->WareHouseItemInfo[infoIndex].dwCode = pages[p][i].sItemInfo.CODE;
+			lpPlayInfo->WareHouseItemInfo[infoIndex].dwKey = pages[p][i].sItemInfo.ItemHeader.Head;
+			lpPlayInfo->WareHouseItemInfo[infoIndex].dwSum = pages[p][i].sItemInfo.ItemHeader.dwChkSum;
+			infoIndex++;
+		}
+		SendWareHouseWirePage(lpPlayInfo, p, money, weightMax, revision, 0, pages[p], counts[p]);
+		delete[] pages[p];
+	}
+
+	if (money)
+		lpPlayInfo->AddServerMoney(money - 2023, WHERE_OPEN_WAREHOUES);
+
+	return money;
 }
+
 
 
 
@@ -4078,47 +4476,10 @@ int rsLoadCaravanData(rsPLAYINFO* lpPlayInfo)
 
 int rsLoadWareHouseData_Admin( rsPLAYINFO *lpPlayInfo , char *szID , int Day )
 {
-	char szFileName[128];
-	FILE	*fp;
-
-	WIN32_FIND_DATA		ffd;
-	HANDLE				hFind;
-
-
-	if ( Day==0 )
-		GetWareHouseFile( szID , szFileName );
-	else
-		GetWareHouseFile_Backup( szID , szFileName , Day );
-
- 	hFind = FindFirstFile( szFileName , &ffd );
-	FindClose( hFind );
-	if ( hFind!=INVALID_HANDLE_VALUE ) {
-		fp = fopen( szFileName , "rb" );
-		if ( fp ) {
-			TRANS_WAREHOUSE whPages[WAREHOUSE_PAGE_COUNT];
-			int nPages = ReadWareHouseFilePages(fp, whPages, WAREHOUSE_PAGE_COUNT);
-			fclose(fp);
-			if (nPages < 1)
-				return FALSE;
-			for (int p = nPages; p < WAREHOUSE_PAGE_COUNT; p++)
-				MakeEmptyWareHousePacket(&whPages[p], p);
-			lpPlayInfo->OpenWarehouseInfoFlag = 0;
-			if (lpPlayInfo->lpsmSock) {
-				for (int p = 0; p < WAREHOUSE_PAGE_COUNT; p++) {
-					if (whPages[p].size >= smSOCKBUFF_SIZE)
-						whPages[p].size = smSOCKBUFF_SIZE;
-					whPages[p].wVersion[0] = WAREHOUSE_PACKET_VERSION;
-					whPages[p].dwTemp[0] = (DWORD)p;
-					lpPlayInfo->lpsmSock->Send((char*)&whPages[p], whPages[p].size, TRUE);
-				}
-			}
-			return TRUE;
-		}
-	}
-	else {
+	if (!lpPlayInfo)
 		return FALSE;
-	}
-
+	if (Day == 0)
+		return rsLoadWareHouseData(lpPlayInfo);
 	return FALSE;
 }
 
@@ -5257,6 +5618,7 @@ static int PostBoxAddPrepared(rsPOST_BOX_ITEM* box, _POST_BOX_ITEM* src)
 	}
 	else if (dest->dwEntryId >= box->dwNextEntryId)
 		box->dwNextEntryId = dest->dwEntryId + 1;
+	src->dwEntryId = dest->dwEntryId;
 	dest->Flag = 1;
 	return TRUE;
 }
@@ -5306,6 +5668,121 @@ static void PostBoxLogLine(const char* szLine)
 	fputs(szLine, fp);
 	fputs("\r\n", fp);
 	fclose(fp);
+}
+
+static void PostBoxGuessSource(char* out, int outSize, const char* doc, int kind)
+{
+	if (!out || outSize <= 0)
+		return;
+	out[0] = 0;
+	if (doc && strstr(doc, "Devolvido"))
+		lstrcpyn(out, "Return", outSize);
+	else if (doc && strstr(doc, "Enviado por"))
+		lstrcpyn(out, "P2P", outSize);
+	else if (doc && strstr(doc, "Desafio"))
+		lstrcpyn(out, "Quest", outSize);
+	else if (doc && strstr(doc, "Shopping"))
+		lstrcpyn(out, "Shop", outSize);
+	else if (doc && strstr(doc, "Logado"))
+		lstrcpyn(out, "LoginReward", outSize);
+	else if (doc && strstr(doc, "Arena"))
+		lstrcpyn(out, "Arena", outSize);
+	else if (kind == POSTBOX_KIND_PLAYER)
+		lstrcpyn(out, "P2P", outSize);
+	else
+		lstrcpyn(out, "System", outSize);
+}
+
+static void PostBoxFillIp(rsPLAYINFO* lpPlayInfo, char* out, int outSize)
+{
+	if (!out || outSize <= 0)
+		return;
+	out[0] = 0;
+	if (!lpPlayInfo || !lpPlayInfo->lpsmSock)
+		return;
+	in_addr addr;
+	addr.S_un.S_addr = lpPlayInfo->lpsmSock->acc_sin.sin_addr.S_un.S_addr;
+	lstrcpyn(out, inet_ntoa(addr), outSize);
+}
+
+static void PostBoxAuditFromItem(POSTBOX_AUDIT* a, const _POST_BOX_ITEM* item, const char* destAccount)
+{
+	if (!a)
+		return;
+	ZeroMemory(a, sizeof(POSTBOX_AUDIT));
+	if (destAccount && destAccount[0])
+		lstrcpyn(a->DestAccount, destAccount, 32);
+	if (!item)
+		return;
+	a->EntryId = item->dwEntryId;
+	a->Kind = item->nKind;
+	lstrcpyn(a->DestChar, item->szCharName, 32);
+	lstrcpyn(a->SenderAccount, item->szSenderID, 32);
+	lstrcpyn(a->SenderChar, item->szSenderName, 32);
+	lstrcpyn(a->ItemCode, item->szItemCode, 32);
+	a->ItemBinCode = item->dwItemCode;
+	lstrcpyn(a->Message, item->szDoc, 128);
+	a->HasPass = item->szPassCode[0] ? 1 : 0;
+	a->DepositedAt = item->dwDepositedAt;
+	a->ExpireAt = item->dwExpireAt;
+	a->Quantity = item->dwJobCode;
+	if (item->HasItemBlob && item->lpItemBlob)
+	{
+		sITEMINFO* blob = (sITEMINFO*)item->lpItemBlob;
+		lstrcpyn(a->ItemName, blob->ItemName, 64);
+		a->ItemHead = blob->ItemHeader.Head;
+		a->ItemChkSum = blob->ItemHeader.dwChkSum;
+		a->Weight = blob->Weight;
+		if (blob->PotionCount > 0)
+			a->Quantity = blob->PotionCount;
+	}
+	PostBoxGuessSource(a->Source, sizeof(a->Source), item->szDoc, item->nKind);
+}
+
+void rsPostBoxAuditLog(const POSTBOX_AUDIT* row)
+{
+	if (!row || !row->EventType[0])
+		return;
+
+	auto db = SQLConnection::GetConnection(DATABASEID_ITEMLogDB);
+	if (!db || !db->Open())
+		return;
+
+	const char* query =
+		"INSERT INTO PostBoxLog (EventType,EntryId,Kind,DestAccount,DestChar,SenderAccount,SenderChar,"
+		"ItemCode,ItemName,ItemBinCode,ItemHead,ItemChkSum,Quantity,Weight,Message,HasPass,"
+		"DepositedAt,ExpireAt,Reason,Source,DestIP) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+	POSTBOX_AUDIT local = *row;
+	if (db->Prepare(query))
+	{
+		int p = 1;
+		BOOL ok = TRUE;
+		ok = ok && db->BindInputParameter(local.EventType, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(&local.EntryId, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(&local.Kind, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(local.DestAccount, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(local.DestChar, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(local.SenderAccount, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(local.SenderChar, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(local.ItemCode, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(local.ItemName, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(&local.ItemBinCode, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(&local.ItemHead, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(&local.ItemChkSum, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(&local.Quantity, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(&local.Weight, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(local.Message, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(&local.HasPass, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(&local.DepositedAt, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(&local.ExpireAt, p++, PARAMTYPE_Integer);
+		ok = ok && db->BindInputParameter(local.Reason, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(local.Source, p++, PARAMTYPE_String);
+		ok = ok && db->BindInputParameter(local.DestIP, p++, PARAMTYPE_String);
+		if (ok)
+			db->Execute(FALSE);
+	}
+	db->Close();
 }
 
 static int PostBoxCopyAccountCandidate(const char* szCharName, const char* candidate, char* szOutID, int idSize)
@@ -5463,6 +5940,17 @@ int rsAddPostBoxSystemItem(char* szID, char* szCharName, char* szItemCode, int j
 	PostBoxStampNewItem(&ctx.item, POSTBOX_KIND_SYSTEM);
 	lstrcpy(ctx.item.szSenderName, "Sistema");
 	int ok = PostBoxWithAccount(szID, PostBoxAddCtx, &ctx);
+	if (ok)
+	{
+		POSTBOX_AUDIT audit;
+		PostBoxAuditFromItem(&audit, &ctx.item, szID);
+		lstrcpy(audit.EventType, "DEPOSIT");
+		if (!audit.ItemName[0] && szItemCode)
+			lstrcpyn(audit.ItemName, szItemCode, 64);
+		rsPLAYINFO* dest = FindUserFromID(szID);
+		PostBoxFillIp(dest, audit.DestIP, sizeof(audit.DestIP));
+		rsPostBoxAuditLog(&audit);
+	}
 	if (ok && szCharName && szCharName[0] && szCharName[0] != '*')
 		rsPostBoxNotifyPlayer(szCharName, "Sistema", TRUE);
 	return ok;
@@ -5506,7 +5994,21 @@ int rsAddPostBoxPlayerItem(char* szID, char* szCharName, sITEMINFO* lpItem, cons
 	if (!ok && ctx.item.lpItemBlob)
 		delete (sITEMINFO*)ctx.item.lpItemBlob;
 	if (ok)
+	{
+		POSTBOX_AUDIT audit;
+		PostBoxAuditFromItem(&audit, &ctx.item, szID);
+		lstrcpy(audit.EventType, "DEPOSIT");
+		lstrcpyn(audit.ItemName, lpItem->ItemName, 64);
+		audit.ItemHead = lpItem->ItemHeader.Head;
+		audit.ItemChkSum = lpItem->ItemHeader.dwChkSum;
+		audit.Weight = lpItem->Weight;
+		if (lpItem->PotionCount > 0)
+			audit.Quantity = lpItem->PotionCount;
+		rsPLAYINFO* dest = FindUserFromID(szID);
+		PostBoxFillIp(dest, audit.DestIP, sizeof(audit.DestIP));
+		rsPostBoxAuditLog(&audit);
 		rsPostBoxNotifyPlayer(szCharName, szSenderName, TRUE);
+	}
 	return ok;
 }
 
@@ -5550,6 +6052,12 @@ int rsPostBoxProcessExpired(rsPLAYINFO* lpPlayInfo)
 			continue;
 		if (!rsPostBoxItemForChar(lpPlayInfo, item))
 			continue;
+		POSTBOX_AUDIT audit;
+		PostBoxAuditFromItem(&audit, item, lpPlayInfo->szID);
+		lstrcpy(audit.EventType, "EXPIRE");
+		lstrcpy(audit.Reason, "expirou");
+		PostBoxFillIp(lpPlayInfo, audit.DestIP, sizeof(audit.DestIP));
+		rsPostBoxAuditLog(&audit);
 		PostBoxReturnOrDiscard(item, "expirou");
 		if (item->lpItemBlob)
 		{
@@ -5569,6 +6077,12 @@ int rsPostBoxRefuseEntry(rsPLAYINFO* lpPlayInfo, DWORD dwEntryId)
 	_POST_BOX_ITEM* item = rsPostBoxFindEntry(lpPlayInfo, dwEntryId);
 	if (!item)
 		return POSTBOX_RESULT_NOTFOUND;
+	POSTBOX_AUDIT audit;
+	PostBoxAuditFromItem(&audit, item, lpPlayInfo->szID);
+	lstrcpy(audit.EventType, "REFUSE");
+	lstrcpy(audit.Reason, "recusado");
+	PostBoxFillIp(lpPlayInfo, audit.DestIP, sizeof(audit.DestIP));
+	rsPostBoxAuditLog(&audit);
 	PostBoxReturnOrDiscard(item, "recusado");
 	if (item->lpItemBlob)
 	{
